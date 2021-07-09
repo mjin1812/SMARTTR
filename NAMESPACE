@@ -3,4 +3,6 @@
 S3method(print,mouse)
 S3method(print,slice)
 export(add_slice)
+export(mouse)
 export(save_mouse)
+export(slice)

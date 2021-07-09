@@ -1,7 +1,9 @@
 ###_____________ General housekeeping functions __________####
 
-#' Save mouse into it's attribute output path
+#' @title Save mouse data
 #'
+#'
+#' @description Saves mouse data into it's attribute output path as an RDATA file
 #' @usage save_mouse(m)
 #' @param m mouse object
 #' @export

@@ -2,7 +2,7 @@
 % Please edit documentation in R/housekeeping_functions.R
 \name{save_mouse}
 \alias{save_mouse}
-\title{Save mouse into it's attribute output path}
+\title{Save mouse data}
 \usage{
 save_mouse(m)
 }
@@ -10,5 +10,5 @@ save_mouse(m)
 \item{m}{mouse object}
 }
 \description{
-Save mouse into it's attribute output path
+Saves mouse data into it's attribute output path as an RDATA file
 }
