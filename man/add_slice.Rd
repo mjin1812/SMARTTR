@@ -11,7 +11,7 @@ m <- add_slice(m, s, replace = FALSE)
 
 \item{s}{slice object}
 
-\item{replace}{(bool, default = FALSE) Replace slice already contained in a mouse object.}
+\item{replace}{(bool, default = FALSE) Replace a slice already contained in a mouse object.}
 }
 \description{
 Add slice to a mouse object

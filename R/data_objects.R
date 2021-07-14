@@ -62,6 +62,7 @@ new_slice <- function(data = list(registration_obj = NULL,           #list per s
                       info = list(slice_ID = NA,
                                   coordinate = -1,
                                   atlas_plate = NA,
+                                  conversion_factor = 1.0833,
                                   bin = 1,
                                   z_width = 24,            #Measured in um
                                   hemisphere = NULL,
