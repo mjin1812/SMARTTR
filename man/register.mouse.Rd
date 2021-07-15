@@ -33,5 +33,6 @@ m  mouse object
 Register a slice in a mouse object
 }
 \examples{
+m <- register(m, slice_ID = '1_10', hemisphere = "left", filter = my_filter)
 TODO: add popup window option to better visualize the internal structures of the images
 }

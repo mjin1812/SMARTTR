@@ -10,5 +10,5 @@ save_mouse(m)
 \item{m}{mouse object}
 }
 \description{
-Saves mouse data into it's attribute output path as an RDATA file
+Saves mouse object into it's attribute output path as an RDATA file
 }

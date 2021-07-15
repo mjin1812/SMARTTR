@@ -19,3 +19,6 @@ s slice object
 \description{
 Register a slice in a slice object
 }
+\examples{
+s <- register(s)
+}

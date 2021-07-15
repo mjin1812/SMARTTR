@@ -5,6 +5,8 @@
 new_mouse <- function(data = list(slices = list()
                                   ),
                       info = list(mouse_ID = 'set ID',
+                                  sex = 'female',
+                                  strain = NULL,
                                   experiment = 'create experiment name',
                                   group = 'name experiment group',
                                   cohort = 'name mouse cohort',
@@ -62,7 +64,7 @@ new_slice <- function(data = list(registration_obj = NULL,           #list per s
                       info = list(slice_ID = NA,
                                   coordinate = -1,
                                   atlas_plate = NA,
-                                  conversion_factor = 1.0833,
+                                  conversion_factor = 1.0833,   # From pixels to microns
                                   bin = 1,
                                   z_width = 24,            #Measured in um
                                   hemisphere = NULL,
