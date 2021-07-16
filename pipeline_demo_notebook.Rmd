@@ -1,0 +1,238 @@
+---
+title: "Denny Lab Wholebrain Pipeline Demo"
+author: ' by Michelle Jin'
+date: "June 15, 2021"
+output:
+  html_document: default
+  word_document: default
+---
+
+<div style="line-height: 2em;">
+<font size="4"> 
+<style type="text/css">
+
+h1.title {
+  font-size: 38px;
+  color: Black;
+  text-align: center;
+}
+h4.author { /* Header 4 - and the author and data headers use this too  */
+  font-size: 18px;
+  color: Black;
+  text-align: center;
+}
+h4.date { /* Header 4 - and the author and data headers use this too  */
+  font-size: 18px;
+  color: Black;
+  text-align: center;
+}
+</style>
+
+
+# Introduction
+
+This is an R Notebook that allows for an interactive walkthrough of the wholebrain pipeline for the lab. The base of this pipeline is a package in development with the working title, `SMARTR`, a self-referential play on the previous package I developed as an extension to `wholebrain` called `SMART`. 
+
+In this notebook, prototypical example of of the following steps of the pipeline will be demonstrated:
+
+
+1. Setting up the pipeline by specifying experiment parameters, and save directories.
+2. The interactive registration process.
+3. Importing raw segmentation data from .txt files generated from ImageJ for multiple channels.
+4. Optionally creating a filter for the 'cfos' and 'eyfp' channels to clean segmented counts.
+5. Creating a segmentation object compatible with `wholebrain` functions.
+6. Forward warping and mapping the data onto the standardized mouse atlas.
+7. Cleaning the mapped data in all the following ways: 
+    + Removing cells that map outside the boundaries of the atlas.
+    + Omitting regions by user specified region acronyms.
+    + Omitting regions by a default list of regions to omit.
+    + Removing Layer 1 cells
+    + Removing cells from a contralateral hemisphere per slice if the registrations are divided by right and left hemispheres. 
+8.  Obtaining cell counts normalized by region volume. 
+9.  TODO: Aggregating cell counts across multiple animals.
+10. TODO: Splitting the hippocampal cell counts into Dorsal and Ventral based on a user-defined AP coordinate ranges.
+11. TODO: Functions for easy analysis, e.g. cross correlations and network analysis.
+  
+  
+<br>  
+
+## Object oriented programming in R
+
+Before getting started, it's helpful to get a sense of a how the structure of data is handled and bundled together in this pipeline. Data is now stored in S3 data type objects called `slice` and `mouse`. The data in these objects will be manipulated by a special type of function called a generic function (this is analogous to an object method in python). Generic functions allow you to pass objects of different classes to the same function, and it can recognize and perform different operations on objects depending on their class. If this is all confusing to you, don't worry at all! This is much more information than you actually need to know to use this pipeline. It's just helpful to better understand the architecture of the package.  
+
+
+To get an excellent brief overview of what object oriented programming is and it's advantages over procedural programming, check out this excellent 
+[YouTube video!](https://www.youtube.com/watch?v=pTB0EiLXUC8&t=379s&ab_channel=ProgrammingwithMosh) 
+
+
+### Object descriptions... TODO
+
+The `slice` object will contain all the data related to registration, segmentation for each channel, and cell counts for a particular image. It will also contain experimental imaging parameters.
+
+
+### Setting up the pipeline
+
+```{r}
+# First lets load the libraries we need to use!
+
+library(SMART)
+library(SMARTR)
+library(wholebrain)
+
+```
+
+### Initializing your mouse object 
+
+```{r}
+
+# Let's create an instance of a mouse object
+# Let pretend this mouse object stores data from mouse No. 255  
+
+mouse_255 <- mouse() 
+
+# Let first see what's in it with print()
+print(mouse_255)
+
+# The output should print a bunch of important mouse attributes that haven't been set yet.
+# Check out the mouse help page with the command below:
+
+?mouse
+
+```
+#### Let's continue setting up the mouse object by storing the mouse attributes
+ 
+```{r}
+
+# We can access the list used to print the mouse attribute with the command below
+mouse_info <- attr(mouse_255, 'info')
+
+# Change mouse attributes to reflect your mouse and experiment
+mouse_info$mouse_ID      <- '255'
+mouse_info$sex           <- 'female'
+mouse_info$strain        <- '129s'
+mouse_info$experiment    <- 'sundowning'
+mouse_info$group         <- 'control'
+mouse_info$cohort        <- '3_2_months'
+mouse_info$input_path    <- 'Y:\\Holly Hunsberger\\Sundowning_images\\Cohort 3_2month\\255'
+mouse_info$output_path   <- 'C:\\Users\\Jinmich\\Documents\\255\\255_example_output'
+
+
+# Change mouse's attributes by storing the mouse info list
+attr(mouse_255, 'info') <- mouse_info
+
+# Check the updates 
+print(mouse_255)
+
+```
+We have now finished setting up a mouse object and are ready to store some imaging and cell count data into it!
+
+### Initialize a slice object
+
+```{r}
+# Lets create an instance of a slice object. 
+# Let pretend this slice object stores data from slice No. S1_9
+
+slice_S1_9 <- slice()
+
+# Let first see what's in it with print()
+print(slice_S1_9)
+```
+#### Let continue setting up slice attributes just like we did for a mouse!
+
+```{r}
+# We can access the list used to print the slice attribute with the command below
+slice_info <- attr(slice_S1_9, 'info')
+
+# Change slice attributes to reflect your slice and experiment
+slice_info$slice_ID            <- '1_9'
+slice_info$coordinate          <- -3.2
+slice_info$conversion_factor   <- 1.0    # Pixel-to-micron conversion factor
+slice_info$bin                 <- 1
+slice_info$z_width             <- 24     # z stack thickness in microns
+slice_info$hemisphere          <- 'left'
+slice_info$channels            <- c('cfos', 'eyfp', 'colabel')   
+slice_info$registration_path   <- 'Y:\\Holly Hunsberger\\Sundowning_images\\Cohort 3_2month\\255\\255_S1_9\\MAX_255_1_9.tif'  
+
+
+# TODO allow slice attributes channels to be the default in the channels parameters in functions if none is supplied.
+# TODO: allow for relative paths based on the mouse input directory
+
+# Change slice attributes by storing the slice info list
+attr(slice_S1_9, 'info') <- slice_info
+
+# Check the updates 
+print(slice_S1_9)
+
+```
+### Add slices to your mouse
+
+We are ready to bundle our slice information with our mouse. But first a quick tip:
+
+
+You can use the `$` operator to look at named elements in a mouse. Type the code below into the R console:
+`mouse_255$`
+
+You should see that a named list called `slices` pops up and you can complete the suggestion by hitting TAB.
+The `$` operator is very useful for accessing any named element in a list. 
+
+
+```{r}
+
+# Check the length of slices in a mouse first
+length(mouse_255$slices)
+
+# Now lets check out the help page of one of the functions in SMARTR
+# In general, always see the "Usage" or "Examples" section for examples of how to use a particular function in the package
+
+?add_slice
+
+# Now that we've read how to use the function, let's add our slice to our mouse with the line below:
+mouse_255 <- add_slice(mouse_255, slice_S1_9)
+
+
+# Check the length of slices now
+length(mouse_255$slices)
+
+# Access the new slice information with the code below
+mouse_255$slices$`1_9_left`
+
+```
+
+### Now we are ready to register this image!
+
+
+
+
+```{r, eval = FALSE}
+##
+m <- mouse_58
+m <- register(m, slice_ID = "AD_M_S1_7" )
+
+```
+
+
+```{r}
+
+```
+
+
+
+```{r}
+plot(cars)
+```
+
+
+
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+
+</div>
+</font> 

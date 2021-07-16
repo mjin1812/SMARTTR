@@ -4,16 +4,21 @@
 \alias{get_registered_areas.mouse}
 \title{Method for getting regional areas per slice in a mouse object}
 \usage{
-\method{get_registered_areas}{mouse}(m, slice_ID)
+\method{get_registered_areas}{mouse}(m, slice_ID, hemisphere = NULL, replace = FALSE)
 }
 \arguments{
 \item{m}{: mouse object}
 
 \item{slice_ID}{: ID of slice (str)}
+
+\item{hemisphere}{: hemisphere of slice}
 }
 \value{
 m mouse object
 }
 \description{
 Method for getting regional areas per slice in a mouse object
+}
+\examples{
+m <- get_registered_areas(m, slice_ID = "1_10", hemisphere = "left")
 }

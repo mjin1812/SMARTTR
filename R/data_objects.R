@@ -32,6 +32,15 @@ validate_mouse <- function(m){
 #' @description mouse() constructs an S3 object of class 'mouse'. A mouse object
 #' consists of a list of slice objects and attributes stored as a list.
 #'
+#' @details
+#' ## The list of slice object.
+#' The slice objects are added to a mouse object with the function [SMARTR::add_slice()].
+#' Each slice is a named element in the mouse object list, with the naming convention dependent on the slice ID and hemisphere attributes of the slice object.
+#'
+#' If you are processing either a left or right hemisphere, the slice is named with the convention: "slice_ID" appended with its "hemisphere"
+#' If the hemisphere attribute is NULL,  i.e. if the whole slice aligns well with a single atlas plate and there is no need to create separate slice objects per hemisphere,
+#' then the slice is named with the convention: "slice_ID"
+#'
 #' ## Attributes are strings with initialized values listed below:
 #' 1. mouse_ID = 'set ID'
 #' 2. experiment = 'create experiment name'
@@ -43,6 +52,9 @@ validate_mouse <- function(m){
 #' @usage mouse_example <- mouse() # initializes a mouse object
 #' @returns A mouse, a colloquial term for an object of class 'mouse'. A 'mouse' object
 #' is also a list, with class list.
+#' @seealso
+#' See also [SMARTR::slice()] for the description of a slice object and it's attributes.
+#' See also [SMARTR::add_slice()] for the description of how to add a slice object to a mouse object.
 #' @export
 
 mouse <- function(... ){
@@ -55,12 +67,12 @@ mouse <- function(... ){
 
 
 new_slice <- function(data = list(registration_obj = NULL,           #list per section
-                                  raw_segmentation_data = list(),    #list of length 3(per channel)
-                                  segmentation_filters = list(),     #Each element containing sublist the length of registration_obj
-                                  segmentation_obj = list(),
-                                  raw_forward_warped_data = list(),
-                                  forward_warped_data = list(),      # After cleaning up with excluded regions
-                                  areas = list()),
+                                  raw_segmentation_data = NULL,    #list of length 3(per channel)
+                                  segmentation_filters = NULL,     #Each element containing sublist the length of registration_obj
+                                  segmentation_obj = NULL,
+                                  raw_forward_warped_data = NULL,
+                                  forward_warped_data = NULL,      # After cleaning up with excluded regions
+                                  areas = NULL),
                       info = list(slice_ID = NA,
                                   coordinate = -1,
                                   atlas_plate = NA,

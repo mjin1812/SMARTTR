@@ -14,7 +14,7 @@ add_slice <- function(m, s, replace = FALSE){
 
   # Omit hemisphere name if there is no hemisphere value in the attributes
   if (is.null(hemisphere)){
-    slice_name <- paste0(slice_ID)
+    slice_name <- slice_ID
   } else {
     slice_name <- paste0(slice_ID, "_", hemisphere)
   }
@@ -68,11 +68,29 @@ add_slice <- function(m, s, replace = FALSE){
 ###______________Generic functions ________________###
 
 ## Creating generic function for registration
+#' Register
+#'
+#' @param x
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 register <- function(x, ...) {
   UseMethod("register")
 }
 
 ## Creating generic function for segmentation importation
+#' import_segmentation
+#'
+#' @param x
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 import_segmentation <- function(x, ...){
   UseMethod('import_segmentation')
 }
@@ -83,26 +101,61 @@ make_segmentation_filter <- function(x, ...){
 }
 
 ## Create segmentation object
+#' make_segmentation_object
+#'
+#' @param x
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 make_segmentation_object <- function(x, ...){
   UseMethod('make_segmentation_object')
 }
 
 
 ## forward_warp segmentation data to atlas space
+#' map_cells_to_atlas
+#'
+#' @param x
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 map_cells_to_atlas <- function(x, ...){
   UseMethod('map_cells_to_atlas')
 }
 
 ## excluded designated regions from the mapped cell data table
+#' exclude_anatomy
+#'
+#' @param x
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 exclude_anatomy <- function(x, ...){
   UseMethod('exclude_anatomy')
 }
 
 ## excluded designated regions from the mapped cell data table
+#' get_registered_areas
+#'
+#' @param x
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 get_registered_areas <- function(x, ...){
   UseMethod('get_registered_areas')
 }
-
 
 
 # #_________ TESTING NEW SEGMENTATION METHOD _________
@@ -111,8 +164,6 @@ get_registered_areas <- function(x, ...){
 # import_segmentation_weka <- function(x, ...){
 #   UseMethod('import_segmentation_weka')
 # }
-
-
 
 #__________________ Mouse & Slice object methods for generic functions __________________________
 ##____ Creating method for registration of slice object____
@@ -151,10 +202,8 @@ register.slice <- function(s,
                                               filter = filter,
                                               correspondance = s$registration_obj,
                                               ...)
-
   return(s)
 }
-
 
 ##____ Creating method for registration of mouse object____
 #' Register a slice in a mouse object
@@ -181,7 +230,7 @@ register.mouse <- function(m,
 
   # Omit hemisphere name if there is no hemisphere value in the attributes
   if (is.null(hemisphere)){
-    slice_name <- paste0(slice_ID)
+    slice_name <- slice_ID
   } else {
     slice_name <- paste0(slice_ID, "_", hemisphere)
   }
@@ -209,6 +258,11 @@ register.mouse <- function(m,
                                            filter = filter, ...)
         } else{
           message("Improving previous registration for this slice. Set replace = TRUE to start from scratch!...\n")
+
+          if (is.null(filter)){
+            filter <- SMARTR::segmentation.object$filter
+            filter$resize <-  m$slices[[match]]$registration_obj$resize
+          }
 
           # Register matched slices with existing data
           m$slices[[match]] <- register(m$slices[[match]],
@@ -316,7 +370,7 @@ import_segmentation.mouse <- function(m,
 
   # Omit hemisphere name if there is no hemisphere value in the attributes
   if (is.null(hemisphere)){
-    slice_name <- paste0(slice_ID)
+    slice_name <- slice_ID
   } else {
     slice_name <- paste0(slice_ID, "_", hemisphere)
   }
@@ -569,7 +623,7 @@ make_segmentation_object.mouse <- function(m,
 
   # Omit hemisphere name if there is no hemisphere value in the attributes
   if (is.null(hemisphere)){
-    slice_name <- paste0(slice_ID)
+    slice_name <- slice_ID
   } else {
     slice_name <- paste0(slice_ID, "_", hemisphere)
   }
@@ -620,7 +674,7 @@ make_segmentation_object.mouse <- function(m,
 #' @title Map cells to atlas for slice object
 #' @description Method for forward warping segmentation data to atlas space for a slice object.
 #' Requires segmentation objects to be made for channels specified and a registration object.
-#' @param  s : slice object
+#' @param s : slice object
 #' @param channels : channels to filter (str vector), can filter both eyfp & cfos
 #' @param clean : TRUE (bool). Remove cells that don't map to any regions.
 #' @param display : TRUE (bool). Display the results of the forward warp for the slice.
@@ -685,7 +739,7 @@ map_cells_to_atlas.mouse <- function(m,
 
   # Omit hemisphere name if there is no hemisphere value in the attributes
   if (is.null(hemisphere)){
-    slice_name <- paste0(slice_ID)
+    slice_name <- slice_ID
   } else {
     slice_name <- paste0(slice_ID, "_", hemisphere)
   }
@@ -736,8 +790,6 @@ map_cells_to_atlas.mouse <- function(m,
 
 
 ##____Method for excluding regions, layer 1, and hemispheres per slice ____
-
-
 #' @title Post-processing to exclude and clean up mapped data
 #' @description Method for excluding regions, layer 1, and hemispheres, and  per slice
 #' @param s: slice object
@@ -856,7 +908,7 @@ exclude_anatomy.mouse <- function(m,
 
   # Omit hemisphere name if there is no hemisphere value in the attributes
   if (is.null(hemisphere)){
-    slice_name <- paste0(slice_ID)
+    slice_name <- slice_ID
     if (exclude_other_hemisphere){
       stop("Can't exclude contralateral hemisphere without reference hemisphere! i.e., hemisphere = NULL and exclude_other_hemisphere = TRUE. ")
     }
@@ -865,7 +917,7 @@ exclude_anatomy.mouse <- function(m,
     slice_name <- paste0(slice_ID, "_", hemisphere)
   }
 
-  print(slice_name)
+  # print(slice_name)
 
   # check in list of previous stored slice names for a match
   stored_names <- names(m$slices)
@@ -921,18 +973,52 @@ get_registered_areas.slice <- function(s){
 #' Method for getting regional areas per slice in a mouse object
 #' @param m : mouse object
 #' @param slice_ID : ID of slice (str)
+#' @param hemisphere : hemisphere of slice
 #' @return m mouse object
 #' @export
 #'
-#' @examples
+#' @examples m <- get_registered_areas(m, slice_ID = "1_10", hemisphere = "left")
 get_registered_areas.mouse <- function(m,
-                                       slice_ID){
+                                       slice_ID,
+                                       hemisphere = NULL,
+                                       replace = FALSE){
 
+  if (is.null(hemisphere)){
+    slice_name <- slice_ID
+  } else {
+    slice_name <- paste0(slice_ID, "_", hemisphere)
+  }
 
+  # check in list of previous stored slice names for a match
+  stored_names <- names(m$slices)
 
+  # Check if there is a previous slice that matches
+  match <- FALSE
 
+  for (stored_name in stored_names){
+    if (identical(stored_name, slice_name)){
+      match <- slice_name
 
+      # Check if areas data already exists
+      if (!is.null(m$slices[[match]]$areas)){
 
+        # Check if user wants existing data to be overwritten
+        if (replace){
+          m$slices[[match]] <- get_registered_areas(m$slices[[match]])
+
+        } else {
+          stop(paste0("There is an existing areas data for this slice! If you want to overwrite it, set replace to TRUE."))
+
+        }
+
+      } else {
+        m$slices[[match]] <- get_registered_areas(m$slices[[match]])
+      }
+    }
+  }
+  if (isFALSE(match)){
+    stop(paste0("There were no slices matching the name ", slice_name, " found in your mouse!" ))
+  }
 return(m)
 }
 
@@ -1003,12 +1089,12 @@ get.registered.areas <- function(cell.data.list, registration, conversion.factor
   region.info <- list()
 
   for (i in 1:nrow(regions)) {
-    region.data <- get.region(regions$acronym[i],registration)
+    region.data <- wholebrain::get.region(regions$acronym[i],registration)
     region.data[,1:4] <- region.data[,1:4]*conversion.factor
     region.info <- c(region.info, list(region.data[region.data$right.hemisphere==regions$right.hemisphere[i],]))
   }
 
-  areas <- data.frame(name=as.character(name.from.acronym(regions$acronym)),
+  areas <- data.frame(name=as.character(wholebrain::name.from.acronym(regions$acronym)),
                       acronym=regions$acronym,
                       right.hemisphere=regions$right.hemisphere,
                       area=rep(0,nrow(regions)),

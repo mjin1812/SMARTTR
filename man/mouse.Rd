@@ -13,6 +13,18 @@ is also a list, with class list.
 \description{
 mouse() constructs an S3 object of class 'mouse'. A mouse object
 consists of a list of slice objects and attributes stored as a list.
+}
+\details{
+\subsection{The list of slice object.}{
+
+The slice objects are added to a mouse object with the function \code{\link[=add_slice]{add_slice()}}.
+Each slice is a named element in the mouse object list, with the naming convention dependent on the slice ID and hemisphere attributes of the slice object.
+
+If you are processing either a left or right hemisphere, the slice is named with the convention: "slice_ID" appended with its "hemisphere"
+If the hemisphere attribute is NULL,  i.e. if the whole slice aligns well with a single atlas plate and there is no need to create separate slice objects per hemisphere,
+then the slice is named with the convention: "slice_ID"
+}
+
 \subsection{Attributes are strings with initialized values listed below:}{
 \enumerate{
 \item mouse_ID = 'set ID'
@@ -23,4 +35,8 @@ consists of a list of slice objects and attributes stored as a list.
 \item output_path = 'set output path'
 }
 }
+}
+\seealso{
+See also \code{\link[=slice]{slice()}} for the description of a slice object and it's attributes.
+See also \code{\link[=add_slice]{add_slice()}} for the description of how to add a slice object to a mouse object.
 }

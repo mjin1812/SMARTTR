@@ -7,7 +7,7 @@
 save_mouse(m)
 }
 \arguments{
-\item{m}{mouse object}
+\item{...}{parameter to pass mouse object}
 }
 \description{
 Saves mouse object into it's attribute output path as an RDATA file

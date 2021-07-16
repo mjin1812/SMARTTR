@@ -3,12 +3,13 @@
 #' @title Save mouse data
 #' @description Saves mouse object into it's attribute output path as an RDATA file
 #' @usage save_mouse(m)
-#' @param m mouse object
+#' @param ... parameter to pass mouse object
 #' @export
+#' @example save_mouse(m)
 
-save_mouse <- function(m){
-  info <- attr(m, 'info')
-  save(m, file = file.path(info$output_path, paste0('mouse_',info$mouse_ID,'.RDATA')))
+save_mouse <- function(...){
+  info <- attr(..., 'info')
+  save(..., file = file.path(info$output_path, paste0('mouse_',info$mouse_ID,'.RDATA'))  )
 }
 
 ## Printing methods for mouse and slices
