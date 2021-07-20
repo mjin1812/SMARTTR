@@ -29,3 +29,7 @@
 \description{
 Make a wholebrain compatible segmentation object for a slice in a mouse object
 }
+\examples{
+m <-  make_segmentation_object(m, slice_ID = '1_9', hemisphere = 'left', channels = c('eyfp', 'cfos'), use_filter = FALSE)
+
+}

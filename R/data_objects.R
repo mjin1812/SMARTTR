@@ -2,8 +2,9 @@
 #_________________________________________________________________________
 
 ## Hidden constructor for mouse
-new_mouse <- function(data = list(slices = list()
-                                  ),
+new_mouse <- function(data = list(slices = list(),
+                                  cell_table = NULL,
+                                  normalized_counts = NULL),
                       info = list(mouse_ID = 'set ID',
                                   sex = 'female',
                                   strain = NULL,

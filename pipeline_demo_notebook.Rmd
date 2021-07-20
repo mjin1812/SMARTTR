@@ -28,13 +28,19 @@ h4.date { /* Header 4 - and the author and data headers use this too  */
 }
 </style>
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+
 
 # Introduction
 
-This is an R Notebook that allows for an interactive walkthrough of the wholebrain pipeline for the lab. The base of this pipeline is a package in development with the working title, `SMARTR`, a self-referential play on the previous package I developed as an extension to `wholebrain` called `SMART`. 
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook that allows for an interactive walkthrough of the wholebrain pipeline for the lab.. When you execute code within the notebook, the results will appear beneath the code. To execute a code chunk in this notebook click the *Run* button within a chunk or place your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+The base of this pipeline is a package in development with the working title, `SMARTR`, a self-referential play on the previous package I developed as an extension to `wholebrain` called `SMART`. 
 
 In this notebook, prototypical example of of the following steps of the pipeline will be demonstrated:
-
 
 1. Setting up the pipeline by specifying experiment parameters, and save directories.
 2. The interactive registration process.
@@ -132,36 +138,37 @@ We have now finished setting up a mouse object and are ready to store some imagi
 # Lets create an instance of a slice object. 
 # Let pretend this slice object stores data from slice No. S1_9
 
-slice_S1_9 <- slice()
+slice_S1_10 <- slice()
 
 # Let first see what's in it with print()
-print(slice_S1_9)
+print(slice_S1_10)
 ```
 #### Let continue setting up slice attributes just like we did for a mouse!
 
 ```{r}
 # We can access the list used to print the slice attribute with the command below
-slice_info <- attr(slice_S1_9, 'info')
+slice_info <- attr(slice_S1_10, 'info')
 
 # Change slice attributes to reflect your slice and experiment
-slice_info$slice_ID            <- '1_9'
-slice_info$coordinate          <- -3.2
+# Note that you should look at your image and compare it with a standardized mouse atlas to decide what the proper AP coordinate should be
+slice_info$slice_ID            <- '1_10'
+slice_info$coordinate          <- -3.15
 slice_info$conversion_factor   <- 1.0    # Pixel-to-micron conversion factor
 slice_info$bin                 <- 1
 slice_info$z_width             <- 24     # z stack thickness in microns
 slice_info$hemisphere          <- 'left'
 slice_info$channels            <- c('cfos', 'eyfp', 'colabel')   
-slice_info$registration_path   <- 'Y:\\Holly Hunsberger\\Sundowning_images\\Cohort 3_2month\\255\\255_S1_9\\MAX_255_1_9.tif'  
+slice_info$registration_path   <- 'Y:\\Holly Hunsberger\\Sundowning_images\\Cohort 3_2month\\255\\255_S1_10\\MAX_255_1_10.tif'  
 
 
 # TODO allow slice attributes channels to be the default in the channels parameters in functions if none is supplied.
 # TODO: allow for relative paths based on the mouse input directory
 
 # Change slice attributes by storing the slice info list
-attr(slice_S1_9, 'info') <- slice_info
+attr(slice_S1_10, 'info') <- slice_info
 
 # Check the updates 
-print(slice_S1_9)
+print(slice_S1_10)
 
 ```
 ### Add slices to your mouse
@@ -187,51 +194,189 @@ length(mouse_255$slices)
 ?add_slice
 
 # Now that we've read how to use the function, let's add our slice to our mouse with the line below:
-mouse_255 <- add_slice(mouse_255, slice_S1_9)
+mouse_255 <- add_slice(mouse_255, slice_S1_10)
 
 
 # Check the length of slices now
 length(mouse_255$slices)
 
 # Access the new slice information with the code below
-mouse_255$slices$`1_9_left`
+mouse_255$slices$`1_10_left`
 
 ```
 
-### Now we are ready to register this image!
+### Now we are ready to begin registering this image!
+
+For those of you who are new, registration is the process of aligning your imaging dataset with a standardized mouse atlas.
+In order to do this, we use the package wholebrain to detect the boundaries of our brain sample before the package can generate it's best guess of how it maps to the boundaries of 
+an atlas image. Unfortunately, most of the times the initial guess is way off with our images. 
+
+Therefore, we pass a `filter` list which contains an argument called `brain.threshold` which is responsible for generating a good outline of our image. 
+We adjust and check effects of changing the `brain.threshold` parameter using the base wholebrain function `segment`. 
+
+I generally don't like this step as it is buggy and often crashes. Hopefully one day we find a threshold that universally works and can skip this step!
 
 
+```{r}
+# First we need to detect the boundaries of the brain in our images. 
+# Lets load a presaved filter object in SMARTR and set it to the variable filter
+filter <- SMARTR::filter
+
+# To see what it contains
+print(filter)
+
+# Get the registration image
+reg_path <- attr(mouse_255$slices$`1_10_left`, 'info')$registration_path
+
+```
+
+Adjust the filter parameter using the `segment` function below
+
+```{r, eval = FALSE}
+
+# Adjust brain threshold with the filter
+seg_out <-wholebrain::segment(reg_path, filter = filter)
+
+# Storing adjusted filter parameters back into the filter variable
+filter <- seg_out$filter
+
+```
+  
 
 
 ```{r, eval = FALSE}
-##
-m <- mouse_58
-m <- register(m, slice_ID = "AD_M_S1_7" )
+
+# Specify the slice name that you want to register and run the registration using the adjusted filter
+mouse_255 <- register(mouse_255, 
+                      slice_ID = "1_10",
+                      hemisphere = 'left',
+                      filter = filter)
+
+```
+
+
+### Let's import the raw segmentation data into our mouse object
+
+```{r}
+mouse_255 <- import_segmentation(mouse_255,
+                                slice_ID = '1_10',
+                                hemisphere = 'left',
+                                channels = c('eyfp', 'cfos', 'colabel'))
 
 ```
 
 
 ```{r}
 
+## There is currently a function written to create an eyfp or cfos filter. However this is not yet hardcorded into the pipeline so we will skip this step.
+## Since this eyfp filter is used to generate a segmentation object for the colabel channel, we will temporarily skip creating a segmentation object for this channel.
+## We want to avoid hardcoding a dependency on the filter to process the colabel channel. This will be figured out in the future... 
+
+
+```
+
+
+```{r, eval = FALSE}
+
+# Set the use_filter parameter to FALSE to avoid using the filter for now
+mouse_255 <- make_segmentation_object(mouse_255,
+                                      slice_ID = '1_10',
+                                      hemisphere = 'left',
+                                      channels = c('eyfp', 'cfos'),
+                                      use_filter = FALSE)
+
+```
+
+
+
+### We are ready to map our segmentation data onto atlas space!
+
+Lets now forward warp our segmented cells onto atlas space with the map_cells_to_atlas() function in SMARTR. Within this function, the package calls
+inspect.registration() from the base wholebrain package. 
+
+
+```{r, eval = FALSE}
+mouse_255 <- map_cells_to_atlas(mouse_255,
+                                slice_ID = '1_10',
+                                hemisphere = 'left',
+                                channels = c('eyfp', 'cfos'),
+                                clean =  FALSE,
+                                display = TRUE,
+                                replace = FALSE)
+```
+
+
+Duplicate the slice and add the right side as dummy data
+
+```{r}
+
+slice_1_10 <- mouse_255$slices$`1_10_left`
+attr(slice_1_10, 'info')$hemisphere <-  'right'
+mouse_255 <- add_slice(mouse_255, slice_1_10, replace = TRUE)
+
+```
+
+
+
+Cleaning the regions that we don't want
+
+
+```{r}
+mouse_255 <- SMARTR::exclude_anatomy(mouse_255, 
+                        slice_ID = '1_10',
+                        hemisphere = 'left',
+                        channels = c("eyfp", "cfos"),
+                        clean = TRUE, 
+                        exclude_layer_1 = TRUE, 
+                        exclude_other_hemisphere = TRUE)
+
+
 ```
 
 
 
 ```{r}
-plot(cars)
+mouse_255 <- SMARTR::exclude_anatomy(mouse_255, 
+                        slice_ID = '1_10',
+                        hemisphere = 'right',
+                        channels = c("eyfp", "cfos"),
+                        clean = TRUE, 
+                        exclude_layer_1 = TRUE, 
+                        exclude_other_hemisphere = TRUE)
+
+
 ```
 
 
 
+# Get registered areas for slice "1_10"  left and right hemispheres
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+```{r}
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+mouse_255 <- get_registered_areas(mouse_255,
+                                  slice_ID = "1_10",
+                                  hemisphere = "left")
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+mouse_255 <- get_registered_areas(mouse_255,
+                                  slice_ID = "1_10",
+                                  hemisphere = "right")
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+```
+
+
+Once we have processed all the slices that we want per animal, we need to get normalized cell counts per volume.
+
+```{r}
+
+
+
+
+
+```
+
+
+
 
 
 </div>

@@ -5,7 +5,7 @@
 #' @usage save_mouse(m)
 #' @param ... parameter to pass mouse object
 #' @export
-#' @example save_mouse(m)
+#' @example m <- save_mouse(m)
 
 save_mouse <- function(...){
   info <- attr(..., 'info')

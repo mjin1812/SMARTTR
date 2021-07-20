@@ -9,6 +9,7 @@
   channels = c("cfos", "eyfp", "colabel"),
   clean = TRUE,
   display = TRUE,
+  mouse_ID = NULL,
   ...
 )
 }
@@ -20,6 +21,8 @@
 \item{clean}{: TRUE (bool). Remove cells that don't map to any regions.}
 
 \item{display}{: TRUE (bool). Display the results of the forward warp for the slice.}
+
+\item{mouse_ID}{: (str) mouse ID}
 
 \item{...}{additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the wholebrain::inspect.registration() function}
 }

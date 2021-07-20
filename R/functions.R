@@ -1,4 +1,13 @@
 
+##______________ Package imports ________________
+
+#' @importFrom magrittr %>%
+NULL
+
+
+
+##______________ Useful general functions ________________
+
 #' @title Add slice to a mouse object
 #' @usage m <- add_slice(m, s, replace = FALSE)
 #' @param m mouse object
@@ -125,6 +134,7 @@ make_segmentation_object <- function(x, ...){
 #' @export
 #'
 #' @examples
+
 map_cells_to_atlas <- function(x, ...){
   UseMethod('map_cells_to_atlas')
 }
@@ -228,6 +238,18 @@ register.mouse <- function(m,
                            ...){
 
 
+  # get or set output path
+  output_path <- attr(m, 'info')$output_path
+  if (is.null(output_path)) {
+    output_path <- "../"
+  } else {
+    output_path <- file.path(output_path, "registrations")
+
+    if (!file.exists(output_path)){
+      dir.create(output_path)
+    }
+  }
+
   # Omit hemisphere name if there is no hemisphere value in the attributes
   if (is.null(hemisphere)){
     slice_name <- slice_ID
@@ -238,6 +260,7 @@ register.mouse <- function(m,
 
   # check in list of previous stored slice names for a match
   stored_names <- names(m$slices)
+
 
   # Check if there is a previous slice that matches
   match <- FALSE
@@ -255,7 +278,8 @@ register.mouse <- function(m,
 
           # Register from scratch
           m$slices[[match]] <- register(m$slices[[match]],
-                                           filter = filter, ...)
+                                        filter = filter,
+                                        output.folder = output_path, ...)
         } else{
           message("Improving previous registration for this slice. Set replace = TRUE to start from scratch!...\n")
 
@@ -266,14 +290,16 @@ register.mouse <- function(m,
 
           # Register matched slices with existing data
           m$slices[[match]] <- register(m$slices[[match]],
-                                        filter = filter, ...)
+                                        filter = filter,
+                                        output.folder = output_path, ...)
         }
       } else  {
         message("Starting a new registration!")
 
         # Register matched slices with no registration data yet
         m$slices[[match]] <- register(m$slices[[match]],
-                                      filter = filter, ...)
+                                      filter = filter,
+                                      output.folder = output_path, ...)
 
       }
     }
@@ -609,6 +635,10 @@ make_segmentation_object.slice <- function(s,
 #' @param channels : (vec) Channels to process; Note: always set 'eyfp' before 'colabel' in the vector
 #' @param replace : replace existing raw segmentation data (bool)
 #' @param use_filter: TRUE (bool). Use a filter to create more curated segmentation object from the raw segmentation data.
+#' @export
+#'
+#' @examples m <-  make_segmentation_object(m, slice_ID = '1_9', hemisphere = 'left', channels = c('eyfp', 'cfos'), use_filter = FALSE)
+#'
 
 
 make_segmentation_object.mouse <- function(m,
@@ -674,17 +704,21 @@ make_segmentation_object.mouse <- function(m,
 #' @title Map cells to atlas for slice object
 #' @description Method for forward warping segmentation data to atlas space for a slice object.
 #' Requires segmentation objects to be made for channels specified and a registration object.
+#'
 #' @param s : slice object
 #' @param channels : channels to filter (str vector), can filter both eyfp & cfos
 #' @param clean : TRUE (bool). Remove cells that don't map to any regions.
 #' @param display : TRUE (bool). Display the results of the forward warp for the slice.
+#' @param mouse_ID : (str) mouse ID
 #' @param ... additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the wholebrain::inspect.registration() function
+#'
 #' @export
 
 map_cells_to_atlas.slice <- function(s,
                                      channels = c('cfos', 'eyfp', 'colabel'),
                                      clean =  TRUE,
                                      display = TRUE,
+                                     mouse_ID = NULL,
                                      ...){
 
   for (k in 1:length(channels)){
@@ -701,6 +735,12 @@ map_cells_to_atlas.slice <- function(s,
     } else{
       s$forward_warped_data[[k]] <- cell_data
     }
+
+    if (!is.null(mouse_ID)){
+      s$forward_warped_data[[k]]$animal <-  mouse_ID
+    }
+
+
   }
 
   names(s$raw_forward_warped_data) <- channels
@@ -767,6 +807,7 @@ map_cells_to_atlas.mouse <- function(m,
                                                   channels = channels,
                                                   clean = clean,
                                                   display = display,
+                                                  mouse_ID = mouse_ID,
                                                   ...)
 
         } else{
@@ -778,6 +819,7 @@ map_cells_to_atlas.mouse <- function(m,
                                                 channels = channels,
                                                 clean = clean,
                                                 display = display,
+                                                mouse_ID = mouse_ID,
                                                 ...)
       }
     }
@@ -785,6 +827,7 @@ map_cells_to_atlas.mouse <- function(m,
   if (isFALSE(match)){
     stop(paste0("There were no slices matching the name ", slice_name, " found in your mouse!" ))
   }
+
   return(m)
 }
 
@@ -858,7 +901,11 @@ exclude_anatomy.slice <- function(s,
     # Filter out cell counts that are out of bounds
     if(clean){
       dataset <- dataset[!dataset$id==0,]
+
+      # Get rid of rows that contain any NA values
+      dataset <- tidyr::drop_na(dataset)
       s$forward_warped_data[[k]] <- dataset
+
     }
 
     # Reassign cleaned dataset
@@ -964,8 +1011,9 @@ get_registered_areas.slice <- function(s){
   # Get conversion factor from microns to pixels
     cf <- attr(s, 'info')$conversion_factor
     s$areas <- get.registered.areas(s$forward_warped_data, registration = s$registration_obj, conversion.factor = cf)
-    return(s)
+    tidyr::drop_na(s$areas)
 
+    return(s)
 }
 
 
@@ -1008,9 +1056,7 @@ get_registered_areas.mouse <- function(m,
 
         } else {
           stop(paste0("There is an existing areas data for this slice! If you want to overwrite it, set replace to TRUE."))
-
         }
-
       } else {
         m$slices[[match]] <- get_registered_areas(m$slices[[match]])
       }
@@ -1024,13 +1070,158 @@ return(m)
 
 
 
-
 #__________________ Mouse object specific functions __________________________
 
 
 
 
+#' Get cell tables
+#' @description This function stores a list in a mouse object that is the length of the channels parameter. Each element of the list is a dataframe
+#' containing combined cell counts for one channel across all slices processed for that mouse.
+#' By default, if one slices has no dataset processed for that particular channel, that slice will be skipped over.
+#' The function will run properly but a warning will be thrown indicating you should go back and
+#' generate a mapped dataset for that particular slice and channel.
+#'
+#' @param m mouse object
+#' @param channels  channels : c("cfos", "eyfp") (vec) Channels to process.
+#'
+#' @return m mouse object
+#' @export
+#'
+#' @examples m <- get_cell_tables(m, channels = c("cfos"m "eyfp", "colabel"))
+
+get_cell_table <- function(m,
+                           channels = c("cfos", "eyfp")){
+
+  #A list the length of "channels" combining cell counts across all slices
+  #All NA values are removed to avoid an error so just check that each data frame is not NULL, otherwise print an error
+
+  cell_table <- vector(mode = "list", length = length(channels))
+  names(cell_table) = channels
+
+  for (channel in channels){
+
+    for (s in m$slices){
+
+      # Get slice information
+      s_info <- attr(s, "info")
+      hemisphere <- s_info$hemisphere
+      slice_ID <-  s_info$slice_ID
+
+      # Omit hemisphere name if there is no hemisphere value in the attributes
+      if (is.null(hemisphere)){
+        slice_name <- slice_ID
+      } else {
+        slice_name <- paste0(slice_ID, "_", hemisphere)
+      }
+
+
+      # Check for empty dataframe
+      if  (is.null(s$forward_warped_data[[channel]])){
+        warning(paste0("\n The forward warped data from slice ", slice_name,
+                       ", channel: ", channel, " is missing. Skipping this slice while creating a combined cell table.",
+                       "\nIf you want to include it, go back and create the mapped dataset for this slice, then re-run this function! "))
+      }
+
+      # Add the slice name to the dataset
+      s$forward_warped_data[[channel]]$slice_name <- rep(slice_name, times = length(s$forward_warped_data[[channel]]$animal))
+
+      # Bind the dataset
+      cell_table[[channel]] <- rbind(cell_table[[channel]], s$forward_warped_data[[channel]])
+
+    }
+
+    # Add the mouse ID and remove rows with NA values
+    # cell_table[[channel]]$<- <- rep(attr(m, "info")$mouse_ID, times = length(cell_table[[channel]]$animal))
+    cell_table[[channel]] <- tidyr::drop_na(cell_table[[channel]])
+  }
+
+  m$cell_table <-  cell_table
+  return(m)
+}
+
+
+
 ## normalized_cell_counts per mm^3 function
+#
+#' Normalize cell counts per mm^2 or by mm^3 (if multiplying by the stack size)
+#' @description Run this function after all the slices that you want to process are finished being added
+#' and you have run the function get_cell_table() for your mouse.
+#'
+#' @param m
+#' @param combine_hemispheres
+#' @param simplify_regions
+#'
+#' @return
+#' @export
+#'
+#' @examples m <- normalize_cell_counts(m, combine_hemispheres = TRUE, simplify_regions = TRUE)
+normalize_cell_counts <- function(m,
+                                  combine_hemispheres = TRUE,
+                                  simplify_regions = TRUE){
+
+
+  # 1) NULL areas check
+
+    for(s in m$slices){
+
+      # Get slice information
+      s_info <- attr(s, "info")
+      hemisphere <- s_info$hemisphere
+      slice_ID <-  s_info$slice_ID
+
+      # Omit hemisphere name if there is no hemisphere value in the attributes
+      if (is.null(hemisphere)){
+        slice_name <- slice_ID
+      } else {
+        slice_name <- paste0(slice_ID, "_", hemisphere)
+      }
+
+      ## Check that this slice has run get_registered_areas
+      if (is.null(s$areas)){
+        stop(paste0("Slice ", slice_name ," in your mouse dataset has an empty areas vector.\n",
+                    "Run the function get_registered_areas() for this slice before you can normalized all your cell counts by total area or by volume."))
+        }
+    }
+
+
+  # 2)  Getting total areas across all slices, separated by hemisphere
+
+  # rbind all the areas table
+  aggregate_areas <- m$slices[[1]]$areas
+  if (length(m$slices)  >=  2){
+    for (k in 2:length(m$slices)){
+      aggregate_areas <- rbind(aggregate_areas, m$slices[[k]]$areas)
+    }
+  }
+
+  # Drop any NAs
+  aggregate_areas <- tidyr::drop_na(aggregate_areas)
+
+  # Use aggregate to sum up areas from the same region across slices
+  total_areas <- aggregate(aggregate_areas$area,
+                           by = list(acronym = aggregate_areas$acronym, right.hemisphere = aggregate_areas$right.hemisphere),
+                           FUN =sum) %>% dplyr::rename(area = x)
+
+  # Get z_width from slice attributes of the first slice
+  z_width <- attr(m$slices[[1]], "info")$z_width
+
+
+  # then use Cell_table to create combined cell counts normalized by area
+  normalized_counts <- normalize.registered.areas(m$cell_table, total_areas, z_width = z_width ) #tabulate number of cells in each region
+  names(normalized_counts) <- names(m$cell_table)
+
+
+  if (simplify_regions){
+    ## TODO add into function the option of simplifying cell counts
+  }
+
+  # Store the normalized counts in the mouse object
+  m$normalized_counts <- normalized_counts
+  return(m)
+}
+
+
 
 
 
@@ -1069,9 +1260,18 @@ return(m)
 
 
 ## Modification of Marcos' function
+#' Title
+#'
+#' @param cell.data.list
+#' @param registration
+#' @param conversion.factor
+#'
+#' @return
+#'
+#' @examples
 get.registered.areas <- function(cell.data.list, registration, conversion.factor = 1){
 
-  # bind the cell data into on dataframe
+  # bind the channel cell data into a single dataframe
   cell.data <- do.call("rbind", cell.data.list)
 
   # create a regions dataframe
@@ -1110,8 +1310,63 @@ get.registered.areas <- function(cell.data.list, registration, conversion.factor
     area <- 0.5*abs(area + r$xT[nrow(r)]*r$yT[1] - r$xT[1]*r$yT[nrow(r)])
     areas$area[i] <- area
   }
+
   return(areas)
 }
+
+
+
+#____
+
+## Modification of Marcos' function
+
+#' normalize registered areas
+#'
+#' @param cell_table cell_tables list from get_cell_table()
+#' @param total_areas computed total areas list
+#' @param z_width stack width in microns (default = 24)
+#'
+#' @return
+#'
+#' @examples
+normalize.registered.areas <- function(cell_table, total_areas, z_width = 24){
+
+  # Initializing a normalized cell count list that will store df of  normalized cell counts
+  normalized.list <- vector(mode = "list", length = length(cell_table))
+  names(normalized.list) <- names(cell_table)
+
+  for(channel in names(cell_table)) {
+
+    # Get cell data for channel
+    cell.data <-  cell_table[[channel]]
+
+    # Table tally of how many counts there are in a given region
+    counts <- as.data.frame(table(cell.data$right.hemisphere, cell.data$acronym), stringsAsFactors = FALSE)
+    names(counts) <- c("right.hemisphere","acronym","count")
+
+    # Merge the total areas with the counts df by acronym and hemisphere
+    areas <- merge(counts, total_areas, by=c("acronym","right.hemisphere"), all = TRUE)
+
+
+    # Normalize count by area mm^2 and volume
+    areas$area.mm2 <- areas$area*1e-6
+    areas$volume.mm3 <- areas$area*z_width*1e-9
+
+    areas$normalized.count.by.area <- areas$count/areas$area.mm2
+    areas$normalized.count.by.volume <- areas$count/areas$volume.mm3
+
+    # Add acronym names
+    areas$name <- as.character(name.from.acronym(areas$acronym))
+
+
+    # store the data into the normalized list
+    normalized.list[[channel]] <- areas
+  }
+
+  return(normalized.list)
+}
+
+
 
 
 
