@@ -2,16 +2,66 @@
 % Please edit documentation in R/functions.R
 \name{map_cells_to_atlas}
 \alias{map_cells_to_atlas}
-\title{map_cells_to_atlas}
+\alias{map_cells_to_atlas.slice}
+\alias{map_cells_to_atlas.mouse}
+\title{map_cells_to_atlas (generic function)}
 \usage{
 map_cells_to_atlas(x, ...)
+
+\method{map_cells_to_atlas}{slice}(
+  s,
+  channels = c("cfos", "eyfp", "colabel"),
+  clean = TRUE,
+  display = TRUE,
+  mouse_ID = NULL,
+  ...
+)
+
+\method{map_cells_to_atlas}{mouse}(
+  m,
+  slice_ID = "1_10",
+  hemisphere = "left",
+  channels = c("cfos", "efyp", "colabel"),
+  clean = TRUE,
+  display = TRUE,
+  replace = FALSE,
+  ...
+)
 }
 \arguments{
-\item{...}{}
+\item{...}{additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the wholebrain::inspect.registration() function}
+
+\item{s}{: slice object}
+
+\item{channels}{(vec of str) Channels to process; Note: always set 'eyfp' before 'colabel' in the vector}
+
+\item{clean}{: TRUE (bool). Remove cells that don't map to any regions.}
+
+\item{display}{: TRUE (bool). Display the results of the forward warp for the slice.display}
+
+\item{mouse_ID}{: (str) mouse ID}
+
+\item{m}{: mouse object}
+
+\item{slice_ID}{: ID of slice (str)}
+
+\item{hemisphere}{'left', 'right' or NULL (both)}
+
+\item{replace}{: FALSE (bool). Replace current forward warped data, both raw and cleaned.}
 }
 \value{
 
+
+m mouse object
 }
 \description{
-map_cells_to_atlas
+Method for forward warping segmentation data to atlas space for a slice object.
+Requires segmentation objects to be made for channels specified and a registration object.
+
+Method for forward warping segmentation data to atlas space for a slice within a mouse object.
+Requires segmentation objects to be made for the channels specified and a registration.
+}
+\examples{
+s <- map_cells_to_atlas(s, channels c('cfos' , 'eyfp', 'colabel'), clean = TRUE, display = TRUE, mouse_ID = "255")
+m <- map_cells_to_atlas(m, slice_ID = "1_10", hemisphere = NULL, channels = c("cfos", "eyfp", "colabel"), clean = TRUE, replace = FALSE)
 }

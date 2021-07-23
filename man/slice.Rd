@@ -14,7 +14,7 @@ is also a list, with class list.
 slice() constructs an S3 object of class 'slice'. A slice object
 consists of a list of lists storing information about registration, segmentation, raw mapped data and cleaned mapped data.
 The object attributes are also stored as a list.
-\subsection{Attributes is a list with named initialized values listed below:}{
+\subsection{Attributes is a list with named initialized (default) values listed below:}{
 \enumerate{
 \item slice_ID = NA,
 \item coordinate = -1,
@@ -24,7 +24,8 @@ The object attributes are also stored as a list.
 \item hemisphere = NULL,
 \item channels = c('eyfp', 'cfos', 'colabel'),
 \item registration_path = 'set registration image path',
-\item segmentation_path = 'set segmentation image path',    # Segmentation path may not be used
+\item segmentation_path = 'set segmentation image path',    # path to images used for wholebrain segmentation method (currently unused)
+\item slice_directory = NULL                               # Slice directory for importing segmentation data if registration path is not assigned.
 \item regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
 "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS")
 }

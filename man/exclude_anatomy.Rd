@@ -2,16 +2,86 @@
 % Please edit documentation in R/functions.R
 \name{exclude_anatomy}
 \alias{exclude_anatomy}
-\title{exclude_anatomy}
+\alias{exclude_anatomy.slice}
+\alias{exclude_anatomy.mouse}
+\title{exclude_anatomy (generic function)}
 \usage{
 exclude_anatomy(x, ...)
+
+\method{exclude_anatomy}{slice}(
+  s,
+  channels = c("cfos", "eyfp", "colabel"),
+  clean = TRUE,
+  exclude_regions = NULL,
+  exclude_hemisphere = TRUE,
+  exclude_layer_1 = TRUE,
+  plot_filtered = TRUE
+)
+
+\method{exclude_anatomy}{mouse}(
+  m,
+  slice_ID = "1_10",
+  hemisphere = NULL,
+  channels = c("cfos", "eyfp", "colabel"),
+  clean = TRUE,
+  exclude_regions = NULL,
+  exclude_other_hemisphere = TRUE,
+  exclude_layer_1 = TRUE
+)
 }
 \arguments{
 \item{...}{}
+
+\item{channels}{: channels to filter (str vector), can filter both eyfp & cfos}
+
+\item{clean}{clean: TRUE (bool). Remove cells that don't map to any regions.}
+
+\item{exclude_regions}{: NULL (str vector); acronyms of regions you want to exclude IN ADDITION to regions that will by default be excluded in the slice attribute 'regions_excluded'}
+
+\item{exclude_layer_1}{: TRUE (bool); excludes all counts from layer 1 (TEMPORARY, may not be hardcoded in later)}
+
+\item{plot_filtered}{: TRUE (bool) pop up window to check the excluded anatomy.}
+
+\item{m}{: mouse object}
+
+\item{slice_ID}{: ID of slice (str)}
+
+\item{hemisphere}{: hemisphere of slice}
+
+\item{exclude_other_hemisphere}{: TRUE (bool); excludes the contralateral hemisphere from one indicated in slice attribute}
+
+\item{s:}{slice object}
+
+\item{channels:}{channels to filter (str vector), can filter both eyfp & cfos}
+
+\item{clean:}{TRUE (bool). Remove cells that don't map to any regions.}
+
+\item{exclude_regions:}{NULL (str vector); acronyms of regions you want to exclude IN ADDITION to regions that will by default be excluded in the slice attribute 'regions_excluded'}
+
+\item{exclude_hemisphere:}{TRUE (bool); excludes the contralateral hemisphere from one indicated in slice attribute}
+
+\item{exclude_layer_1:}{TRUE (bool); excludes all counts from layer 1 (TEMPORARY, may not be hardcoded in later)}
 }
 \value{
 
+
+m mouse object
 }
 \description{
-exclude_anatomy
+Method for excluding user specified regions, layer 1, and contralateral hemisphere  per slice.
+This function automatically excludes the default regions included in the attribute "regions_excluded" in each slice
+IN ADDITION to the regions added to the 'exclude_regions' parameter.
+Regions added to the 'exclude_regions' parameter will then be updated in the slice attribute to keep track of what was excluded.
+
+Method for excluding cell counts in specified regions, layer 1, out-of-bounds cells counts, and hemispheres per mouse.
+This function automatically excludes the default regions included in the attribute "regions_excluded" in each slice
+IN ADDITION to the regions added to the 'exclude_regions' parameter.
+Regions added to the 'exclude_regions' parameter will then be updated in the slice attribute to keep track of what was excluded.
+}
+\examples{
+s <-  exclude_anatomy(s, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE, exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE, plot_filtered = TRUE)
+m <- exclude_anatomy(m, slice_ID = "1_10", hemisphere = NULL, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE,
+exclude_regions = NULL,
+exclude_other_hemisphere = TRUE,
+exclude_layer_1 = TRUE
 }

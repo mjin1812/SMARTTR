@@ -2,16 +2,38 @@
 % Please edit documentation in R/functions.R
 \name{get_registered_areas}
 \alias{get_registered_areas}
-\title{get_registered_areas}
+\alias{get_registered_areas.slice}
+\alias{get_registered_areas.mouse}
+\title{get_registered_areas (generic function)}
 \usage{
 get_registered_areas(x, ...)
+
+\method{get_registered_areas}{slice}(s)
+
+\method{get_registered_areas}{mouse}(m, slice_ID, hemisphere = NULL, replace = FALSE)
 }
 \arguments{
 \item{...}{}
+
+\item{s}{: slice object}
+
+\item{m}{: mouse object}
+
+\item{slice_ID}{: ID of slice (str)}
+
+\item{hemisphere}{: hemisphere of slice}
 }
 \value{
 
+
+s slice object
+
+m mouse object
 }
 \description{
-get_registered_areas
+returns a dataframe with columns 'name' (full region name), 'acronym', 'area' (in microns^2^), 'right.hemisphere'
+}
+\examples{
+s <- get_registered_areas(s)
+m <- get_registered_areas(m, slice_ID = "1_10", hemisphere = "left", replace = FALSE)
 }

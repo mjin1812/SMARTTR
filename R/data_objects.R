@@ -42,13 +42,15 @@ validate_mouse <- function(m){
 #' If the hemisphere attribute is NULL,  i.e. if the whole slice aligns well with a single atlas plate and there is no need to create separate slice objects per hemisphere,
 #' then the slice is named with the convention: "slice_ID"
 #'
-#' ## Attributes are strings with initialized values listed below:
+#' ## Attributes are strings with initialized (default) values listed below:
 #' 1. mouse_ID = 'set ID'
-#' 2. experiment = 'create experiment name'
-#' 3. group = 'name experiment group',
-#' 4. cohort = 'name mouse cohort'
-#' 5. input_path = 'set input path'
-#' 6. output_path = 'set output path'
+#' 2. sex = "female"
+#' 3. strain = NULL
+#' 4. experiment = 'create experiment name'
+#' 5. group = 'name experiment group',
+#' 6. cohort = 'name mouse cohort'
+#' 7. input_path = 'set input path'
+#' 8. output_path = 'set output path'
 #'
 #' @usage mouse_example <- mouse() # initializes a mouse object
 #' @returns A mouse, a colloquial term for an object of class 'mouse'. A 'mouse' object
@@ -84,6 +86,7 @@ new_slice <- function(data = list(registration_obj = NULL,           #list per s
                                   channels = c('eyfp', 'cfos', 'colabel'),
                                   registration_path = 'set registration image path',
                                   segmentation_path = 'set segmentation image path',    # Segmentation path may not be used
+                                  slice_directory = NULL,
                                   regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
                                     "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS")
 
@@ -109,7 +112,7 @@ validate_slice <- function(s){
 #' consists of a list of lists storing information about registration, segmentation, raw mapped data and cleaned mapped data.
 #' The object attributes are also stored as a list.
 #'
-#' ## Attributes is a list with named initialized values listed below:
+#' ## Attributes is a list with named initialized (default) values listed below:
 #' 1. slice_ID = NA,
 #' 2. coordinate = -1,
 #' 3. atlas_plate = NA,
@@ -118,8 +121,9 @@ validate_slice <- function(s){
 #' 6. hemisphere = NULL,
 #' 7. channels = c('eyfp', 'cfos', 'colabel'),
 #' 8. registration_path = 'set registration image path',
-#' 9. segmentation_path = 'set segmentation image path',    # Segmentation path may not be used
-#' 10. regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
+#' 9. segmentation_path = 'set segmentation image path',    # path to images used for wholebrain segmentation method (currently unused)
+#' 10. slice_directory = NULL                               # Slice directory for importing segmentation data if registration path is not assigned.
+#' 11. regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
 #' "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS")
 #'
 #' @usage slice_example <- slice() # initializes a slice object

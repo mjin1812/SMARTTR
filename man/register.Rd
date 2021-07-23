@@ -2,16 +2,54 @@
 % Please edit documentation in R/functions.R
 \name{register}
 \alias{register}
-\title{Register}
+\alias{register.slice}
+\alias{register.mouse}
+\title{Register (generic function)}
 \usage{
 register(x, ...)
+
+\method{register}{slice}(s, filter = NULL, ...)
+
+\method{register}{mouse}(
+  m,
+  slice_ID = "1_10",
+  hemisphere = NULL,
+  filter = NULL,
+  replace = FALSE,
+  ...
+)
 }
 \arguments{
-\item{...}{}
+\item{...}{additional parameters to pass to the SMART::registration2() function, besides 'input', 'coordinate', 'filter' & 'correspondance'}
+
+\item{s}{slice object}
+
+\item{filter}{(list)}
+
+\item{m}{mouse object}
+
+\item{slice_ID}{ID of slice (str)}
+
+\item{hemisphere}{'left', 'right' (str) or NULL if both hemispheres are included}
+
+\item{replace}{(bool, default = FALSE) Replace a registration already contained in a mouse object by resetting to NULL value before registration improvement loop.}
 }
 \value{
 
+
+s slice object
+
+m  mouse object
 }
 \description{
-Register
+Register (generic function)
+
+Register a slice in a slice object
+
+Register a slice in a mouse object. If a slice has been previously registered, the default behavior is to continue modifying the
+previous registration. Use the \code{replace} parameter to change this behavior.
+}
+\examples{
+s <- register(s)
+m <- register(m, slice_ID = '1_10', hemisphere = "left", filter = my_filter)
 }

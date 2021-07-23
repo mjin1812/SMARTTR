@@ -195,45 +195,63 @@ h4.date { /* Header 4 - and the author and data headers use this too  */
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>This is an <a href="http://rmarkdown.rstudio.com">R Markdown</a> Notebook that allows for an interactive walkthrough of the wholebrain pipeline for the lab.. When you execute code within the notebook, the results will appear beneath the code. To execute a code chunk in this notebook click the <em>Run</em> button within a chunk or place your cursor inside it and pressing <em>Ctrl+Shift+Enter</em>.</p>
-<p>The base of this pipeline is a package in development with the working title, <code>SMARTR</code>, a self-referential play on the previous package I developed as an extension to <code>wholebrain</code> called <code>SMART</code>.</p>
-<p>In this notebook, prototypical example of of the following steps of the pipeline will be demonstrated:</p>
+<p>The base of this pipeline is an R package in development with the working title, <code>SMARTR</code>, a self-referential play on the previous package I developed as an extension to <code>wholebrain</code> called <code>SMART</code>.</p>
+<p>In this notebook, a prototypical example of of the following steps of the pipeline will be demonstrated:</p>
 <ol style="list-style-type: decimal">
 <li>Setting up the pipeline by specifying experiment parameters, and save directories.</li>
 <li>The interactive registration process.</li>
 <li>Importing raw segmentation data from .txt files generated from ImageJ for multiple channels.</li>
-<li>Optionally creating a filter for the ‘cfos’ and ‘eyfp’ channels to clean segmented counts.</li>
-<li>Creating a segmentation object compatible with <code>wholebrain</code> functions.</li>
+<li>TODO: Optionally creating a filter for the ‘cfos’ and ‘eyfp’ channels to clean segmented counts. #Currently needs cleanup and a more elegant integration with the rest of the package</li>
+<li>Creating a segmentation object that is compatible with <code>wholebrain</code> functions.</li>
 <li>Forward warping and mapping the data onto the standardized mouse atlas.</li>
 <li>Cleaning the mapped data in all the following ways:
 <ul>
 <li>Removing cells that map outside the boundaries of the atlas.</li>
-<li>Omitting regions by user specified region acronyms.</li>
 <li>Omitting regions by a default list of regions to omit.</li>
+<li>Omitting regions by user specified region acronyms.</li>
 <li>Removing Layer 1 cells</li>
 <li>Removing cells from a contralateral hemisphere per slice if the registrations are divided by right and left hemispheres.</li>
 </ul></li>
-<li>Obtaining cell counts normalized by region volume.</li>
+<li>Obtaining cell counts normalized by region volume (per mm<sup>2</sup>) and region areas (per mm<sup>2</sup>).</li>
 <li>TODO: Aggregating cell counts across multiple animals.</li>
 <li>TODO: Splitting the hippocampal cell counts into Dorsal and Ventral based on a user-defined AP coordinate ranges.</li>
 <li>TODO: Functions for easy analysis, e.g. cross correlations and network analysis.</li>
 </ol>
 <p><br></p>
-<div id="object-oriented-programming-in-r" class="section level2">
-<h2>Object oriented programming in R</h2>
+</div>
+<div id="object-oriented-programming-in-r" class="section level1">
+<h1>Object oriented programming in R</h1>
 <p>Before getting started, it’s helpful to get a sense of a how the structure of data is handled and bundled together in this pipeline. Data is now stored in S3 data type objects called <code>slice</code> and <code>mouse</code>. The data in these objects will be manipulated by a special type of function called a generic function (this is analogous to an object method in python). Generic functions allow you to pass objects of different classes to the same function, and it can recognize and perform different operations on objects depending on their class. If this is all confusing to you, don’t worry at all! This is much more information than you actually need to know to use this pipeline. It’s just helpful to better understand the architecture of the package.</p>
 <p>To get an excellent brief overview of what object oriented programming is and it’s advantages over procedural programming, check out this excellent <a href="https://www.youtube.com/watch?v=pTB0EiLXUC8&amp;t=379s&amp;ab_channel=ProgrammingwithMosh">YouTube video!</a></p>
-<div id="object-descriptions-todo" class="section level3">
-<h3>Object descriptions… TODO</h3>
-<p>The <code>slice</code> object will contain all the data related to registration, segmentation for each channel, and cell counts for a particular image. It will also contain experimental imaging parameters.</p>
+<p><br></p>
 </div>
-<div id="setting-up-the-pipeline" class="section level3">
-<h3>Setting up the pipeline</h3>
-<pre class="r"><code># First lets load the libraries we need to use!
+<div id="install-the-smartr-package-in-r" class="section level1">
+<h1>Install the <code>SMARTR</code> package in R</h1>
+<p>Currently the pipeline package is on my github, but it is a private respository. Therefore to download it from github using <code>devtools</code>, we need to feed the install function a personal access token to access the github API. Install the package with the code below:</p>
+<pre class="r"><code># personal access token
+auth_token &lt;- &quot;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&quot;
 
-library(SMART)
+# Install package
+devtools::install_github(&quot;mjin1812/SMARTR&quot;, auth_token = auth_token)</code></pre>
+<p><br></p>
+</div>
+<div id="package-object-descriptions" class="section level1">
+<h1>Package object descriptions</h1>
+<p>A <code>slice</code> object will contain all the data related to registration, segmentation for each channel, and cell counts for a particular image.</p>
+<p>It will also contain “metadata” about your experimental images, such as what the experimenter-assigned slice ID is, which brain atlas AP coordinate matches best, with the given image, and what the path to the image used for registration is. These metadata are stored as the object attributes.</p>
+<p>Run the code below to used the <code>?</code> operator to pull up the documentation for a <code>slice</code> object. This will pull up a help page description of all the <code>slice</code> object attributes. The <code>::</code> or double colons helps tell R to specifically look for the object in the <code>SMARTR</code> package.</p>
+<pre class="r"><code>?SMARTR::slice</code></pre>
+<p>A <code>mouse</code> object is an object that will store multiple <code>slice</code> objects (and therefore all the information in it), and will eventually store the combined cell data and the normalized region cell counts by volume data. Like a <code>slice</code>, it will also contain “metadata” about your mouse stored as attributes. Now, try pulling up the help page yourself for the <code>mouse</code> object to see all attributes you can store!</p>
+<p><br></p>
+</div>
+<div id="pipeline-tutorial" class="section level1">
+<h1>Pipeline tutorial</h1>
+<p>Okay enough background! Let’s walkthrough the pipeline with an example mouse and image to process.</p>
+<div id="setting-up-the-pipeline" class="section level2">
+<h2>1. Setting up the pipeline</h2>
+<pre class="r"><code># First lets load the libraries we need to use!
 library(SMARTR)
 library(wholebrain)</code></pre>
-</div>
 <div id="initializing-your-mouse-object" class="section level3">
 <h3>Initializing your mouse object</h3>
 <pre class="r"><code># Let&#39;s create an instance of a mouse object
@@ -244,12 +262,10 @@ mouse_255 &lt;- mouse()
 # Let first see what&#39;s in it with print()
 print(mouse_255)
 
-# The output should print a bunch of important mouse attributes that haven&#39;t been set yet.
-# Check out the mouse help page with the command below:
-
-?mouse</code></pre>
-<div id="lets-continue-setting-up-the-mouse-object-by-storing-the-mouse-attributes" class="section level4">
-<h4>Let’s continue setting up the mouse object by storing the mouse attributes</h4>
+# The output should print a bunch of important mouse attributes that haven&#39;t been set yet.</code></pre>
+</div>
+<div id="lets-continue-setting-up-the-mouse-object-by-storing-the-mouse-attributes" class="section level3">
+<h3>Let’s continue setting up the mouse object by storing the mouse attributes</h3>
 <pre class="r"><code># We can access the list used to print the mouse attribute with the command below
 mouse_info &lt;- attr(mouse_255, &#39;info&#39;)
 
@@ -269,20 +285,20 @@ attr(mouse_255, &#39;info&#39;) &lt;- mouse_info
 
 # Check the updates 
 print(mouse_255)</code></pre>
-<p>We have now finished setting up a mouse object and are ready to store some imaging and cell count data into it!</p>
-</div>
+<p>We have now finished setting up a mouse object and are ready to store some imaging and automated cell count data into it!</p>
 </div>
 <div id="initialize-a-slice-object" class="section level3">
 <h3>Initialize a slice object</h3>
 <pre class="r"><code># Lets create an instance of a slice object. 
-# Let pretend this slice object stores data from slice No. S1_9
+# Let pretend this slice object stores data from slice No. S1_10
 
 slice_S1_10 &lt;- slice()
 
 # Let first see what&#39;s in it with print()
 print(slice_S1_10)</code></pre>
-<div id="let-continue-setting-up-slice-attributes-just-like-we-did-for-a-mouse" class="section level4">
-<h4>Let continue setting up slice attributes just like we did for a mouse!</h4>
+</div>
+<div id="let-continue-setting-up-slice-attributes-just-like-we-did-for-a-mouse" class="section level3">
+<h3>Let continue setting up slice attributes just like we did for a mouse!</h3>
 <pre class="r"><code># We can access the list used to print the slice attribute with the command below
 slice_info &lt;- attr(slice_S1_10, &#39;info&#39;)
 
@@ -292,7 +308,7 @@ slice_info$slice_ID            &lt;- &#39;1_10&#39;
 slice_info$coordinate          &lt;- -3.15
 slice_info$conversion_factor   &lt;- 1.0    # Pixel-to-micron conversion factor
 slice_info$bin                 &lt;- 1
-slice_info$z_width             &lt;- 24     # z stack thickness in microns
+slice_info$z_width             &lt;- 24     # z-stack thickness in microns
 slice_info$hemisphere          &lt;- &#39;left&#39;
 slice_info$channels            &lt;- c(&#39;cfos&#39;, &#39;eyfp&#39;, &#39;colabel&#39;)   
 slice_info$registration_path   &lt;- &#39;Y:\\Holly Hunsberger\\Sundowning_images\\Cohort 3_2month\\255\\255_S1_10\\MAX_255_1_10.tif&#39;  
@@ -306,13 +322,15 @@ attr(slice_S1_10, &#39;info&#39;) &lt;- slice_info
 
 # Check the updates 
 print(slice_S1_10)</code></pre>
-</div>
+<p>Note that if the physical brain was slanted when slicing, so that each hemisphere aligns to a different AP coordinate, then you need to initialize a new slice for each hemisphere to process each slice separately. Here I’ve created a slice just for the left hemisphere for example. Later we will clean data from the contralateral hemisphere, and vice-versa for the right side.</p>
+<p>If the left and right side align well onto a single atlas plate, initialize only one slice object and set the <code>hemispshere</code> attribute to NULL (or don’t set it, as this is the default anyway).</p>
 </div>
 <div id="add-slices-to-your-mouse" class="section level3">
 <h3>Add slices to your mouse</h3>
 <p>We are ready to bundle our slice information with our mouse. But first a quick tip:</p>
-<p>You can use the <code>$</code> operator to look at named elements in a mouse. Type the code below into the R console: <code>mouse_255$</code></p>
-<p>You should see that a named list called <code>slices</code> pops up and you can complete the suggestion by hitting TAB. The <code>$</code> operator is very useful for accessing any named element in a list.</p>
+<p>You can use the <code>$</code> operator to look at named elements in a mouse. Type the code below into the R console:</p>
+<pre><code>mouse_255$</code></pre>
+<p>You should see that a named list called <code>slices</code> pops up and you can complete the suggestion by hitting TAB. The <code>$</code> operator is very useful for accessing any named element in a list. Right now, the <code>slices</code> list is NULL, so it is empty and doesn’t contain anything. That will change soon after we run the code below.</p>
 <pre class="r"><code># Check the length of slices in a mouse first
 length(mouse_255$slices)
 
@@ -331,13 +349,17 @@ length(mouse_255$slices)
 # Access the new slice information with the code below
 mouse_255$slices$`1_10_left`</code></pre>
 </div>
-<div id="now-we-are-ready-to-begin-registering-this-image" class="section level3">
-<h3>Now we are ready to begin registering this image!</h3>
-<p>For those of you who are new, registration is the process of aligning your imaging dataset with a standardized mouse atlas. In order to do this, we use the package wholebrain to detect the boundaries of our brain sample before the package can generate it’s best guess of how it maps to the boundaries of an atlas image. Unfortunately, most of the times the initial guess is way off with our images.</p>
-<p>Therefore, we pass a <code>filter</code> list which contains an argument called <code>brain.threshold</code> which is responsible for generating a good outline of our image. We adjust and check effects of changing the <code>brain.threshold</code> parameter using the base wholebrain function <code>segment</code>.</p>
+</div>
+<div id="the-interactive-registration-process" class="section level2">
+<h2>2. The interactive registration process</h2>
+<div id="finding-a-brain-threshold-to-detect-the-contours-around-your-image" class="section level3">
+<h3>Finding a brain threshold to detect the contours around your image</h3>
+<p>Now we are ready to begin registering this image! For those of you who are new, registration is the process of aligning your imaging dataset with a standardized mouse atlas. In order to do this, we use the package <code>wholebrain</code> to detect the boundaries of our brain sample before the package can generate it’s best guess of how it maps to the boundaries of an atlas image. Unfortunately, most of the time the initial guess is way off with our images.</p>
+<p>Therefore, we pass a <code>filter</code> list as a parameter into the registration function. The <code>filter</code> is just a list of filtering parameters used for the base <code>wholebrain</code> segmentation function. One of these parameters is <code>brain.threshold</code> which is responsible for generating a good outline around the contours of our brain image.</p>
+<p>We will adjust and check the effects of changing the <code>brain.threshold</code> parameter using the base wholebrain function <code>segment</code>. This function pops up a GUI to manipulate the <code>brain.threshold</code> until we are satisfied with the blue outline detecting the contours of the brain.</p>
 <p>I generally don’t like this step as it is buggy and often crashes. Hopefully one day we find a threshold that universally works and can skip this step!</p>
 <pre class="r"><code># First we need to detect the boundaries of the brain in our images. 
-# Lets load a presaved filter object in SMARTR and set it to the variable filter
+# Lets load a pre-saved filter list in SMARTR and set it to the variable filter
 filter &lt;- SMARTR::filter
 
 # To see what it contains
@@ -347,48 +369,79 @@ print(filter)
 reg_path &lt;- attr(mouse_255$slices$`1_10_left`, &#39;info&#39;)$registration_path</code></pre>
 <p>Adjust the filter parameter using the <code>segment</code> function below</p>
 <pre class="r"><code># Adjust brain threshold with the filter
-seg_out &lt;-wholebrain::segment(reg_path, filter = filter)
+seg_out &lt;- wholebrain::segment(reg_path, filter = filter)
 
 # Storing adjusted filter parameters back into the filter variable
 filter &lt;- seg_out$filter</code></pre>
-<pre class="r"><code># Specify the slice name that you want to register and run the registration using the adjusted filter
-mouse_255 &lt;- register(mouse_255, 
+</div>
+<div id="register-your-image" class="section level3">
+<h3>Register your image</h3>
+<p>The <code>register()</code> function is one of the generic functions of the package. Because of this, the useful documentation about what the function does depends on the type of objects being fed into it. The <code>register()</code> function can be used on both <code>slice</code> and <code>mouse</code> objects.</p>
+<p>Pull up the help page with the code below:</p>
+<pre class="r"><code>?register</code></pre>
+<p>Under the ‘Usage’ and ‘Examples’ sections, there are examples of how to use this function depending on if a <code>slice</code> or <code>mouse</code> is a function argument. The ‘Value’ section indicates what type of data is returned. From now on, you should get in the habit of pulling up the help pages for each new function you see. Now that we’ve read up, let register!</p>
+<pre class="r"><code># The `mouse` object may contain many slices, so you need to specify which `slice_ID` and which `hemisphere` you want to register
+mouse_255 &lt;-SMARTR::register(mouse_255, 
                       slice_ID = &quot;1_10&quot;,
                       hemisphere = &#39;left&#39;,
                       filter = filter)</code></pre>
+<p>At this point, you may find it useful to save all your hard work after perfecting the registration. You can save to the mouse output folder with the command below.</p>
+<pre class="r"><code>save_mouse(mouse_255)</code></pre>
+</div>
+</div>
+<div id="import-raw-segmentation-data-from-imagej" class="section level2">
+<h2>3. Import raw segmentation data from ImageJ</h2>
+<p>The segmentation data from ImageJ is stored into .txt files. We can use the <code>import_segmentation()</code> generic function to import the raw data.</p>
+<p>Note that currently, this method is dependent on the naming conventions of the txt file, and therefore may be specific to Holly’s data right now. In the future, if there are multiple different ImageJ segmentation macros with different naming conventions being used in the lab, we just need to write multiple custom import functions. This won’t interfere with the rest of the pipeline.</p>
 <pre class="r"><code>mouse_255 &lt;- import_segmentation(mouse_255,
                                 slice_ID = &#39;1_10&#39;,
                                 hemisphere = &#39;left&#39;,
                                 channels = c(&#39;eyfp&#39;, &#39;cfos&#39;, &#39;colabel&#39;))</code></pre>
-<pre class="r"><code>## There is currently a function written to create an eyfp or cfos filter. However this is not yet hardcorded into the pipeline so we will skip this step.
+</div>
+<div id="optional-filtering-of-cfos-and-eyfp-channels" class="section level2">
+<h2>4. Optional filtering of ‘cfos’ and ‘eyfp’ channels</h2>
+<pre class="r"><code>## There is currently a function written to create an eyfp or cfos filter. However this is not yet hardcoded into the package so we will skip this step.
 ## Since this eyfp filter is used to generate a segmentation object for the colabel channel, we will temporarily skip creating a segmentation object for this channel.
-## We want to avoid hardcoding a dependency on the filter to process the colabel channel. This will be figured out in the future... </code></pre>
+## We want to avoid hardcoding a dependency on the filter to process the colabel channel, as this function would no longer be optional. This will be figured out in the future... </code></pre>
+</div>
+<div id="creating-a-segmentation-object" class="section level2">
+<h2>5. Creating a segmentation object</h2>
+<p>We need to create a segmentation object compatible with <code>wholebrain</code> functions from the imported raw segmentation data. We’ll use the <code>make_segmentation_object()</code> generic function.</p>
 <pre class="r"><code># Set the use_filter parameter to FALSE to avoid using the filter for now
 mouse_255 &lt;- make_segmentation_object(mouse_255,
                                       slice_ID = &#39;1_10&#39;,
                                       hemisphere = &#39;left&#39;,
                                       channels = c(&#39;eyfp&#39;, &#39;cfos&#39;),
                                       use_filter = FALSE)</code></pre>
-<p>Let now forward warp our segmented cells onto atlas space with the map_cells_to_atlas() function in SMARTR. Within this function, the package calls inspect.registration() from the base wholebrain package.</p>
+</div>
+<div id="forward-warp-data-to-atlas-space" class="section level2">
+<h2>6. Forward warp data to atlas space</h2>
+<p>We are ready to map our segmentation data onto atlas space! We will forward warp our segmented cells onto atlas space with the <code>map_cells_to_atlas()</code> generic function. Within this function, the package calls <code>wholebrain::inspect.registration()</code> from the base wholebrain package.</p>
 <pre class="r"><code>mouse_255 &lt;- map_cells_to_atlas(mouse_255,
                                 slice_ID = &#39;1_10&#39;,
                                 hemisphere = &#39;left&#39;,
                                 channels = c(&#39;eyfp&#39;, &#39;cfos&#39;),
                                 clean =  FALSE,
                                 display = TRUE)</code></pre>
-<p>Duplicate the slice and add the right side as dummy data</p>
-<pre class="r"><code>slice_1_10 &lt;- mouse_255$slices$`1_10_left`
-attr(slice_1_10, &#39;info&#39;)$hemisphere &lt;-  &#39;right&#39;
-mouse_255 &lt;- add_slice(mouse_255, slice_1_10)</code></pre>
+</div>
+<div id="cleaning-mapped-cell-data" class="section level2">
+<h2>7. Cleaning mapped cell data</h2>
+<p>Now we can clean the data we’ve mapped. To demonstrate cleaning both the left and right sides of a slice, I’m going to cheat a little bit and just duplicate our slice with the mapped left side, and just change the hemisphere atttribute.</p>
+<pre class="r"><code># Duplicate the left slice and add the right side as dummy data
+
+slice_1_10_r &lt;- mouse_255$slices$`1_10_left`
+attr(slice_1_10_r, &#39;info&#39;)$hemisphere &lt;-  &#39;right&#39;
+mouse_255 &lt;- add_slice(mouse_255, slice_1_10_r)</code></pre>
+<p>Now we have two slice object in our mouse, each belonging to one image. For each slice object, we want to exclude the contralateral hemisphere, clean up cell counts that map outside of the brain contours, …</p>
 <p>Cleaning the regions that we don’t want</p>
-<pre class="r"><code>mouse_255 &lt;- SMARTR::exclude_anatomy(mouse_255, 
+<pre class="r"><code>mouse_255 &lt;- exclude_anatomy(mouse_255, 
                         slice_ID = &#39;1_10&#39;,
                         hemisphere = &#39;left&#39;,
                         channels = c(&quot;eyfp&quot;, &quot;cfos&quot;),
                         clean = TRUE, 
                         exclude_layer_1 = TRUE, 
                         exclude_other_hemisphere = TRUE)</code></pre>
-<pre class="r"><code>mouse_255 &lt;- SMARTR::exclude_anatomy(mouse_255, 
+<pre class="r"><code>mouse_255 &lt;- exclude_anatomy(mouse_255, 
                         slice_ID = &#39;1_10&#39;,
                         hemisphere = &#39;right&#39;,
                         channels = c(&quot;eyfp&quot;, &quot;cfos&quot;),
@@ -396,18 +449,29 @@ mouse_255 &lt;- add_slice(mouse_255, slice_1_10)</code></pre>
                         exclude_layer_1 = TRUE, 
                         exclude_other_hemisphere = TRUE)</code></pre>
 </div>
-</div>
-</div>
-<div id="get-registered-areas-for-slice-1_10-left-and-right-hemispheres" class="section level1">
-<h1>Get registered areas for slice “1_10” left and right hemispheres</h1>
+<div id="getting-cell-counts-per-region-normalized-by-volume-or-area-in-mm3-or-mm2-respectively." class="section level2">
+<h2>8. Getting cell counts per region normalized by volume or area in mm<sup>3</sup> or mm<sup>2</sup> respectively.</h2>
+<p>To get all the cell counts normalized</p>
+<p>Getting registered areas for all the regions in a slice object. Get registered areas for a particular slice</p>
+<p>“1_10” left and right hemispheres</p>
 <pre class="r"><code>mouse_255 &lt;- get_registered_areas(mouse_255,
                                   slice_ID = &quot;1_10&quot;,
-                                  hemisphere = &quot;left&quot;)
+                                  hemisphere = &quot;left&quot;,
+                                  replace = TRUE)
 
 mouse_255 &lt;- get_registered_areas(mouse_255,
                                   slice_ID = &quot;1_10&quot;,
-                                  hemisphere = &quot;right&quot;)</code></pre>
+                                  hemisphere = &quot;right&quot;,
+                                  replace = TRUE)</code></pre>
+<div id="get-a-combined-cell-data-table" class="section level3">
+<h3>Get a combined cell data table</h3>
+<pre class="r"><code>mouse_255 &lt;- get_cell_table(mouse_255, channels = c(&quot;cfos&quot;, &quot;eyfp&quot;))</code></pre>
 <p>Once we have processed all the slices that we want per animal, we need to get normalized cell counts per volume.</p>
+<pre class="r"><code>m &lt;- normalize_cell_counts(m)</code></pre>
+<pre class="r"><code># Loading premade data for convenience
+load(&quot;C:/Users/Jinmich/Documents/255/255_example_output/mouse_255.RDATA&quot;)</code></pre>
+</div>
+</div>
 </div>
 </div>
 <p></font></p>

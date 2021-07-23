@@ -2,16 +2,60 @@
 % Please edit documentation in R/functions.R
 \name{make_segmentation_object}
 \alias{make_segmentation_object}
-\title{make_segmentation_object}
+\alias{make_segmentation_object.slice}
+\alias{make_segmentation_object.mouse}
+\title{make_segmentation_object (generic funciton)}
 \usage{
 make_segmentation_object(x, ...)
+
+\method{make_segmentation_object}{slice}(
+  s,
+  mouse_ID = "255",
+  channels = c("cfos", "eyfp", "colabel"),
+  use_filter = TRUE
+)
+
+\method{make_segmentation_object}{mouse}(
+  m,
+  slice_ID = "1_10",
+  hemisphere = NULL,
+  channels = c("cfos", "eyfp", "colabel"),
+  replace = FALSE,
+  use_filter = TRUE
+)
 }
 \arguments{
 \item{...}{}
+
+\item{s}{: slice object}
+
+\item{mouse_ID}{: ID of mouse (str)}
+
+\item{channels}{: (vec) Channels to process; Note: always set 'eyfp' before 'colabel' in the vector}
+
+\item{use_filter}{: TRUE (bool). Use a filter to create more curated segmentation object from the raw segmentation data.}
+
+\item{m}{: mouse object}
+
+\item{slice_ID}{: ID of slice (str)}
+
+\item{replace}{: replace existing raw segmentation data (bool)}
+
+\item{hemisphere:}{'left', 'right' or NULL (both)}
+
+\item{use_filter:}{TRUE (bool). Use a filter to create more curated segmentation object from the raw segmentation data.}
 }
 \value{
 
+
+s slice object
 }
 \description{
-make_segmentation_object
+Make a wholebrain compatible segmentation object for a slice in a slice object
+
+Make a wholebrain compatible segmentation object for a slice in a mouse object
+}
+\examples{
+s <- make_segmentation_object(s, mouse_ID = "255", channels = c("cfos", "eyfp"), use_filter = FALSE)
+m <-  make_segmentation_object(m, slice_ID = '1_9', hemisphere = 'left', channels = c('eyfp', 'cfos'), use_filter = FALSE)
 }

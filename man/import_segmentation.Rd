@@ -2,16 +2,56 @@
 % Please edit documentation in R/functions.R
 \name{import_segmentation}
 \alias{import_segmentation}
-\title{import_segmentation}
+\alias{import_segmentation.slice}
+\alias{import_segmentation.mouse}
+\title{import_segmentation (generic function)}
 \usage{
 import_segmentation(x, ...)
+
+\method{import_segmentation}{slice}(
+  s,
+  mouse_ID = "255",
+  channels = c("cfos", "eyfp", "colabel")
+)
+
+\method{import_segmentation}{mouse}(
+  m,
+  slice_ID = "1_10",
+  hemisphere = NULL,
+  channels = c("cfos", "efyp", "colabel"),
+  replace = FALSE
+)
 }
 \arguments{
 \item{...}{}
+
+\item{s}{: slice object}
+
+\item{mouse_ID}{: ID of mouse (str)}
+
+\item{channels}{: channels to import (str vector)}
+
+\item{m}{: mouse object}
+
+\item{slice_ID}{: ID of slice (str)}
+
+\item{hemisphere}{: 'left', 'right' or NULL (both)}
+
+\item{replace}{: replace existing raw segmentation data (bool)}
 }
 \value{
 
+
+s slice object
+
+m mouse object
 }
 \description{
-import_segmentation
+Method for importing segmentation data for a slice object
+
+Method for importing segmentation data for a mouse object
+}
+\examples{
+s <-  import_segmentation(s, mouse_ID = "255", channels = c("cfos", "eyfp", "colabel"))
+m <-  import_segmentation(m, slice_ID = "1_10", channels = c("cfos", "eyfp", "colabel"), replace = FALSE)
 }

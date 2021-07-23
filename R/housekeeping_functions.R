@@ -29,3 +29,70 @@ print.slice <- function(s){
   print(attr(s, 'info'))
 }
 
+
+
+
+
+#' @title Add slice to a mouse object
+#' @usage m <- add_slice(m, s, replace = FALSE)
+#' @param m mouse object
+#' @param s slice object
+#' @param replace (bool, default = FALSE) Replace a slice already contained in a mouse object.
+#' @export
+
+add_slice <- function(m, s, replace = FALSE){
+
+  # Get slice ID & hemisphere
+  slice_ID <- attr(s, 'info')$slice_ID
+  hemisphere <- attr(s, 'info')$hemisphere
+
+  # Omit hemisphere name if there is no hemisphere value in the attributes
+  if (is.null(hemisphere)){
+    slice_name <- slice_ID
+  } else {
+    slice_name <- paste0(slice_ID, "_", hemisphere)
+  }
+
+  # First slice
+  if (length(m$slices) < 1){
+
+    m$slices[[1]] <- s
+    names(m$slices) <- slice_name
+
+  } else{
+
+    # check in list of previous stored slice names for a match
+    stored_names <- names(m$slices)
+
+    # If there is a previous slice that matches, give user warning to set replace to TRUE to overwrite
+    match <- FALSE
+
+    for (stored_name in stored_names){
+
+      if (identical(stored_name, slice_name)){
+
+        match <- slice_name
+        message(paste0('There was existing data found for slice ', slice_ID,
+                       ", ", hemisphere, ' hemisphere\n'))
+
+        if (replace){
+          # replace slice
+          m$slices[[slice_name]] <- s
+          message(paste0('Replaced existing slice data!'))
+        } else {
+          stop(paste0('If you want to replace a previous slice object,',
+                      'then set the "replace" argument to "TRUE".'))
+        }
+      }
+    }
+
+    # If there were no matches, store the slice as a new slice
+
+    if (isFALSE(match)){
+      index <- length(m$slices) + 1
+      m$slices[[index]] <- s
+      names(m$slices)[index] <- slice_name
+    }
+  }
+  return(m)
+}

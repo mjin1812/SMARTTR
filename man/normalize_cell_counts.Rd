@@ -2,12 +2,23 @@
 % Please edit documentation in R/functions.R
 \name{normalize_cell_counts}
 \alias{normalize_cell_counts}
-\title{Normalize cell counts per mm^2 or by mm^3 (if multiplying by the stack size)}
+\title{Normalize cell counts per mm^^2 or by mm^3^ (if multiplying by the stack size)}
 \usage{
-normalize_cell_counts(m, combine_hemispheres = TRUE, simplify_regions = TRUE)
+normalize_cell_counts(
+  m,
+  combine_hemispheres = TRUE,
+  simplify_regions = TRUE,
+  simplify_keywords = c("layer", "part", "stratum", "division")
+)
 }
 \arguments{
-\item{simplify_regions}{}
+\item{m}{mouse object}
+
+\item{combine_hemispheres}{bool : Combine normalized cell counts from both hemispheres}
+
+\item{simplify_regions}{bool : simplify the normalized region counts based on keywords in \code{simplify_keywords}}
+
+\item{simplify_keywords}{str vector : c("layer","part","stratum","division"), keywords to search through region names and simplify to parent structure}
 }
 \value{
 

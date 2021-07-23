@@ -6,78 +6,10 @@ NULL
 
 
 
-##______________ Useful general functions ________________
-
-#' @title Add slice to a mouse object
-#' @usage m <- add_slice(m, s, replace = FALSE)
-#' @param m mouse object
-#' @param s slice object
-#' @param replace (bool, default = FALSE) Replace a slice already contained in a mouse object.
-#' @export
-
-add_slice <- function(m, s, replace = FALSE){
-
-  # Get slice ID & hemisphere
-  slice_ID <- attr(s, 'info')$slice_ID
-  hemisphere <- attr(s, 'info')$hemisphere
-
-  # Omit hemisphere name if there is no hemisphere value in the attributes
-  if (is.null(hemisphere)){
-    slice_name <- slice_ID
-  } else {
-    slice_name <- paste0(slice_ID, "_", hemisphere)
-  }
-
-  # First slice
-  if (length(m$slices) < 1){
-
-    m$slices[[1]] <- s
-    names(m$slices) <- slice_name
-
-  } else{
-
-    # check in list of previous stored slice names for a match
-    stored_names <- names(m$slices)
-
-    # If there is a previous slice that matches, give user warning to set replace to TRUE to overwrite
-    match <- FALSE
-
-    for (stored_name in stored_names){
-
-      if (identical(stored_name, slice_name)){
-
-        match <- slice_name
-        message(paste0('There was existing data found for slice ', slice_ID,
-                       ", ", hemisphere, ' hemisphere\n'))
-
-        if (replace){
-          # replace slice
-          m$slices[[slice_name]] <- s
-          message(paste0('Replaced existing slice data!'))
-        } else {
-          stop(paste0('If you want to replace a previous slice object,',
-                      'then set the "replace" argument to "TRUE".'))
-        }
-      }
-    }
-
-    # If there were no matches, store the slice as a new slice
-
-    if (isFALSE(match)){
-      index <- length(m$slices) + 1
-      m$slices[[index]] <- s
-      names(m$slices)[index] <- slice_name
-    }
-  }
-  return(m)
-}
-
-
-
 ###______________Generic functions ________________###
 
 ## Creating generic function for registration
-#' Register
+#' Register (generic function)
 #'
 #' @param x
 #' @param ...
@@ -85,21 +17,20 @@ add_slice <- function(m, s, replace = FALSE){
 #' @return
 #' @export
 #'
-#' @examples
+
 register <- function(x, ...) {
   UseMethod("register")
 }
 
 ## Creating generic function for segmentation importation
-#' import_segmentation
+#' import_segmentation (generic function)
 #'
 #' @param x
 #' @param ...
 #'
 #' @return
 #' @export
-#'
-#' @examples
+
 import_segmentation <- function(x, ...){
   UseMethod('import_segmentation')
 }
@@ -110,59 +41,55 @@ make_segmentation_filter <- function(x, ...){
 }
 
 ## Create segmentation object
-#' make_segmentation_object
+#' make_segmentation_object (generic funciton)
 #'
 #' @param x
 #' @param ...
 #'
 #' @return
 #' @export
-#'
-#' @examples
+
 make_segmentation_object <- function(x, ...){
   UseMethod('make_segmentation_object')
 }
 
 
 ## forward_warp segmentation data to atlas space
-#' map_cells_to_atlas
+#' map_cells_to_atlas (generic function)
 #'
 #' @param x
 #' @param ...
 #'
 #' @return
 #' @export
-#'
-#' @examples
+
 
 map_cells_to_atlas <- function(x, ...){
   UseMethod('map_cells_to_atlas')
 }
 
 ## excluded designated regions from the mapped cell data table
-#' exclude_anatomy
+#' exclude_anatomy (generic function)
 #'
 #' @param x
 #' @param ...
 #'
 #' @return
 #' @export
-#'
-#' @examples
+
 exclude_anatomy <- function(x, ...){
   UseMethod('exclude_anatomy')
 }
 
 ## excluded designated regions from the mapped cell data table
-#' get_registered_areas
+#' get_registered_areas (generic function)
 #'
 #' @param x
 #' @param ...
 #'
 #' @return
 #' @export
-#'
-#' @examples
+
 get_registered_areas <- function(x, ...){
   UseMethod('get_registered_areas')
 }
@@ -179,14 +106,14 @@ get_registered_areas <- function(x, ...){
 ##____ Creating method for registration of slice object____
 #' Register a slice in a slice object
 #'
+#' @rdname register
 #' @param s slice object
 #' @param filter (list)
 #' @param ... additional parameters to pass to the SMART::registration2() function, besides 'input', 'coordinate', 'filter' & 'correspondance'
-#'
 #' @return s slice object
-#' @export
-#'
 #' @examples s <- register(s)
+#' @export
+
 register.slice <- function(s,
                            filter = NULL,
                            ...){
@@ -216,20 +143,21 @@ register.slice <- function(s,
 }
 
 ##____ Creating method for registration of mouse object____
-#' Register a slice in a mouse object
+#' Register a slice in a mouse object. If a slice has been previously registered, the default behavior is to continue modifying the
+#' previous registration. Use the `replace` parameter to change this behavior.
 #'
+#' @rdname register
 #' @param m  mouse object
 #' @param slice_ID ID of slice (str)
 #' @param hemisphere 'left', 'right' (str) or NULL if both hemispheres are included
 #' @param filter (list)
 #' @param replace (bool, default = FALSE) Replace a registration already contained in a mouse object by resetting to NULL value before registration improvement loop.
 #' @param ... additional parameters to pass to the SMART::registration2() function, besides 'input', 'coordinate', 'filter' & 'correspondance'
-#'
 #' @return m  mouse object
-#' @export
 #'
 #' @examples m <- register(m, slice_ID = '1_10', hemisphere = "left", filter = my_filter)
-#' TODO: add popup window option to better visualize the internal structures of the images
+#' @export
+# TODO: add popup window option to better visualize the internal structures of the images
 register.mouse <- function(m,
                            slice_ID = '1_10',
                            hemisphere = NULL,  # set hemisphere to 'left' or 'right' to specify which slice should be pulled
@@ -315,27 +243,38 @@ register.mouse <- function(m,
 ##____ Creating method for importing segmentation data for a slice object____
 
 #' Import segmentation data
+#' @rdname import_segmentation
 #' @description Method for importing segmentation data for a slice object
 #' @param s : slice object
 #' @param mouse_ID : ID of mouse (str)
 #' @param channels : channels to import (str vector)
-#'
 #' @return s slice object
-#' @export
-#'
 #' @examples s <-  import_segmentation(s, mouse_ID = "255", channels = c("cfos", "eyfp", "colabel"))
+#' @export
 
-#' TODO: modify paths to search for correct files regardless of upper or lower case. Use grep and stringi to match multiple patterns
+# TODO: modify paths to search for correct files regardless of upper or lower case. Use grep and stringi to match multiple patterns
 
 import_segmentation.slice <- function(s,
                                       mouse_ID = '255',
                                       channels = c('cfos', 'eyfp', 'colabel')){
 
+
   # Get slice information
   info <- attributes(s)
 
   ## Use registration image path to find segmentation data path stem
-  path_stem <- dirname(info$info$registration_path)
+  # Check if slice has a set directory, otherwise borrow from the registration path
+  if (is.null(info$info$slice_directory)){
+    if (info$info$registration_path == 'set registration image path'){
+      stop(paste0("This function doesn't know where to look to import segmentation data!\n",
+                  "Set either the registration_path or the slice_directory in your slice attributes to continue."))
+    } else {
+      path_stem <- dirname(info$info$registration_path)
+    }
+  } else{
+    path_stem <- info$info$slice_directory
+  }
+
   section <- info$info$slice_ID
 
   for (k in 1:length(channels)){
@@ -376,6 +315,8 @@ import_segmentation.slice <- function(s,
 
 ##____ Creating method for importing segmentation data for a mouse object____
 #' Import raw segmentation data
+#'
+#' @rdname import_segmentation
 #' @description Method for importing segmentation data for a mouse object
 #' @param  m : mouse object
 #' @param slice_ID : ID of slice (str)
@@ -383,7 +324,9 @@ import_segmentation.slice <- function(s,
 #' @param channels : channels to import (str vector)
 #' @param replace : replace existing raw segmentation data (bool)
 #' @return m mouse object
+#' @examples m <-  import_segmentation(m, slice_ID = "1_10", channels = c("cfos", "eyfp", "colabel"), replace = FALSE)
 #' @export
+
 
 import_segmentation.mouse <- function(m,
                                       slice_ID = '1_10',
@@ -465,7 +408,7 @@ make_segmentation_filter.slice <- function(s,
     } else if (channels[k] == 'cfos'){
       data <- s$raw_segmentation_data$eyfp
     }
-    filter <- make.eyfp.filter(data, params = params[[k]], ranges = ranges[[k]])
+    filter <- make.filter(data, params = params[[k]], ranges = ranges[[k]])
     s$segmentation_filters[[k]] <- filter
 
   message('Processed ', channels[k], " channel")
@@ -541,8 +484,10 @@ make_segmentation_filter.mouse <- function(m,
 
 ##____Method for creating segmentation object for each slice____
 
-#' Create a segmentation object
+
 #' Creates a wholebrain segmentation object and stores it.
+#'
+#' @rdname make_segmentation_object
 #' @description Make a wholebrain compatible segmentation object for a slice in a slice object
 #' @param s : slice object
 #' @param mouse_ID : ID of mouse (str)
@@ -550,12 +495,13 @@ make_segmentation_filter.mouse <- function(m,
 #' @param use_filter : TRUE (bool). Use a filter to create more curated segmentation object from the raw segmentation data.
 #'
 #' @return s slice object
+#' @examples s <- make_segmentation_object(s, mouse_ID = "255", channels = c("cfos", "eyfp"), use_filter = FALSE)
 #' @export
-#'
-#' @examples
-#'
 
-# Note: this function needs a lot of cleaning; for now always create a filter for the
+# Note: this function needs cleaning; for now always create a filter for the
+# 'eyfp' channel and and set the 'use_filter' variable to TRUE.
+
+# Note: this function needs cleaning; for now always create a filter for the
 # 'eyfp' channel and and set the 'use_filter' variable to TRUE.
 
 ## TODO: CLEAN UP so that when use_filter = FALSE, processing 'colabel' channel doesn't throw an error
@@ -591,6 +537,8 @@ make_segmentation_object.slice <- function(s,
         coloc_cell_list <- identify.colabeled.cells.filter(s$raw_segmentation_data[[channels[k]]],
                                                           eyfp_counts_filtered$Nb+1,
                                                           eyfp_meas_16bit$Label)
+
+
         coloc.counts <- eyfp_counts_filtered[match(coloc_cell_list, eyfp_counts_filtered$Nb+1),]
         seg.coloc <- SMARTR::segmentation.object
         seg.coloc$soma$x <- coloc.counts$X2_Pix
@@ -627,7 +575,9 @@ make_segmentation_object.slice <- function(s,
 }
 
 ##____Method for creating segmentation object for each mouse____
+
 #' Creates a wholebrain segmentation object and stores it
+#' @rdname make_segmentation_object
 #' @description Make a wholebrain compatible segmentation object for a slice in a mouse object
 #' @param m : mouse object
 #' @param slice_ID : ID of slice (str)
@@ -635,10 +585,8 @@ make_segmentation_object.slice <- function(s,
 #' @param channels : (vec) Channels to process; Note: always set 'eyfp' before 'colabel' in the vector
 #' @param replace : replace existing raw segmentation data (bool)
 #' @param use_filter: TRUE (bool). Use a filter to create more curated segmentation object from the raw segmentation data.
-#' @export
-#'
 #' @examples m <-  make_segmentation_object(m, slice_ID = '1_9', hemisphere = 'left', channels = c('eyfp', 'cfos'), use_filter = FALSE)
-#'
+#' @export
 
 
 make_segmentation_object.mouse <- function(m,
@@ -704,15 +652,16 @@ make_segmentation_object.mouse <- function(m,
 #' @title Map cells to atlas for slice object
 #' @description Method for forward warping segmentation data to atlas space for a slice object.
 #' Requires segmentation objects to be made for channels specified and a registration object.
-#'
+#' @rdname map_cells_to_atlas
 #' @param s : slice object
 #' @param channels : channels to filter (str vector), can filter both eyfp & cfos
 #' @param clean : TRUE (bool). Remove cells that don't map to any regions.
 #' @param display : TRUE (bool). Display the results of the forward warp for the slice.
 #' @param mouse_ID : (str) mouse ID
 #' @param ... additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the wholebrain::inspect.registration() function
-#'
+#' @examples s <- map_cells_to_atlas(s, channels c('cfos' , 'eyfp', 'colabel'), clean = TRUE, display = TRUE, mouse_ID = "255")
 #' @export
+
 
 map_cells_to_atlas.slice <- function(s,
                                      channels = c('cfos', 'eyfp', 'colabel'),
@@ -750,7 +699,10 @@ map_cells_to_atlas.slice <- function(s,
 }
 
 ##____Method for forward warping the segmentation data per mouse____
-#' @title Map cells to atlas for slice object
+#' @title Map cells to atlas for slice within a mouse object
+#' @description  Method for forward warping segmentation data to atlas space for a slice within a mouse object.
+#' Requires segmentation objects to be made for the channels specified and a registration.
+#' @rdname map_cells_to_atlas
 #' @param m : mouse object
 #' @param slice_ID : ID of slice (str)
 #' @param hemisphere 'left', 'right' or NULL (both)
@@ -760,10 +712,8 @@ map_cells_to_atlas.slice <- function(s,
 #' @param replace : FALSE (bool). Replace current forward warped data, both raw and cleaned.
 #' @param ... additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the wholebrain::inspect.registration() function
 #' @return m mouse object
+#' @examples m <- map_cells_to_atlas(m, slice_ID = "1_10", hemisphere = NULL, channels = c("cfos", "eyfp", "colabel"), clean = TRUE, replace = FALSE)
 #' @export
-#'
-#' @examples
-#'
 
 map_cells_to_atlas.mouse <- function(m,
                                      slice_ID = "1_10",
@@ -834,17 +784,21 @@ map_cells_to_atlas.mouse <- function(m,
 
 ##____Method for excluding regions, layer 1, and hemispheres per slice ____
 #' @title Post-processing to exclude and clean up mapped data
-#' @description Method for excluding regions, layer 1, and hemispheres, and  per slice
+#' @description Method for excluding user specified regions, layer 1, and contralateral hemisphere  per slice.
+#' This function automatically excludes the default regions included in the attribute "regions_excluded" in each slice
+#' IN ADDITION to the regions added to the 'exclude_regions' parameter.
+#' Regions added to the 'exclude_regions' parameter will then be updated in the slice attribute to keep track of what was excluded.
+#' @rdname exclude_anatomy
 #' @param s: slice object
 #' @param channels: channels to filter (str vector), can filter both eyfp & cfos
 #' @param clean: TRUE (bool). Remove cells that don't map to any regions.
 #' @param exclude_regions: NULL (str vector); acronyms of regions you want to exclude IN ADDITION to regions that will by default be excluded in the slice attribute 'regions_excluded'
 #' @param exclude_hemisphere: TRUE (bool); excludes the contralateral hemisphere from one indicated in slice attribute
 #' @param exclude_layer_1: TRUE (bool); excludes all counts from layer 1 (TEMPORARY, may not be hardcoded in later)
+#' @param plot_filtered : TRUE (bool) pop up window to check the excluded anatomy.
+#' @examples s <-  exclude_anatomy(s, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE, exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE, plot_filtered = TRUE)
 #' @export
 
-# NOTE: # This function automatically excludes the default regions included in the attribute "regions_excluded" in each slice
-# IN ADDITION to the regions added to the 'exclude_regions' parameter. Regions added to the 'exclude_regions' parameter will then be updated in the slice attribute
 
 exclude_anatomy.slice <- function(s,
                                   channels = c('cfos', 'eyfp', 'colabel'),
@@ -926,12 +880,12 @@ exclude_anatomy.slice <- function(s,
 
 ##____Method for excluding regions, layer 1, and hemispheres per mouse ____
 
-#' Method for excluding regions, layer 1, and hemispheres per mouse
+#' Method for excluding regions, layer 1, and hemispheres in a slice per mouse
 #' @description Method for excluding cell counts in specified regions, layer 1, out-of-bounds cells counts, and hemispheres per mouse.
-#'  PLEASE NOTE that this function automatically excludes the default regions included in the attribute "regions_excluded" in each slice
-#'  IN ADDITION to the regions added to the 'exclude_regions' parameter.
-#'  Regions added to the 'exclude_regions' parameter will then be updated in the slice attribute to keep track of overall which regions were excluded per slice.
-#'
+#' This function automatically excludes the default regions included in the attribute "regions_excluded" in each slice
+#' IN ADDITION to the regions added to the 'exclude_regions' parameter.
+#' Regions added to the 'exclude_regions' parameter will then be updated in the slice attribute to keep track of what was excluded.
+#' @rdname exclude_anatomy
 #' @param m : mouse object
 #' @param slice_ID : ID of slice (str)
 #' @param hemisphere : hemisphere of slice
@@ -940,11 +894,15 @@ exclude_anatomy.slice <- function(s,
 #' @param exclude_regions : NULL (str vector); acronyms of regions you want to exclude IN ADDITION to regions that will by default be excluded in the slice attribute 'regions_excluded'
 #' @param exclude_other_hemisphere : TRUE (bool); excludes the contralateral hemisphere from one indicated in slice attribute
 #' @param exclude_layer_1 : TRUE (bool); excludes all counts from layer 1 (TEMPORARY, may not be hardcoded in later)
-#'
 #' @return m mouse object
+#' @examples m <- exclude_anatomy(m, slice_ID = "1_10", hemisphere = NULL, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE,
+#' exclude_regions = NULL,
+#' exclude_other_hemisphere = TRUE,
+#' exclude_layer_1 = TRUE
 #' @export
-#' @examples m <- exclude
-exclude_anatomy.mouse <- function(m,
+
+
+ exclude_anatomy.mouse <- function(m,
                                   slice_ID = "1_10",
                                   hemisphere = NULL,
                                   channels = c('cfos', 'eyfp', 'colabel'),
@@ -1001,11 +959,12 @@ exclude_anatomy.mouse <- function(m,
 
 # ##____Method for getting regional areas per slice ____
 #' Method for getting regional areas per slice
-#' @description returns a dataframe with columns 'name' (full region name), 'acronym', 'area', 'right.hemisphere
+#' @rdname get_registered_areas
+#' @description returns a dataframe with columns 'name' (full region name), 'acronym', 'area' (in microns^2^), 'right.hemisphere'
 #' @param s : slice object
 #' @return s slice object
+#' @examples s <- get_registered_areas(s)
 #' @export
-#' @examples s <- get_registered_areas(2)
 get_registered_areas.slice <- function(s){
 
   # Get conversion factor from microns to pixels
@@ -1019,13 +978,13 @@ get_registered_areas.slice <- function(s){
 
 ## ___ Method for getting regional areas per slice
 #' Method for getting regional areas per slice in a mouse object
+#' @rdname get_registered_areas
 #' @param m : mouse object
 #' @param slice_ID : ID of slice (str)
 #' @param hemisphere : hemisphere of slice
 #' @return m mouse object
+#' @examples m <- get_registered_areas(m, slice_ID = "1_10", hemisphere = "left", replace = FALSE)
 #' @export
-#'
-#' @examples m <- get_registered_areas(m, slice_ID = "1_10", hemisphere = "left")
 get_registered_areas.mouse <- function(m,
                                        slice_ID,
                                        hemisphere = NULL,
@@ -1081,14 +1040,11 @@ return(m)
 #' By default, if one slices has no dataset processed for that particular channel, that slice will be skipped over.
 #' The function will run properly but a warning will be thrown indicating you should go back and
 #' generate a mapped dataset for that particular slice and channel.
-#'
 #' @param m mouse object
 #' @param channels  channels : c("cfos", "eyfp") (vec) Channels to process.
-#'
 #' @return m mouse object
-#' @export
-#'
 #' @examples m <- get_cell_tables(m, channels = c("cfos"m "eyfp", "colabel"))
+#' @export
 
 get_cell_table <- function(m,
                            channels = c("cfos", "eyfp")){
@@ -1100,7 +1056,6 @@ get_cell_table <- function(m,
   names(cell_table) = channels
 
   for (channel in channels){
-
     for (s in m$slices){
 
       # Get slice information
@@ -1144,21 +1099,20 @@ get_cell_table <- function(m,
 
 ## normalized_cell_counts per mm^3 function
 #
-#' Normalize cell counts per mm^2 or by mm^3 (if multiplying by the stack size)
+#' Normalize cell counts per mm^^2 or by mm^3^ (if multiplying by the stack size)
 #' @description Run this function after all the slices that you want to process are finished being added
 #' and you have run the function get_cell_table() for your mouse.
-#'
-#' @param m
-#' @param combine_hemispheres
-#' @param simplify_regions
-#'
+#' @param m mouse object
+#' @param combine_hemispheres bool : Combine normalized cell counts from both hemispheres
+#' @param simplify_regions bool : simplify the normalized region counts based on keywords in `simplify_keywords`
+#' @param simplify_keywords str vector : c("layer","part","stratum","division"), keywords to search through region names and simplify to parent structure
 #' @return
-#' @export
-#'
 #' @examples m <- normalize_cell_counts(m, combine_hemispheres = TRUE, simplify_regions = TRUE)
+#' @export
 normalize_cell_counts <- function(m,
                                   combine_hemispheres = TRUE,
-                                  simplify_regions = TRUE){
+                                  simplify_regions = TRUE,
+                                  simplify_keywords = c("layer","part","stratum","division")){
 
 
   # 1) NULL areas check
@@ -1212,8 +1166,30 @@ normalize_cell_counts <- function(m,
   names(normalized_counts) <- names(m$cell_table)
 
 
-  if (simplify_regions){
-    ## TODO add into function the option of simplifying cell counts
+  # Clean NAs, check for combining hemispheres or simplifying regions
+  for (channel in names(normalized_counts)){
+
+    # clean NA values in all channels
+    normalized_counts[[channel]] <- tidyr::drop_na(normalized_counts[[channel]])
+
+    # Combine hemispheres
+    if (combine_hemispheres){
+      normalized_counts[[channel]] <- plyr::ddply(normalized_counts[[channel]], c("acronym", "name"), numcolwise(sum))
+
+      # Recalculated normalized count by area
+      normalized_counts[[channel]]$normalized.count.by.area <- normalized_counts[[channel]]$count/normalized_counts[[channel]]$area.mm2
+
+      # Recalculate normalized count by volume
+      normalized_counts[[channel]]$normalized.count.by.volume <- normalized_counts[[channel]]$count/normalized_counts[[channel]]$volume.mm3
+
+    }
+
+    # Simplify regions
+    if (simplify_regions){
+
+      # normalize the cell counts by specific keyworks
+      normalized_counts <- simplify.regions(normalized_counts, keywords = simplify_keywords)
+    }
   }
 
   # Store the normalized counts in the mouse object
@@ -1233,14 +1209,6 @@ normalize_cell_counts <- function(m,
 
 ## Experiment function to automatically extract hippocampus as a region and split DV to a
 # parameter to
-
-
-
-
-
-
-
-
 
 
 
@@ -1289,9 +1257,9 @@ get.registered.areas <- function(cell.data.list, registration, conversion.factor
   region.info <- list()
 
   for (i in 1:nrow(regions)) {
-    region.data <- wholebrain::get.region(regions$acronym[i],registration)
+    region.data <- wholebrain::get.region(regions$acronym[k],registration)
     region.data[,1:4] <- region.data[,1:4]*conversion.factor
-    region.info <- c(region.info, list(region.data[region.data$right.hemisphere==regions$right.hemisphere[i],]))
+    region.info <- c(region.info, list(region.data[region.data$right.hemisphere==regions$right.hemisphere[k],]))
   }
 
   areas <- data.frame(name=as.character(wholebrain::name.from.acronym(regions$acronym)),
@@ -1302,18 +1270,17 @@ get.registered.areas <- function(cell.data.list, registration, conversion.factor
 
   # Use Gauss' area formula (shoelace formula)
   for (i in 1:length(region.info)) {
-    r <- region.info[[i]]
+    r <- region.info[[k]]
     area <- 0
     for (j in 1:(nrow(r)-1)) {
       area <- area + r$xT[j]*r$yT[j+1] - r$xT[j+1]*r$yT[j]
     }
     area <- 0.5*abs(area + r$xT[nrow(r)]*r$yT[1] - r$xT[1]*r$yT[nrow(r)])
-    areas$area[i] <- area
+    areas$area[k] <- area
   }
 
   return(areas)
 }
-
 
 
 #____
@@ -1366,6 +1333,132 @@ normalize.registered.areas <- function(cell_table, total_areas, z_width = 24){
   return(normalized.list)
 }
 
+
+#' Modification of Marcos' combine regions function
+#'
+#' @param normalized_counts list with length = No. channels., each channel element is df of normalized counts
+#' @param keywords a vector of keywords with which to simplify the region names
+#'
+#' @return a list with length = No. channels. Each channel df has simplified parent acronyms and names is summed from original df based on them.
+#'
+#' @examples
+simplify.regions <- function(normalized_counts, keywords = c("layer","part","stratum","division")) {
+
+
+  # Initialize empty list vector to store the simplified counts
+  simplified_counts <- vector(mode = "list", length = length(normalized_counts))
+  names(simplified_counts) <- names(normalized_counts)
+
+  for(channel in names(normalized_counts)) {
+
+    # Extract the dataframe for one channel
+    simplified_counts_chan <- normalized_counts[[channel]]
+
+    # loop through each keyword
+    for (s in keywords) {
+
+      # Look for row indices where the names contain the keywords
+      k <- grep(s, simplified_counts_chan$name, value = FALSE, ignore.case = TRUE)
+
+      while(length(k) > 0){
+
+        # Store the parent acronym and full name
+        simplified_counts_chan$acronym[k] <- get.acronym.parent(simplified_counts_chan$acronym[k])
+        simplified_counts_chan$name[k] <- as.character(name.from.acronym(simplified_counts_chan$acronym[k]))
+
+        # Continue storing storing the parent names until there are no more that match the keyword
+        k <- grep(s, simplified_counts_chan$name, value = FALSE, ignore.case = TRUE)
+      }
+    }
+
+    # Check if the data has been collapsed by hemisphere
+    if (is.null(simplified_counts_chan$right.hemisphere)){
+
+      # step to collapse by name/acronym
+      simplified_counts_chan <- plyr::ddply(simplified_counts_chan, c("acronym", "name"), numcolwise(sum))
+    } else {
+      # step to collapse by name/acronym and hemisphere
+      simplified_counts_chan <- plyr::ddply(simplified_counts_chan, c("acronym", "name", "right.hemisphere"), numcolwise(sum))
+
+    }
+
+    # Recalculated normalized count by area
+    simplified_counts_chan$normalized.count.by.area <- simplified_counts_chan$count/simplified_counts_chan$area.mm2
+
+    # Recalculate normalized count by volume
+    simplified_counts_chan$normalized.count.by.volume <- simplified_counts_chan$count/simplified_counts_chan$volume.mm3
+
+    # Store in simplified counts list
+    simplified_counts[[channel]] <- simplified_counts_chan
+  }
+
+  return(simplified_counts)
+}
+
+
+
+
+
+###################### Unedited OLD functions #################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+####################################
+
+make.filter <- function(data, params = c("Vol..unit.","Moment1","Moment2","Moment3","Moment4","Sigma"),
+                             ranges = list(c(200,12000),c(3,50),c(0,600),c(0,2000),c(0,5),c(20,Inf))){
+  non.cells <- c()
+  for (i in 1:length(params)){
+    non.cells <- c(non.cells,which(data[,params[k]] < ranges[[k]][1] | data[,params[k]] > ranges[[k]][2]))
+  }
+  return(unique(non.cells))
+}
+
+#######################################
+
+
+
+
+identify.colabeled.cells.filter <- function(coloc.table,eyfp.cell.list,eyfp.labels.16bit,volume = 25,overlap = 0.5){
+  p <- seq(4,ncol(coloc.table),3)
+  mi <- max.col(coloc.table[,p])
+  mp <- c()
+  mv <- c()
+  mo <- c()
+  for(i in 1:nrow(coloc.table)){
+    mp <- c(mp,coloc.table[,p][i,mi[k]])
+    mv <- c(mv,coloc.table[,p-1][i,mi[k]])
+    mo <- c(mo,coloc.table[,p-2][i,mi[k]])
+  }
+  mo <- mo[mv>=volume & mp>=overlap]
+  val.map <- strsplit(as.character(eyfp.labels.16bit),"-")
+  val.map <- lapply(val.map,substr,start=4,stop=10)
+  mot <- c()
+  for(ov in val.map){
+    if(ov[2] %in% mo)
+      mot <- c(mot,ov[1])
+  }
+  return(as.integer(mot[mot %in% eyfp.cell.list]))
+}
 
 
 
