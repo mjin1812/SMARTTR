@@ -12,7 +12,8 @@ make_segmentation_object(x, ...)
   s,
   mouse_ID = "255",
   channels = c("cfos", "eyfp", "colabel"),
-  use_filter = TRUE
+  use_filter = TRUE,
+  ...
 )
 
 \method{make_segmentation_object}{mouse}(
@@ -21,11 +22,12 @@ make_segmentation_object(x, ...)
   hemisphere = NULL,
   channels = c("cfos", "eyfp", "colabel"),
   replace = FALSE,
-  use_filter = TRUE
+  use_filter = TRUE,
+  ...
 )
 }
 \arguments{
-\item{...}{}
+\item{...}{additional volume and overlap parameters for get.colabeled.cells().}
 
 \item{s}{: slice object}
 
@@ -54,6 +56,9 @@ s slice object
 Make a wholebrain compatible segmentation object for a slice in a slice object
 
 Make a wholebrain compatible segmentation object for a slice in a mouse object
+}
+\note{
+If you are processing the colabel channel, you must always have the raw eyfp segmentation data imported.
 }
 \examples{
 s <- make_segmentation_object(s, mouse_ID = "255", channels = c("cfos", "eyfp"), use_filter = FALSE)

@@ -18,7 +18,7 @@ import_segmentation(x, ...)
   m,
   slice_ID = "1_10",
   hemisphere = NULL,
-  channels = c("cfos", "efyp", "colabel"),
+  channels = c("cfos", "eyfp", "colabel"),
   replace = FALSE
 )
 }
@@ -50,6 +50,12 @@ m mouse object
 Method for importing segmentation data for a slice object
 
 Method for importing segmentation data for a mouse object
+}
+\note{
+Note that in order to import the raw data for co-labeled cells, you need both the txt files that end in "ColocOnly.txt" and "eYFP_16bit.txt".
+The ImageJ colabelling algorithm calculates overlap between two segmented 3D objects from different channel.
+One channel serves as the "reference" to later generate X & Y coordinates of colabelled cells in the make_segmentation_object() function.
+By convention, we use the eYFP channel rather than cfos..
 }
 \examples{
 s <-  import_segmentation(s, mouse_ID = "255", channels = c("cfos", "eyfp", "colabel"))

@@ -251,7 +251,11 @@ register.mouse <- function(m,
 #' @return s slice object
 #' @examples s <-  import_segmentation(s, mouse_ID = "255", channels = c("cfos", "eyfp", "colabel"))
 #' @export
-
+#' @note Note that in order to import the raw data for co-labeled cells, you need both the txt files that end in "ColocOnly.txt" and "eYFP_16bit.txt".
+#' The ImageJ colabelling algorithm calculates overlap between two segmented 3D objects from different channel.
+#' One channel serves as the "reference" to later generate X & Y coordinates of colabelled cells in the make_segmentation_object() function.
+#' By convention, we use the eYFP channel rather than cfos..
+#'
 # TODO: modify paths to search for correct files regardless of upper or lower case. Use grep and stringi to match multiple patterns
 
 import_segmentation.slice <- function(s,
@@ -278,12 +282,28 @@ import_segmentation.slice <- function(s,
   section <- info$info$slice_ID
 
   for (k in 1:length(channels)){
-    if (tolower(channels[k]) == 'colabel') {
-      coloc.table <- read.delim(file.path(path_stem,
-                                          paste0( mouse_ID,'_',section,"_Fast_R_cfos_SpotSegmentation_ColocOnly.txt")))
-      s$raw_segmentation_data[[k]] <- coloc.table
 
-    } else{
+    if (tolower(channels[k]) == 'colabel') {
+
+
+      coloc_path <- file.path(path_stem, paste0( mouse_ID,'_',section,"_Fast_R_cfos_SpotSegmentation_ColocOnly.txt"))
+      eyfp_16bit_path <- paste0("M_", mouse_ID, '_', section,"_Fast_G_eYFP_16bit.txt")
+
+      print(coloc_path)
+      print(eyfp_16bit_path)
+
+      # Read
+      coloc.table <- read.delim(coloc_path, stringsAsFactors = FALSE)
+      eyfp.meas.16bit <- read.csv(eyfp_16bit_path, stringsAsFactors = FALSE)
+
+
+      # store the coloc table and the eyfp 16 bit measurements as a combined list
+      s$raw_segmentation_data[[k]] <- list(coloc_table = coloc.table,
+                                           eyfp_counts_16bit = eyfp.meas.16bit)
+
+    }
+
+    else{
       if (tolower(channels[k]) == 'cfos'){
 
         # Create import data paths for cfos
@@ -298,15 +318,17 @@ import_segmentation.slice <- function(s,
       }
 
       print(meas_path)
-      meas <- read.csv(meas_path)
       print(quant_path)
-      quant <- read.csv(quant_path)
-      meas$X2_Pix <- meas$CX..pix./(info$info$bin*info$info$conversion_factor) #create position column to account for binning
-      meas$Y2_Pix <- meas$CY..pix./(info$info$bin*info$info$conversion_factor) #same as above
+      meas <- read.csv(meas_path, stringsAsFactors = FALSE )
+      quant <- read.csv(quant_path, stringsAsFactors = FALSE)
+      meas$X2_Pix <- meas$CX..pix./(info$info$bin) #create position column to account for binning
+      meas$Y2_Pix <- meas$CY..pix./(info$info$bin) #same as above
       counts <- cbind(meas, quant) #create combined table
+      counts <- counts[,unique(names(counts))]
       s$raw_segmentation_data[[k]] <- counts
     }
   }
+
   # Name the elements of the raw data
   names(s$raw_segmentation_data) <- channels
   return(s)
@@ -331,7 +353,7 @@ import_segmentation.slice <- function(s,
 import_segmentation.mouse <- function(m,
                                       slice_ID = '1_10',
                                       hemisphere = NULL,
-                                      channels = c('cfos', 'efyp', 'colabel'),
+                                      channels = c('cfos', 'eyfp', 'colabel'),
                                       replace = FALSE){
 
   # Get mouse ID
@@ -384,16 +406,22 @@ import_segmentation.mouse <- function(m,
   return(m)
 }
 
-################################ START of work in progress #########################
-
 ##____ Method for making an eyfp filter____
-# s: slice object
-# channels: channels to filter (str vector), can filter both eyfp & cfos
-# params:  (list) Has same length as channels. Each element contains a vector of parameters names used for filtering that channel
-# ranges" (list of lists) Has same length as channels. Each element contains a list of ranges for the parameters used for filtering.
 
-# TODO: clean up the name of the make filter function internally
-
+#' Make a segmentation filter for a slice object
+#' @rdname make_segmentation_filter
+#' @param s
+#' @param channels : channels to process (str vector), "eyfp" and "cfos" are legal.
+#' @param params:  (list) Has same length as channels. Each element contains a vector of parameters names used for filtering that channel
+#' @param ranges (list of lists) Has same length as channels. Each element of outer list corresponds the order of channels you want to process.
+#' Inner list contains vectors of parameter ranges for that channel.
+#'
+#' @return
+#' @export
+#'
+#' @examples s <- make_segmentation_filter(s, channels = c('eyfp'),
+#' params = list(c("Vol..unit.","Moment1","Moment2","Moment3","Moment4","Sigma")),
+#' ranges = list(list(c(200, 12000), c(3, 50), c(0, 600), c(0, 2000), c(0, 5), c(20, Inf))))
 
 make_segmentation_filter.slice <- function(s,
                                       channels = c('eyfp'),
@@ -419,13 +447,23 @@ make_segmentation_filter.slice <- function(s,
 
 
 ##____ Method for creating filter for making eyfp filter for mouse____
-# m : mouse object
-# slice_ID : ID of slice (str)
-# hemisphere: 'left', 'right' or NULL (both)
-# channels: channels to import (str vector)
-# params:  (list) Has same length as channels. Each element contains a vector of parameters names used for filtering that channel
-# ranges" (list of lists) Has same length as channels. Each element contains a list of ranges for the parameters used for filtering.
 
+#' Make a segmentation filter for a slice within a mouse object
+#' @rdname make_segmentation_filter
+#' @param m mouse object
+#' @param slice_ID : ID of slice (str)
+#' @param hemisphere 'left', 'right' or NULL (both)
+#' @param channels : channels to process (str vector), "eyfp" and "cfos" are legal.
+#' @param params:  (list) Has same length as channels. Each element contains a vector of parameters names used for filtering that channel
+#' @param ranges (list of lists) Has same length as channels. Each element of outer list corresponds the order of channels you want to process.
+#' Inner list contains vectors of parameter ranges for that channel.
+#'
+#' @return m mouse object
+#' @export
+#'
+#' @examples m <- make_segmentation_filter(m, slice_ID = '1_10', hemisphere = NULL , channels = c('eyfp'),
+#' params = list(c("Vol..unit.","Moment1","Moment2","Moment3","Moment4","Sigma")),
+#' ranges = list(list(c(200, 12000), c(3, 50), c(0, 600), c(0, 2000), c(0, 5), c(20, Inf))))
 make_segmentation_filter.mouse <- function(m,
                                            slice_ID = '1_10',
                                            hemisphere = 'left',
@@ -479,8 +517,6 @@ make_segmentation_filter.mouse <- function(m,
 }
 
 
-################################ END of work in progress ##############################
-
 
 ##____Method for creating segmentation object for each slice____
 
@@ -493,84 +529,97 @@ make_segmentation_filter.mouse <- function(m,
 #' @param mouse_ID : ID of mouse (str)
 #' @param channels : (str vec) Channels to process; Note: always set 'eyfp' before 'colabel' in the vector
 #' @param use_filter : TRUE (bool). Use a filter to create more curated segmentation object from the raw segmentation data.
+#' @param ... additional volume and overlap parameters for get.colabeled.cells().
 #'
 #' @return s slice object
 #' @examples s <- make_segmentation_object(s, mouse_ID = "255", channels = c("cfos", "eyfp"), use_filter = FALSE)
 #' @export
-
-# Note: this function needs cleaning; for now always create a filter for the
-# 'eyfp' channel and and set the 'use_filter' variable to TRUE.
-
-# Note: this function needs cleaning; for now always create a filter for the
-# 'eyfp' channel and and set the 'use_filter' variable to TRUE.
-
-## TODO: CLEAN UP so that when use_filter = FALSE, processing 'colabel' channel doesn't throw an error
-## TODO: Figure out how Marcos's colocalization filter works
-## TODO: Change the colocalization filtering step so that one approach isn't hardcoded into the pipeline
+#' @note If you are processing the colabel channel, you must always have the raw eyfp segmentation data imported.
 
 make_segmentation_object.slice <- function(s,
                                            mouse_ID = '255',
                                            channels = c('cfos', 'eyfp', 'colabel'),
-                                           use_filter = TRUE){
-  # If use_filter is TRUE, check if a filter exists for either the cfos channel or eyfp
+                                           use_filter = TRUE,
+                                           ... ){
+
   # Get slice information
   info <- attributes(s)
 
   ## Use registration image path to find segmentation data path stem
-  path_stem <- dirname(info$info$registration_path)
-  section <- info$info$slice_ID
-
-  for (k in 1:length(channels)){
-    ## Check if a filter currently exists for cfos and eyfp channel OR if a filter exists for colabeles
-    if (use_filter && !is.null(s$segmentation_filters[[channels[k]]]) |
-        use_filter && channels[k] =='colabel'){
-
-      ## special filtering process for colabel to match with eyfp channel by volume
-      ## (MARCOS's approach in 'Helper.R', THIS NEEDS TO BE CHANGED SO IT's NOT HARDCODED INTO THE PIPELINE)
-      if (channels[k]=='colabel'){
-        eyfp_meas_16bit <- read.csv(file.path(path_stem,
-                                              paste0("M_", mouse_ID,'_',section,"_Fast_G_eYFP_LabelImage_16bit.txt")))
-
-        # Create a list of the filtered eyfp cells
-        eyfp_counts_filtered <- s$raw_segmentation_data[['eyfp']][-s$segmentation_filters[['eyfp']], ]
-
-        coloc_cell_list <- identify.colabeled.cells.filter(s$raw_segmentation_data[[channels[k]]],
-                                                          eyfp_counts_filtered$Nb+1,
-                                                          eyfp_meas_16bit$Label)
+  # path_stem <- dirname(info$info$registration_path)
 
 
-        coloc.counts <- eyfp_counts_filtered[match(coloc_cell_list, eyfp_counts_filtered$Nb+1),]
-        seg.coloc <- SMARTR::segmentation.object
-        seg.coloc$soma$x <- coloc.counts$X2_Pix
-        seg.coloc$soma$y <- coloc.counts$Y2_Pix
-        seg.coloc$soma$area <- coloc.counts$Vol..pix.
-        seg.coloc$soma$intensity <- coloc.counts$Mean
+  # Check if colabel channel is included (MAY NOT BE NECESSARY)
+  if ('colabel' %in% channels){
+    # Rearrange the channels vector so that colabel is always processed last
+    channels <- c(channels[!channels %in% 'colabel'], channels[channels %in% 'colabel'])
 
-        # storing segmentation object in  slice
-        s$segmentation_obj[[k]] <- seg
+  }
 
-      } else{
-        # Using filter to create filtered counts
-        counts_filtered <- s$raw_segmentation_data[[channels[k]]][-s$segmentation_filters[[channels[k]]], ]
-        seg <- SMARTR::segmentation.object
-        seg$soma$x <- counts_filtered$X2_Pix
-        seg$soma$y <- counts_filtered$Y2_Pix
-        seg$soma$area <- counts_filtered$Vol..pix.
-        seg$soma$intensity <- counts_filtered$Mean
+  # Create a segmentation list to store the channel segmentatoin objects
+  segmentation_list  <- vector(mode = 'list', length = length(channels))
+  names(segmentation_list) <- names(channels)
+
+
+  for (channel in channels){
+
+    if (channel == 'colabel'){
+
+      # filter check
+      if (use_filter) {
+        if (is.null(s$segmentation_filter[['eyfp']])) {
+          warning(paste0("No filter is available for eyfp, even though `use_filter` parameter is TRUE.\nThe eyfp channel is used to process the colabel channel,",
+                         "\n so the colabel channel will be processed without usage of an eyfp filter."))
+          eyfp_counts <- s$raw_segmentation_data[['eyfp']]
+        } else {
+          eyfp_counts <- s$raw_segmentation_data[['eyfp']][-s$segmentation_filters[['eyfp']], ]
+        }
+      } else {
+        eyfp_counts <- s$raw_segmentation_data[['eyfp']]
       }
-    } else{
-      # create segmentation object
-      seg <- SMARTR::segmentation.object
-      seg$soma$x <- s$raw_segmentation_data[[channels[k]]]$X2_Pix
-      seg$soma$y <- s$raw_segmentation_data[[channels[k]]]$Y2_Pix
-      seg$soma$area <- s$raw_segmentation_data[[channels[k]]]$Vol..pix.
-      seg$soma$intensity <- s$raw_segmentation_data[[channels[k]]]$Mean
 
-      # storing segmentation object in  slice
-      s$segmentation_obj[[k]] <- seg
+      # obtain df of colocalized cell counts
+      coloc.counts <- get.colabeled.cells(s$raw_segmentation_data$colabel$coloc_table,
+                                        eyfp_counts,
+                                        s$raw_segmentation_data$colabel$eyfp_counts_16bit,
+                                        ...)
+
+      seg.coloc <- SMARTR::segmentation.object
+      seg.coloc$soma$x <- coloc.counts$X2_Pix
+      seg.coloc$soma$y <- coloc.counts$Y2_Pix
+      seg.coloc$soma$area <- coloc.counts$Vol..pix.
+      seg.coloc$soma$intensity <- coloc.counts$Mean
+
+
+      # store into segmentation list
+      segmentation_list[[channel]] <- seg.coloc
+
+    } else {
+      #Other channels
+      if (use_filter){
+        if (is.null(s$segmentation_filter[[channel]])){
+          warning(paste0("No filter is available for ", channel," even though `use_filter` parameter is TRUE.\nThe channel will be processed without usage of an filter."))
+          counts <- s$raw_segmentation_data[[channel]]
+        } else {
+          counts <- s$raw_segmentation_data[[channel]][-s$segmentation_filters[[channel]], ]
+        }
+      } else {
+        counts <- s$raw_segmentation_data[[channel]]
+      }
+
+      seg <- SMARTR::segmentation.object
+      seg$soma$x <- counts$X2_Pix
+      seg$soma$y <- counts$Y2_Pix
+      seg$soma$area <- counts$Vol..pix.
+      seg$soma$intensity <- counts$Mean
+
+      # Store into segmentation list
+      segmentation_list[[channel]] <- seg
+
     }
   }
-  names(s$segmentation_obj) <- channels
+
+ s$segmentation_obj <- segmentation_list
   return(s)
 }
 
@@ -585,6 +634,7 @@ make_segmentation_object.slice <- function(s,
 #' @param channels : (vec) Channels to process; Note: always set 'eyfp' before 'colabel' in the vector
 #' @param replace : replace existing raw segmentation data (bool)
 #' @param use_filter: TRUE (bool). Use a filter to create more curated segmentation object from the raw segmentation data.
+#' @param ... additional volume and overlap parameters for get.colabeled.cells().
 #' @examples m <-  make_segmentation_object(m, slice_ID = '1_9', hemisphere = 'left', channels = c('eyfp', 'cfos'), use_filter = FALSE)
 #' @export
 
@@ -594,7 +644,8 @@ make_segmentation_object.mouse <- function(m,
                                            hemisphere = NULL,
                                            channels = c('cfos', 'eyfp', 'colabel'),
                                            replace = FALSE,
-                                           use_filter = TRUE){
+                                           use_filter = TRUE,
+                                           ...){
 
   # Get mouse ID
   mouse_ID <- attr(m, 'info')$mouse_ID
@@ -627,7 +678,8 @@ make_segmentation_object.mouse <- function(m,
           m$slices[[match]] <- make_segmentation_object(m$slices[[match]],
                                                         mouse_ID = mouse_ID,
                                                         channels = channels,
-                                                        use_filter = use_filter)
+                                                        use_filter = use_filter,
+                                                        ...)
         } else{
           stop(paste0("There is an existing segmentation object for this slice! If you want to overwrite it, set replace to TRUE."))
         }
@@ -637,7 +689,8 @@ make_segmentation_object.mouse <- function(m,
         m$slices[[match]] <- make_segmentation_object(m$slices[[match]],
                                                       mouse_ID = mouse_ID,
                                                       channels = channels,
-                                                      use_filter = use_filter)
+                                                      use_filter = use_filter,
+                                                      ... )
       }
     }
   }
