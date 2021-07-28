@@ -1395,29 +1395,7 @@ simplify.regions <- function(normalized_counts, keywords = c("layer","part","str
   return(simplified_counts)
 }
 
-
-
-
-
 ###################### Unedited OLD functions #################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1438,28 +1416,93 @@ make.filter <- function(data, params = c("Vol..unit.","Moment1","Moment2","Momen
 
 
 
-identify.colabeled.cells.filter <- function(coloc.table,eyfp.cell.list,eyfp.labels.16bit,volume = 25,overlap = 0.5){
+
+# eyfp.counts  - dataframe
+# eyfp.counts.16bit
+#
+#
+
+
+
+
+
+# Modified version of Marcos identify.colabelled.cells.filter() functions
+#' Get colabelled cells data table
+#'
+#' @param coloc.table
+#' @param eyfp.counts
+#' @param eyfp.counts.16bit
+#' @param volume
+#' @param overlap
+#'
+#' @return returns a dataframe of colabelled cell counts
+#'
+#' @examples
+get.colabeled.cells <- function(coloc.table, eyfp.counts, eyfp.counts.16bit, volume = 25, overlap = 0.5) {
+  # p is position
+  # mi is max index
+  # mp is max proportion
+  # mv is max volume
+  # mo is max object number for eyfp
+
+
+  # Get position index of the volume parameteres in the coloc.table
   p <- seq(4,ncol(coloc.table),3)
+  names(p) <- names(coloc.table)[p]  # Helper line to keep track
+
+  # Get column indices of the volumn column with the largest objects overlap
   mi <- max.col(coloc.table[,p])
-  mp <- c()
-  mv <- c()
-  mo <- c()
-  for(i in 1:nrow(coloc.table)){
-    mp <- c(mp,coloc.table[,p][i,mi[k]])
-    mv <- c(mv,coloc.table[,p-1][i,mi[k]])
-    mo <- c(mo,coloc.table[,p-2][i,mi[k]])
-  }
+
+  # extracting column for objects, volumes, and proportions based on names
+  mp_names <- paste0("P", 1:7)
+  mv_names <- paste0("V", 1:7)
+  mo_names <- paste0("O", 1:7)
+
+  # Get selection indices
+  select <- cbind(1:length(coloc.table$X),mi)
+
+  # Extracting max proportion
+  mp <- coloc.table[,mp_names][select]
+  mv <- coloc.table[,mv_names][select]
+  mo <- coloc.table[,mo_names][select]
+
+
+  # Filter out objects that are smaller than the volume threshold and the less than
+  # The proportion overlap threshold
   mo <- mo[mv>=volume & mp>=overlap]
-  val.map <- strsplit(as.character(eyfp.labels.16bit),"-")
-  val.map <- lapply(val.map,substr,start=4,stop=10)
-  mot <- c()
-  for(ov in val.map){
-    if(ov[2] %in% mo)
-      mot <- c(mot,ov[1])
-  }
-  return(as.integer(mot[mot %in% eyfp.cell.list]))
+
+
+
+  # Split by object name and value, split by character position
+  obj.val.16 <- strsplit(eyfp.counts.16bit$Name,"-") %>% lapply(substr, start = 4, stop = 10) %>% unlist()
+  val.16 <-  obj.val.16[seq(2, length(obj.val.16), by = 2)] # Object value
+  obj.16 <-  obj.val.16[seq(1, length(obj.val.16), by = 2)] # Object number
+
+  obj_index <- match(mo, val.16) %>% na.omit()
+  mot <- obj.16[obj_index] %>% as.integer()
+
+  # mot is matched object number from 16bit measure df that is in mo
+  obj.val <- strsplit(eyfp.counts$Name,"-") %>% lapply(substr, start = 4, stop = 10) %>% unlist()
+  obj <-  obj.val[seq(1, length(obj.val), by = 2)] # Object number
+
+
+  # index of the eyfp rows corresponding to matched object name
+  index <- match(mot, obj) %>% na.omit()
+  coloc.data <- eyfp.counts[index, unique(names(eyfp.counts))] %>% dplyr::distinct()
+
+  return(coloc.data)
+
+
+
+
+  ## EXTRAS
+  # ## get the matched object number
+  # matched_obj <- mot[match(obj , mot)]
+
+  ## compare the X&Y coordinates of the 16bit and normal based on matched object number
+  # val <-  obj.val[seq(2, length(obj.val), by = 2)] # Object value
+  # df.16 <- eyfp.counts.16bit[obj_index,] %>% dplyr::distinct()
+
 }
-
-
 
 
