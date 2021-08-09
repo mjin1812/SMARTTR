@@ -466,13 +466,13 @@ mouse_325 <- exclude_anatomy(mouse_325,
                         clean = TRUE, 
                         exclude_regions = c("VS"),
                         exclude_layer_1 = TRUE, 
-                        exclude_other_hemisphere = TRUE)
+                        exclude_hemisphere = TRUE)
 
 
 ```
 
 
-Let's do the same thing for the full slice, except we set exclude_other_hemisphere to FALSE.
+Let's do the same thing for the full slice, except we set exclude_hemisphere to FALSE.
 
 
 ```{r}
@@ -483,7 +483,7 @@ mouse_325 <- exclude_anatomy(mouse_325,
                         clean = TRUE, 
                         exclude_regions = c("VS"),
                         exclude_layer_1 = TRUE, 
-                        exclude_other_hemisphere = FALSE)
+                        exclude_hemisphere = FALSE)
 
 ```
 

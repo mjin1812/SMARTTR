@@ -972,13 +972,13 @@ exclude_anatomy.slice <- function(s,
 #' @param channels (vec) Channels to process.
 #' @param clean (bool, default = TRUE ). Remove cells that don't map to any regions.
 #' @param exclude_regions (str vector, default = NULL); acronyms of regions you want to exclude IN ADDITION to regions that will by default be excluded in the slice attribute 'regions_excluded'
-#' @param exclude_other_hemisphere (bool, default = TRUE); excludes the contralateral hemisphere from one indicated in slice attribute
+#' @param exclude_hemisphere (bool, default = TRUE); excludes the contralateral hemisphere from one indicated in slice attribute
 #' @param exclude_layer_1 (bool, default = TRUE); excludes all counts from layer 1 (TEMPORARY, may not be hardcoded in later)
 #' @param plot_filtered (bool, default = TRUE) pop up window to check the excluded anatomy.
 #' @return m mouse object
 #' @examples m <- exclude_anatomy(m, slice_ID = "1_10", hemisphere = NULL, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE,
 #' exclude_regions = NULL,
-#' exclude_other_hemisphere = TRUE,
+#' exclude_hemisphere = TRUE,
 #' exclude_layer_1 = TRUE
 #' @export
 
@@ -989,15 +989,15 @@ exclude_anatomy.slice <- function(s,
                                   channels = c('cfos', 'eyfp', 'colabel'),
                                   clean = TRUE,
                                   exclude_regions = NULL,
-                                  exclude_other_hemisphere = TRUE,
+                                  exclude_hemisphere = TRUE,
                                   exclude_layer_1 = TRUE,
                                   plot_filtered = TRUE){
 
   # Omit hemisphere name if there is no hemisphere value in the attributes
   if (is.null(hemisphere)){
     slice_name <- slice_ID
-    if (exclude_other_hemisphere){
-      stop("Can't exclude contralateral hemisphere without reference hemisphere! i.e., hemisphere = NULL and exclude_other_hemisphere = TRUE. ")
+    if (exclude_hemisphere){
+      stop("Can't exclude contralateral hemisphere without reference hemisphere! i.e., hemisphere = NULL and exclude_hemisphere = TRUE. ")
     }
 
   } else {
@@ -1024,7 +1024,7 @@ exclude_anatomy.slice <- function(s,
                                              channels = channels,
                                              clean = clean,
                                              exclude_regions = exclude_regions,
-                                             exclude_hemisphere = exclude_other_hemisphere,
+                                             exclude_hemisphere = exclude_hemisphere,
                                              exclude_layer_1 = exclude_layer_1,
                                              plot_filtered = plot_filtered)
       } else {

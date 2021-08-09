@@ -25,7 +25,7 @@ exclude_anatomy(x, ...)
   channels = c("cfos", "eyfp", "colabel"),
   clean = TRUE,
   exclude_regions = NULL,
-  exclude_other_hemisphere = TRUE,
+  exclude_hemisphere = TRUE,
   exclude_layer_1 = TRUE,
   plot_filtered = TRUE
 )
@@ -52,8 +52,6 @@ exclude_anatomy(x, ...)
 \item{slice_ID}{(str) ID of slice}
 
 \item{hemisphere}{(str) 'left', 'right' or NULL (both)}
-
-\item{exclude_other_hemisphere}{(bool, default = TRUE); excludes the contralateral hemisphere from one indicated in slice attribute}
 }
 \value{
 
@@ -75,6 +73,6 @@ Regions added to the 'exclude_regions' parameter will then be updated in the sli
 s <-  exclude_anatomy(s, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE, exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE, plot_filtered = TRUE)
 m <- exclude_anatomy(m, slice_ID = "1_10", hemisphere = NULL, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE,
 exclude_regions = NULL,
-exclude_other_hemisphere = TRUE,
+exclude_hemisphere = TRUE,
 exclude_layer_1 = TRUE
 }
