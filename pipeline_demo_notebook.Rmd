@@ -1,7 +1,7 @@
 ---
 title: "Denny Lab Wholebrain Pipeline Demo"
 author: ' by Michelle Jin'
-date: "June 15, 2021"
+date: "August 9, 2021"
 output:
   html_document: default
   word_document: default
@@ -38,14 +38,14 @@ knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook that allows for an interactive walkthrough of the wholebrain pipeline for the lab.. When you execute code within the notebook, the results will appear beneath the code. To execute a code chunk in this notebook click the *Run* button within a chunk or place your cursor inside it and pressing *Ctrl+Shift+Enter*. 
 
-The base of this pipeline is an R package in development with the working title, `SMARTR`, a self-referential play on the previous package I developed as an extension to `wholebrain` called `SMART`. 
+The base of this pipeline is an R package in development with the working title, `SMARTR`, a self-referential play on a previous package I developed as an extension to `wholebrain` called `SMART`. 
 
-In this notebook, a prototypical example of of the following steps of the pipeline will be demonstrated:
+In this notebook, a prototypical example of of the following steps in processing data from a mouse will be demonstrated:
 
-1. Setting up the pipeline by specifying experiment parameters, and save directories.
+1. Setting up the pipeline by specifying experimental parameters and save directories.
 2. The interactive registration process.
 3. Importing raw segmentation data from .txt files generated from ImageJ for multiple channels.
-4. TODO: Optionally creating a filter for the 'cfos' and 'eyfp' channels to clean segmented counts. #Currently needs cleanup and a more elegant integration with the rest of the package
+4. Optionally creating a filter for the 'cfos' and 'eyfp' channels to clean segmented counts. 
 5. Creating a segmentation object that is compatible with `wholebrain` functions.
 6. Forward warping and mapping the data onto the standardized mouse atlas.
 7. Cleaning the mapped data in all the following ways: 
@@ -55,8 +55,8 @@ In this notebook, a prototypical example of of the following steps of the pipeli
     + Removing Layer 1 cells
     + Removing cells from a contralateral hemisphere per slice if the registrations are divided by right and left hemispheres. 
 8.  Obtaining cell counts normalized by region volume (per mm^2^) and region areas (per mm^2^). 
-9.  TODO: Aggregating cell counts across multiple animals.
-10. TODO: Splitting the hippocampal cell counts into Dorsal and Ventral based on a user-defined AP coordinate ranges.
+9.  TODO: Splitting the hippocampal cell counts into Dorsal and Ventral based on a user-defined AP coordinate ranges.
+10. TODO: Aggregating cell counts across multiple animals.
 11. TODO: Functions for easy analysis, e.g. cross correlations and network analysis.
   
   
@@ -75,10 +75,12 @@ To get an excellent brief overview of what object oriented programming is and it
 
 # Install the `SMARTR` package in R
 
-Currently the pipeline package is on my github, but it is a private respository. Therefore to download it from github using `devtools`, we need to feed the install function
-a personal access token to access the github API. Install the package with the code below:
+Currently the pipeline package is on my github, but it is a private respository. Therefore to download it from github using the `devtools` package, we need to feed the install function a personal access token to access the github API. There are also some dependencies on the tidyverse packages so we will install that too. Install the package with the code below:
 
 ```{r}
+# Install from CRAN
+install.packages("tidyverse")
+
 # personal access token
 auth_token <- "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"
 
@@ -90,6 +92,22 @@ devtools::install_github("mjin1812/SMARTR", auth_token = auth_token)
 
 <br>  
 
+We can now load the package!
+
+```{r}
+# Load SMARTR
+library(SMARTR)
+```
+
+You can pull up the package description with the code below:
+
+```{r}
+
+?SMARTR
+
+```
+
+
 # Package object descriptions
 
 A `slice` object will contain all the data related to registration, segmentation for each channel, and cell counts for a particular image.
@@ -97,13 +115,13 @@ A `slice` object will contain all the data related to registration, segmentation
 It will also contain "metadata" about your experimental images, such as what the experimenter-assigned slice ID is, which brain atlas AP coordinate matches best, with the given image, and what the path to the image used for registration is. These metadata are stored as the object attributes.
 
 Run the code below to used the `?` operator to pull up the documentation for a `slice` object. This will pull up a help page description of all the `slice` object attributes. 
-The `::` or double colons helps tell R to specifically look for the object in the `SMARTR` package. 
+
+Note that the use of `::` or double colons here means that R specifically looks for a function, object, or help page in `SMARTR` package. This isn't necessary if you load the package, but it can sometimes help avoid ambiguity if there are identical names for things in other loaded packages.
 
 ```{r}
 ?SMARTR::slice
 
 ```
-
 
 
 A `mouse` object is an object that will store multiple `slice` objects (and therefore all the information in it), and will eventually store the combined cell data 
@@ -119,12 +137,6 @@ Okay enough background! Let's walkthrough the pipeline with an example mouse and
 
 ## 1. Setting up the pipeline
 
-```{r}
-# First lets load the libraries we need to use!
-library(SMARTR)
-library(wholebrain)
-
-```
 
 ### Initializing your mouse object 
 
@@ -133,10 +145,10 @@ library(wholebrain)
 # Let's create an instance of a mouse object
 # Let pretend this mouse object stores data from mouse No. 255  
 
-mouse_255 <- mouse() 
+mouse_325 <- mouse() 
 
 # Let first see what's in it with print()
-print(mouse_255)
+print(mouse_325)
 
 # The output should print a bunch of important mouse attributes that haven't been set yet.
 
@@ -146,24 +158,23 @@ print(mouse_255)
 ```{r}
 
 # We can access the list used to print the mouse attribute with the command below
-mouse_info <- attr(mouse_255, 'info')
+mouse_info <- attr(mouse_325, 'info')
 
-# Change mouse attributes to reflect your mouse and experiment
-mouse_info$mouse_ID      <- '255'
+# Change mouse attributes to reflect your mouse and experiment.
+mouse_info$mouse_ID      <- '325'
 mouse_info$sex           <- 'female'
 mouse_info$strain        <- '129s'
 mouse_info$experiment    <- 'sundowning'
 mouse_info$group         <- 'control'
-mouse_info$cohort        <- '3_2_months'
-mouse_info$input_path    <- 'Y:\\Holly Hunsberger\\Sundowning_images\\Cohort 3_2month\\255'
-mouse_info$output_path   <- 'C:\\Users\\Jinmich\\Documents\\255\\255_example_output'
-
+mouse_info$cohort        <- '4_2_months'
+mouse_info$output_path   <- 'V:/Michelle Jin/Sundowning/PipelineDemo/325'
+# mouse_info$input_path    <- 'Y:/Holly Hunsberger/Sundowning_images/Cohort4_2month/325/325_2_5'
 
 # Change mouse's attributes by storing the mouse info list
-attr(mouse_255, 'info') <- mouse_info
+attr(mouse_325, 'info') <- mouse_info
 
 # Check the updates 
-print(mouse_255)
+print(mouse_325)
 
 ```
 We have now finished setting up a mouse object and are ready to store some imaging and automated cell count data into it!
@@ -174,37 +185,37 @@ We have now finished setting up a mouse object and are ready to store some imagi
 # Lets create an instance of a slice object. 
 # Let pretend this slice object stores data from slice No. S1_10
 
-slice_S1_10 <- slice()
+slice_2_5 <- slice()
 
 # Let first see what's in it with print()
-print(slice_S1_10)
+print(slice_2_5)
 ```
 ### Let continue setting up slice attributes just like we did for a mouse!
 
 ```{r}
 # We can access the list used to print the slice attribute with the command below
-slice_info <- attr(slice_S1_10, 'info')
+slice_info <- attr(slice_2_5, 'info')
 
 # Change slice attributes to reflect your slice and experiment
 # Note that you should look at your image and compare it with a standardized mouse atlas to decide what the proper AP coordinate should be
-slice_info$slice_ID            <- '1_10'
-slice_info$coordinate          <- -3.15
-slice_info$conversion_factor   <- 1.0    # Pixel-to-micron conversion factor
-slice_info$bin                 <- 1
+slice_info$slice_ID            <- '2_5'
+slice_info$coordinate          <- -1.63
+slice_info$conversion_factor   <- 1.0833 # Pixel-to-micron conversion factor
+slice_info$bin                 <- 1      # Whether the image was down sampled by a bin factor in imageJ
 slice_info$z_width             <- 24     # z-stack thickness in microns
-slice_info$hemisphere          <- 'left'
+slice_info$hemisphere          <- NULL   # Set to 'left' or 'right' if processing a specific hemisphere
 slice_info$channels            <- c('cfos', 'eyfp', 'colabel')   
-slice_info$registration_path   <- 'Y:\\Holly Hunsberger\\Sundowning_images\\Cohort 3_2month\\255\\255_S1_10\\MAX_255_1_10.tif'  
+slice_info$registration_path   <- 'Y:/Holly Hunsberger/Sundowning_images/Cohort4_2month/325/325_2_5/MAX_325_2_5.tif'  
 
 
 # TODO allow slice attributes channels to be the default in the channels parameters in functions if none is supplied.
 # TODO: allow for relative paths based on the mouse input directory
 
 # Change slice attributes by storing the slice info list
-attr(slice_S1_10, 'info') <- slice_info
+attr(slice_2_5, 'info') <- slice_info
 
 # Check the updates 
-print(slice_S1_10)
+print(slice_2_5)
 
 ```
 
@@ -222,7 +233,7 @@ You can use the `$` operator to look at named elements in a mouse. Type the code
 
 
 ```
-mouse_255$
+mouse_325$
 ```
 
 
@@ -234,7 +245,7 @@ so it is empty and doesn't contain anything. That will change soon after we run 
 ```{r}
 
 # Check the length of slices in a mouse first
-length(mouse_255$slices)
+length(mouse_325$slices)
 
 # Now lets check out the help page of one of the functions in SMARTR
 # In general, always see the "Usage" or "Examples" section for examples of how to use a particular function in the package
@@ -242,14 +253,14 @@ length(mouse_255$slices)
 ?add_slice
 
 # Now that we've read how to use the function, let's add our slice to our mouse with the line below:
-mouse_255 <- add_slice(mouse_255, slice_S1_10)
+mouse_325 <- add_slice(mouse_325, slice_2_5)
 
 
 # Check the length of slices now
-length(mouse_255$slices)
+length(mouse_325$slices)
 
 # Access the new slice information with the code below
-mouse_255$slices$`1_10_left`
+mouse_325$slices$`2_5`
 
 ```
 
@@ -276,13 +287,16 @@ filter <- SMARTR::filter
 print(filter)
 
 # Get the registration image
-reg_path <- attr(mouse_255$slices$`1_10_left`, 'info')$registration_path
+reg_path <- attr(mouse_325$slices$`2_5`, 'info')$registration_path
 
 ```
 
 Adjust the filter parameter using the `segment` function below
 
 ```{r, eval = FALSE}
+
+# Pre-adjusted to save time
+filter$brain.threshold <- 8
 
 # Adjust brain threshold with the filter
 seg_out <- wholebrain::segment(reg_path, filter = filter)
@@ -312,9 +326,9 @@ Under the 'Usage' and 'Examples' sections, there are examples of how to use this
 ```{r, eval = FALSE}
 
 # The `mouse` object may contain many slices, so you need to specify which `slice_ID` and which `hemisphere` you want to register
-mouse_255 <-SMARTR::register(mouse_255, 
-                      slice_ID = "1_10",
-                      hemisphere = 'left',
+mouse_325 <-SMARTR::register(mouse_325, 
+                      slice_ID = "2_5",
+                      hemisphere = NULL,
                       filter = filter)
 
 ```
@@ -323,10 +337,17 @@ mouse_255 <-SMARTR::register(mouse_255,
 At this point, you may find it useful to save all your hard work after perfecting the registration. You can save to the mouse output folder with the command below.
 
 
-```{r}
-save_mouse(mouse_255)
-
+```{r, eval = FALSE}
+save_mouse(mouse_325)
 ```
+
+
+To save time, we will load a dataset that has been pre-registered:
+
+```{r}
+load("V:/Michelle Jin/Sundowning/PipelineDemo/325/mouse_325.RDATA")
+```
+
 
 
 ## 3. Import raw segmentation data from ImageJ
@@ -336,21 +357,36 @@ The segmentation data from ImageJ is stored into .txt files. We can use the `imp
 Note that currently, this method is dependent on the naming conventions of the txt file, and therefore may be specific to Holly's data right now. In the future, if there are multiple different ImageJ segmentation macros with different naming conventions being used in the lab, we just need to write multiple custom import functions. This won't interfere with the rest of the pipeline.
 
 ```{r}
-mouse_255 <- import_segmentation(mouse_255,
-                                slice_ID = '1_10',
-                                hemisphere = 'left',
-                                channels = c('eyfp', 'cfos', 'colabel'))
+mouse_325 <- import_segmentation(mouse_325,
+                                 slice_ID = '2_5',
+                                 hemisphere = NULL,
+                                 channels = c('eyfp', 'cfos', 'colabel'))
 
 ```
 
 ## 4. Optional filtering of 'cfos' and 'eyfp' channels
 
+If you have gone through the process of identifying the best variables and ranges to filter out false positive counts from true positive counts for your dataset, you can used the `make_segmentation_filter()` to further pre-process your data. This function is flexible, in that it allows you to process either the eyfp channel, cfos channel, or both and allows for setting separate variables and filtering ranges for either channel.
+
+
 ```{r}
 
-## There is currently a function written to create an eyfp or cfos filter. However this is not yet hardcoded into the package so we will skip this step.
-## Since this eyfp filter is used to generate a segmentation object for the colabel channel, we will temporarily skip creating a segmentation object for this channel.
-## We want to avoid hardcoding a dependency on the filter to process the colabel channel, as this function would no longer be optional. This will be figured out in the future... 
+# Create a filter of non-cells for the eyfp channel
 
+mouse_325 <- make_segmentation_filter(mouse_325,
+                                      slice_ID = '2_5',
+                                      hemisphere = NULL,
+                                      channels = "eyfp",
+                                      params = list(c("Vol..unit.", "Spher..unit.", "Moment1", "Moment2", "Moment3", "Moment4", "Moment5")),
+                                      ranges = list(list(c(222, 8350),
+                                                        c(0.43, 0.80),
+                                                        c(0.45, 50),
+                                                        c(0, 458),
+                                                        c(0, 1097),
+                                                        c(0, 4.4),
+                                                        c(0, 0.035)
+                                                        ))
+                                      )
 
 ```
 
@@ -363,14 +399,13 @@ We need to create a segmentation object compatible with `wholebrain` functions f
 ```{r, eval = FALSE}
 
 # Set the use_filter parameter to FALSE to avoid using the filter for now
-mouse_255 <- make_segmentation_object(mouse_255,
-                                      slice_ID = '1_10',
-                                      hemisphere = 'left',
-                                      channels = c('eyfp', 'cfos'),
-                                      use_filter = FALSE)
+mouse_325 <- make_segmentation_object(mouse_325,
+                                      slice_ID = '2_5',
+                                      hemisphere = NULL,
+                                      channels = c('eyfp', 'cfos', "colabel"),
+                                      use_filter = TRUE)
 
 ```
-
 
 
 ## 6. Forward warp data to atlas space
@@ -380,10 +415,9 @@ We are ready to map our segmentation data onto atlas space! We will forward warp
 
 ```{r, eval = FALSE}
 
-mouse_255 <- map_cells_to_atlas(mouse_255,
-                                slice_ID = '1_10',
-                                hemisphere = 'left',
-                                channels = c('eyfp', 'cfos'),
+mouse_325 <- map_cells_to_atlas(mouse_325,
+                                slice_ID = '2_5',
+                                channels = c('eyfp', 'cfos', "colabel"),
                                 clean =  FALSE,
                                 display = TRUE)
 ```
@@ -392,50 +426,64 @@ mouse_255 <- map_cells_to_atlas(mouse_255,
 
 ## 7. Cleaning mapped cell data
 
-Now we can clean the data we've mapped. To demonstrate cleaning both the left and right sides of a slice, I'm going to cheat a little bit and just duplicate our slice with the mapped left side, and 
-just change the hemisphere atttribute. 
-
+Now we can clean the data we've mapped. To demonstrate cleaning of a slice with a single hemisphere, I'm going to cheat a little bit and just duplicate our slice and
+just change the hemisphere atttribute. Let pretend this is just a completely different slice object from a separate section.
 
 
 ```{r}
 # Duplicate the left slice and add the right side as dummy data
-
-slice_1_10_r <- mouse_255$slices$`1_10_left`
-attr(slice_1_10_r, 'info')$hemisphere <-  'right'
-mouse_255 <- add_slice(mouse_255, slice_1_10_r)
-
-```
-
-
-Now we have two slice object in our mouse, each belonging to one image. For each slice object, we want to exclude the contralateral hemisphere, clean up cell counts that map outside of the brain contours, ...
-
-
-Cleaning the regions that we don't want
-
-
-```{r}
-mouse_255 <- exclude_anatomy(mouse_255, 
-                        slice_ID = '1_10',
-                        hemisphere = 'left',
-                        channels = c("eyfp", "cfos"),
-                        clean = TRUE, 
-                        exclude_layer_1 = TRUE, 
-                        exclude_other_hemisphere = TRUE)
-
+slice_2_5_r <- mouse_325$slices$`2_5`
+attr(slice_2_5_r, 'info')$hemisphere <-  'right'
+mouse_325 <- add_slice(mouse_325, slice_2_5_r)
 
 ```
 
 
+Now we have two slice objects in our mouse, one with both hemispheres of data and another slice from which we only want the right hemisphere's data. 
+
+For all slices you analyze, there may be a set automatic list of regions you'd like to exclude. This is automatically set as a slice attribute when you create it and you can edit it like any other slice attribute as demonstrated earlier. When you run the `exclude_anatomy` function, it will automatically omit these regions.
 
 ```{r}
-mouse_255 <- exclude_anatomy(mouse_255, 
-                        slice_ID = '1_10',
+
+# Print default regions excluded list
+
+print(attr(mouse_325$slices$`2_5`, "info")$regions_excluded)
+
+```
+
+
+For right hemisphere slice object, we want to 1) exclude the contralateral hemisphere, 2) clean up cell counts that map outside of the brain contours, 3) exclude cell counts from layer 1 of the cortex, and 4) manually specify regions we want to exclude. 
+
+
+In this example right-sided slice, I've specified the additional region `VS` to exclude both the `VL` and `V3` (lateral and third ventricles). 
+
+
+```{r}
+mouse_325 <- exclude_anatomy(mouse_325, 
+                        slice_ID = '2_5',
                         hemisphere = 'right',
-                        channels = c("eyfp", "cfos"),
+                        channels = c("eyfp", "cfos", "colabel"),
                         clean = TRUE, 
+                        exclude_regions = c("VS"),
                         exclude_layer_1 = TRUE, 
                         exclude_other_hemisphere = TRUE)
 
+
+```
+
+
+Let's do the same thing for the full slice, except we set exclude_other_hemisphere to FALSE.
+
+
+```{r}
+mouse_325 <- exclude_anatomy(mouse_325, 
+                        slice_ID = '2_5',
+                        hemisphere = NULL,
+                        channels = c("eyfp", "cfos", "colabel"),
+                        clean = TRUE, 
+                        exclude_regions = c("VS"),
+                        exclude_layer_1 = TRUE, 
+                        exclude_other_hemisphere = FALSE)
 
 ```
 
@@ -443,63 +491,64 @@ mouse_255 <- exclude_anatomy(mouse_255,
 
 ## 8. Getting cell counts per region normalized by volume or area in mm^3^ or mm^2^ respectively.
 
-To get all the cell counts normalized 
 
+### Get slice areas
 
-
-Getting registered areas for all the regions in a slice object. Get registered areas for a particular slice
-
-"1_10"  left and right hemispheres
+In order to get cell counts per region in each mouse normalized by volume, the exact area of each region in each slice needs to be calculated. This is accomplished with
+the function  `get_registered_areas`. The function will automatically calculate region area per hemisphere. 
 
 
 
 ```{r}
 
-mouse_255 <- get_registered_areas(mouse_255,
-                                  slice_ID = "1_10",
-                                  hemisphere = "left",
-                                  replace = TRUE)
+# Calculate region areas for the full slice
+mouse_325 <- get_registered_areas(mouse_325,
+                                  slice_ID = "2_5",
+                                  hemisphere = NULL)
 
-mouse_255 <- get_registered_areas(mouse_255,
-                                  slice_ID = "1_10",
-                                  hemisphere = "right",
-                                  replace = TRUE)
+# Calculate region areas for the right-hemisphere slice
+mouse_325 <- get_registered_areas(mouse_325,
+                                  slice_ID = "2_5",
+                                  hemisphere = "right")
 
 
 ```
 
 
-### Get a combined cell data table
+###  Get a combined cell data table 
 
+This function aggregates all foward warped cell counts across all slices into one data frame. This can be especially useful for plotting purposes. 
 
 ```{r}
 
-mouse_255 <- get_cell_table(mouse_255, channels = c("cfos", "eyfp"))
+mouse_325 <- get_cell_table(mouse_325, channels = c("cfos", "eyfp", "colabel"))
 
 
 ```
 
-
-
-Once we have processed all the slices that we want per animal, we need to get normalized cell counts per volume.
+You can access the cell table with the `$` operator (e.g. `mouse_325$cell_table$cfos`). We can use this aggregated dataset if we want to plot an interactive "glass brain" plot of all slices in the mouse.
 
 ```{r}
+# Plot an interactive 3D plot of the cfos channel
+SMART::glassbrain2(mouse_325$cell_table$eyfp, jitter = TRUE)
+```
 
 
-m <- normalize_cell_counts(m)
+### Get normalized cell counts 
 
+Once we have processed all the slices that we want per animal, we can get normalized cell counts per volume (mm^3^) and per area (mm^2^). 
+
+```{r}
+mouse_325 <- normalize_cell_counts(mouse_325, combine_hemispheres = TRUE, simplify_regions = TRUE)
 
 ```
 
 
+## 9. TODO: automatically generate DV Hippocampus datasets with user specified coordinates
 
+## 10. TODO: Create experiment object that aggregates information from multiple mice
 
-```{r}
-# Loading premade data for convenience
-load("C:/Users/Jinmich/Documents/255/255_example_output/mouse_255.RDATA")
-
-```
-
+## 11. TODO: Include analysis functions that auto generate plots
 
 
 </div>

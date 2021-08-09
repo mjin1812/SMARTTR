@@ -12,7 +12,7 @@ register(x, ...)
 
 \method{register}{mouse}(
   m,
-  slice_ID = "1_10",
+  slice_ID = NA,
   hemisphere = NULL,
   filter = NULL,
   replace = FALSE,
@@ -24,13 +24,13 @@ register(x, ...)
 
 \item{s}{slice object}
 
-\item{filter}{(list)}
+\item{filter}{(list) Wholebrain filter with parameters.}
 
 \item{m}{mouse object}
 
-\item{slice_ID}{ID of slice (str)}
+\item{slice_ID}{(str)  ID of slice}
 
-\item{hemisphere}{'left', 'right' (str) or NULL if both hemispheres are included}
+\item{hemisphere}{(str, default = NULL) 'left', 'right' or NULL if both hemispheres are included}
 
 \item{replace}{(bool, default = FALSE) Replace a registration already contained in a mouse object by resetting to NULL value before registration improvement loop.}
 }

@@ -9,7 +9,7 @@ get_cell_table(m, channels = c("cfos", "eyfp"))
 \arguments{
 \item{m}{mouse object}
 
-\item{channels}{channels : c("cfos", "eyfp") (vec) Channels to process.}
+\item{channels}{(vec) Channels to process.}
 }
 \value{
 m mouse object
@@ -22,5 +22,5 @@ The function will run properly but a warning will be thrown indicating you shoul
 generate a mapped dataset for that particular slice and channel.
 }
 \examples{
-m <- get_cell_tables(m, channels = c("cfos"m "eyfp", "colabel"))
+m <- get_cell_tables(m, channels = c("cfos", "eyfp", "colabel"))
 }

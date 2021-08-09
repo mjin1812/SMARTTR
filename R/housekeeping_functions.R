@@ -30,9 +30,6 @@ print.slice <- function(s){
 }
 
 
-
-
-
 #' @title Add slice to a mouse object
 #' @usage m <- add_slice(m, s, replace = FALSE)
 #' @param m mouse object

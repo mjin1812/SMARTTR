@@ -19,8 +19,8 @@ map_cells_to_atlas(x, ...)
 
 \method{map_cells_to_atlas}{mouse}(
   m,
-  slice_ID = "1_10",
-  hemisphere = "left",
+  slice_ID = NA,
+  hemisphere = NULL,
   channels = c("cfos", "efyp", "colabel"),
   clean = TRUE,
   display = TRUE,
@@ -29,25 +29,25 @@ map_cells_to_atlas(x, ...)
 )
 }
 \arguments{
-\item{...}{additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the wholebrain::inspect.registration() function}
+\item{...}{additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the \code{\link[wholebrain:inspect.registration]{wholebrain::inspect.registration()}} function}
 
-\item{s}{: slice object}
+\item{s}{slice object}
 
-\item{channels}{(vec of str) Channels to process; Note: always set 'eyfp' before 'colabel' in the vector}
+\item{channels}{(vec) Channels to process.}
 
-\item{clean}{: TRUE (bool). Remove cells that don't map to any regions.}
+\item{clean}{(bool, default = TRUE). Remove cells that don't map to any regions.}
 
-\item{display}{: TRUE (bool). Display the results of the forward warp for the slice.display}
+\item{display}{(bool, default = TRUE). Display the results of the forward warp for the slice.display}
 
-\item{mouse_ID}{: (str) mouse ID}
+\item{mouse_ID}{(str) mouse ID}
 
-\item{m}{: mouse object}
+\item{m}{mouse object}
 
-\item{slice_ID}{: ID of slice (str)}
+\item{slice_ID}{(str) ID of slice}
 
-\item{hemisphere}{'left', 'right' or NULL (both)}
+\item{hemisphere}{(str) 'left', 'right' or NULL (both)}
 
-\item{replace}{: FALSE (bool). Replace current forward warped data, both raw and cleaned.}
+\item{replace}{(bool, default = FALSE). Replace current forward warped data, both raw and cleaned.}
 }
 \value{
 

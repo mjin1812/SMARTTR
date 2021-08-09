@@ -1,13 +1,35 @@
 Package: SMARTR
-Title: What the Package Does (One Line, Title Case)
+Title: Wholebrain analysis package in development for the Denny Lab
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Michelle",
+           family = "Jin",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "mj2947@cumc.columbia.edu",
+           comment = c(ORCID = "0000-0002-8696-1958"))
+    person(given = "Marcos", 
+           family = "Lanio", 
+           email ="ml3696@cumc.columbia.edu", 
+           role = c("aut", "ctb"),
+           comment = c(ORCID = "0000-0003-3000-1592"))
+Author: Michelle Jin [aut, cre],
+  Marcos Lanio [aut, ctb],
+Maintainer: Michelle Jin <mj2947@cumc.columbia.edu>
+Description: The base of this pipeline is an R package in development with the working title, `SMARTR`, a self-referential play on the previous package I developed as an extension to `wholebrain` called `SMART`. 
+    This package allows for the user-friendly accomplishing of the analysis steps below:
+    1. Setting up the pipeline by specifying experiment parameters, and save directories.
+    2. The interactive registration process.
+    3. Importing raw segmentation data from .txt files generated from ImageJ for multiple channels.
+    4. Optionally creating a filter for the 'cfos' and 'eyfp' channels to clean segmented counts. 
+    5. Creating a segmentation object that is compatible with `wholebrain` functions.
+    6. Forward warping and mapping the data onto the standardized mouse atlas.
+    7. Cleaning the mapped data in all the following ways: 
+        + Removing cells that map outside the boundaries of the atlas.
+        + Omitting regions by a default list of regions to omit.
+        + Omitting regions by user specified region acronyms.
+        + Removing Layer 1 cells
+        + Removing cells from a contralateral hemisphere per slice if the registrations are divided by right and left hemispheres. 
+    8.  Obtaining cell counts normalized by region volume (per mm^2^) and region areas (per mm^2^). 
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8

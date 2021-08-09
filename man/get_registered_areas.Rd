@@ -15,23 +15,23 @@ get_registered_areas(x, ...)
 \arguments{
 \item{...}{}
 
-\item{s}{: slice object}
+\item{s}{slice object}
 
-\item{m}{: mouse object}
+\item{m}{mouse object}
 
-\item{slice_ID}{: ID of slice (str)}
+\item{slice_ID}{(str) ID of slice}
 
-\item{hemisphere}{: hemisphere of slice}
+\item{hemisphere}{(str) 'left', 'right' or NULL (both)}
 }
 \value{
 
 
-s slice object
+s slice object with a stored dataframe with columns 'name' (full region name), 'acronym', 'area' (in microns^2^), 'right.hemisphere'
 
 m mouse object
 }
 \description{
-returns a dataframe with columns 'name' (full region name), 'acronym', 'area' (in microns^2^), 'right.hemisphere'
+Calculate the registered area (in microns^2^) of all regions contained in a slice.
 }
 \examples{
 s <- get_registered_areas(s)

@@ -10,42 +10,40 @@ make_segmentation_object(x, ...)
 
 \method{make_segmentation_object}{slice}(
   s,
-  mouse_ID = "255",
+  mouse_ID = NA,
   channels = c("cfos", "eyfp", "colabel"),
-  use_filter = TRUE,
+  use_filter = FALSE,
   ...
 )
 
 \method{make_segmentation_object}{mouse}(
   m,
-  slice_ID = "1_10",
+  slice_ID = NA,
   hemisphere = NULL,
   channels = c("cfos", "eyfp", "colabel"),
   replace = FALSE,
-  use_filter = TRUE,
+  use_filter = FALSE,
   ...
 )
 }
 \arguments{
 \item{...}{additional volume and overlap parameters for get.colabeled.cells().}
 
-\item{s}{: slice object}
+\item{s}{slice object}
 
-\item{mouse_ID}{: ID of mouse (str)}
+\item{mouse_ID}{(str) ID of mouse}
 
-\item{channels}{: (vec) Channels to process; Note: always set 'eyfp' before 'colabel' in the vector}
+\item{channels}{(vec) Channels to process.}
 
-\item{use_filter}{: TRUE (bool). Use a filter to create more curated segmentation object from the raw segmentation data.}
+\item{use_filter}{(bool, default = FALSE). Use a filter to create more curated segmentation object from the raw segmentation data.}
 
-\item{m}{: mouse object}
+\item{m}{mouse object}
 
-\item{slice_ID}{: ID of slice (str)}
+\item{slice_ID}{(str) ID of slice}
 
-\item{replace}{: replace existing raw segmentation data (bool)}
+\item{hemisphere}{(str) 'left', 'right' or NULL (both)}
 
-\item{hemisphere:}{'left', 'right' or NULL (both)}
-
-\item{use_filter:}{TRUE (bool). Use a filter to create more curated segmentation object from the raw segmentation data.}
+\item{replace}{(bool, default = FALSE) replace existing raw segmentation data}
 }
 \value{
 

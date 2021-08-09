@@ -20,47 +20,40 @@ exclude_anatomy(x, ...)
 
 \method{exclude_anatomy}{mouse}(
   m,
-  slice_ID = "1_10",
+  slice_ID = NA,
   hemisphere = NULL,
   channels = c("cfos", "eyfp", "colabel"),
   clean = TRUE,
   exclude_regions = NULL,
   exclude_other_hemisphere = TRUE,
-  exclude_layer_1 = TRUE
+  exclude_layer_1 = TRUE,
+  plot_filtered = TRUE
 )
 }
 \arguments{
 \item{...}{}
 
-\item{channels}{: channels to filter (str vector), can filter both eyfp & cfos}
+\item{s}{slice object}
 
-\item{clean}{clean: TRUE (bool). Remove cells that don't map to any regions.}
+\item{channels}{(vec) Channels to process.}
 
-\item{exclude_regions}{: NULL (str vector); acronyms of regions you want to exclude IN ADDITION to regions that will by default be excluded in the slice attribute 'regions_excluded'}
+\item{clean}{(bool, default = TRUE ). Remove cells that don't map to any regions.}
 
-\item{exclude_layer_1}{: TRUE (bool); excludes all counts from layer 1 (TEMPORARY, may not be hardcoded in later)}
+\item{exclude_regions}{(str vector, default = NULL); acronyms of regions you want to exclude IN ADDITION to regions that will by default be excluded in the slice attribute 'regions_excluded'}
 
-\item{plot_filtered}{: TRUE (bool) pop up window to check the excluded anatomy.}
+\item{exclude_hemisphere}{(bool, default = TRUE); excludes the contralateral hemisphere from one indicated in slice attribute}
 
-\item{m}{: mouse object}
+\item{exclude_layer_1}{(bool, default = TRUE); excludes all counts from layer 1 (TEMPORARY, may not be hardcoded in later)}
 
-\item{slice_ID}{: ID of slice (str)}
+\item{plot_filtered}{(bool, default = TRUE) pop up window to check the excluded anatomy.}
 
-\item{hemisphere}{: hemisphere of slice}
+\item{m}{mouse object}
 
-\item{exclude_other_hemisphere}{: TRUE (bool); excludes the contralateral hemisphere from one indicated in slice attribute}
+\item{slice_ID}{(str) ID of slice}
 
-\item{s:}{slice object}
+\item{hemisphere}{(str) 'left', 'right' or NULL (both)}
 
-\item{channels:}{channels to filter (str vector), can filter both eyfp & cfos}
-
-\item{clean:}{TRUE (bool). Remove cells that don't map to any regions.}
-
-\item{exclude_regions:}{NULL (str vector); acronyms of regions you want to exclude IN ADDITION to regions that will by default be excluded in the slice attribute 'regions_excluded'}
-
-\item{exclude_hemisphere:}{TRUE (bool); excludes the contralateral hemisphere from one indicated in slice attribute}
-
-\item{exclude_layer_1:}{TRUE (bool); excludes all counts from layer 1 (TEMPORARY, may not be hardcoded in later)}
+\item{exclude_other_hemisphere}{(bool, default = TRUE); excludes the contralateral hemisphere from one indicated in slice attribute}
 }
 \value{
 

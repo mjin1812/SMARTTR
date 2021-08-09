@@ -8,15 +8,11 @@
 \usage{
 import_segmentation(x, ...)
 
-\method{import_segmentation}{slice}(
-  s,
-  mouse_ID = "255",
-  channels = c("cfos", "eyfp", "colabel")
-)
+\method{import_segmentation}{slice}(s, mouse_ID = NA, channels = c("cfos", "eyfp", "colabel"))
 
 \method{import_segmentation}{mouse}(
   m,
-  slice_ID = "1_10",
+  slice_ID = NA,
   hemisphere = NULL,
   channels = c("cfos", "eyfp", "colabel"),
   replace = FALSE
@@ -25,19 +21,19 @@ import_segmentation(x, ...)
 \arguments{
 \item{...}{}
 
-\item{s}{: slice object}
+\item{s}{slice object}
 
-\item{mouse_ID}{: ID of mouse (str)}
+\item{mouse_ID}{(str) ID of mouse}
 
-\item{channels}{: channels to import (str vector)}
+\item{channels}{(str vector) channels to import}
 
-\item{m}{: mouse object}
+\item{m}{mouse object}
 
-\item{slice_ID}{: ID of slice (str)}
+\item{slice_ID}{(str) ID of slice}
 
-\item{hemisphere}{: 'left', 'right' or NULL (both)}
+\item{hemisphere}{(str)'left', 'right' or NULL}
 
-\item{replace}{: replace existing raw segmentation data (bool)}
+\item{replace}{(bool, default = FALSE) replace existing raw segmentation data}
 }
 \value{
 
