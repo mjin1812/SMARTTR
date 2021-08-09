@@ -77,7 +77,7 @@ To get an excellent brief overview of what object oriented programming is and it
 
 Currently the pipeline package is on my github, but it is a private respository. Therefore to download it from github using the `devtools` package, we need to feed the install function a personal access token to access the github API. There are also some dependencies on the tidyverse packages so we will install that too. Install the package with the code below:
 
-```{r}
+```{r, eval = FALSE}
 # Install from CRAN
 install.packages("tidyverse")
 
@@ -112,21 +112,21 @@ You can pull up the package description with the code below:
 
 A `slice` object will contain all the data related to registration, segmentation for each channel, and cell counts for a particular image.
 
-It will also contain "metadata" about your experimental images, such as what the experimenter-assigned slice ID is, which brain atlas AP coordinate matches best, with the given image, and what the path to the image used for registration is. These metadata are stored as the object attributes.
+It will also contain "metadata" about your experimental images, such as what the experimenter-assigned slice ID is, which brain atlas AP coordinate matches best with the given image, and what the path to the image used for registration is. These metadata are stored as the object's attributes.
 
 Run the code below to used the `?` operator to pull up the documentation for a `slice` object. This will pull up a help page description of all the `slice` object attributes. 
 
-Note that the use of `::` or double colons here means that R specifically looks for a function, object, or help page in `SMARTR` package. This isn't necessary if you load the package, but it can sometimes help avoid ambiguity if there are identical names for things in other loaded packages.
 
 ```{r}
 ?SMARTR::slice
 
 ```
 
+Note that the use of `::` or double colons here means that R specifically looks for a function, object, or help page in `SMARTR` package. This isn't necessary if you load the package, but it can sometimes help avoid ambiguity if there are identical names for things in other loaded packages.
 
-A `mouse` object is an object that will store multiple `slice` objects (and therefore all the information in it), and will eventually store the combined cell data 
-and the normalized region cell counts by volume data. Like a `slice`, it will also contain "metadata" about your mouse stored as attributes. 
-Now, try pulling up the help page yourself for the `mouse` object to see all attributes you can store!
+
+
+A `mouse` object is an object that will store multiple `slice` objects (and therefore all the information in it), and will eventually store the combined cell data and the  region cell counts normalized by volume. Like a `slice`, it will also contain "metadata" about your mouse stored as attributes. Now, try pulling up the help page yourself for the `mouse` object to see all attributes you can store!
 
 <br>  
 
@@ -143,7 +143,7 @@ Okay enough background! Let's walkthrough the pipeline with an example mouse and
 ```{r}
 
 # Let's create an instance of a mouse object
-# Let pretend this mouse object stores data from mouse No. 255  
+# This mouse object stores data from mouse No. 325
 
 mouse_325 <- mouse() 
 
@@ -154,6 +154,7 @@ print(mouse_325)
 
 ```
 ### Let's continue setting up the mouse object by storing the mouse attributes
+
  
 ```{r}
 
@@ -168,7 +169,6 @@ mouse_info$experiment    <- 'sundowning'
 mouse_info$group         <- 'control'
 mouse_info$cohort        <- '4_2_months'
 mouse_info$output_path   <- 'V:/Michelle Jin/Sundowning/PipelineDemo/325'
-# mouse_info$input_path    <- 'Y:/Holly Hunsberger/Sundowning_images/Cohort4_2month/325/325_2_5'
 
 # Change mouse's attributes by storing the mouse info list
 attr(mouse_325, 'info') <- mouse_info
@@ -219,7 +219,7 @@ print(slice_2_5)
 
 ```
 
-Note that if the physical brain was slanted when slicing, so that each hemisphere aligns to a different AP coordinate, then you need to initialize a new slice for each hemisphere to process each slice separately. Here I've created a slice just for the left hemisphere for example. Later we will clean data from the contralateral hemisphere, and vice-versa for the right side.
+Note that if the physical brain was slanted when slicing, so that each hemisphere aligns to a different AP coordinate, then you need to initialize a new slice for each hemisphere to process each slice separately. Here I've created a slice including both hemispheres; later we will clean data from a right-hemisphere slice and omit the contralateral hemisphere for demonstration.
 
 If the left and right side align well onto a single atlas plate, initialize only one slice object and set the `hemispshere` attribute to NULL (or don't set it, as this is the default anyway).
 
@@ -239,20 +239,28 @@ mouse_325$
 
 You should see that a named list called `slices` pops up and you can complete the suggestion by hitting TAB.
 The `$` operator is very useful for accessing any named element in a list. Right now, the `slices` list is NULL,
-so it is empty and doesn't contain anything. That will change soon after we run the code below.
+so it is empty and doesn't contain anything.
+
+
+```{r}
+# Check the length of slices in a mouse first
+length(mouse_325$slices)
+
+```
+
+
+That will change soon after we add the slice into our mouse. Let's check out the help page of the function `add_slice()`. In general, always see the "Usage" or "Examples" section for examples of how to use a particular function in the package
 
 
 ```{r}
 
-# Check the length of slices in a mouse first
-length(mouse_325$slices)
-
-# Now lets check out the help page of one of the functions in SMARTR
-# In general, always see the "Usage" or "Examples" section for examples of how to use a particular function in the package
-
 ?add_slice
 
-# Now that we've read how to use the function, let's add our slice to our mouse with the line below:
+```
+
+Now that we've read how to use the function, let's add our slice to our mouse with the line below:
+
+```{r}
 mouse_325 <- add_slice(mouse_325, slice_2_5)
 
 
@@ -320,13 +328,13 @@ Pull up the help page with the code below:
 ```
 
 
-Under the 'Usage' and 'Examples' sections, there are examples of how to use this function depending on if a `slice` or `mouse` is a function argument. The 'Value' section indicates what type of data is returned. From now on, you should get in the habit of pulling up the help pages for each new function you see. Now that we've read up, let register!
+Under the 'Usage' and 'Examples' sections, there are examples of how to use this function depending on if a `slice` or `mouse` object is a function argument. The 'Value' section indicates what type of data is returned. From now on, you should get in the habit of pulling up the help pages for each new function you see. Now that we've read up, let register!
 
 
 ```{r, eval = FALSE}
 
 # The `mouse` object may contain many slices, so you need to specify which `slice_ID` and which `hemisphere` you want to register
-mouse_325 <-SMARTR::register(mouse_325, 
+mouse_325 <- register(mouse_325, 
                       slice_ID = "2_5",
                       hemisphere = NULL,
                       filter = filter)
@@ -342,7 +350,7 @@ save_mouse(mouse_325)
 ```
 
 
-To save time, we will load a dataset that has been pre-registered:
+To save time, we will now load a dataset that has been pre-registered:
 
 ```{r}
 load("V:/Michelle Jin/Sundowning/PipelineDemo/325/mouse_325.RDATA")
@@ -445,17 +453,23 @@ For all slices you analyze, there may be a set automatic list of regions you'd l
 
 ```{r}
 
-# Print default regions excluded list
+# Print the default regions excluded list
 
 print(attr(mouse_325$slices$`2_5`, "info")$regions_excluded)
 
 ```
 
 
-For right hemisphere slice object, we want to 1) exclude the contralateral hemisphere, 2) clean up cell counts that map outside of the brain contours, 3) exclude cell counts from layer 1 of the cortex, and 4) manually specify regions we want to exclude. 
+For the right hemisphere slice object, we want to: 
 
+* exclude the contralateral hemisphere
+* clean up cell counts that map outside of the brain contours
+* exclude cell counts from layer 1 of the cortex
+* manually specify regions we want to exclude
 
-In this example right-sided slice, I've specified the additional region `VS` to exclude both the `VL` and `V3` (lateral and third ventricles). 
+Pull up the help page of `exclude_anatomy` to get the names of the arguments that accomplish these tasks.
+
+In this example right-sided slice, I've specified the additional region VS to exclude both the VL and V3 (lateral and third ventricles). 
 
 
 ```{r}
@@ -472,7 +486,7 @@ mouse_325 <- exclude_anatomy(mouse_325,
 ```
 
 
-Let's do the same thing for the full slice, except we set exclude_hemisphere to FALSE.
+Let's do the same thing for the full slice, except we set exclude_hemisphere to FALSE since there is no hemisphere to exclude.
 
 
 ```{r}
@@ -541,6 +555,7 @@ Once we have processed all the slices that we want per animal, we can get normal
 ```{r}
 mouse_325 <- normalize_cell_counts(mouse_325, combine_hemispheres = TRUE, simplify_regions = TRUE)
 
+print(mouse_325$normalized_counts)
 ```
 
 

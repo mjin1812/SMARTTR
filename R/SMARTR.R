@@ -2,12 +2,26 @@
 #'
 #' @description
 #' The base of this pipeline is an R package in development with the working title, `SMARTR`, a self-referential play on
-#' a previous package developed as an extension to `wholebrain` called `SMART`.  This package allows for the
-#' user-friendly pre-processing of segmentation data generated from ImageJ to a be compatible with the [`wholebrain`] package to generate
-#' region-based cell counts that are normalized by volume.
-#' It will also provides tools for data analysis based on experimental groupings.
+#' a previous package developed as an extension to `wholebrain` called [`SMART`].  This package allows for the
+#' user-friendly pre-processing of segmentation data generated from ImageJ to a be compatible with the `wholebrain` package to generate
+#' region-based cell counts that are normalized by volume. It will also provides tools for data analysis based on experimental groupings.
 #'
-#' @details The package currently allows for easy implementation of the following:
+#' @details  Object descriptions
+#'
+#' The data for analysis will be stored in objects that allow for more neat bundling of useful information together.
+#'
+#' A [slice] object will contain all the data related to registration, segmentation for each channel, and cell counts for a particular image.
+#' It will also contain “metadata” about your experimental images, such as what the experimenter-assigned slice ID is,
+#' which brain atlas AP coordinate matches best with the given image, and what the path to the image used for registration is.
+#' These metadata are stored as the object’s attributes.
+#'
+#' A [mouse] object is an object that will store multiple slice objects (and therefore all the information in it),
+#' and will eventually store the combined cell data and the region cell counts normalized by volume.
+#' Like a slice, it will also contain “metadata” about your mouse stored as attributes.
+#'
+#'
+#' @section The package currently allows for easy implementation of the following steps:
+#'
 #' 1) Setting up the pipeline by specifying experimentparameters, and save directories.
 #' 2) The interactive registration process.
 #' 3) Importing raw segmentation data from .txt files generated from ImageJ for multiple channels.

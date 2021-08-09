@@ -246,11 +246,11 @@ library(SMARTR)</code></pre>
 <div id="package-object-descriptions" class="section level1">
 <h1>Package object descriptions</h1>
 <p>A <code>slice</code> object will contain all the data related to registration, segmentation for each channel, and cell counts for a particular image.</p>
-<p>It will also contain “metadata” about your experimental images, such as what the experimenter-assigned slice ID is, which brain atlas AP coordinate matches best, with the given image, and what the path to the image used for registration is. These metadata are stored as the object attributes.</p>
+<p>It will also contain “metadata” about your experimental images, such as what the experimenter-assigned slice ID is, which brain atlas AP coordinate matches best with the given image, and what the path to the image used for registration is. These metadata are stored as the object’s attributes.</p>
 <p>Run the code below to used the <code>?</code> operator to pull up the documentation for a <code>slice</code> object. This will pull up a help page description of all the <code>slice</code> object attributes.</p>
-<p>Note that the use of <code>::</code> or double colons here means that R specifically looks for a function, object, or help page in <code>SMARTR</code> package. This isn’t necessary if you load the package, but it can sometimes help avoid ambiguity if there are identical names for things in other loaded packages.</p>
 <pre class="r"><code>?SMARTR::slice</code></pre>
-<p>A <code>mouse</code> object is an object that will store multiple <code>slice</code> objects (and therefore all the information in it), and will eventually store the combined cell data and the normalized region cell counts by volume data. Like a <code>slice</code>, it will also contain “metadata” about your mouse stored as attributes. Now, try pulling up the help page yourself for the <code>mouse</code> object to see all attributes you can store!</p>
+<p>Note that the use of <code>::</code> or double colons here means that R specifically looks for a function, object, or help page in <code>SMARTR</code> package. This isn’t necessary if you load the package, but it can sometimes help avoid ambiguity if there are identical names for things in other loaded packages.</p>
+<p>A <code>mouse</code> object is an object that will store multiple <code>slice</code> objects (and therefore all the information in it), and will eventually store the combined cell data and the region cell counts normalized by volume. Like a <code>slice</code>, it will also contain “metadata” about your mouse stored as attributes. Now, try pulling up the help page yourself for the <code>mouse</code> object to see all attributes you can store!</p>
 <p><br></p>
 </div>
 <div id="pipeline-tutorial" class="section level1">
@@ -261,7 +261,7 @@ library(SMARTR)</code></pre>
 <div id="initializing-your-mouse-object" class="section level3">
 <h3>Initializing your mouse object</h3>
 <pre class="r"><code># Let&#39;s create an instance of a mouse object
-# Let pretend this mouse object stores data from mouse No. 255  
+# This mouse object stores data from mouse No. 325
 
 mouse_325 &lt;- mouse() 
 
@@ -283,7 +283,6 @@ mouse_info$experiment    &lt;- &#39;sundowning&#39;
 mouse_info$group         &lt;- &#39;control&#39;
 mouse_info$cohort        &lt;- &#39;4_2_months&#39;
 mouse_info$output_path   &lt;- &#39;V:/Michelle Jin/Sundowning/PipelineDemo/325&#39;
-# mouse_info$input_path    &lt;- &#39;Y:/Holly Hunsberger/Sundowning_images/Cohort4_2month/325/325_2_5&#39;
 
 # Change mouse&#39;s attributes by storing the mouse info list
 attr(mouse_325, &#39;info&#39;) &lt;- mouse_info
@@ -327,7 +326,7 @@ attr(slice_2_5, &#39;info&#39;) &lt;- slice_info
 
 # Check the updates 
 print(slice_2_5)</code></pre>
-<p>Note that if the physical brain was slanted when slicing, so that each hemisphere aligns to a different AP coordinate, then you need to initialize a new slice for each hemisphere to process each slice separately. Here I’ve created a slice just for the left hemisphere for example. Later we will clean data from the contralateral hemisphere, and vice-versa for the right side.</p>
+<p>Note that if the physical brain was slanted when slicing, so that each hemisphere aligns to a different AP coordinate, then you need to initialize a new slice for each hemisphere to process each slice separately. Here I’ve created a slice including both hemispheres; later we will clean data from a right-hemisphere slice and omit the contralateral hemisphere for demonstration.</p>
 <p>If the left and right side align well onto a single atlas plate, initialize only one slice object and set the <code>hemispshere</code> attribute to NULL (or don’t set it, as this is the default anyway).</p>
 </div>
 <div id="add-slices-to-your-mouse" class="section level3">
@@ -335,17 +334,13 @@ print(slice_2_5)</code></pre>
 <p>We are ready to bundle our slice information with our mouse. But first a quick tip:</p>
 <p>You can use the <code>$</code> operator to look at named elements in a mouse. Type the code below into the R console:</p>
 <pre><code>mouse_325$</code></pre>
-<p>You should see that a named list called <code>slices</code> pops up and you can complete the suggestion by hitting TAB. The <code>$</code> operator is very useful for accessing any named element in a list. Right now, the <code>slices</code> list is NULL, so it is empty and doesn’t contain anything. That will change soon after we run the code below.</p>
+<p>You should see that a named list called <code>slices</code> pops up and you can complete the suggestion by hitting TAB. The <code>$</code> operator is very useful for accessing any named element in a list. Right now, the <code>slices</code> list is NULL, so it is empty and doesn’t contain anything.</p>
 <pre class="r"><code># Check the length of slices in a mouse first
-length(mouse_325$slices)
-
-# Now lets check out the help page of one of the functions in SMARTR
-# In general, always see the &quot;Usage&quot; or &quot;Examples&quot; section for examples of how to use a particular function in the package
-
-?add_slice
-
-# Now that we&#39;ve read how to use the function, let&#39;s add our slice to our mouse with the line below:
-mouse_325 &lt;- add_slice(mouse_325, slice_2_5)
+length(mouse_325$slices)</code></pre>
+<p>That will change soon after we add the slice into our mouse. Let’s check out the help page of the function <code>add_slice()</code>. In general, always see the “Usage” or “Examples” section for examples of how to use a particular function in the package</p>
+<pre class="r"><code>?add_slice</code></pre>
+<p>Now that we’ve read how to use the function, let’s add our slice to our mouse with the line below:</p>
+<pre class="r"><code>mouse_325 &lt;- add_slice(mouse_325, slice_2_5)
 
 
 # Check the length of slices now
@@ -387,15 +382,15 @@ filter &lt;- seg_out$filter</code></pre>
 <p>The <code>register()</code> function is one of the generic functions of the package. Because of this, the useful documentation about what the function does depends on the type of objects being fed into it. The <code>register()</code> function can be used on both <code>slice</code> and <code>mouse</code> objects.</p>
 <p>Pull up the help page with the code below:</p>
 <pre class="r"><code>?register</code></pre>
-<p>Under the ‘Usage’ and ‘Examples’ sections, there are examples of how to use this function depending on if a <code>slice</code> or <code>mouse</code> is a function argument. The ‘Value’ section indicates what type of data is returned. From now on, you should get in the habit of pulling up the help pages for each new function you see. Now that we’ve read up, let register!</p>
+<p>Under the ‘Usage’ and ‘Examples’ sections, there are examples of how to use this function depending on if a <code>slice</code> or <code>mouse</code> object is a function argument. The ‘Value’ section indicates what type of data is returned. From now on, you should get in the habit of pulling up the help pages for each new function you see. Now that we’ve read up, let register!</p>
 <pre class="r"><code># The `mouse` object may contain many slices, so you need to specify which `slice_ID` and which `hemisphere` you want to register
-mouse_325 &lt;-SMARTR::register(mouse_325, 
+mouse_325 &lt;- register(mouse_325, 
                       slice_ID = &quot;2_5&quot;,
                       hemisphere = NULL,
                       filter = filter)</code></pre>
 <p>At this point, you may find it useful to save all your hard work after perfecting the registration. You can save to the mouse output folder with the command below.</p>
 <pre class="r"><code>save_mouse(mouse_325)</code></pre>
-<p>To save time, we will load a dataset that has been pre-registered:</p>
+<p>To save time, we will now load a dataset that has been pre-registered:</p>
 <pre class="r"><code>load(&quot;V:/Michelle Jin/Sundowning/PipelineDemo/325/mouse_325.RDATA&quot;)</code></pre>
 </div>
 </div>
@@ -456,11 +451,18 @@ attr(slice_2_5_r, &#39;info&#39;)$hemisphere &lt;-  &#39;right&#39;
 mouse_325 &lt;- add_slice(mouse_325, slice_2_5_r)</code></pre>
 <p>Now we have two slice objects in our mouse, one with both hemispheres of data and another slice from which we only want the right hemisphere’s data.</p>
 <p>For all slices you analyze, there may be a set automatic list of regions you’d like to exclude. This is automatically set as a slice attribute when you create it and you can edit it like any other slice attribute as demonstrated earlier. When you run the <code>exclude_anatomy</code> function, it will automatically omit these regions.</p>
-<pre class="r"><code># Print default regions excluded list
+<pre class="r"><code># Print the default regions excluded list
 
 print(attr(mouse_325$slices$`2_5`, &quot;info&quot;)$regions_excluded)</code></pre>
-<p>For right hemisphere slice object, we want to 1) exclude the contralateral hemisphere, 2) clean up cell counts that map outside of the brain contours, 3) exclude cell counts from layer 1 of the cortex, and 4) manually specify regions we want to exclude.</p>
-<p>In this example right-sided slice, I’ve specified the additional region <code>VS</code> to exclude both the <code>VL</code> and <code>V3</code> (lateral and third ventricles).</p>
+<p>For the right hemisphere slice object, we want to:</p>
+<ul>
+<li>exclude the contralateral hemisphere</li>
+<li>clean up cell counts that map outside of the brain contours</li>
+<li>exclude cell counts from layer 1 of the cortex</li>
+<li>manually specify regions we want to exclude</li>
+</ul>
+<p>Pull up the help page of <code>exclude_anatomy</code> to get the names of the arguments that accomplish these tasks.</p>
+<p>In this example right-sided slice, I’ve specified the additional region VS to exclude both the VL and V3 (lateral and third ventricles).</p>
 <pre class="r"><code>mouse_325 &lt;- exclude_anatomy(mouse_325, 
                         slice_ID = &#39;2_5&#39;,
                         hemisphere = &#39;right&#39;,
@@ -468,8 +470,8 @@ print(attr(mouse_325$slices$`2_5`, &quot;info&quot;)$regions_excluded)</code></p
                         clean = TRUE, 
                         exclude_regions = c(&quot;VS&quot;),
                         exclude_layer_1 = TRUE, 
-                        exclude_other_hemisphere = TRUE)</code></pre>
-<p>Let’s do the same thing for the full slice, except we set exclude_other_hemisphere to FALSE.</p>
+                        exclude_hemisphere = TRUE)</code></pre>
+<p>Let’s do the same thing for the full slice, except we set exclude_hemisphere to FALSE since there is no hemisphere to exclude.</p>
 <pre class="r"><code>mouse_325 &lt;- exclude_anatomy(mouse_325, 
                         slice_ID = &#39;2_5&#39;,
                         hemisphere = NULL,
@@ -477,7 +479,7 @@ print(attr(mouse_325$slices$`2_5`, &quot;info&quot;)$regions_excluded)</code></p
                         clean = TRUE, 
                         exclude_regions = c(&quot;VS&quot;),
                         exclude_layer_1 = TRUE, 
-                        exclude_other_hemisphere = FALSE)</code></pre>
+                        exclude_hemisphere = FALSE)</code></pre>
 </div>
 <div id="getting-cell-counts-per-region-normalized-by-volume-or-area-in-mm3-or-mm2-respectively." class="section level2">
 <h2>8. Getting cell counts per region normalized by volume or area in mm<sup>3</sup> or mm<sup>2</sup> respectively.</h2>
@@ -505,7 +507,9 @@ SMART::glassbrain2(mouse_325$cell_table$eyfp, jitter = TRUE)</code></pre>
 <div id="get-normalized-cell-counts" class="section level3">
 <h3>Get normalized cell counts</h3>
 <p>Once we have processed all the slices that we want per animal, we can get normalized cell counts per volume (mm<sup>3</sup>) and per area (mm<sup>2</sup>).</p>
-<pre class="r"><code>mouse_325 &lt;- normalize_cell_counts(mouse_325, combine_hemispheres = TRUE, simplify_regions = TRUE)</code></pre>
+<pre class="r"><code>mouse_325 &lt;- normalize_cell_counts(mouse_325, combine_hemispheres = TRUE, simplify_regions = TRUE)
+
+print(mouse_325$normalized_counts)</code></pre>
 </div>
 </div>
 <div id="todo-automatically-generate-dv-hippocampus-datasets-with-user-specified-coordinates" class="section level2">

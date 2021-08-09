@@ -6,13 +6,26 @@
 \title{SMARTR: Wholebrain analysis package in development for the Denny Lab}
 \description{
 The base of this pipeline is an R package in development with the working title, \code{SMARTR}, a self-referential play on
-a previous package developed as an extension to \code{wholebrain} called \code{SMART}.  This package allows for the
-user-friendly pre-processing of segmentation data generated from ImageJ to a be compatible with the \code{\link{wholebrain}} package to generate
-region-based cell counts that are normalized by volume.
-It will also provides tools for data analysis based on experimental groupings.
+a previous package developed as an extension to \code{wholebrain} called \code{\link{SMART}}.  This package allows for the
+user-friendly pre-processing of segmentation data generated from ImageJ to a be compatible with the \code{wholebrain} package to generate
+region-based cell counts that are normalized by volume. It will also provides tools for data analysis based on experimental groupings.
 }
 \details{
-The package currently allows for easy implementation of the following:
+Object descriptions
+
+The data for analysis will be stored in objects that allow for more neat bundling of useful information together.
+
+A \link{slice} object will contain all the data related to registration, segmentation for each channel, and cell counts for a particular image.
+It will also contain “metadata” about your experimental images, such as what the experimenter-assigned slice ID is,
+which brain atlas AP coordinate matches best with the given image, and what the path to the image used for registration is.
+These metadata are stored as the object’s attributes.
+
+A \link{mouse} object is an object that will store multiple slice objects (and therefore all the information in it),
+and will eventually store the combined cell data and the region cell counts normalized by volume.
+Like a slice, it will also contain “metadata” about your mouse stored as attributes.
+}
+\section{The package currently allows for easy implementation of the following steps}{
+
 \enumerate{
 \item Setting up the pipeline by specifying experimentparameters, and save directories.
 \item The interactive registration process.
@@ -30,3 +43,4 @@ The package currently allows for easy implementation of the following:
 \item Obtaining cell counts normalized by region volume (per mm^2^) and region areas (per mm^2^).
 }
 }
+
