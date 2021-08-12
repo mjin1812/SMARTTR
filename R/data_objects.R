@@ -7,9 +7,13 @@ new_mouse <- function(data = list(slices = list(),
                                   normalized_counts = NULL),
                       info = list(mouse_ID = 'set ID',
                                   sex = 'female',
+                                  age = NULL,
+                                  cre_genotype = NULL,
+                                  reporter = NULL,
                                   strain = NULL,
                                   experiment = 'create experiment name',
-                                  group = 'name experiment group',
+                                  group = 'name experiment group: e.g. control or AD',
+                                  drug = 'drug group: e.g. vehicle or ketamine',
                                   cohort = 'name mouse cohort',
                                   input_path = 'set input path',
                                   output_path = 'set output path')
@@ -42,15 +46,21 @@ validate_mouse <- function(m){
 #' If the hemisphere attribute is NULL,  i.e. if the whole slice aligns well with a single atlas plate and there is no need to create separate slice objects per hemisphere,
 #' then the slice is named with the convention: "slice_ID"
 #'
-#' ## Attributes are strings with initialized (default) values listed below:
+#' ## Attributes are strings with initialized (default) values listed below.
 #' 1. mouse_ID = 'set ID'
 #' 2. sex = "female"
-#' 3. strain = NULL
-#' 4. experiment = 'create experiment name'
-#' 5. group = 'name experiment group',
-#' 6. cohort = 'name mouse cohort'
-#' 7. input_path = 'set input path'
-#' 8. output_path = 'set output path'
+#' 3. age = NULL
+#' 4. cre_genotype = NULL
+#' 5. reporter = NULL
+#' 6. strain = NULL
+#' 7. experiment = 'create experiment name'
+#' 8. group = 'name experiment group: e.g. control or AD'
+#' 9. drug = 'drug group: e.g. vehicle or ketamine',
+#' 10. cohort = 'name mouse cohort'
+#' 11. input_path = 'set input path'
+#' 12. output_path = 'set output path'
+#'
+#' Note that you may not need to use all of these attributes but fill out as many are applicable to your experiment.
 #'
 #' @usage mouse_example <- mouse() # initializes a mouse object
 #' @returns A mouse, a colloquial term for an object of class 'mouse'. A 'mouse' object
@@ -139,4 +149,23 @@ slice <- function(...){
 
 ##             Constructor for experiment object
 #______________________________________________________________________
+
+
+# Attributes:
+#
+#
+#
+#
+
+
+
+
+
+
+
+
+
+
+
+
 

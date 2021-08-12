@@ -85,7 +85,7 @@ install.packages("tidyverse")
 auth_token <- "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"
 
 # Install package
-devtools::install_github("mjin1812/SMARTR", auth_token = auth_token)
+devtools::install_github("mjin1812/SMARTR@main", auth_token = auth_token)
 
 
 ```
@@ -169,6 +169,7 @@ mouse_info$experiment    <- 'sundowning'
 mouse_info$group         <- 'control'
 mouse_info$cohort        <- '4_2_months'
 mouse_info$output_path   <- 'V:/Michelle Jin/Sundowning/PipelineDemo/325'
+
 
 # Change mouse's attributes by storing the mouse info list
 attr(mouse_325, 'info') <- mouse_info
@@ -553,13 +554,22 @@ SMART::glassbrain2(mouse_325$cell_table$eyfp, jitter = TRUE)
 Once we have processed all the slices that we want per animal, we can get normalized cell counts per volume (mm^3^) and per area (mm^2^). 
 
 ```{r}
-mouse_325 <- normalize_cell_counts(mouse_325, combine_hemispheres = TRUE, simplify_regions = TRUE)
+mouse_325 <- normalize_cell_counts(mouse_325, combine_hemispheres = FALSE, simplify_regions = FALSE)
 
 print(mouse_325$normalized_counts)
 ```
 
 
-## 9. TODO: automatically generate DV Hippocampus datasets with user specified coordinates
+## 9. Automatically generate DV Hippocampus datasets with user specified coordinates
+
+
+```{r}
+
+mouse_325 <- SMARTR::split_hipp_DV(mouse_325, AP_coord = -2.7, combine_hemispheres = FALSE)
+
+mouse_325$hipp_DV_normalized_counts$dorsal
+```
+
 
 ## 10. TODO: Create experiment object that aggregates information from multiple mice
 

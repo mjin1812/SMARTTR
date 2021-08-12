@@ -4,14 +4,12 @@
 \alias{normalize.registered.areas}
 \title{normalize registered areas}
 \usage{
-normalize.registered.areas(cell_table, total_areas, z_width = 24)
+normalize.registered.areas(cell_table, total_volumes)
 }
 \arguments{
 \item{cell_table}{cell_tables list from get_cell_table()}
 
-\item{total_areas}{computed total areas list}
-
-\item{z_width}{stack width in microns (default = 24)}
+\item{total_volumes}{computed total volumes list}
 }
 \value{
 

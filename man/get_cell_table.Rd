@@ -4,7 +4,7 @@
 \alias{get_cell_table}
 \title{Get cell tables}
 \usage{
-get_cell_table(m, channels = c("cfos", "eyfp"))
+get_cell_table(m, channels = c("cfos", "eyfp", "colabel"))
 }
 \arguments{
 \item{m}{mouse object}

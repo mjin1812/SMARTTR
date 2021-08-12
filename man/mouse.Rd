@@ -25,17 +25,23 @@ If the hemisphere attribute is NULL,  i.e. if the whole slice aligns well with a
 then the slice is named with the convention: "slice_ID"
 }
 
-\subsection{Attributes are strings with initialized (default) values listed below:}{
+\subsection{Attributes are strings with initialized (default) values listed below.}{
 \enumerate{
 \item mouse_ID = 'set ID'
 \item sex = "female"
+\item age = NULL
+\item cre_genotype = NULL
+\item reporter = NULL
 \item strain = NULL
 \item experiment = 'create experiment name'
-\item group = 'name experiment group',
+\item group = 'name experiment group: e.g. control or AD'
+\item drug = 'drug group: e.g. vehicle or ketamine',
 \item cohort = 'name mouse cohort'
 \item input_path = 'set input path'
 \item output_path = 'set output path'
 }
+
+Note that you may not need to use all of these attributes but fill out as many are applicable to your experiment.
 }
 }
 \seealso{

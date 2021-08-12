@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis_functions.R
 \name{get.registered.areas}
 \alias{get.registered.areas}
-\title{Title}
+\title{Get the registered areas}
 \usage{
 get.registered.areas(cell.data.list, registration, conversion.factor = 1)
 }
@@ -13,5 +13,5 @@ get.registered.areas(cell.data.list, registration, conversion.factor = 1)
 
 }
 \description{
-Title
+Get the registered areas
 }
