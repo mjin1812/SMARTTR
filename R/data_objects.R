@@ -152,14 +152,32 @@ slice <- function(...){
 
 
 # Attributes:
-# Experiment_groups (Autogenerate)
-# drug_groups (autogenerate)
 # Output path
-#
-#
+# Experiment name
+# Experiment_groups (Autogenerate) with add mice function
+# drug_groups (autogenerate) with add mice function
+# sex_groups (autogenerate)
+# cohorts (autogenerate)
+# genotypes (autogenerate)
+# reporters (autogenerate)
+# channels (autogenerate)
 
 
 
+
+
+#' 1. mouse_ID = 'set ID'
+#' 2. sex = "female"
+#' 3. age = NULL
+#' 4. cre_genotype = NULL
+#' 5. reporter = NULL
+#' 6. strain = NULL
+#' 7. experiment = 'create experiment name'
+#' 8. group = 'name experiment group: e.g. control or AD'
+#' 9. drug = 'drug group: e.g. vehicle or ketamine',
+#' 10. cohort = 'name mouse cohort'
+#' 11. input_path = 'set input path'
+#' 12. output_path = 'set output path'
 
 
 

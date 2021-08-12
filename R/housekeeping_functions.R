@@ -4,12 +4,18 @@
 #' @description Saves mouse object into it's attribute output path as an RDATA file
 #' @usage save_mouse(m)
 #' @param ... parameter to pass mouse object
+#' @param timestamp (bool) save the object with a date tag
 #' @export
 #' @example m <- save_mouse(m)
 
-save_mouse <- function(...){
+save_mouse <- function(..., timestamp = FALSE){
   info <- attr(..., 'info')
-  save(..., file = file.path(info$output_path, paste0('mouse_',info$mouse_ID,'.RDATA'))  )
+
+  if (timestamp){
+    save(..., file = file.path(info$output_path, paste0('mouse_',info$mouse_ID,'_', Sys.Date(),'.RDATA')))
+  } else {
+    save(..., file = file.path(info$output_path, paste0('mouse_',info$mouse_ID,'.RDATA')))
+  }
 }
 
 ## Printing methods for mouse and slices
