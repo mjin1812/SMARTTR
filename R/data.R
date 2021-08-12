@@ -19,8 +19,6 @@
 
 #' segmentation object compatible with wholebrain package functions
 #'
-#' A dataset containing the prices and other attributes of almost 54,000
-#' diamonds.
 #'
 #' @format A
 #' \describe{
@@ -28,3 +26,14 @@
 #'   \item{soma}{list storing cell count data}
 #' }
 "segmentation.object"
+
+
+#' Ontology
+#'
+#' A custom ontology where the hippocampus (CA1, CA2, CA3, and DG) and it's subregions are split into dorsal and ventral regions and acronyms.
+#' They are given unique IDs and parent ids except for the c("dCA1", "dCA2", "dCA3", "dDG") and c("vCA1", "vCA2", "vCA3", "vDG"), whose parents are c(CA1, CA2, CA3, and DG)
+#' respectively.
+#' @format A dataframe
+#' \describe{
+#' }
+"ontology"

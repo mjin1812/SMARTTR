@@ -1365,27 +1365,42 @@ split_hipp_DV <- function(m,
     if(length(hipp_cell_tables[[dv]]) > 0){
       hipp_norm_counts[[dv]] <- normalize.registered.areas(hipp_cell_tables[[dv]], DV_volumes[[dv]])
 
-      # combine hemispheres
+      # Simplify the subregions regions
+      if (simplify_regions){
+        hipp_norm_counts[[dv]] <- suppressWarnings(simplify.regions(hipp_norm_counts[[dv]],
+                                                                    keywords = simplify_keywords))
+        message("Simplified regions!")
+      }
+
       for (channel in names(hipp_norm_counts[[dv]])){
 
         # clean NA values in all channels
         hipp_norm_counts[[dv]][[channel]] <- tidyr::drop_na(hipp_norm_counts[[dv]][[channel]])
 
+        # Rename the regions to match regions of the dorsal and ventral hippocampus
+        if (dv == "dorsal"){
+          dorsal_acronyms <- paste0("d", hipp_norm_counts[[dv]][[channel]]$acronym)
+          print(dorsal_acronyms)
+          hipp_norm_counts[[dv]][[channel]]$acronym <- dorsal_acronyms
+          hipp_norm_counts[[dv]][[channel]]$name <- SMARTR::name.from.acronym(dorsal_acronyms) %>% as.character()
+
+        } else {
+
+          ventral_acronyms <- paste0("v", hipp_norm_counts[[dv]][[channel]]$acronym)
+          print(ventral_acronyms)
+          hipp_norm_counts[[dv]][[channel]]$acronym <- ventral_acronyms
+          hipp_norm_counts[[dv]][[channel]]$name <- SMARTR::name.from.acronym(ventral_acronyms) %>% as.character()
+        }
+
+        # combine hemispheres
         if (combine_hemispheres){
         hipp_norm_counts[[dv]][[channel]] <-  dplyr::group_by(hipp_norm_counts[[dv]][[channel]], acronym, name) %>%
           dplyr::summarise_at(c("count", "area.mm2", "volume.mm3"), sum) %>%
           dplyr::mutate(normalized.count.by.area = count/area.mm2,
                         normalized.count.by.volume = count/volume.mm3)
 
-          print("Combined hemispheres!")
+          message("Combined hemispheres!")
         }
-      }
-
-      # Simplify the subregions regions
-      if (simplify_regions){
-        hipp_norm_counts[[dv]] <- simplify.regions(hipp_norm_counts[[dv]], keywords = simplify_keywords)
-
-        print("Simplified regions!")
       }
 
     } else{
@@ -1659,8 +1674,16 @@ simplify.regions <- function(normalized_counts, keywords = c("layer","part","str
 }
 
 
-####################################
 
+#' Make a filter for the cfos or eyfp channel
+#'
+#' @param data
+#' @param params
+#' @param ranges
+#'
+#' @return
+#'
+#' @examples
 make.filter <- function(data,
                         params = c("Vol..unit.","Moment1","Moment2","Moment3","Moment4","Sigma"),
                         ranges = list(c(200,12000),c(3,50),c(0,600),c(0,2000),c(0,5),c(20,Inf))){
@@ -1670,8 +1693,6 @@ make.filter <- function(data,
   }
   return(unique(non.cells))
 }
-
-#######################################
 
 
 
@@ -1703,10 +1724,13 @@ get.colabeled.cells <- function(coloc.table, eyfp.counts, eyfp.counts.16bit, vol
   # Get column indices of the volumn column with the largest objects overlap
   mi <- max.col(coloc.table[,p])
 
+  # calculate number of columns
+  end_col <- (length(names(coloc.table)) - 2)/3
+
   # extracting column for objects, volumes, and proportions based on names
-  mp_names <- paste0("P", 1:7)
-  mv_names <- paste0("V", 1:7)
-  mo_names <- paste0("O", 1:7)
+  mp_names <- paste0("P", 1:end_col)
+  mv_names <- paste0("V", 1:end_col)
+  mo_names <- paste0("O", 1:end_col)
 
   # Get selection indices
   select <- cbind(1:length(coloc.table$X),mi)

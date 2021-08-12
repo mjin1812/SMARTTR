@@ -93,3 +93,139 @@ add_slice <- function(m, s, replace = FALSE){
   }
   return(m)
 }
+
+
+
+
+
+
+#__________________ Internal Functions __________________________
+
+# Copies of Wholebrain's ontology search functions applied to the SMARTR custom ontology for the hippocampus
+
+#' @export
+name.from.acronym <- function (x)
+{
+  unlist(lapply(x, function(y) {
+    if (length(which(SMARTR::ontology$acronym == y)) != 0) {
+      return(SMARTR::ontology$name[which(SMARTR::ontology$acronym == y)])
+    }
+    else {
+      return(NA)
+    }
+  }))
+}
+
+#' @export
+name.from.id <- function (x)
+{
+  unlist(lapply(x, function(y) {
+    if (length(which(SMARTR::ontology$id == y)) != 0) {
+      return(SMARTR::ontology$name[which(SMARTR::ontology$id == y)])
+    }
+    else {
+      return(NA)
+    }
+  }))
+}
+
+
+#' @export
+get.sub.structure <- function (x)
+{
+  tmp <- get.acronym.child(x)
+  if (sum(is.na(tmp)/length(tmp)) != 0) {
+    tmp <- x
+    return(tmp)
+  }
+  tmp2 <- tmp
+  for (i in tmp) {
+    tmp2 <- append(tmp2, get.sub.structure(i))
+  }
+  return(tmp2)
+}
+
+
+
+#' @export
+get.sup.structure <- function (x, matching.string = c("CTX", "CNU", "IB",
+                                 "MB", "HB", "grey", "root", "VS",
+                                 "fiber tracts"))
+{
+  if (x %in% matching.string) {
+    return(x)
+  }
+  tmp <- get.acronym.parent(x)
+  if ((tmp %in% matching.string)) {
+    tmp <- x
+  }
+  tmp2 <- tmp
+  while (!(tmp %in% matching.string)) {
+    tmp2 <- tmp
+    tmp <- get.acronym.parent(tmp)
+  }
+  if (tmp == "root" | tmp == "grey" | tmp == "CH") {
+    return(tmp2)
+  }
+  else {
+    return(tmp)
+  }
+}
+
+
+
+
+#' @export
+get.acronym.child <-  function (x)
+  {
+    ids <- unlist(lapply(x, function(y) {
+      if (length(which(SMARTR::ontology$parent == SMARTR::ontology$id[which(SMARTR::ontology$acronym ==
+                                                            y)])) != 0) {
+        if (y == "root") {
+          return("997")
+        }
+        else {
+          return(SMARTR::ontology$id[which(SMARTR::ontology$parent == SMARTR::ontology$id[which(SMARTR::ontology$acronym ==
+                                                                          y)])])
+        }
+      }
+      else {
+        return(NA)
+      }
+    }))
+    return(acronym.from.id(ids))
+  }
+
+#' @export
+get.acronym.parent <- function (x)
+{
+  ids <- unlist(lapply(x, function(y) {
+    if (length(which(SMARTR::ontology$acronym == y)) != 0) {
+      if (y == "root") {
+        return("997")
+      }
+      else {
+        return(SMARTR::ontology$parent[which(SMARTR::ontology$acronym ==
+                                       y)])
+      }
+    }
+    else {
+      return(NA)
+    }
+  }))
+  return(acronym.from.id(ids))
+}
+
+#' @export
+acronym.from.id <- function (x)
+{
+  unlist(lapply(x, function(y) {
+    if (length(which(SMARTR::ontology$id == y)) != 0) {
+      return(as.character(SMARTR::ontology$acronym[which(SMARTR::ontology$id ==
+                                                   y)]))
+    }
+    else {
+      return(NA)
+    }
+  }))
+}

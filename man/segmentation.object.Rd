@@ -15,7 +15,6 @@ A
 segmentation.object
 }
 \description{
-A dataset containing the prices and other attributes of almost 54,000
-diamonds.
+segmentation object compatible with wholebrain package functions
 }
 \keyword{datasets}

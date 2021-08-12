@@ -152,8 +152,9 @@ slice <- function(...){
 
 
 # Attributes:
-#
-#
+# Experiment_groups (Autogenerate)
+# drug_groups (autogenerate)
+# Output path
 #
 #
 
