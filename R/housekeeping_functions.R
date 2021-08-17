@@ -71,9 +71,7 @@ add_slice <- function(m, s, replace = FALSE){
     match <- FALSE
 
     for (stored_name in stored_names){
-
       if (identical(stored_name, slice_name)){
-
         match <- slice_name
         message(paste0('There was existing data found for slice ', slice_ID,
                        ", ", hemisphere, ' hemisphere\n'))
@@ -96,9 +94,110 @@ add_slice <- function(m, s, replace = FALSE){
       m$slices[[index]] <- s
       names(m$slices)[index] <- slice_name
     }
+
+
   }
   return(m)
 }
+
+
+#' Add mouse object to an experiment
+#'
+#' @description This function takes an experiment object and mouse object and adds the mouse object to the experiment. The mouse's unprocessed data, including all of it's individual
+#' slice information and raw imported segmentation and registration data will be not be added from the mouse object to save space. Any desire to modify this data must be done at the mouse
+#' object level before continuing further.
+#'
+#' This function will also read the individual mouse attributes and automatically populate the experimental attributes that are relevant. For example, the 'group' attribute of
+#' a mouse will be read and automatically added to the experiment object's 'experimental_groups' attribute if it is a new unique experimental group name.
+#'
+#' @param e experiment object
+#' @param m mouse object
+#' @param replace (bool, default = FALSE) Replace a mouse already contained in an experiment object.
+#' @return an experiment object
+#' @export
+#'
+#' @examples
+add_mouse <- function(e, m, replace = FALSE){
+
+  # Read the mouse's attributes
+  m_info <- attr(m, "info")
+  mouse_ID <- m_info$mouse_ID
+
+  # Read the experiment attributes
+  e_info <- attr(e, 'info')
+
+  # First mouse stored
+  if (length(e$mice) < 1){
+    e$mice[[1]] <- m
+    names(e$mice) <-  mouse_ID
+  } else{
+    # Check list of previously stored slice names
+    stored_mice <- names(e$mice)
+
+    # match flag
+    match <- FALSE
+
+    for (stored_mouse in stored_mice){
+      if (identical(stored_mouse, mouse_ID)){
+
+        match <- stored_mouse
+        message(paste0('There was existing data found for mouse ', mouse_ID, '\n'))
+
+        if (replace){
+          # replace slice
+          e$mice[[mouse_ID]] <- m
+          message(paste0('Replaced existing mouse data!'))
+        } else {
+          stop(paste0('If you want to replace a previous mouse object,',
+                      'then set the "replace" argument to "TRUE".'))
+        }
+      }
+    }
+
+    # If there were no matches, store the mouse as a new mouse
+    if (isFALSE(match)){
+      index <- length(e$mice) + 1
+      e$mice[[index]] <- m
+      names(e$mice)[index] <- mouse_ID
+    }
+  }
+
+  # Check with the other experimental attributes and see if there are any new unique ones -> store it
+  attr2match <- list(exp = c("experiment_groups", "drug_groups", "sex_groups", "cohorts", "strains", "genotypes", "reporters", "ages"),
+                           mouse = c("group", "drug", "sex", "cohort", "strain", "cre_genotype", "reporter", "age"))
+
+  for (k in 1:length(attr2match$exp)){
+
+    if (!is.null(attr2match$exp[k])){
+
+      mouse_attr <- attr(m, 'info')[[attr2match$mouse[k]]]
+      exp_attr <- attr(e,"info")[[attr2match$exp[k]]]
+
+      if (!mouse_attr %in% exp_attr){
+        attr(m, 'info')[[attr2match$mouse[k]]] <- c(exp_attr, mouse_attr)
+      }
+    } else{
+      attr(e,"info")[[attr2match$exp[k]]] <-  attr(m, 'info')[[attr2match$mouse[k]]]
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

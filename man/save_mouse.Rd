@@ -8,6 +8,8 @@ save_mouse(m)
 }
 \arguments{
 \item{...}{parameter to pass mouse object}
+
+\item{timestamp}{(bool) save the object with a date tag}
 }
 \description{
 Saves mouse object into it's attribute output path as an RDATA file

@@ -236,7 +236,6 @@ register.mouse <- function(m,
         m$slices[[match]] <- register(m$slices[[match]],
                                       filter = filter,
                                       output.folder = output_path, ...)
-
       }
     }
   }
@@ -246,10 +245,7 @@ register.mouse <- function(m,
   return(m)
 }
 
-
-
 ##____ Creating method for importing segmentation data for a slice object____
-
 #' Import segmentation data
 #' @rdname import_segmentation
 #' @description Method for importing segmentation data for a slice object
@@ -667,7 +663,6 @@ make_segmentation_object.slice <- function(s,
 #' @param ... additional volume and overlap parameters for get.colabeled.cells().
 #' @examples m <-  make_segmentation_object(m, slice_ID = '1_9', hemisphere = 'left', channels = c('eyfp', 'cfos'), use_filter = FALSE)
 #' @export
-
 
 make_segmentation_object.mouse <- function(m,
                                            slice_ID = NA,
@@ -1202,7 +1197,6 @@ normalize_cell_counts <- function(m,
                                   combine_hemispheres = TRUE,
                                   simplify_regions = TRUE,
                                   simplify_keywords = c("layer","part","stratum","division")){
-
   # 1) NULL areas check
 
     for(s in m$slices){
@@ -1284,7 +1278,6 @@ normalize_cell_counts <- function(m,
 
 
 ## Auto split the HPF dataset into Dorsal and Ventral
-
 
 #' Split the hippocampal dataset to dorsal and ventral regions
 #' @param m mouse object
@@ -1412,14 +1405,9 @@ split_hipp_DV <- function(m,
   return(m)
 }
 
-
-
 #__________________ Experiment object specific functions __________________________
 
 
-
-## Experiment function to automatically extract hippocampus as a region and split DV to a
-# parameter to
 
 
 
@@ -1476,8 +1464,7 @@ get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2",
   # Get z_width from slice attributes of the first slice
   z_width <- attr(m$slices[[1]], "info")$z_width
 
-
-  ## Store total volumes
+  # Store total volumes
   total_volumes_hipp <- vector(mode = "list", length = 2)
   names(total_volumes_hipp) <- DV
 
@@ -1497,13 +1484,8 @@ get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2",
     }
     k <- k + 1
   }
-
   return(total_volumes_hipp)
 }
-
-
-
-
 
 ## Modification of Marcos' function
 #' Get the registered areas
@@ -1745,8 +1727,6 @@ get.colabeled.cells <- function(coloc.table, eyfp.counts, eyfp.counts.16bit, vol
   # The proportion overlap threshold
   mo <- mo[mv>=volume & mp>=overlap]
 
-
-
   # Split by object name and value, split by character position
   obj.val.16 <- strsplit(eyfp.counts.16bit$Name,"-") %>% lapply(substr, start = 4, stop = 10) %>% unlist()
   val.16 <-  obj.val.16[seq(2, length(obj.val.16), by = 2)] # Object value
@@ -1765,9 +1745,6 @@ get.colabeled.cells <- function(coloc.table, eyfp.counts, eyfp.counts.16bit, vol
   coloc.data <- eyfp.counts[index, unique(names(eyfp.counts))] %>% dplyr::distinct()
 
   return(coloc.data)
-
-
-
 
   ## EXTRAS
   # ## get the matched object number
