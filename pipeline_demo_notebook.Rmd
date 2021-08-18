@@ -84,6 +84,9 @@ install.packages("tidyverse")
 # personal access token
 auth_token <- "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"
 
+# Set the devtools install option to install for just 64bit architecture
+options(devtools.install.args = "--no-multiarch")   
+
 # Install package
 devtools::install_github("mjin1812/SMARTR@main", auth_token = auth_token)
 
@@ -554,27 +557,107 @@ SMART::glassbrain2(mouse_325$cell_table$eyfp, jitter = TRUE)
 Once we have processed all the slices that we want per animal, we can get normalized cell counts per volume (mm^3^) and per area (mm^2^). 
 
 ```{r}
-mouse_325 <- normalize_cell_counts(mouse_325, combine_hemispheres = FALSE, simplify_regions = FALSE)
+mouse_325 <- normalize_cell_counts(mouse_325, combine_hemispheres = TRUE, simplify_regions = FALSE)
 
 print(mouse_325$normalized_counts)
 ```
-
 
 ## 9. Automatically generate DV Hippocampus datasets with user specified coordinates
 
 
 ```{r}
 
-mouse_325 <- SMARTR::split_hipp_DV(mouse_325, AP_coord = -2.7, combine_hemispheres = FALSE)
+mouse_325 <- split_hipp_DV(mouse_325, AP_coord = -2.7, combine_hemispheres = TRUE, simplify_regions = FALSE, merge = FALSE)
 
-mouse_325$hipp_DV_normalized_counts$dorsal
+# mouse_325$hipp_DV_normalized_counts$dorsal
 ```
 
 
-## 10. TODO: Create experiment object that aggregates information from multiple mice
+## 10. Create experiment object that aggregates information from multiple mice
+
+
+Once you've registered enough mice, you can begin adding them into an experiment object. Note that adding a mouse object will autopopulate
+many of the experimental parameters. Additionally, adding mice to an experiment will keep only the aggregate processed neural mapping information so that unnecessary memory isn't being used during analysis. Any changes you want to make to cleaning up or modifying individual slice data should be done at the mouse object level. 
+
+
+Check out the help page of an experiment object.
+
+
+```{r}
+
+sundowning <- experiment(experiment_name = "sundowning",
+                         experimenters = c("HH", "AW", "MJ"))
+ 
+sundowning <- add_mouse(sundowning, mouse_325)
+
+
+
+
+```
+
+
+Once you've added enough mice to perform an analysis...
+
+
+
+```{r}
+sundowning <- combine_norm_cell_counts(sundowning, by = c('groups', 'sex'))
+
+
+
+```
+
+
 
 ## 11. TODO: Include analysis functions that auto generate plots
 
 
+
+
+
+
+
+
+
 </div>
 </font> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# SCRATCH SCRATCH SCRATCH
+
+```{r}
+
+for (k in 1:10){
+  
+  load(paste0("V:/Michelle Jin/Sundowning/PipelineDemo/325/false_AD_mouse_", k, ".RDATA"))
+
+  m1 <- normalize_cell_counts(m1, combine_hemispheres = TRUE, simplify_regions = TRUE)
+  m1 <- split_hipp_DV(m1, AP_coord = -2.7, combine_hemispheres = TRUE, simplify_regions = TRUE, merge = TRUE)
+  sundowning <- add_mouse(sundowning, m1)
+}
+
+
+
+```
+```{r}
+save_experiment(sundowning, timestamp = TRUE)
+```
+
+
+Choose a random number of regions to delete from each test mouse's normalized cells count
+```{r}
+
+```
+

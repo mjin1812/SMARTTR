@@ -663,7 +663,7 @@ make_segmentation_object.slice <- function(s,
 #' @param ... additional volume and overlap parameters for get.colabeled.cells().
 #' @examples m <-  make_segmentation_object(m, slice_ID = '1_9', hemisphere = 'left', channels = c('eyfp', 'cfos'), use_filter = FALSE)
 #' @export
-
+#'
 make_segmentation_object.mouse <- function(m,
                                            slice_ID = NA,
                                            hemisphere = NULL,
@@ -1279,16 +1279,18 @@ normalize_cell_counts <- function(m,
 
 ## Auto split the HPF dataset into Dorsal and Ventral
 
-#' Split the hippocampal dataset to dorsal and ventral regions
+#' Split the hippocampal dataset to dorsal and ventral regions. If [normalize_cell_counts()] has already been run,
+#' the existing hippocampus data will be deleted and either replaced with new dorsal/ventral hippocampus data with merge (recommended) or
+#' it will be stored in a separate dataframe if the user wants analyze the hippocampus separately for specialized analysis.
 #' @param m mouse object
 #' @param AP_coord (double) The AP coordinate which separates dorsal hippocampus from ventral hippocampus. Counts anterior to this are considered dorsal, counts posterior to
 #' this are considered ventral.
 #' @param combine_hemispheres (bool, default = TRUE) Combine normalized cell counts from both hemispheres
-#' @param merge (bool, not functional) Whether to include the division of dHipp and vHipp into the normalized counts dataframe of the mouse or to store as a separate element for isolated analysis.
+#' @param merge (bool, default = TRUE) Recommended setting. Whether to include the division of dHipp and vHipp into the normalized counts dataframe of the mouse or to store as a separate element for isolated analysis.
 #' Merging will replace the hippocampal counts currently in the normalized counts table. Not merging will create a separate data element in the mouse. TODO: Currently not functional.
 #' @param simplify_regions (bool, default = TRUE ) simplify the normalized region counts based on keywords in the internal function, `simplify_keywords`
-#' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure
-#' @param rois (vec) List of the region acronyms to include in the hippocampus
+#' @param simplify_keywords (str, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure
+#' @param rois (str) List of the region acronyms to include in the hippocampus
 #' @return m mouse object with DV cell counts from the hippocampus included
 #' @export
 #'
@@ -1342,6 +1344,16 @@ split_hipp_DV <- function(m,
 
     # Keep track of the unique AP coordinate (slice identifier)
     hipp_AP_coordinates <- c(hipp_AP_coordinates, hipp_df$AP) %>% unique()
+
+    # Remove existing hippocampus data from the normalized cell counts table if it exists
+    if (!is.null(m$normalized_counts)){
+      hipp_delete <- which(m$normalized_counts[[channel]]$acronym %in% regions)
+      m$normalized_counts[[channel]] <- m$normalized_counts[[channel]][-hipp_delete,]
+
+      message(paste0("Removed existing hippocampus data for ", channel,
+                     " channel from the normalized counts dataframe"))
+    }
+
   }
 
   # Get hippocampal areas
@@ -1362,7 +1374,7 @@ split_hipp_DV <- function(m,
       if (simplify_regions){
         hipp_norm_counts[[dv]] <- suppressWarnings(simplify.regions(hipp_norm_counts[[dv]],
                                                                     keywords = simplify_keywords))
-        message("Simplified regions!")
+        message("Simplified regions.")
       }
 
       for (channel in names(hipp_norm_counts[[dv]])){
@@ -1373,14 +1385,14 @@ split_hipp_DV <- function(m,
         # Rename the regions to match regions of the dorsal and ventral hippocampus
         if (dv == "dorsal"){
           dorsal_acronyms <- paste0("d", hipp_norm_counts[[dv]][[channel]]$acronym)
-          print(dorsal_acronyms)
+          # print(dorsal_acronyms)
           hipp_norm_counts[[dv]][[channel]]$acronym <- dorsal_acronyms
           hipp_norm_counts[[dv]][[channel]]$name <- SMARTR::name.from.acronym(dorsal_acronyms) %>% as.character()
 
         } else {
 
           ventral_acronyms <- paste0("v", hipp_norm_counts[[dv]][[channel]]$acronym)
-          print(ventral_acronyms)
+          # print(ventral_acronyms)
           hipp_norm_counts[[dv]][[channel]]$acronym <- ventral_acronyms
           hipp_norm_counts[[dv]][[channel]]$name <- SMARTR::name.from.acronym(ventral_acronyms) %>% as.character()
         }
@@ -1391,21 +1403,98 @@ split_hipp_DV <- function(m,
           dplyr::summarise_at(c("count", "area.mm2", "volume.mm3"), sum) %>%
           dplyr::mutate(normalized.count.by.area = count/area.mm2,
                         normalized.count.by.volume = count/volume.mm3)
-
-          message("Combined hemispheres!")
+          message(paste0("Combined hemispheres for ", channel, " channel."))
         }
       }
-
     } else{
       hipp_norm_counts[[dv]] <- NULL
     }
   }
 
-  m$hipp_DV_normalized_counts <- hipp_norm_counts
+  # Whether to merge the information in each channel to the large normalized counts dataframe
+  if (merge){
+    # merged right.hemisphere check
+    if (is.null(m$normalized_counts[[1]]$right.hemisphere) && is.null(hipp_norm_counts[[1]][[1]]$right.hemisphere) ||
+        !is.null(m$normalized_counts[[1]]$right.hemisphere) && !is.null(hipp_norm_counts[[1]][[1]]$right.hemisphere)){
+
+      ## continue with merge
+      for (dv in names(hipp_norm_counts)){
+        for (channel in channels){
+          m$normalized_counts[[channel]] <- rbind(m$normalized_counts[[channel]], hipp_norm_counts[[dv]][[channel]]) %>% arrange(acronym)
+        }
+      }
+      message("Merged into main normalized counts dataframe.")
+
+    } else {
+      stop(paste0("If you want to merge the dorsal ventral split dataset into the main normalized counts dataframe, the \n",
+                  "combine_hemispheres parameter needs to be identical when you run normalize_cell_counts() and split_hipp_DV()."))
+    }
+  } else {
+    m$hipp_DV_normalized_counts <- hipp_norm_counts
+    message("Data is now stored in hipp_DV_normalized_counts dataframe. Future analysis of the hippocampus will be stored separately.\n")
+  }
   return(m)
 }
 
 #__________________ Experiment object specific functions __________________________
+
+
+#' Combine cell counts across the mice in an experiment
+#'
+#' @param e experiment object
+#' @param by (str) names of the experiment attributes used to divide up the cell counts. Will be same attributes to group by during analysis.
+#'
+#' @return
+#' @export
+#'
+#' @examples e <- combine_norm_cell_counts(e, by = c('groups', 'sex'))
+combine_norm_cell_counts <- function(e, by = c("experiment_groups", "sex_groups")){
+
+  # Get experiment info
+  e_info <- attr(e, "info")
+
+  # Fix close but wrong attribute names
+  if (!all(by %in% names(e_info))){
+        by <- c(by[by %in% names(e_info)], m2e_attr(by[!by %in% names(e_info)]))
+  }
+
+  # initialize list to store the combined dataframes and the attributes
+  combined_norm_counts_list <- vector(mode = "list", length(e_info$channels))
+  names(combined_norm_counts_list) <- e_info$channels
+
+  for (channel in e_info$channels){
+    for (m in 1:length(e$mice)){
+
+      # Get mouse info
+      m_info <- attr(e$mice[[m]], "info")
+      df <- e$mice[[m]]$normalized_counts[[channel]]
+      for (attrib in by){
+
+        # Add column keeping track of the mouse attribute
+        add_col <- tibble::tibble(m_info[[e2m_attr(attrib)]])
+        names(add_col)  <- e2m_attr(attrib)
+        df <- df %>% tibble::add_column(add_col, .before = TRUE)
+      }
+
+      # Always add the mouse ID
+      add_col <- tibble(m_info[["mouse_ID"]])
+      names(add_col)  <- "mouse_ID"
+      df <- df %>% tibble::add_column(add_col, .before = TRUE)
+
+      if (m == 1){
+        combined_norm_counts <- df
+      } else{
+        # add mouse dataframe of norm counts to growing combined norm counts table
+        combined_norm_counts <- combined_norm_counts %>% dplyr::bind_rows(df)
+      }
+    }
+    combined_norm_counts_list[[channel]] <- combined_norm_counts
+  }
+
+  e$combined_normalized_counts <- combined_norm_counts_list
+  return(e)
+}
+
 
 
 
@@ -1484,8 +1573,13 @@ get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2",
     }
     k <- k + 1
   }
+
   return(total_volumes_hipp)
 }
+
+
+
+
 
 ## Modification of Marcos' function
 #' Get the registered areas
@@ -1727,6 +1821,8 @@ get.colabeled.cells <- function(coloc.table, eyfp.counts, eyfp.counts.16bit, vol
   # The proportion overlap threshold
   mo <- mo[mv>=volume & mp>=overlap]
 
+
+
   # Split by object name and value, split by character position
   obj.val.16 <- strsplit(eyfp.counts.16bit$Name,"-") %>% lapply(substr, start = 4, stop = 10) %>% unlist()
   val.16 <-  obj.val.16[seq(2, length(obj.val.16), by = 2)] # Object value
@@ -1745,6 +1841,9 @@ get.colabeled.cells <- function(coloc.table, eyfp.counts, eyfp.counts.16bit, vol
   coloc.data <- eyfp.counts[index, unique(names(eyfp.counts))] %>% dplyr::distinct()
 
   return(coloc.data)
+
+
+
 
   ## EXTRAS
   # ## get the matched object number

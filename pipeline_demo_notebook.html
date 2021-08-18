@@ -235,7 +235,7 @@ install.packages(&quot;tidyverse&quot;)
 auth_token &lt;- &quot;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&quot;
 
 # Install package
-devtools::install_github(&quot;mjin1812/SMARTR&quot;, auth_token = auth_token)</code></pre>
+devtools::install_github(&quot;mjin1812/SMARTR@main&quot;, auth_token = auth_token)</code></pre>
 <p><br></p>
 <p>We can now load the package!</p>
 <pre class="r"><code># Load SMARTR
@@ -283,6 +283,7 @@ mouse_info$experiment    &lt;- &#39;sundowning&#39;
 mouse_info$group         &lt;- &#39;control&#39;
 mouse_info$cohort        &lt;- &#39;4_2_months&#39;
 mouse_info$output_path   &lt;- &#39;V:/Michelle Jin/Sundowning/PipelineDemo/325&#39;
+
 
 # Change mouse&#39;s attributes by storing the mouse info list
 attr(mouse_325, &#39;info&#39;) &lt;- mouse_info
@@ -507,16 +508,27 @@ SMART::glassbrain2(mouse_325$cell_table$eyfp, jitter = TRUE)</code></pre>
 <div id="get-normalized-cell-counts" class="section level3">
 <h3>Get normalized cell counts</h3>
 <p>Once we have processed all the slices that we want per animal, we can get normalized cell counts per volume (mm<sup>3</sup>) and per area (mm<sup>2</sup>).</p>
-<pre class="r"><code>mouse_325 &lt;- normalize_cell_counts(mouse_325, combine_hemispheres = TRUE, simplify_regions = TRUE)
+<pre class="r"><code>mouse_325 &lt;- normalize_cell_counts(mouse_325, combine_hemispheres = FALSE, simplify_regions = FALSE)
 
 print(mouse_325$normalized_counts)</code></pre>
 </div>
 </div>
-<div id="todo-automatically-generate-dv-hippocampus-datasets-with-user-specified-coordinates" class="section level2">
-<h2>9. TODO: automatically generate DV Hippocampus datasets with user specified coordinates</h2>
+<div id="automatically-generate-dv-hippocampus-datasets-with-user-specified-coordinates" class="section level2">
+<h2>9. Automatically generate DV Hippocampus datasets with user specified coordinates</h2>
+<pre class="r"><code>mouse_325 &lt;- split_hipp_DV(mouse_325, AP_coord = -2.7, combine_hemispheres = TRUE, simplify_regions = FALSE)
+
+mouse_325$hipp_DV_normalized_counts$dorsal</code></pre>
 </div>
-<div id="todo-create-experiment-object-that-aggregates-information-from-multiple-mice" class="section level2">
-<h2>10. TODO: Create experiment object that aggregates information from multiple mice</h2>
+<div id="create-experiment-object-that-aggregates-information-from-multiple-mice" class="section level2">
+<h2>10. Create experiment object that aggregates information from multiple mice</h2>
+<p>Once you’ve registered enough mice, you can begin adding them into an experiment object. Note that adding a mouse object will autopopulate many of the experimental parameters. Additionally, adding mice to an experiment will keep only the aggregate processed neural mapping information so that unnecessary memory isn’t being used during analysis. Any changes you want to make to cleaning up or modifying individual slice data should be done at the mouse object level.</p>
+<p>Check out the help page of an experiment object.</p>
+<pre class="r"><code>sundowning &lt;- experiment(experiment_name = &quot;sundowning&quot;,
+                         experimenters = c(&quot;HH&quot;, &quot;AW&quot;, &quot;MJ&quot;))
+ 
+sundowning &lt;- add_mouse(sundowning, mouse_325)</code></pre>
+<p>Once you’ve added enough mice to perform an analysis…</p>
+<pre class="r"><code>sundowning &lt;- combine_norm_cell_counts(sundowning, by = c(&#39;experiment_groups&#39;, &#39;sex&#39;))</code></pre>
 </div>
 <div id="todo-include-analysis-functions-that-auto-generate-plots" class="section level2">
 <h2>11. TODO: Include analysis functions that auto generate plots</h2>

@@ -37,3 +37,14 @@
 #' \describe{
 #' }
 "ontology"
+
+
+
+#' attr2match
+#'
+#' A custom list to match attributes of a mouse and experiment object
+#' respectively.
+#' @format A list
+#' \describe{
+#' }
+"attr2match"

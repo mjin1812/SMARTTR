@@ -1,12 +1,31 @@
 ###_____________ General housekeeping functions __________####
 
+#' @title Save experiment data
+#' @description Saves experiment object into it's attribute output path as an RDATA file
+#' @usage save_experiment(e)
+#' @param ... parameter to pass experiment object
+#' @param timestamp (bool) save the object with a date tag
+#' @export
+#' @example e <- save_experiment(e, timestamp = TRUE)
+
+save_experiment <- function(..., timestamp = FALSE){
+  info <- attr(..., 'info')
+
+  if (timestamp){
+    save(..., file = file.path(info$output_path, paste0(info$experiment_name,'_experiment_', Sys.Date(),'.RDATA')))
+  } else {
+    save(..., file = file.path(info$output_path, paste0(info$experiment_name,'_experiment','.RDATA')))
+  }
+}
+
+
 #' @title Save mouse data
 #' @description Saves mouse object into it's attribute output path as an RDATA file
 #' @usage save_mouse(m)
 #' @param ... parameter to pass mouse object
 #' @param timestamp (bool) save the object with a date tag
 #' @export
-#' @example m <- save_mouse(m)
+#' @example m <- save_mouse(m, timestamp = TRUE)
 
 save_mouse <- function(..., timestamp = FALSE){
   info <- attr(..., 'info')
@@ -16,6 +35,15 @@ save_mouse <- function(..., timestamp = FALSE){
   } else {
     save(..., file = file.path(info$output_path, paste0('mouse_',info$mouse_ID,'.RDATA')))
   }
+}
+
+
+#' Print attributes of experiment object
+#' @param e experiment object
+#' @export
+
+print.experiment <- function(e){
+  print(attr(e, 'info'))
 }
 
 ## Printing methods for mouse and slices
@@ -123,11 +151,13 @@ add_mouse <- function(e, m, replace = FALSE){
   m_info <- attr(m, "info")
   mouse_ID <- m_info$mouse_ID
 
+
   # Read the experiment attributes
   e_info <- attr(e, 'info')
 
   # First mouse stored
   if (length(e$mice) < 1){
+    m$slices <- NULL  # Delete slice information
     e$mice[[1]] <- m
     names(e$mice) <-  mouse_ID
   } else{
@@ -145,6 +175,7 @@ add_mouse <- function(e, m, replace = FALSE){
 
         if (replace){
           # replace slice
+          m$slices <- NULL # Delete slice information
           e$mice[[mouse_ID]] <- m
           message(paste0('Replaced existing mouse data!'))
         } else {
@@ -157,6 +188,7 @@ add_mouse <- function(e, m, replace = FALSE){
     # If there were no matches, store the mouse as a new mouse
     if (isFALSE(match)){
       index <- length(e$mice) + 1
+      m$slices <- NULL # Delete slice information
       e$mice[[index]] <- m
       names(e$mice)[index] <- mouse_ID
     }
@@ -166,20 +198,31 @@ add_mouse <- function(e, m, replace = FALSE){
   attr2match <- list(exp = c("experiment_groups", "drug_groups", "sex_groups", "cohorts", "strains", "genotypes", "reporters", "ages"),
                            mouse = c("group", "drug", "sex", "cohort", "strain", "cre_genotype", "reporter", "age"))
 
+  mouse_attr <- attr(m, 'info')
+  exp_attr <- attr(e,"info")
+
+
   for (k in 1:length(attr2match$exp)){
-
-    if (!is.null(attr2match$exp[k])){
-
-      mouse_attr <- attr(m, 'info')[[attr2match$mouse[k]]]
-      exp_attr <- attr(e,"info")[[attr2match$exp[k]]]
-
-      if (!mouse_attr %in% exp_attr){
-        attr(m, 'info')[[attr2match$mouse[k]]] <- c(exp_attr, mouse_attr)
+    if (!is.null(exp_attr[[attr2match$exp[k]]])){
+      if (!mouse_attr[[attr2match$mouse[k]]] %in% exp_attr[[attr2match$exp[k]]]){
+        exp_attr[[attr2match$exp[k]]] <- c(mouse_attr[[attr2match$mouse[k]]], mouse_attr[[attr2match$mouse[k]]])
       }
     } else{
-      attr(e,"info")[[attr2match$exp[k]]] <-  attr(m, 'info')[[attr2match$mouse[k]]]
+      exp_attr[[attr2match$exp[k]]] <-  mouse_attr[[attr2match$mouse[k]]]
     }
   }
+
+  # Detect the number of channels in the mouse
+  channels <- names(m$normalized_counts)
+
+  if (!all(channels %in% exp_attr[["channels"]])){
+    exp_attr[["channels"]] <- c(exp_attr[["channels"]], channels) %>% unique()
+  }
+
+  # Reassign the attributes
+  attr(e,"info") <- exp_attr
+
+  return(e)
 }
 
 
@@ -192,19 +235,28 @@ add_mouse <- function(e, m, replace = FALSE){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 #__________________ Internal Functions __________________________
+
+
+m2e_attr <- function(attribs){
+  attr2match <- SMARTR::attr2match
+  matched <- c()
+  for (attr in attribs){
+    matched <- c(matched, attr2match$exp[stringdist::amatch(attr, attr2match$mouse, maxDist=Inf)])
+  }
+  return(matched)
+}
+
+e2m_attr <- function(attribs){
+  attr2match <- SMARTR::attr2match
+  matched <- c()
+  for (attr in attribs){
+    matched <- c(matched, attr2match$mouse[stringdist::amatch(attr, attr2match$exp, maxDist=Inf)])
+  }
+  return(matched)
+}
+
+
 
 # Copies of Wholebrain's ontology search functions applied to the SMARTR custom ontology for the hippocampus
 
@@ -276,8 +328,6 @@ get.sup.structure <- function (x, matching.string = c("CTX", "CNU", "IB",
     return(tmp)
   }
 }
-
-
 
 
 #' @export
