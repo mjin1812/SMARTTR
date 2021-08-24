@@ -632,6 +632,13 @@ sundowning <- combine_norm_cell_counts(sundowning, by = c('groups', 'sex'))
 
 
 
+```{r}
+sundowning <- experiment(experiment_name = "sundowning",
+                         experimenters = c("HH", "AW", "MJ"),
+                         output_path = "V:\\Michelle Jin\\Sundowning\\PipelineDemo\\Experiment_example")
+ 
+
+```
 
 
 
@@ -639,25 +646,92 @@ sundowning <- combine_norm_cell_counts(sundowning, by = c('groups', 'sex'))
 
 ```{r}
 
-for (k in 1:10){
+# for (k in 1:4){
   
-  load(paste0("V:/Michelle Jin/Sundowning/PipelineDemo/325/false_AD_mouse_", k, ".RDATA"))
+# 
+# k <- 3
+# 
+#   load(paste0("V:/Michelle Jin/Sundowning/PipelineDemo/325/false_AD_mouse_", k, ".RDATA"))
+  m <- normalize_cell_counts(m, combine_hemispheres = TRUE, simplify_regions = TRUE)
+  m <- split_hipp_DV(m, AP_coord = -2.7, combine_hemispheres = TRUE, simplify_regions = TRUE, merge = TRUE)
+  print(m$normalized_counts$cfos[m$normalized_counts$cfos$acronym== "AAA",])
 
-  m1 <- normalize_cell_counts(m1, combine_hemispheres = TRUE, simplify_regions = TRUE)
-  m1 <- split_hipp_DV(m1, AP_coord = -2.7, combine_hemispheres = TRUE, simplify_regions = TRUE, merge = TRUE)
-  sundowning <- add_mouse(sundowning, m1)
-}
+
+#   
+#   sundowning <- add_mouse(sundowning, m)
+# # }
+# 
+# 
 
 
 
 ```
+
+
 ```{r}
+# k <-  2
+
+
+for (k in 1:4){
+  
+  
+load(paste0("V:/Michelle Jin/Sundowning/PipelineDemo/325/false_control_mouse_", k, ".RDATA"))
+m <- normalize_cell_counts(m, combine_hemispheres = TRUE, simplify_regions = TRUE)
+m <- split_hipp_DV(m, AP_coord = -2.7, combine_hemispheres = TRUE, simplify_regions = TRUE, merge = TRUE)
+
+print(m$normalized_counts$cfos[m$normalized_counts$cfos$acronym== "AAA",])
+
+
+sundowning <- add_mouse(sundowning, m)
+  
+}
+```
+```{r}
+
+for (k in 1:4){
+  
+   sundowning$mice[[k]]$normalized_counts$cfos[sundowning$mice[[k]]$normalized_counts$cfos$acronym=="AAA",]
+  
+} 
+
+```
+
+```{r}
+
+attr(sundowning, "info")$output_path <- "V:\\Michelle Jin\\Sundowning\\PipelineDemo\\Experiment_example"
+
+
+
 save_experiment(sundowning, timestamp = TRUE)
 ```
 
 
+
+
+
+
+
+```{r}
+e <- sundowning
+
+e <- combine_norm_cell_counts(e)
+
+```
+
 Choose a random number of regions to delete from each test mouse's normalized cells count
 ```{r}
+for (channel in e_info$channels){
 
+  e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]][e$combined_normalized_counts[[channel]]$mouse_ID != "325",]
+  nrows <- e$combined_normalized_counts[[channel]]$mouse_ID %>% length() 
+  e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]] %>% sample_frac(size = .9, replace = FALSE)
+
+}
+```
+
+
+
+```{r}
+e <- enough_mice_per_group(e, by = "group", min_n = 3)
 ```
 

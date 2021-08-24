@@ -4,16 +4,19 @@
 \alias{combine_norm_cell_counts}
 \title{Combine cell counts across the mice in an experiment}
 \usage{
-combine_norm_cell_counts(e, by = c("experiment_groups", "sex_groups"))
+combine_norm_cell_counts(e, by = c("groups", "sex"))
 }
 \arguments{
 \item{e}{experiment object}
 
-\item{by}{(str) names of the experiment attribute used to divide up the cell counts into separate combined tables.}
+\item{by}{(str) names of the experiment attributes used to divide up the cell counts. Will be same attributes to group by during analysis.}
 }
 \value{
 
 }
 \description{
 Combine cell counts across the mice in an experiment
+}
+\examples{
+e <- combine_norm_cell_counts(e, by = c('groups', 'sex'))
 }

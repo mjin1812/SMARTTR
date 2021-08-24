@@ -195,21 +195,13 @@ add_mouse <- function(e, m, replace = FALSE){
   }
 
   # Check with the other experimental attributes and see if there are any new unique ones -> store it
-  attr2match <- list(exp = c("experiment_groups", "drug_groups", "sex_groups", "cohorts", "strains", "genotypes", "reporters", "ages"),
-                           mouse = c("group", "drug", "sex", "cohort", "strain", "cre_genotype", "reporter", "age"))
+  attr2match <- SMARTR::attr2match
 
   mouse_attr <- attr(m, 'info')
   exp_attr <- attr(e,"info")
 
-
-  for (k in 1:length(attr2match$exp)){
-    if (!is.null(exp_attr[[attr2match$exp[k]]])){
-      if (!mouse_attr[[attr2match$mouse[k]]] %in% exp_attr[[attr2match$exp[k]]]){
-        exp_attr[[attr2match$exp[k]]] <- c(mouse_attr[[attr2match$mouse[k]]], mouse_attr[[attr2match$mouse[k]]])
-      }
-    } else{
-      exp_attr[[attr2match$exp[k]]] <-  mouse_attr[[attr2match$mouse[k]]]
-    }
+  for (attrib in attr2match$exp){
+    exp_attr[[attrib]] <- c(mouse_attr[[e2m_attr(attrib)]], exp_attr[[attrib]]) %>% unique()
   }
 
   # Detect the number of channels in the mouse
@@ -255,6 +247,26 @@ e2m_attr <- function(attribs){
   }
   return(matched)
 }
+
+match_e_attr <- function(attribs){
+  attr2match <- SMARTR::attr2match
+  matched <- c()
+  for (attr in attribs){
+    matched <- c(matched, attr2match$exp[stringdist::amatch(attr, attr2match$exp, maxDist=Inf)])
+  }
+  return(matched)
+}
+
+match_m_attr <- function(attribs){
+  attr2match <- SMARTR::attr2match
+  matched <- c()
+  for (attr in attribs){
+    matched <- c(matched, attr2match$mouse[stringdist::amatch(attr, attr2match$mouse, maxDist=Inf)])
+  }
+  return(matched)
+}
+
+
 
 
 

@@ -1448,7 +1448,7 @@ split_hipp_DV <- function(m,
 #' @export
 #'
 #' @examples e <- combine_norm_cell_counts(e, by = c('groups', 'sex'))
-combine_norm_cell_counts <- function(e, by = c("experiment_groups", "sex_groups")){
+combine_norm_cell_counts <- function(e, by = c("groups", "sex")){
 
   # Get experiment info
   e_info <- attr(e, "info")
@@ -1506,6 +1506,14 @@ combine_norm_cell_counts <- function(e, by = c("experiment_groups", "sex_groups"
 
 #__________________ Internal Functions __________________________
 
+
+# Rearrange things to be anatomical order
+
+# anatomical_order<- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
+# anat.order$region <- anatomical.order %>% map(get.sub.structure) %>% map(intersect,y=common.regions) %>% unlist()
+# for(super.region in anatomical.order){
+# anat.order$super.region[anat.order$region %in% get.sub.structure(super.region)] <- super.region
+#}
 
 
 
