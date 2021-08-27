@@ -41,8 +41,6 @@ remove_outlier_counts <- function(e, by = c("group", "sex"), sd = 2){
 
 
 
-
-
 #' Check if there are enough mice per group
 #' @description Check if there are enough mice per group across all regions
 #' if the normalized counts data sets are split by specified grouping variables.
@@ -114,10 +112,6 @@ enough_mice_per_group<- function(e, by = c("group", "sex"), min_n = 4, remove = 
 
   return(e)
 }
-
-
-
-
 
 
 

@@ -586,12 +586,10 @@ Check out the help page of an experiment object.
 ```{r}
 
 sundowning <- experiment(experiment_name = "sundowning",
-                         experimenters = c("HH", "AW", "MJ"))
+                         experimenters = c("HH", "AW", "MJ"),
+                         output_path = "V:\\Michelle Jin\\Sundowning\\PipelineDemo\\Experiment_example")
  
 sundowning <- add_mouse(sundowning, mouse_325)
-
-
-
 
 ```
 
@@ -599,20 +597,19 @@ sundowning <- add_mouse(sundowning, mouse_325)
 Once you've added enough mice to perform an analysis...
 
 
-
 ```{r}
-sundowning <- combine_norm_cell_counts(sundowning, by = c('groups', 'sex'))
-
-
+sundowning <- combine_norm_cell_counts(sundowning, by = c('group', 'sex'))
 
 ```
 
 
 
+```{r}
+save_experiment(sundowning, timestamp = TRUE)
+```
+
+
 ## 11. TODO: Include analysis functions that auto generate plots
-
-
-
 
 
 
@@ -625,11 +622,7 @@ sundowning <- combine_norm_cell_counts(sundowning, by = c('groups', 'sex'))
 
 
 
-
-
-
-
-
+# SCRATCH SCRATCH SCRATCH
 
 
 ```{r}
@@ -640,74 +633,32 @@ sundowning <- experiment(experiment_name = "sundowning",
 
 ```
 
-
-
-# SCRATCH SCRATCH SCRATCH
-
 ```{r}
 
-# for (k in 1:4){
-  
-# 
+for (k in 1:10){
+
+
 # k <- 3
-# 
-#   load(paste0("V:/Michelle Jin/Sundowning/PipelineDemo/325/false_AD_mouse_", k, ".RDATA"))
-  m <- normalize_cell_counts(m, combine_hemispheres = TRUE, simplify_regions = TRUE)
-  m <- split_hipp_DV(m, AP_coord = -2.7, combine_hemispheres = TRUE, simplify_regions = TRUE, merge = TRUE)
+
+  load(paste0("V:/Michelle Jin/Sundowning/PipelineDemo/325/false_control_mouse_", k, ".RDATA"))
   print(m$normalized_counts$cfos[m$normalized_counts$cfos$acronym== "AAA",])
 
-
-#   
-#   sundowning <- add_mouse(sundowning, m)
-# # }
-# 
-# 
-
-
-
-```
-
-
-```{r}
-# k <-  2
-
-
-for (k in 1:4){
-  
-  
-load(paste0("V:/Michelle Jin/Sundowning/PipelineDemo/325/false_control_mouse_", k, ".RDATA"))
-m <- normalize_cell_counts(m, combine_hemispheres = TRUE, simplify_regions = TRUE)
-m <- split_hipp_DV(m, AP_coord = -2.7, combine_hemispheres = TRUE, simplify_regions = TRUE, merge = TRUE)
-
-print(m$normalized_counts$cfos[m$normalized_counts$cfos$acronym== "AAA",])
-
-
-sundowning <- add_mouse(sundowning, m)
-  
+  sundowning <- add_mouse(sundowning, m, replace = TRUE)
 }
-```
-```{r}
 
-for (k in 1:4){
-  
-   sundowning$mice[[k]]$normalized_counts$cfos[sundowning$mice[[k]]$normalized_counts$cfos$acronym=="AAA",]
-  
-} 
+
+
+
 
 ```
+
 
 ```{r}
 
 attr(sundowning, "info")$output_path <- "V:\\Michelle Jin\\Sundowning\\PipelineDemo\\Experiment_example"
 
-
-
-save_experiment(sundowning, timestamp = TRUE)
+save_experiment(e, timestamp = TRUE)
 ```
-
-
-
-
 
 
 
@@ -716,13 +667,15 @@ e <- sundowning
 
 e <- combine_norm_cell_counts(e)
 
+e_info <- attr(e, "info")
 ```
+
 
 Choose a random number of regions to delete from each test mouse's normalized cells count
 ```{r}
 for (channel in e_info$channels){
-
-  e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]][e$combined_normalized_counts[[channel]]$mouse_ID != "325",]
+# 
+#   e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]][e$combined_normalized_counts[[channel]]$mouse_ID != "325",]
   nrows <- e$combined_normalized_counts[[channel]]$mouse_ID %>% length() 
   e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]] %>% sample_frac(size = .9, replace = FALSE)
 
@@ -732,6 +685,14 @@ for (channel in e_info$channels){
 
 
 ```{r}
-e <- enough_mice_per_group(e, by = "group", min_n = 3)
+e <- enough_mice_per_group(e, by = c("group", "sex"), min_n = 4)
 ```
+
+```{r}
+
+save_experiment(e, timestamp = TRUE)
+
+```
+
+
 
