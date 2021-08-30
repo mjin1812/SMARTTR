@@ -87,6 +87,9 @@ auth_token <- "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"
 # Set the devtools install option to install for just 64bit architecture
 options(devtools.install.args = "--no-multiarch")   
 
+# Install ggpattern package (useful package for plotting) 
+devtools::install_github("coolbutuseless/ggpattern")
+
 # Install package
 devtools::install_github("mjin1812/SMARTR@main", auth_token = auth_token)
 

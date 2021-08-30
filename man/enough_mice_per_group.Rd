@@ -28,7 +28,8 @@ These regions are removed across all comparison groups.}
 e experiment object
 }
 \description{
-Check if there are enough mice per group if the normalized counts data sets are split by specified grouping variables.
+Check if there are enough mice per group across all regions
+if the normalized counts data sets are split by specified grouping variables.
 This function also automatically keeps only the common regions that are found across all comparison groups.
 }
 \examples{

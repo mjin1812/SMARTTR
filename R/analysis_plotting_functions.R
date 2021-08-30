@@ -43,7 +43,7 @@ get_percent_colabel <-function(e, channel = "cfos", save_table = TRUE, roi = NUL
   }
 
   # names to join by
-  by <- names(colabel_group_counts) %>% setdiff(c("area.mm2", "volume.mm3", "normalized.count.by.area", "normalized.count.by.volume"))
+  by <- names(e$combined_normalized_counts$colabel) %>% setdiff(c("area.mm2", "volume.mm3", "normalized.count.by.area", "normalized.count.by.volume"))
 
   # Get the colabel counts
   colabel_counts <-  e$combined_normalized_counts$colabel %>% dplyr::filter(acronym %in% common_reg) %>%
@@ -76,25 +76,23 @@ get_percent_colabel <-function(e, channel = "cfos", save_table = TRUE, roi = NUL
 
 
 
-
-
 #' get_correlations
 #'
 #' @param e experiment object
 #' @param by The variable names (columns) to filter the dataframe selection.
 #' @param values The value of the variables to filter the combined normalized counts df by.
 #' @param channels The channels to correlate.
-#' @param method Correlational method to pass to [corrr::correlate()] function.
-#' @param ,,, additional parameters to pass to the [corrr:correlate()] function aside from method, x, and y.
+#' @param p_adjust_method (default = "BH") Benjamini-Hochberg method is recommended.
+#'  Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE
+#'  to keep "raw" p values.
+#' @param alpha The alpha level for p adjustment.
 #'
 #' @return
 #' @export
 #'
 #' @examples
 get_correlations <- function(e, by = c("sex", "group"), values = c("female", "AD"),
-                             channels = c("cfos", "eyfp", "colabel"),  method = "pearson", ...){
-
-
+                             channels = c("cfos", "eyfp", "colabel"),  p_adjust_method = "BH", alpha = 0.05){
   corr_list <- list()
   names(corr_list) <- names(channels)
 
@@ -119,22 +117,70 @@ get_correlations <- function(e, by = c("sex", "group"), values = c("female", "AD
 
 
     # Select the order of the columns, perform the correlations, ignore the mouse_ID and group columns
-    corrs <- df_channel %>% dplyr::select(all_of(c(common.regions.ordered))) %>%
-      corrr::correlate(method = method, ...)
-    # %>% dplyr::arrange(-dplyr::row_number())
+    df_corr <- df_channel %>% dplyr::select(all_of(c(common.regions.ordered))) %>%
+      as.matrix() %>% Hmisc::rcorr()
 
-    corr_list[[channel]] <- corrs
+    rows <- rownames(df_corr$P)
+    cols <- colnames(df_corr$P)
+
+    # Remove (set to NA) the comparisons that are duplicates
+    for (r in 1:length(rows)){
+      na_col <- which(is.na(df_corr$P[r,]))
+      df_corr$P[r, na_col:length(cols)] <- NA
+    }
+
+    # adjust the p-value for false discovery rate or FWER
+    if (!isFALSE(p_adjust_method)){
+
+      # Calculate without removing NAs
+      df_corr$P <- df_corr$P %>% p.adjust(method = p_adjust_method) %>%
+        matrix(nrow = length(rows), ncol= length(cols), dim = list(rows, cols))
+
+      df_corr$sig <- df_corr$P <= alpha
+    }
+    corr_list[[channel]] <- df_corr
   }
-
   e$corr_list <- corr_list
-
   return(e)
 }
 
 
 
-##_____________________ Plotting functions ___________________________
 
+
+# df_corr %>% purrr::map(tibble::as_tibble) %>%
+#   purrr::map(dplyr::mutate(row = names(.), .before = TRUE))
+#
+#
+# # df_corr$r %>% dplyr::mutate(row = names(.), .before)
+# #
+# %>% purrr::map(dplyr::mutate, row = names(.data))
+
+
+#
+#     corrs <- df_channel %>% dplyr::select(all_of(c(common.regions.ordered))) %>%
+#       corrr::correlate(method = method, ...)
+#     # %>% dplyr::arrange(-dplyr::row_number())
+
+#
+# #Calculate while removing NAs
+#
+# indices <- which(!is.na(df_corr$P))
+# p_adjust <- df_corr$P[indices] %>% p.adjust(method = "BH")
+#
+# df_corr_p_adjust <-  rep(NA, length = length(rows)^2)
+# df_corr_p_adjust[indices] <- p_adjust
+# df_corr_p_adjust <- df_corr_p_adjust %>%
+#   matrix(nrow = length(rows), ncol= length(cols), dim = list(rows, cols))
+
+
+
+
+
+
+
+
+##_____________________ Plotting functions ___________________________
 
 
 #' plot_colabel_percent
@@ -147,17 +193,73 @@ get_correlations <- function(e, by = c("sex", "group"), values = c("female", "AD
 #' @export
 #'
 #' @examples
-plot_colabel_percent <- function(e, by = c("group", "sex"), roi = NULL){
+plot_colabel_percent <- function(e, by = c("group", "sex"), channel = " cfos", roi = NULL,
+                                 colors = c("red", "blue"),
+                                 pattern = "stripes"){
 
 
+
+  test <- e$colabel_percent[[channel]] %>% dplyr::group_by(across(all_of(c(by, "acronym")))) %>%
+    dplyr::summarise(colabel_percent = mean(colabel_percentage),
+                     SD = sd(colabel_percentage),
+                     SE = SD/sqrt(length(colabel_percentage)))
+
+
+
+  # Check if user only wants a specific roi in common regions
+    if (!is.null(roi)){
+      if (!all(roi %in% unique(e$colabel_percent[[channel]]$acronym))){
+        message(paste0("The roi specified is not a common region found in both channels. ", "Common regions include:\n"))
+        for (reg in unique(e$colabel_percent[[channel]]$acronym)){
+          message(reg)
+        }
+        stop("Set the roi to one of these acronyms.")
+      } else{
+        test <- test %>% dplyr::filter(acronym %in% roi)
+
+      }
+    }
+
+  ggplot(test, mapping = aes(x=acronym, y=colabel_percent, fill=group)) +
+    geom_bar(stat="identity", position = "dodge")
+
+  ## ggplot barplot
+
+#
+#   plt <- ggplot(e$colabel_percent[[channel]]) +
+#     ggpattern::geom_col_pattern(by, colabel)
+#
+#   ggplot(test, ,mapping = aes(x = group, y = colabel_percentage, fill = sex)) +
+#     geom_bar(stat="identity", position = "dodge")
+#
+#   ggplot(data = experiment, mapping = aes(x=date, y=car_count, fill=site)) +
+#     geom_bar(stat="identity", position = "dodge")
+#
 
 
 }
 
 
+#
+# df <- data.frame(level = c("a", "b", "c", 'd'), outcome = c(2.3, 1.9, 3.2, 1))
+#
+# ggplot(df) +
+#   geom_col_pattern(
+#     aes(level, outcome, pattern_fill = level),
+#     pattern = 'stripe',
+#     fill    = 'white',
+#     colour  = 'black'
+#   ) +
+#   theme_bw(18) +
+#   theme(legend.position = 'none') +
+#   labs(
+#     title    = "ggpattern::geom_pattern_col()",
+#     subtitle = "pattern = 'stripe'"
+#   ) +
+#   coord_fixed(ratio = 1/2)
 
-# Generate correlational heatmaps
 
+# Generate correlation heatmaps
 
 
 #' Plot correlation heatmaps
@@ -174,12 +276,38 @@ plot_colabel_percent <- function(e, by = c("group", "sex"), roi = NULL){
 plot_heatmaps <- function(e, by = c("group", "sex"), channel = c("cfos", "eyfp", "colabel"),
                             colors = c("red", "green", "blue")){
 
+  for (channel in channels){
+   # Turn into tibble
+   corr_df <-  e$corr_list[[channel]] %>% purrr::map(tibble::as_tibble)
+   val_names <- names(corr_df)
+
+   for (k in 1:length(corr_df)){
+     corr_df[[k]] <- tibble::add_column(corr_df[[k]], row_acronym = names(corr_df[[k]]), .before = TRUE )
+     corr_df[[k]] <- corr_df[[k]] %>% tidyr::pivot_longer(!row_acronym, names_to = "col_acronym", values_to = val_names[k])
+     corr_df[[k]]$row_acronym <- factor(corr_df[[k]]$row_acronym, levels = unique(corr_df[[k]]$row_acronym)) # to keep anatomical level order
+     corr_df[[k]]$col_acronym <- factor(corr_df[[k]]$col_acronym, levels = unique(corr_df[[k]]$col_acronym)) # to keep the anatomical level order
+
+   }
+
+   # Combined the correlation plots into one dataframe and add a column if there is a significant comparison
+   df <- corr_df$r %>% dplyr::left_join(corr_df$n, by = c("row_acronym", "col_acronym")) %>%
+     dplyr::left_join(corr_df$P, by = c("row_acronym", "col_acronym")) %>%
+     dplyr::left_join(corr_df$sig, by = c("row_acronym", "col_acronym")) %>%
+     dplyr::mutate(sig_text = ifelse(isTRUE(sig), "*", ""))
 
 
-  #
+  # Generate a correlation heatmap in anatomical order
+  p <-  ggplot2::ggplot(df, aes(row_acronym, col_acronym, fill = r)) +
+    geom_tile() +
+    geom_text(aes(label = sig_text), size=2.5)
+
+  p
+  }
+}
+
   #
   # cross_region_fractions <- cross_region_fractions %>%
-  #   mutate(text = signif(total_TP_fraction, digits = 3))
+  #   mutate(text = signif(total_TP_fraction, digits = 3))x
   #
   # p <- ggplot(cross_region_fractions, aes(train_region,
   #                                         test_region,
@@ -189,12 +317,6 @@ plot_heatmaps <- function(e, by = c("group", "sex"), channel = c("cfos", "eyfp",
   #   geom_text(aes(label = text)) +
   #   scale_fill_gradient(low = "white", high = "#136aec") +
   #   labs(x = "Train region", y = "Test region", fill = "TP\n fraction\n retained")
-
-
-
-
-
-}
 
 
 # install.packages("Hmisc")
@@ -224,9 +346,6 @@ plot_heatmaps <- function(e, by = c("group", "sex"), channel = c("cfos", "eyfp",
 #
 # # plot a network plot using
 #   network_plot(min_cor = .2)
-
-
-
 
 #
 #

@@ -2,7 +2,7 @@
 % Please edit documentation in R/quality_check_functions.R
 \name{get_common_regions}
 \alias{get_common_regions}
-\title{Get common regions that are found across all the comparison groups}
+\title{Get common regions that are found across all the comparison groups.}
 \usage{
 get_common_regions(mouse_count, by)
 }
@@ -13,5 +13,7 @@ get_common_regions(mouse_count, by)
 unique acronyms that are the intersection across all groups
 }
 \description{
-Get common regions that are found across all the comparison groups
+If a single comparison group doesn't have any mice that have brain regions
+contained in the other groups, no statistical comparison can be made. This region
+should be removed.
 }
