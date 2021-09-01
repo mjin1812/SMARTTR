@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{plot_heatmaps}
 \alias{plot_heatmaps}
-\title{Plot correlation heatmaps}
+\title{plot_colabel_percent}
 \usage{
 plot_heatmaps(
   e,
@@ -13,10 +13,18 @@ plot_heatmaps(
 }
 \arguments{
 \item{colors}{}
+
+\item{roi}{}
 }
 \value{
 
+
+
 }
 \description{
+plot_colabel_percent
+}
+\examples{
 Plot correlation heatmaps
+
 }

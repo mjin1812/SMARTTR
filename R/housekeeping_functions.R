@@ -64,6 +64,16 @@ print.slice <- function(s){
 }
 
 
+#' Print attributes of correlation_list object
+#' @param s slice object
+#' @export
+
+print.correlation_list <- function(cl){
+  print(attr(cl, 'info'))
+}
+
+
+
 #' @title Add slice to a mouse object
 #' @usage m <- add_slice(m, s, replace = FALSE)
 #' @param m mouse object

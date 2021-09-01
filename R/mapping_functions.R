@@ -284,27 +284,31 @@ import_segmentation.slice <- function(s,
   }
 
   section <- info$info$slice_ID
+  txt_files <-  list.files(path = path_stem, all.files = TRUE, pattern = ".txt")
 
   for (k in 1:length(channels)){
 
     if (tolower(channels[k]) == 'colabel') {
 
 
-      coloc_path <- file.path(path_stem, paste0( mouse_ID,'_',section,"_Fast_R_cfos_SpotSegmentation_ColocOnly.txt"))
-      eyfp_16bit_path <- file.path(path_stem, paste0("M_", mouse_ID, '_', section,"_Fast_G_eYFP_16bit.txt"))
+      coloc_path <- paste0( mouse_ID,'_',section,"_Fast_R_cfos_SpotSegmentation_ColocOnly.txt")
+      eyfp_16bit_path <- paste0("M_", mouse_ID, '_', section,"_Fast_G_eYFP_16bit.txt")
 
-      ### CLEAN THIS UP AFTER NAMING CONVENTIONS ARE STANDARDIZED
-      if (!file.exists(eyfp_16bit_path)){
-        eyfp_16bit_path <- file.path(path_stem, paste0("M_", mouse_ID, '_', section, "_Fast_G_eYFP_LabelImage_16bit"))
-      }
+      # match to exact name in directory
+      coloc_path <- txt_files[stringdist::amatch(coloc_path, txt_files, maxDist=Inf)]
+      eyfp_16bit_path <- txt_files[stringdist::amatch(eyfp_16bit_path, txt_files, maxDist=Inf)]
+
+    # ### CLEAN THIS UP AFTER NAMING CONVENTIONS ARE STANDARDIZED
+    #   if (!file.exists(eyfp_16bit_path)){
+    #     eyfp_16bit_path <- file.path(path_stem, paste0("M_", mouse_ID, '_', section, "_Fast_G_eYFP_LabelImage_16bit"))
+    #   }
 
       print(coloc_path)
       print(eyfp_16bit_path)
 
       # Read
-      coloc.table <- read.delim(coloc_path, stringsAsFactors = FALSE)
-      eyfp.meas.16bit <- read.csv(eyfp_16bit_path, stringsAsFactors = FALSE)
-
+      coloc.table <- read.delim(file.path(path_stem, coloc_path), stringsAsFactors = FALSE)
+      eyfp.meas.16bit <- read.csv(file.path(path_stem, eyfp_16bit_path), stringsAsFactors = FALSE)
 
       # store the coloc table and the eyfp 16 bit measurements as a combined list
       s$raw_segmentation_data[[k]] <- list(coloc_table = coloc.table,
@@ -316,20 +320,29 @@ import_segmentation.slice <- function(s,
       if (tolower(channels[k]) == 'cfos'){
 
         # Create import data paths for cfos
-        meas_path <- file.path(path_stem, paste0("M_R_cfos_", mouse_ID,'_',section,".txt" ))
-        quant_path <- file.path(path_stem, paste0("Q_R_cfos_",mouse_ID,'_',section,"_",'cfos',".txt" ))
+        meas_path <- paste0("M_R_cfos_", mouse_ID,'_',section,".txt" )
+        quant_path <- paste0("Q_R_cfos_",mouse_ID,'_',section,"_",'cfos',".txt" )
+
+        # match to exact name in directory
+        meas_path <- txt_files[stringdist::amatch(meas_path, txt_files, maxDist=Inf)]
+        quant_path <- txt_files[stringdist::amatch(quant_path, txt_files, maxDist=Inf)]
 
       } else if (tolower(channels[k]) == 'eyfp'){
 
+
         # Create import data paths for eyfp
-        meas_path <- file.path(path_stem, paste0("M_G_eyfp_", mouse_ID,'_',section,".txt" ))
-        quant_path <- file.path(path_stem, paste0("Q_G_eyfp_",mouse_ID,'_',section,"_eYFP",".txt" ))
+        meas_path <- paste0("M_G_eyfp_", mouse_ID,'_',section,".txt" )
+        quant_path <- paste0("Q_G_eyfp_",mouse_ID,'_',section,"_eYFP",".txt" )
+
+        # match to exact name in directory
+        meas_path <- txt_files[stringdist::amatch(meas_path, txt_files, maxDist=Inf)]
+        quant_path <- txt_files[stringdist::amatch(quant_path, txt_files, maxDist=Inf)]
       }
 
       print(meas_path)
       print(quant_path)
-      meas <- read.csv(meas_path, stringsAsFactors = FALSE )
-      quant <- read.csv(quant_path, stringsAsFactors = FALSE)
+      meas <- read.csv( file.path(path_stem, meas_path), stringsAsFactors = FALSE )
+      quant <- read.csv(file.path(path_stem, quant_path), stringsAsFactors = FALSE)
       meas$X2_Pix <- meas$CX..pix./(info$info$bin) #create position column to account for binning
       meas$Y2_Pix <- meas$CY..pix./(info$info$bin) #same as above
       counts <- cbind(meas, quant) #create combined table

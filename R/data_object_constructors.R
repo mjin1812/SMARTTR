@@ -146,7 +146,7 @@ new_slice <- function(data = list(registration_obj = NULL,           #list per s
                                   hemisphere = NULL,
                                   channels = c('eyfp', 'cfos', 'colabel'),
                                   registration_path = 'set registration image path',
-                                  segmentation_path = 'set segmentation image path',    # Segmentation path may not be used
+                                  # segmentation_path = 'set segmentation image path',    # Segmentation path may not be used
                                   slice_directory = NULL,
                                   regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
                                     "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS")
@@ -180,8 +180,17 @@ validate_slice <- function(s){
                         "regions_excluded")
 
   if (!all(info_names %in% valid_attributes)){
+
+    print(info_names %in% valid_attributes)
+
+
+    print(info_names)
+    print(valid_attributes)
+
     message(paste0("Specified a custom attribute name. The attribute will be stored in the object but it can only be used for documentation purposes.",
-                   "\nPlease check if the custom attribute may apply to one of the standard attribute names."))
+
+
+                                  "\nPlease check if the custom attribute may apply to one of the standard attribute names."))
   }
 
   return(s)
@@ -228,7 +237,7 @@ slice <- function(slice_ID = NA,
                   hemisphere = NULL,
                   channels = c('eyfp', 'cfos', 'colabel'),
                   registration_path = 'set registration image path',
-                  segmentation_path = 'set segmentation image path',    # Segmentation path may not be used
+                  # segmentation_path = 'set segmentation image path',    # Segmentation path may not be used
                   slice_directory = NULL,
                   regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
                                        "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
@@ -244,7 +253,7 @@ slice <- function(slice_ID = NA,
                hemisphere = hemisphere,
                channels = channels,
                registration_path = registration_path,
-               segmentation_path = segmentation_path,    # Segmentation path may not be used
+               # segmentation_path = segmentation_path,    # Segmentation path may not be used
                slice_directory = slice_directory,
                regions_excluded = regions_excluded,
                ...)

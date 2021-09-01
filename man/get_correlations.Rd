@@ -9,8 +9,8 @@ get_correlations(
   by = c("sex", "group"),
   values = c("female", "AD"),
   channels = c("cfos", "eyfp", "colabel"),
-  method = "pearson",
-  ...
+  p_adjust_method = "BH",
+  alpha = 0.05
 )
 }
 \arguments{
@@ -22,9 +22,11 @@ get_correlations(
 
 \item{channels}{The channels to correlate.}
 
-\item{method}{Correlational method to pass to \code{\link[corrr:correlate]{corrr::correlate()}} function.}
+\item{p_adjust_method}{(default = "BH") Benjamini-Hochberg method is recommended.
+Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE
+to keep "raw" p values.}
 
-\item{, , , }{additional parameters to pass to the \code{\link[=corrr:correlate]{corrr:correlate()}} function aside from method, x, and y.}
+\item{alpha}{The alpha level for p adjustment.}
 }
 \value{
 
