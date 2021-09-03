@@ -213,6 +213,10 @@ correlation_diff_permutation <- function(e, correlation_list_name_1 = "female_AD
 
   # Get overlapping regions between the two correlational datasets
   channels <- attr_group_1$names
+
+  p_matrix_list <- vector(mode = "list", length = length(channels))
+  names(p_matrix_list) <- channels
+
   for (channel in channels) {
 
     # Obtain combined cell count table for this channel
@@ -284,10 +288,15 @@ correlation_diff_permutation <- function(e, correlation_list_name_1 = "female_AD
         matrix(nrow = l_reg, ncol= l_reg, dimnames = dimnames(test_statistic))
     }
 
-    # Store the results in the experiment object
-    comparison <- paste(correlation_list_name_1,"vs",correlation_list_name_2, sep = "_")
-    e$permutation_p_matrix[[comparison]][[channel]] <- list(p_val = p_matrix, sig = p_matrix < alpha)
+    p_matrix_list[[channel]] <- list(p_val = p_matrix, sig = p_matrix < alpha)
   }
+  # Store the results in the experiment object
+  comparison <- paste(correlation_list_name_1,"vs",correlation_list_name_2, sep = "_")
+
+  if(is.null(e$permutation_p_matrix)){
+    e$permutation_p_matrix <- list()
+  }
+  e$permutation_p_matrix[[comparison]] <- p_matrix_list
   return(e)
 }
 
