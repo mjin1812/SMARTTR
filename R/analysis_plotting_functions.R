@@ -253,12 +253,6 @@ correlation_diff_permutation <- function(e, correlation_list_name_1 = "female_AD
       as.matrix() %>% Hmisc::rcorr()
     test_statistic <- group_1_corr$r - group_2_corr$r
 
-
-    # # Get an array of distribution of correlation differences
-    # test_statistic_distributions <- permute_corr_diff_distrib(df_channel_groups,
-    #                                                      correlation_list_name_1 = correlation_list_name_1,
-    #                                                      correlation_list_name_2 = correlation_list_name_2,
-    #                                                      n_shuffle = n_shuffle)
     # # Get an array of distribution of correlation differences
     test_statistic_distributions <- permute_corr_diff_distrib(df_channel_groups,
                                                          correlation_list_name_1 = correlation_list_name_1,
@@ -272,25 +266,28 @@ correlation_diff_permutation <- function(e, correlation_list_name_1 = "female_AD
                        ncol = length(common_regions_btwn_groups),
                        dimnames = dimnames(test_statistic))
 
-    for (i in common_regions_btwn_groups){
-      for (j in common_regions_btwn_groups){
-
-        # print(paste(i, "i"))
-        # print(paste(j, "j"))
-        # print(channel)
-
+    l_reg <- length(common_regions_btwn_groups)
+    for (i in 1:l_reg){
+      for (j in 1:l_reg){
         null_distrib <- test_statistic_distributions[i,j] %>% unlist()
         p_matrix[i,j] <-  (sum(abs(null_distrib) >= abs(test_statistic[i,j])) + 1) / (n_shuffle + 1)
+        if(j>=i){
+          p_matrix[i,j:l_reg] <- NA
+        }
       }
     }
 
+    # adjust the p-value for false discovery rate or FWER
+    if (!isFALSE(p_adjust_method)){
+      # Calculate without removing NAs
+      p_matrix <- p_matrix %>% p.adjust(method = p_adjust_method) %>%
+        matrix(nrow = l_reg, ncol= l_reg, dimnames = dimnames(test_statistic))
+    }
+
+    # Store the results in the experiment object
     comparison <- paste(correlation_list_name_1,"vs",correlation_list_name_2, sep = "_")
-
-    # TODO ADD multiple comparisons correction
-    e$permutation_p_matrix[[comparison]][[channel]] <- p_matrix
+    e$permutation_p_matrix[[comparison]][[channel]] <- list(p_val = p_matrix, sig = p_matrix < alpha)
   }
-
-
   return(e)
 }
 
