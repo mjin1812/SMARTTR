@@ -69,7 +69,7 @@ print.slice <- function(s){
 #' @export
 
 print.correlation_list <- function(cl){
-  print(attr(cl, 'info'))
+  print(attributes(cl))
 }
 
 
@@ -405,4 +405,24 @@ acronym.from.id <- function (x)
       return(NA)
     }
   }))
+}
+
+
+
+
+# Get current OS
+get_os <- function(){
+  sysinf <- Sys.info()
+  if (!is.null(sysinf)){
+    os <- sysinf['sysname']
+    if (os == 'Darwin')
+      os <- "osx"
+  } else { ## mystery machine
+    os <- .Platform$OS.type
+    if (grepl("^darwin", R.version$os))
+      os <- "osx"
+    if (grepl("linux-gnu", R.version$os))
+      os <- "linux"
+  }
+  return(tolower(os))
 }

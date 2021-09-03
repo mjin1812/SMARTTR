@@ -5,7 +5,6 @@
 NULL
 
 
-
 ###______________Generic functions ________________###
 
 ## Creating generic function for registration

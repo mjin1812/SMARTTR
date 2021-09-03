@@ -4,18 +4,26 @@
 \alias{get_percent_colabel}
 \title{Get the percentage of colabelled cells over cfos or eyfp channels}
 \usage{
-get_percent_colabel(e, channel = "cfos", save_table = TRUE, roi = NULL)
+get_percent_colabel(
+  e,
+  channel = "eyfp",
+  save_table = TRUE,
+  roi = "dDG",
+  individual = TRUE
+)
 }
 \arguments{
-\item{channel}{(str, default = "cfos") The channel used as denominator in percentage counts.}
+\item{channel}{(str, default = "cfos") The channel used as denominator in fraction counts.}
 
 \item{save_table}{(bool, default = TRUE) Whether to save the output table as a csv in the experiment object output folder.}
 
-\item{roi}{(str, default = NULL) Whether to generate colabelled percentages for only specific regions of interest. The default is
-to assess across all rois.}
+\item{roi}{(str, default = NULL) Whether to generate colabelled percentages for only specific regions of interest. The default is}
+
+\item{individual}{(bool, default = TRUE) Whether the data should include individual mouse colabelled. If FALSE the colabel percentages are
+averaged together to assess across all rois.}
 }
 \value{
-e experiment object with colabel percent table
+e experiment object with colabel percentage table
 }
 \description{
 This analysis will only include common regions that are included in both the colabelled and

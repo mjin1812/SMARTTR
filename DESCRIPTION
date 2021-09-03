@@ -40,8 +40,11 @@ Depends:
     R (>= 2.10),
     SMART (>= 0.1.0),
     stringdist (>= 0.9.7),
+    stringr (>= 1.4.0),
     wholebrain(>= 0.1.1),
     Hmisc (>= 4.5.0),
-    tidyverse (>= 1.3.1)
+    ggplot2 (>= 3.3.5),
+    tidyverse (>= 1.3.1),
+    RcppAlgos (>= 2.4.1)
 Suggests:
     ggpattern(>= 0.2.0)

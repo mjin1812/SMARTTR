@@ -29,7 +29,7 @@ to keep "raw" p values.}
 \item{alpha}{The alpha level for p adjustment.}
 }
 \value{
-
+e experiment object. The experiment object now has a \code{correlation_list} object stored in it.
 }
 \description{
 get_correlations
