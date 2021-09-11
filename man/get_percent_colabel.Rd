@@ -6,24 +6,27 @@
 \usage{
 get_percent_colabel(
   e,
+  by = NULL,
   channel = "eyfp",
   save_table = TRUE,
-  roi = "dDG",
+  rois = "dDG",
   individual = TRUE
 )
 }
 \arguments{
+\item{by}{(str, default = NULL) Attribute names to group by, e.g. by = c("group", "sex")
+averaged together to assess across all rois.}
+
 \item{channel}{(str, default = "cfos") The channel used as denominator in fraction counts.}
 
 \item{save_table}{(bool, default = TRUE) Whether to save the output table as a csv in the experiment object output folder.}
 
-\item{roi}{(str, default = NULL) Whether to generate colabelled percentages for only specific regions of interest. The default is}
+\item{individual}{(bool, default = TRUE) Whether the data should include individual mouse colabelled. If FALSE the colabel percentages are}
 
-\item{individual}{(bool, default = TRUE) Whether the data should include individual mouse colabelled. If FALSE the colabel percentages are
-averaged together to assess across all rois.}
+\item{roi}{(str, default = NULL) Whether to generate colabelled percentages for only specific regions of interest. The default is}
 }
 \value{
-e experiment object with colabel percentage table
+e experiment object with colabel percentage table stored in it.
 }
 \description{
 This analysis will only include common regions that are included in both the colabelled and

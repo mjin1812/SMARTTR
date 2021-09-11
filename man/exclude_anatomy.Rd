@@ -12,7 +12,8 @@ exclude_anatomy(x, ...)
   s,
   channels = c("cfos", "eyfp", "colabel"),
   clean = TRUE,
-  exclude_regions = NULL,
+  exclude_right_regions = NULL,
+  exclude_left_regions = NULL,
   exclude_hemisphere = TRUE,
   exclude_layer_1 = TRUE,
   plot_filtered = TRUE
@@ -24,8 +25,9 @@ exclude_anatomy(x, ...)
   hemisphere = NULL,
   channels = c("cfos", "eyfp", "colabel"),
   clean = TRUE,
-  exclude_regions = NULL,
-  exclude_hemisphere = TRUE,
+  exclude_right_regions = NULL,
+  exclude_left_regions = NULL,
+  exclude_hemisphere = FALSE,
   exclude_layer_1 = TRUE,
   plot_filtered = TRUE
 )
@@ -39,7 +41,9 @@ exclude_anatomy(x, ...)
 
 \item{clean}{(bool, default = TRUE ). Remove cells that don't map to any regions.}
 
-\item{exclude_regions}{(str vector, default = NULL); acronyms of regions you want to exclude IN ADDITION to regions that will by default be excluded in the slice attribute 'regions_excluded'}
+\item{exclude_right_regions}{(str vector, default = NULL); acronyms of regions you want to exclude from right hemi,in addition to regions that will by default be excluded in the slice attribute 'right_regions_excluded'}
+
+\item{exclude_left_regions}{(str vector, default = NULL); acronyms of regions you want to exclude from left hemi, in addition to regions that will by default be excluded in the slice attribute 'left_regions_excluded'}
 
 \item{exclude_hemisphere}{(bool, default = TRUE); excludes the contralateral hemisphere from one indicated in slice attribute}
 

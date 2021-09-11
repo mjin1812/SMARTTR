@@ -2,20 +2,27 @@
 % Please edit documentation in R/quality_check_functions.R
 \name{detect_single_slice_regions}
 \alias{detect_single_slice_regions}
-\title{Detect atlas regions that only show up in a single slice object}
+\title{Detect atlas regions that only show up in a single slice object within a mouse.}
 \usage{
-detect_single_slice_regions(m, remove = FALSE, output = TRUE)
+detect_single_slice_regions(m, remove = FALSE, log = TRUE)
 }
 \arguments{
-\item{output}{}
+\item{remove}{(bool, FALSE) Remove any regions in the normalized counts table that}
+
+\item{log}{(bool, TRUE) Save the regions that don't have enough n into a .csv file in the output folder.}
 }
 \value{
 
 }
 \description{
 Quality check function to make sure that the regions included for analysis show up
-in more than 1 slice object, otherwise the user can remove them from the mouse object.
+in more than 1 slice object, otherwise the user can remove exceptions from the mouse object.
+
+Regions counts derived from only one image may be less accurate. This function can generate a log of these regions
+so the user can qualitatively evaluate the raw data. Users also have to option of removing these regions automatically
+from normalized_counts dataframe.
 
 The user should run \code{\link[=normalize_cell_counts]{normalize_cell_counts()}} and \code{\link[=get_cell_table]{get_cell_table()}} functions prior to using this function.
-If the user has run \code{\link[=split_hipp_DV]{split_hipp_DV()}} the function will automatically account for this
+If the user has run \code{\link[=split_hipp_DV]{split_hipp_DV()}} with the option to merge, this function will account for for the dorsal and
+ventral hippocampal counts separately.
 }

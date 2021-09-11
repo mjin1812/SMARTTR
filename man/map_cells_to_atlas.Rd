@@ -21,7 +21,7 @@ map_cells_to_atlas(x, ...)
   m,
   slice_ID = NA,
   hemisphere = NULL,
-  channels = c("cfos", "efyp", "colabel"),
+  channels = c("cfos", "eyfp", "colabel"),
   clean = TRUE,
   display = TRUE,
   replace = FALSE,

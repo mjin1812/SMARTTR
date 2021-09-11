@@ -124,6 +124,12 @@ get_registered_areas <- function(x, ...){
 register.slice <- function(s,
                            filter = NULL,
                            ...){
+
+  # Detect the OS and set quartz( as graphing function)
+  if(get_os() != "osx"){
+    quartz <- X11
+  }
+
   # Get slice information
   info <- attributes(s)
 
@@ -602,7 +608,6 @@ make_segmentation_object.slice <- function(s,
   for (channel in channels){
 
     if (channel == 'colabel'){
-
       # filter check
       if (use_filter) {
         if (is.null(s$segmentation_filter[['eyfp']])) {
@@ -621,13 +626,11 @@ make_segmentation_object.slice <- function(s,
                                         eyfp_counts,
                                         s$raw_segmentation_data$colabel$eyfp_counts_16bit,
                                         ...)
-
       seg.coloc <- SMARTR::segmentation.object
       seg.coloc$soma$x <- coloc.counts$X2_Pix
       seg.coloc$soma$y <- coloc.counts$Y2_Pix
       seg.coloc$soma$area <- coloc.counts$Vol..pix.
       seg.coloc$soma$intensity <- coloc.counts$Mean
-
 
       # store into segmentation list
       segmentation_list[[channel]] <- seg.coloc
@@ -644,7 +647,6 @@ make_segmentation_object.slice <- function(s,
       } else {
         counts <- s$raw_segmentation_data[[channel]]
       }
-
       seg <- SMARTR::segmentation.object
       seg$soma$x <- counts$X2_Pix
       seg$soma$y <- counts$Y2_Pix
@@ -761,6 +763,7 @@ map_cells_to_atlas.slice <- function(s,
                                      ...){
 
   for (k in 1:length(channels)){
+
     cell_data <- wholebrain::inspect.registration(s$registration_obj,
                                       s$segmentation_obj[[channels[k]]],
                                       forward.warps = TRUE,
@@ -806,12 +809,11 @@ map_cells_to_atlas.slice <- function(s,
 map_cells_to_atlas.mouse <- function(m,
                                      slice_ID = NA,
                                      hemisphere = NULL,
-                                     channels = c('cfos', 'efyp', 'colabel'),
+                                     channels = c('cfos', 'eyfp', 'colabel'),
                                      clean =  TRUE,
                                      display = TRUE,
                                      replace = FALSE,
                                      ...){
-
   # Get mouse ID
   mouse_ID <- attr(m, 'info')$mouse_ID
 
@@ -847,9 +849,8 @@ map_cells_to_atlas.mouse <- function(m,
                                                   display = display,
                                                   mouse_ID = mouse_ID,
                                                   ...)
-
         } else{
-          stop(paste0("There is an existing segmentation object for this slice! If you want to overwrite it, set replace to TRUE."))
+          stop(paste0("There is a existing mapped data for this slice! If you want to overwrite it, set replace to TRUE."))
         }
       } else {
         # forward mapped data from scratch
@@ -865,7 +866,6 @@ map_cells_to_atlas.mouse <- function(m,
   if (isFALSE(match)){
     stop(paste0("There were no slices matching the name ", slice_name, " found in your mouse!" ))
   }
-
   return(m)
 }
 
@@ -880,42 +880,60 @@ map_cells_to_atlas.mouse <- function(m,
 #' @param s slice object
 #' @param channels (vec) Channels to process.
 #' @param clean (bool, default = TRUE ). Remove cells that don't map to any regions.
-#' @param exclude_regions (str vector, default = NULL); acronyms of regions you want to exclude IN ADDITION to regions that will by default be excluded in the slice attribute 'regions_excluded'
+#' @param exclude_right_regions (str vector, default = NULL); acronyms of regions you want to exclude from right hemi,in addition to regions that will by default be excluded in the slice attribute 'right_regions_excluded'
+#' @param exclude_left_regions (str vector, default = NULL); acronyms of regions you want to exclude from left hemi, in addition to regions that will by default be excluded in the slice attribute 'left_regions_excluded'
 #' @param exclude_hemisphere (bool, default = TRUE); excludes the contralateral hemisphere from one indicated in slice attribute
 #' @param exclude_layer_1 (bool, default = TRUE) excludes all counts from layer 1
 #' @param plot_filtered (bool, default = TRUE) pop up window to check the excluded anatomy.
 #' @examples s <-  exclude_anatomy(s, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE, exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE, plot_filtered = TRUE)
 #' @export
 
-
 exclude_anatomy.slice <- function(s,
                                   channels = c('cfos', 'eyfp', 'colabel'),
                                   clean = TRUE,
-                                  exclude_regions = NULL,
+                                  # exclude_regions = NULL,
+                                  exclude_right_regions = NULL,
+                                  exclude_left_regions = NULL,
                                   exclude_hemisphere = TRUE,
                                   exclude_layer_1 = TRUE,
                                   plot_filtered = TRUE){
 
 
   # Get slice information & combine exclude regions parameter with default regions excluded;
-  # Reassign so that all regions excluded are tracked
   info <- attributes(s)
-  exclude_regions <- unique(c(exclude_regions, info$info$regions_excluded))
-  attr(s, 'info')$regions_excluded <- exclude_regions
+
+  # Reassign so that all regions excluded on the right side are tracked
+  exclude_right_regions <- unique(c(exclude_right_regions, info$info$right_regions_excluded))
+  attr(s, 'info')$right_regions_excluded <- exclude_right_regions
 
   # is.null check for exclude regions
-  if (!is.null(exclude_regions)){
-
+  if (!is.null(exclude_right_regions)){
     # Containing all subregions to exclude too
-    all_excluded_regions <- c()
-    for (r in 1:length(exclude_regions)) {
-      all_excluded_regions <- c(all_excluded_regions, exclude_regions[r],
-                                wholebrain::get.sub.structure(exclude_regions[r]))
+    all_excluded_right_regions <- c()
+    for (r in 1:length(exclude_right_regions)) {
+      all_excluded_right_regions <- c(all_excluded_right_regions, exclude_right_regions[r],
+                                SMARTR::get.sub.structure(exclude_right_regions[r]))
     }
-    # May  not be necessary, included just in case
-    all_excluded_regions <- unique(all_excluded_regions)
+    all_excluded_right_regions <- unique(all_excluded_right_regions)
   } else {
-    all_excluded_regions <- NULL
+    all_excluded_right_regions <- NULL
+  }
+
+  # Reassign so that all regions excluded on the left side are tracked
+  exclude_left_regions <- unique(c(exclude_left_regions, info$info$left_regions_excluded))
+  attr(s, 'info')$left_regions_excluded <- exclude_left_regions
+
+  # is.null check for exclude regions
+  if (!is.null(exclude_left_regions)){
+    # Containing all subregions to exclude too
+    all_excluded_left_regions <- c()
+    for (r in 1:length(exclude_left_regions)) {
+      all_excluded_left_regions <- c(all_excluded_left_regions, exclude_left_regions[r],
+                                      SMARTR::get.sub.structure(exclude_left_regions[r]))
+    }
+    all_excluded_left_regions <- unique(all_excluded_left_regions)
+  } else {
+    all_excluded_left_regions <- NULL
   }
 
   ## Filtering per channel
@@ -923,8 +941,10 @@ exclude_anatomy.slice <- function(s,
 
     dataset <- s$forward_warped_data[[channels[k]]]
 
-    # 1) Filter out regions
-    dataset <- dataset[!(dataset$acronym %in% all_excluded_regions), ]
+    # 1) Filter out right and left regions
+    # dataset <- dataset[!(dataset$acronym %in% all_excluded_regions), ]
+     dataset <- dataset[!(dataset$right.hemisphere & (dataset$acronym %in% all_excluded_right_regions)),]
+     dataset <- dataset[!(!dataset$right.hemisphere & (dataset$acronym %in% all_excluded_left_regions)),]
 
     # 2) Filter out hemisphere
     if (exclude_hemisphere){
@@ -943,13 +963,10 @@ exclude_anatomy.slice <- function(s,
     # Filter out cell counts that are out of bounds
     if(clean){
       dataset <- dataset[!dataset$id==0,]
-
       # Get rid of rows that contain any NA values
       dataset <- tidyr::drop_na(dataset)
       s$forward_warped_data[[k]] <- dataset
-
     }
-
     # Reassign cleaned dataset
     s$forward_warped_data[[channels[k]]] <- dataset
 
@@ -978,7 +995,8 @@ exclude_anatomy.slice <- function(s,
 #' @param hemisphere (str) 'left', 'right' or NULL (both)
 #' @param channels (vec) Channels to process.
 #' @param clean (bool, default = TRUE ). Remove cells that don't map to any regions.
-#' @param exclude_regions (str vector, default = NULL); acronyms of regions you want to exclude IN ADDITION to regions that will by default be excluded in the slice attribute 'regions_excluded'
+#' @param exclude_right_regions (str vector, default = NULL); acronyms of regions you want to exclude from right hemi,in addition to regions that will by default be excluded in the slice attribute 'right_regions_excluded'
+#' @param exclude_left_regions (str vector, default = NULL); acronyms of regions you want to exclude from left hemi, in addition to regions that will by default be excluded in the slice attribute 'left_regions_excluded'
 #' @param exclude_hemisphere (bool, default = TRUE); excludes the contralateral hemisphere from one indicated in slice attribute
 #' @param exclude_layer_1 (bool, default = TRUE); excludes all counts from layer 1 (TEMPORARY, may not be hardcoded in later)
 #' @param plot_filtered (bool, default = TRUE) pop up window to check the excluded anatomy.
@@ -995,8 +1013,9 @@ exclude_anatomy.slice <- function(s,
                                   hemisphere = NULL,
                                   channels = c('cfos', 'eyfp', 'colabel'),
                                   clean = TRUE,
-                                  exclude_regions = NULL,
-                                  exclude_hemisphere = TRUE,
+                                  exclude_right_regions = NULL,
+                                  exclude_left_regions = NULL,
+                                  exclude_hemisphere = FALSE,
                                   exclude_layer_1 = TRUE,
                                   plot_filtered = TRUE){
 
@@ -1030,7 +1049,8 @@ exclude_anatomy.slice <- function(s,
         m$slices[[match]] <- exclude_anatomy(m$slices[[match]],
                                              channels = channels,
                                              clean = clean,
-                                             exclude_regions = exclude_regions,
+                                             exclude_right_regions = exclude_right_regions,
+                                             exclude_left_regions = exclude_left_regions,
                                              exclude_hemisphere = exclude_hemisphere,
                                              exclude_layer_1 = exclude_layer_1,
                                              plot_filtered = plot_filtered)
@@ -1117,6 +1137,63 @@ get_registered_areas.mouse <- function(m,
     stop(paste0("There were no slices matching the name ", slice_name, " found in your mouse!" ))
   }
 return(m)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#__________________ slice object specific functions __________________________
+
+
+
+#' Adjust brain outline.
+#' @description  This function takes a slice object and first applies a filter with default settings to
+#' the image set as the slice registration path. An interative user loop allows for easy adjustment of the brain threshold
+#' since the wholebrain GUI tends to be a bit buggy. This function then returns a filter with the adjusted brain threshold.
+#'
+#' @param s slice object
+#'
+#' @return filter (list) wholebrain compatible filter
+#' @export
+#'
+#' @examples filter <- adjust_brain_outline(s); s <- register(s, filter = filter) Adjust the brain threshold, then run register on the slice object
+adjust_brain_outline <- function(s){
+
+  regi_path <- attr(s, "info")$registration_path
+  filter <- SMARTR::filter
+  filter$brain.threshold <- 10
+
+  cat(paste0("Trying default brain threshold of ", filter$brain.threshold, "\n" ))
+  filter <- wholebrain::segment(regi_path, filter = filter)
+  filter <- filter$filter
+
+  change_done <-FALSE
+  while (!change_done) {
+    cat(paste0("Your brain threshold is: ", filter$brain.threshold ))
+    inp <- readline("Do you want to change your threshold: Y/N?" )
+    if (inp=="Y" || inp=="y") {
+
+      filter$brain.threshold <- as.integer(readline("Enter your new brain threshold: "))
+      filter <- wholebrain::segment(regi_path, filter = filter)
+      filter <- filter$filter
+
+    } else if ( inp=="N" || inp == "n") {
+      # exit out of loop
+      change_done  <- TRUE
+    }
+  }
+
+  return(filter)
 }
 
 
@@ -1861,9 +1938,6 @@ get.colabeled.cells <- function(coloc.table, eyfp.counts, eyfp.counts.16bit, vol
   coloc.data <- eyfp.counts[index, unique(names(eyfp.counts))] %>% dplyr::distinct()
 
   return(coloc.data)
-
-
-
 
   ## EXTRAS
   # ## get the matched object number

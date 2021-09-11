@@ -22,14 +22,16 @@ get_correlations(
 
 \item{channels}{The channels to correlate.}
 
-\item{p_adjust_method}{(default = "BH") Benjamini-Hochberg method is recommended.
+\item{p_adjust_method}{(bool or str, default = "BH") Benjamini-Hochberg method is recommended.
 Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE
 to keep "raw" p values.}
 
 \item{alpha}{The alpha level for p adjustment.}
 }
 \value{
-e experiment object. The experiment object now has a \code{correlation_list} object stored in it.
+e experiment object. The experiment object now has a named \code{correlation_list} object stored in it.
+The name of the correlation object is the concatenation of the variable values separated by a "_".
+This name allows for unambiguous identification of different group correlations analysis in the future.
 }
 \description{
 get_correlations

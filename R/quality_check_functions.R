@@ -3,39 +3,97 @@
 
 #_____________________ For mouse objects _________________________
 
-
-#' Detect atlas regions that only show up in a single slice object
+#' Detect atlas regions that only show up in a single slice object within a mouse.
 #' @description Quality check function to make sure that the regions included for analysis show up
-#' in more than 1 slice object, otherwise the user can remove them from the mouse object.
+#' in more than 1 slice object, otherwise the user can remove exceptions from the mouse object.
+#'
+#' Regions counts derived from only one image may be less accurate. This function can generate a log of these regions
+#' so the user can qualitatively evaluate the raw data. Users also have to option of removing these regions automatically
+#' from normalized_counts dataframe.
+#'
 #'
 #' The user should run [normalize_cell_counts()] and [get_cell_table()] functions prior to using this function.
-#' If the user has run [split_hipp_DV()] the function will automatically account for this
+#' If the user has run [split_hipp_DV()] with the option to merge, this function will account for for the dorsal and
+#' ventral hippocampal counts separately.
 #'
 #' @param m
-#' @param remove
-#' @param output
+#' @param remove (bool, FALSE) Remove any regions in the normalized counts table that
+#' @param log (bool, TRUE) Save the regions that don't have enough n into a .csv file in the output folder.
 #'
 #' @return
 #' @export
 #'
 #' @examples
-detect_single_slice_regions <- function(m, remove = FALSE, output = TRUE){
-
+detect_single_slice_regions <- function(m, remove = FALSE, log = TRUE){
   # $hipp_DV_normalized_counts
   if (!is.null(m$hipp_DV_normalized_counts)){
-
     # Do the same thing for hippocampus and append to the log files
-
   }
 }
 
 
 #_____________________ For experiment objects _________________________
 
-## remove any normalized regions counts that are more than 2 SDs (user-defined) higher
-# than their cohort mean
+#' Remove outlier counts
+#' @description remove any normalized regions counts that are more than X standard deviations (default = 2) higher
+# than their cohort mean.
+#'
+#' @param e experiment object
+#' @param by (str, default = c("group", "sex")) The mice attributes used to group the datasets into comparison groups.
+#' @param n_sd (int, default = 2). Number of standards deviations above and below which categorizes outliers.
+#' @param remove (bool, default = TRUE) Remove all outlier rows from the combined normalized counts dataframe in the experiment object.
+#' @param log (bool, default = TRUE) Save the logged outlier regions into a csv file in the output folder.
+#'
+#' @return e experiment object. Outlier counts in the experiment object are removed if remove = TRUE.
+#' @export
+#'
+#' @examples
+find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = TRUE, log = TRUE){
 
-remove_outlier_counts <- function(e, by = c("group", "sex"), sd = 2){
+  # Get the channels for an experiment
+  e_info <- attr(e, "info")
+
+  # correct mismatched attributes typed by users
+  by <- match_m_attr(by)
+
+
+  for (channel in e_info$channels){
+
+    # Get the mean and sd of each group
+
+    ## Get mouse counts
+    stats_df <- e$combined_normalized_counts[[channel]] %>%
+      dplyr::group_by(across(all_of(c(by, "acronym")))) %>%
+      dplyr::summarise(mean_norm_counts = mean(normalized.count.by.volume),
+                       sd_norm_counts = sd(normalized.count.by.volume))
+
+    joined_df <- e$combined_normalized_counts[[channel]] %>% dplyr::inner_join(stats_df, c(by, "acronym")) %>%
+      dplyr::mutate(outlier = ifelse(normalized.count.by.volume > mean_norm_counts + sd_norm_counts*n_sd | normalized.count.by.volume < mean_norm_counts - sd_norm_counts*n_sd, TRUE, FALSE))
+
+    # Create a list of outliers to print
+
+    if (isTRUE(log)){
+      log_df <- joined_df %>% dplyr::filter(outlier) %>%
+        dplyr::select(-c(mean_norm_counts,sd_norm_counts)) %>%
+        dplyr::arrange(across(all_of(by)), acronym, mouse_ID)
+
+      if (length(log_df$mouse_ID) > 0 ){
+        message("There were ", length(log_df$mouse_ID),
+                " outliers found. Outliers were based on within group mean and standard deviation.")
+        out_path <- file.path(e_info$output_path, "region_count_outliers_within_groups.csv")
+        write.csv(log_df, file = out_path)
+        message(paste0("Saved regions outliers dataframe at:\n", out_path))
+      } else {
+        message("No regions outliers were found within each group.")
+      }
+    }
+
+    if (isTRUE(remove)){
+      e$combined_normalized_counts[[channel]] <- joined_df %>% dplyr::filter(!outlier) %>%
+        dplyr::select(-c(mean_norm_counts,sd_norm_counts, outlier))
+    }
+  }
+  return(e)
 }
 
 
@@ -112,7 +170,6 @@ enough_mice_per_group<- function(e, by = c("group", "sex"), min_n = 4, remove = 
 
   return(e)
 }
-
 
 
 #_______________ Internal functions _______________
