@@ -234,8 +234,6 @@ correlation_diff_permutation <- function(e,
   attr_group_2 <- attributes(e$correlation_list[[correlation_list_name_2]])
 
   # # Get overlapping regions between the two correlational datasets
-  # channels <- attr_group_1$names
-
   p_matrix_list <- vector(mode = "list", length = length(channels))
   names(p_matrix_list) <- channels
 
@@ -314,7 +312,10 @@ correlation_diff_permutation <- function(e,
     p_matrix_list[[channel]] <- list(p_val = p_matrix,
                                      sig = p_matrix < alpha,
                                      test_statistic = test_statistic,
-                                     permutation_null_distribution = test_statistic_distributions)
+                                     group_1_pearson = group_1_corr$r,
+                                     group_2_pearson = group_2_corr$r,
+                                     permutation_null_distribution = test_statistic_distributions,
+                                     alpha = alpha)
   }
   # Store the results in the experiment object
   comparison <- paste(correlation_list_name_1,"vs",correlation_list_name_2, sep = "_")
@@ -509,7 +510,6 @@ summarise_networks <- function(e,
          networks_stats = network_stats_df,
          networks_degree_distrib = degree_distribution_df)
   }
-
   return(e)
 }
 
@@ -793,19 +793,19 @@ plot_correlation_heatmaps <- function(e, correlation_list_name = "female_AD", co
 #' @param title Title of the plot.
 #' @param height height of the plot in inches.
 #' @param width width of the plot in inches.
-#' @param image_ext (default = ".png") image extension to the plot as.
+#' @param image_ext (default = ".png") image extension to save the plot as.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
-#' @param channels (str, default = c("cfos", "eyfp", "colabel")) channels to plot
+#' @param channels (str, default = c("cfos", "eyfp", "colabel")) channels to plot.
+#' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
 #' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal codes corresponding to the channels (respectively) to plot.
-#' @param alpha (float, default = 0.05) The alpha value used to plot horizontal line. Point above the line are considered significant.
+#'
 #' @export
 #' @examples
 volcano_plot <- function(e,
                          permutation_comparison = "female_AD_vs_male_AD",
                          channels = c("cfos", "eyfp", "colabel"),
                          colors =  c("#be0000", "#00782e", "#f09b08"),
-                         alpha = 0.05,
                          save_plot = TRUE,
                          title = NULL,
                          height = 8,
@@ -822,12 +822,14 @@ volcano_plot <- function(e,
                                             line = element_line(size = 1),
                                             plot.title = element_text(hjust = 0.5, size = 36),
                                             axis.ticks.length = unit(5.5,"points"))
-
   if (is.null(title)){
     title <-  permutation_comparison
   }
 
   for (k in 1:length(channels)){
+    # Get alpha levels
+    alpha <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$alpha
+
     # get the p-values, significance, and corr_diff
     p_vals <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$p_val %>%
       tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
@@ -835,7 +837,6 @@ volcano_plot <- function(e,
       tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
     sigs <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$sig %>%
       tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
-
 
     # Pivot long
     p_vals <- p_vals %>% pivot_longer(col = - "rowreg", values_drop_na = TRUE,
@@ -860,12 +861,10 @@ volcano_plot <- function(e,
       labs(title = title, x = "Correlation Difference", y = "-log(p-value)") +
       plot_theme
 
-
     if (print_plot){
       quartz()
       print(p)
     }
-
 
     if(save_plot){
       # Plot the plot
@@ -889,34 +888,143 @@ volcano_plot <- function(e,
 
 
 #' Create a parallel coordinate plot
-#'
-#' @param e
-#' @param permutation_comparison
-#' @param channels
-#' @param colors
-#' @param alpha
-#' @param save_plot
-#' @param title
-#' @param height
-#' @param width
-#' @param print_plot
-#' @param image_ext
-#'
-#' @return
-#' @export
-#'
-#' @examples
+#' @description Plot the correlation difference between two comparison groups into a parallel coordinate plot. The function
+#' [SMARTR::correlation_diff_permutation()] must be run first in order to generate results to plot.
+#' @param e experiment object
+#' @param permutation_comparison The name of the correlation group comparisons to plot.
+#' @param channels (str, default = c("cfos", "eyfp", "colabel")) channels to plot
+#' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal codes corresponding to the channels (respectively) to plot.
+#' @param x_label_group_1
+#' @param x_label_group_2
+#' @param  height height of the plot in inches.
+#' @param  width width of the plot in inches.
+#' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
+#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
+#'  the experiment object output folder.
+#' @param image_ext (default = ".png") image extension to save the plot as.
 parallel_coordinate_plot <- function(e,
                                      permutation_comparison = "AD_vs_control",
                                      channels = c("cfos", "eyfp", "colabel"),
                                      colors =  c("#be0000", "#00782e", "#f09b08"),
-                                     alpha = 0.05,
-                                     save_plot = TRUE,
-                                     title = NULL,
-                                     height = 8,
+                                     x_label_group_1 = NULL,
+                                     x_label_group_2 = NULL,
+                                     height = 10,
                                      width = 10,
                                      print_plot = TRUE,
+                                     save_plot = TRUE,
                                      image_ext = ".png"){
+
+  # parse group names
+  if(is.null(x_label_group_1)){
+    group_1 <- stringr::str_split(permutation_comparison, "_vs_", simplify = TRUE)[,1] %>%
+      stringr::str_split("_", simplify = TRUE) %>% paste(collapse = " ")
+  } else {
+    group_1 <- x_label_group_1
+  }
+  if(is.null(x_label_group_2)){
+    group_2 <- stringr::str_split(permutation_comparison, "_vs_", simplify = TRUE)[,2] %>%
+      stringr::str_split("_", simplify = TRUE) %>% paste(collapse = " ")
+  } else {
+    group_1=2 <- x_label_group_2
+  }
+
+
+  for (k in 1:length(channels)){
+
+    # Get alpha
+    alpha <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$alpha
+
+    # get the p-values, significance, and corr_diff
+    p_vals <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$p_val %>%
+      tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
+    corr_diffs <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$test_statistic %>%
+      tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
+    sigs <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$sig %>%
+      tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
+    sigs <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$sig %>%
+      tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
+    sigs <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$sig %>%
+      tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
+    group_1_pearson <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$group_1_pearson %>%
+      tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
+    group_2_pearson <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$group_2_pearson %>%
+      tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
+
+
+    # Pivot long
+    p_vals <- p_vals %>% pivot_longer(col = - "rowreg", values_drop_na = TRUE,
+                                      values_to = "p_val", names_to = "colreg")
+    corr_diffs <- corr_diffs %>% pivot_longer(col = - "rowreg", values_drop_na = TRUE,
+                                              values_to = "corr_diff", names_to = "colreg")
+    sigs <- sigs %>% pivot_longer(col = - "rowreg", values_drop_na = TRUE,
+                                  values_to = "sig", names_to = "colreg")
+    group_1_pearson <- group_1_pearson %>% pivot_longer(col = - "rowreg", values_drop_na = TRUE,
+                                  values_to = group_1, names_to = "colreg")
+    group_2_pearson <- group_2_pearson %>% pivot_longer(col = - "rowreg", values_drop_na = TRUE,
+                                  values_to = group_2, names_to = "colreg")
+
+    # Combine into master df for plotting
+    df <- p_vals %>% dplyr::inner_join(corr_diffs, by = c("rowreg", "colreg")) %>%
+      dplyr::inner_join(sigs, by = c("rowreg", "colreg")) %>%
+      dplyr::inner_join(group_1_pearson, by = c("rowreg", "colreg")) %>%
+      dplyr::inner_join(group_2_pearson, by = c("rowreg", "colreg")) %>%
+      tidyr::pivot_longer(cols = c(group_1, group_2), names_to = "group", values_to = "corr")
+
+
+
+    df <- df %>% dplyr::filter(sig, abs(corr_diff) >= 1) %>%
+      dplyr::mutate(sign = factor(ifelse(corr>0,"P","N"))) %>%
+      dplyr::mutate(group = factor(group, levels = c(group_2, group_1)),
+             nudge = ifelse(group == group_1, 0.1, -0.1)) %>%
+      dplyr::arrange(group, corr_diff) %>%
+      mutate(text = paste(rowreg, colreg, sep = "."),
+             group_plot = paste(rowreg, colreg, sep = "."))
+
+
+    df[seq(2, nrow(df)/2, by = 2),]$text <- ""
+    df[seq(nrow(df)/2+1, nrow(df), by = 2),]$text <- ""
+
+
+    # Plotting theme
+    theme.small.xh <- theme_classic() +
+      theme(text = element_text(size = 22), line = element_line(size = 1),
+            plot.title = element_text(hjust = 0.5, size = 36), axis.ticks.length = unit(5.5,"points"))
+
+    # Create parallel coordinate plot
+    p <- ggplot(df, aes(x = group, y = corr, group = group_plot)) +
+      geom_line(alpha = 0.5, color = colors[k], size = 3) +
+      geom_point(size = 4, alpha = 0.5, color = colors[k]) +
+      geom_text_repel(aes(label = text),
+                      color = colors[k], direction = "y", force = 1,
+                      ylim = c(-1, 1),
+                      segment.alpha = 0.3,
+                      nudge_x = pull(df, nudge)*1:5, max.iter = 20000) +
+      geom_hline(yintercept = 0,linetype=2,size=1.2) +
+      xlab("Group") + ylab("Correlation") + expand_limits(y=c(-1,1)) + theme.small.xh
+
+
+    if (print_plot){
+      quartz(height = height, width = width)
+      print(p)
+    }
+
+    if(save_plot){
+      # Plot
+      quartz(width = width, height = height)
+      print(p)
+
+      # Create figure directory if it doesn't already exists
+      output_dir <-  file.path(attr(e, "info")$output_path, "figures")
+      if(!dir.exists(output_dir)){
+        dir.create(output_dir)
+      }
+      image_file <- file.path(output_dir, paste0(permutation_comparison, "_parallel_coordinate_plot_",
+                                                 channels[k], "_", image_ext))
+      ggsave(filename = image_file,  width = width, height = height, units = "in")
+      dev.off()
+    }
+  }
+
 }
 
 
@@ -998,7 +1106,7 @@ plot_networks <- function(e,
     p <-  p + ggtitle(title)
 
     if (print_plot){
-      quartz()
+      quartz(width = width, height = height)
       print(p)
     }
 
@@ -1019,8 +1127,6 @@ plot_networks <- function(e,
   }
 
 }
-
-
 
 
 
