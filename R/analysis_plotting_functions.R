@@ -10,10 +10,7 @@ NULL
 #' @importFrom tidygraph activate
 NULL
 
-
-
 ##_____________________ Analysis functions ___________________________
-
 
 #Calculate percentage colabeled over cfos and eyfp. Specify which ROIS you want
 
@@ -57,7 +54,6 @@ get_percent_colabel <-function(e, by = NULL, channel = "eyfp", save_table = TRUE
       common_reg <- rois
     }
   }
-
 
   if (is.null(by)){
 
@@ -334,18 +330,18 @@ correlation_diff_permutation <- function(e,
 
 
 #' Create network graph objects for plotting
+#' @description
 #' @param e experiment object
 #' @param correlation_list_name (str, default = "AD") Name of the correlation list object used to generate the networks.
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
-#' @param edge_color (str, default = "firebrick")  The name of the color or a hexadecimal code used to plot the edges.
 #' @param alpha (float, default = 0.05) The significance cutoff for including brain regions in the network.
-#'
 #' @return e experiment object. This object now has a `networks` list with each element of the list storing network data. The name of
 #' each network (`network_name`)is the same as the `correlation_list_name` used to generate the network. This `network_name` is fed into
 #' [SMARTR::plot_network()] as a parameter.
 #' @export
 #'
 #' @examples
+#' @seealso [SMARTR::plot_networks()]
 create_networks <- function(e,
                             correlation_list_name = "AD",
                             channels = c("cfos", "eyfp", "colabel"),
@@ -425,9 +421,101 @@ create_networks <- function(e,
   return(e)
 }
 
+
+
+#' Summarize multiple networks
+#' @description Create summary dataframes of all networks and create network statistics for multiple networks
+#' @param e experiment object
+#' @param network_names (str, default = NULL) The names of the networks to generate summary tables for.
+#' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
+#' @param save_stats (bool, default = TRUE) Save the summary stats as a csv file in the output folder
+#' @param save_degree_distribution (bool, default = TRUE) Save the network degree distributions (frequencies of each degree) across each comparison group as a csv file.
+#' @param save_betweenness_distribution (bool, default = TRUE) Save the betweenness distribution.
+#'
+#' @return e experiment object
+#' @export
+#'
+#' @examples e <- get_network_statistics(e, network_names = c("AD", "control"),
+#' channels = c("cfos", "eyfp", "colabel"),
+#' save_stats = TRUE, save_degree_distribution = TRUE)
+summarise_networks <- function(e,
+                                   network_names = c("AD", "control"),
+                                   channels = c("cfos", "eyfp", "colabel"),
+                                   save_stats = TRUE,
+                                   save_degree_distribution = TRUE,
+                                   save_betweenness_distribution = TRUE){
+
+  # Check all the networks named are made
+  if(!all(network_names %in% names(e$networks))){
+    stop("The network names that you specified are not all stored in your experiment object.",
+         "Please check the names of the networks you want to summarize!")
+  }
+
+  # Check that they all contain the channels to compare with each other
+  for (network in network_names){
+    if(!all(channels %in% names(e$networks[[network]]))){
+      stop("At least one of your networks does not contain data for the channel(s) you want to summarize.",
+           "Please double check and change your channels parameter.")
+    }
+  }
+
+  # Get output path
+  outpath <- attr(e, "info")$output_path
+
+  # Create summary tibble
+  for (channel in channels){
+    nodes_df_list <- list()
+    edges_df_list <- list()
+    for (network in network_names){
+
+      nodes_df_list[[network]] <-  e$networks[[network]][[channel]] %>% tidygraph::activate(nodes) %>%
+        tibble::as_tibble() %>% dplyr::mutate(group = network)
+
+      edges_df_list[[network]] <-  e$networks[[network]][[channel]] %>% tidygraph::activate(edges) %>%
+        tibble::as_tibble() %>% dplyr::mutate(group = network)
+    }
+    nodes_df <- dplyr::bind_rows(nodes_df_list) %>% dplyr::mutate(group=factor(group, levels = network_names))
+    edges_df <- dplyr::bind_rows(edges_df_list) %>% dplyr::mutate(group=factor(group, levels = network_names))
+
+    network_stats_df <- nodes_df %>% dplyr::group_by(group) %>%
+      summarise_if(is.numeric,list(~mean(.),~sd(.))) %>%
+      dplyr::left_join(nodes_df %>% dplyr::group_by(group) %>% summarise(n.nodes = n())) %>%
+      dplyr::left_join(edges_df %>% dplyr::group_by(group) %>% summarise(n.edges = n())) %>%
+      dplyr::mutate(edge.density = n.edges/(2*n.nodes*(n.nodes-1))) %>%
+      dplyr::rename_all(str_replace,pattern = "_",replacement=".")
+
+    #make table of degree frequency (useful for plotting degree histogram outside of R)
+    degree_distribution_df <- nodes_df %>% dplyr::group_by(group, degree) %>% dplyr::count(degree)
+
+    # Make a dataframe of betweenness (useful)
+    betweenness_distribution <- nodes_df %>% dplyr::select(name, group, btw) %>% dplyr::group_by(group) %>% dplyr::arrange(group, dplyr::desc(btw)) %>%
+      dplyr::mutate(name = factor(name, levels=name))
+
+    if(save_stats){
+      write.csv(network_stats_df,  file.path(outpath, paste0("summary_networks_stats_", channel, ".csv")))
+    }
+
+    if(save_degree_distribution){
+      write.csv(degree_distribution_df,  file.path(outpath, paste0("networks_degree_distributions_", channel, ".csv")))
+    }
+
+    if(save_betweenness_distribution){
+      write.csv( betweenness_distribution,  file.path(outpath, paste0("networks_betweenness_distributions_", channel, ".csv")))
+    }
+
+    # Store the network summary data into channels
+    e$networks_summaries[[channel]] <- list(networks_nodes = nodes_df,
+         networks_edges = edges_df,
+         networks_stats = network_stats_df,
+         networks_degree_distrib = degree_distribution_df)
+  }
+
+  return(e)
+}
+
+
+
 ##_____________________ Plotting functions ___________________________
-
-
 ## THis needs to be cleaned up so that patterns are optional
 
 #' plot_colabel_percent
@@ -590,7 +678,6 @@ plot_percent_colabel <- function(e, by = NULL, channel = "cfos",  rois = c("AAA"
   }
 }
 
-
 #' Plot correlation heatmaps
 #'
 #' @param e experiment object that contains a named correlation_list object generated by [SMARTR::get_correlations()]
@@ -600,12 +687,8 @@ plot_percent_colabel <- function(e, by = NULL, channel = "cfos",  rois = c("AAA"
 #' @param height Height of the plot in inches.
 #' @param width width of the plot in inches.
 #' @param image_ext (default = ".png") image extension to the plot as.
-#' @param save_plot (bool, default = TRUE) Save the correlation heatmap plots into the figures subdirectory of the
+#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
-#' @param store store the plot object in the experiment objects
-
-#'
-#' @return e experiment object
 #' @export
 #'
 #' @examples
@@ -613,7 +696,6 @@ plot_percent_colabel <- function(e, by = NULL, channel = "cfos",  rois = c("AAA"
 plot_correlation_heatmaps <- function(e, correlation_list_name = "female_AD", colors = c("#be0000", "#00782e", "#f09b08"),
                                       print_plot = TRUE, save_plot = TRUE,
                                       title = NULL, height = 10, width = 10, image_ext = ".png"){
-
 
   # Detect the OS and set quartz( as graphing function)
   if(get_os() != "osx"){
@@ -639,7 +721,7 @@ plot_correlation_heatmaps <- function(e, correlation_list_name = "female_AD", co
   theme.hm <- ggplot2::theme(axis.text.x = element_text(hjust = 1, vjust = 0.5, angle = 90, size = 8),
                     axis.text.y = element_text(vjust = 0.5, size = 8),
                     plot.title = element_text(hjust = 0.5, size = 36),
-                    axis.title = element_text(size = 22),
+                    axis.title = element_text(size = 18),
                     legend.text = element_text(size = 22),
                     legend.key.height = unit(100, "points"),
                     legend.title = element_text(size = 22))
@@ -696,26 +778,27 @@ plot_correlation_heatmaps <- function(e, correlation_list_name = "female_AD", co
 }
 
 
-
+# plot_permutation_histogram <- function(e, roi = "dDG"){
+#
+#
+# }
 
 #' Create a Volcano plot.
 #'
 #' Plot the correlation difference between two comparison groups into a volcano plot. The function
 #' [SMARTR::correlation_diff_permutation()] must be run first in order to generate results to plot.
 #'
-#' @param e
+#' @param e experiment object
 #' @param permutation_comparison The name of the correlation group comparisons to plot.
 #' @param title Title of the plot.
 #' @param height height of the plot in inches.
 #' @param width width of the plot in inches.
 #' @param image_ext (default = ".png") image extension to the plot as.
-#' @param save_plot (bool, default = TRUE) Save the correlation heatmap plots into the figures subdirectory of the
+#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
+#'  the experiment object output folder.
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) channels to plot
 #' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal codes corresponding to the channels (respectively) to plot.
 #' @param alpha (float, default = 0.05) The alpha value used to plot horizontal line. Point above the line are considered significant.
-#' @param store (bool, default = FALSE) Store the plot object into your experiment.
-#'
-#' @return e experiment object
 #' @export
 #' @examples
 volcano_plot <- function(e,
@@ -805,22 +888,54 @@ volcano_plot <- function(e,
 
 
 
+#' Create a parallel coordinate plot
+#'
+#' @param e
+#' @param permutation_comparison
+#' @param channels
+#' @param colors
+#' @param alpha
+#' @param save_plot
+#' @param title
+#' @param height
+#' @param width
+#' @param print_plot
+#' @param image_ext
+#'
+#' @return
+#' @export
+#'
+#' @examples
+parallel_coordinate_plot <- function(e,
+                                     permutation_comparison = "AD_vs_control",
+                                     channels = c("cfos", "eyfp", "colabel"),
+                                     colors =  c("#be0000", "#00782e", "#f09b08"),
+                                     alpha = 0.05,
+                                     save_plot = TRUE,
+                                     title = NULL,
+                                     height = 8,
+                                     width = 10,
+                                     print_plot = TRUE,
+                                     image_ext = ".png"){
+}
+
+
 
 
 #' Plot the networks stored in an experiment object
 #'
 #' @param e experiment object
 #' @param network_name (str, default = "AD")
-#' @param title
-#' @param channels
-#' @param height
-#' @param width
-#' @param image_ext
-#' @param save_plot
-#'
-#' @return
+#' @param title (str, default = NULL) Title of network plot
+#' @param channels (str, default = c("cfos", "eyfp", "colabel"))
+#' @param height Height of the plot in inches.
+#' @param width width of the plot in inches.
+#' @param image_ext (default = ".png") image extension to the plot as.
+#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
+#' @param edge_color (str, default = "firebrick") Color of the network edges. Can also be a dexadecimal color code written as a string.
+#' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.
+#'  the experiment object output folder.
 #' @export
-#'
 #' @examples
 plot_networks <- function(e,
                           network_name = "AD",
@@ -908,10 +1023,101 @@ plot_networks <- function(e,
 
 
 
-# plot_permutation_histogram <- function(e, roi = "dDG"){
 
-#
-# }
+#' Plot the degree distributions
+#' @description
+#' @param e
+#' @param colors
+#' @param labels
+#' @param save_plot
+#' @param print_plot
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plot_degree_distributions <- function(e, colors = c(), labels, save_plot = TRUE, print_plot = TRUE){
+
+  ggplot(cfos.networks.nodes,aes(degree)) + geom_bar(aes(fill=group),color="black") +
+    scale_fill_manual(values = cfos.cols[1:3], name="Group",
+                      labels = c("HNK"="HNK","Ketamine"="Ketamine","Saline"="Saline")) +
+    scale_x_continuous(breaks=1:20) + xlab("Degree") + ylab("Frequency") + theme.small.xh
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+#plot degree distribution ______________________________________________________
+quartz(width = width, height = height)
+ggplot(cfos.networks.nodes,aes(degree)) + geom_bar(aes(fill=group),color="black") +
+  scale_fill_manual(values = cfos.cols[1:3], name="Group",
+                    labels = c("HNK"="HNK","Ketamine"="Ketamine","Saline"="Saline")) +
+  scale_x_continuous(breaks=1:20) + xlab("Degree") + ylab("Frequency") + theme.small.xh
+
+#plot mean degree ______________________________________________________
+quartz(width = width, height = height)
+ggplot(cfos.networks.stats,aes(group,degree.mean)) + geom_col(aes(fill=group),color="black",size=1) +
+  geom_errorbar(aes(ymin=degree.mean-(degree.sd/sqrt(n.nodes)),ymax=degree.mean+(degree.sd/sqrt(n.nodes))),width=0.2,size=1) +
+  scale_fill_manual(values = cfos.cols,name="Group",labels = c("HNK"="HNK","Ketamine"="Ketamine","Saline"="Saline"),guide="none") +
+  xlab("Group") + ylab("Mean Degree") + theme.small.xh
+
+#plot mean clustering coefficient ______________________________________________________
+quartz(width = width, height = height)
+ggplot(cfos.networks.stats,aes(group,clust.coef.mean)) + geom_col(aes(fill=group),color="black",size=1) +
+  geom_errorbar(aes(ymin=clust.coef.mean-(clust.coef.sd/sqrt(n.nodes)),ymax=clust.coef.mean+(clust.coef.sd/sqrt(n.nodes))),width=0.2,size=1) +
+  scale_fill_manual(values = cfos.cols,name="Group",labels = c("HNK"="HNK","Ketamine"="Ketamine","Saline"="Saline"),guide="none") +
+  xlab("Group") + ylab("Mean Clustering Coefficient") + theme.small.xh
+
+#plot global (mean) efficiency ______________________________________________________
+quartz(width = width, height = height)
+ggplot(cfos.networks.stats,aes(group,efficiency.mean)) + geom_col(aes(fill=group),color="black",size=1) +
+  geom_errorbar(aes(ymin=efficiency.mean-(efficiency.sd/sqrt(n.nodes)),ymax=efficiency.mean+(efficiency.sd/sqrt(n.nodes))),width=0.2,size=1) +
+  scale_fill_manual(values = cfos.cols,name="Group",labels = c("HNK"="HNK","Ketamine"="Ketamine","Saline"="Saline"),guide="none") +
+  xlab("Group") + ylab("Global Efficiency") + theme.small.xh
+
+#plot mean betweenness centrality ______________________________________________________
+quartz(width = width, height = height)
+ggplot(cfos.networks.stats,aes(group,btw.mean)) + geom_col(aes(fill=group),color="black",size=1) +
+  geom_errorbar(aes(ymin=btw.mean-(btw.sd/sqrt(n.nodes)),ymax=btw.mean+(btw.sd/sqrt(n.nodes))),width=0.2,size=1) +
+  scale_fill_manual(values = cfos.cols,name="Group",labels = c("HNK"="HNK","Ketamine"="Ketamine","Saline"="Saline"),guide="none") +
+  xlab("Group") + ylab("Mean Betweenness Centrality") + theme.small.xh
+
+
+#plot bars showing degree of individual regions ______________________________________________________
+quartz(width = width, height = height)
+ggplot(filter(cfos.networks.nodes,group=="HNK")%>%arrange(desc(degree))%>%mutate(name=factor(name,levels=name)),aes(name,degree)) +
+  geom_col(fill=cfos.cols["HNK"],color="black") + xlab("Brain Region") + ylab("Degree") + theme.bar
+
+#plot bars showing betweenness of individual regions ______________________________________________________
+quartz(width = width, height = height)
+ggplot(filter(cfos.networks.nodes,group=="HNK")%>%arrange(desc(btw))%>%mutate(name=factor(name,levels=name)),aes(name,btw)) +
+  geom_col(fill=cfos.cols["HNK"],color="black") + xlab("Brain Region") + ylab("Betweenness") + theme.bar
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #________________ Internal Analysis functions _______________
 
