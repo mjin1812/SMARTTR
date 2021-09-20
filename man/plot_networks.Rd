@@ -9,6 +9,7 @@ plot_networks(
   network_name = "AD",
   title = NULL,
   channels = c("cfos", "eyfp", "colabel"),
+  edge_color = "firebrick",
   height = 15,
   width = 15,
   image_ext = ".png",
@@ -21,10 +22,22 @@ plot_networks(
 
 \item{network_name}{(str, default = "AD")}
 
-\item{save_plot}{}
-}
-\value{
+\item{title}{(str, default = NULL) Title of network plot}
 
+\item{channels}{(str, default = c("cfos", "eyfp", "colabel"))}
+
+\item{edge_color}{(str, default = "firebrick") Color of the network edges. Can also be a dexadecimal color code written as a string.}
+
+\item{height}{Height of the plot in inches.}
+
+\item{width}{width of the plot in inches.}
+
+\item{image_ext}{(default = ".png") image extension to the plot as.}
+
+\item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.
+the experiment object output folder.}
+
+\item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the}
 }
 \description{
 Plot the networks stored in an experiment object

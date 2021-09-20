@@ -19,8 +19,6 @@ create_networks(
 
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel")) The channels to process.}
 
-\item{edge_color}{(str, default = "firebrick")  The name of the color or a hexadecimal code used to plot the edges.}
-
 \item{alpha}{(float, default = 0.05) The significance cutoff for including brain regions in the network.}
 }
 \value{
@@ -30,4 +28,7 @@ each network (\code{network_name})is the same as the \code{correlation_list_name
 }
 \description{
 Create network graph objects for plotting
+}
+\seealso{
+\code{\link[=plot_networks]{plot_networks()}}
 }

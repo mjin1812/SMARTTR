@@ -23,7 +23,7 @@ plot_correlation_heatmaps(
 
 \item{colors}{Hexadecimal code for the colors corresponding to the channels attribute of the correlation_list.}
 
-\item{save_plot}{(bool, default = TRUE) Save the correlation heatmap plots into the figures subdirectory of the
+\item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}
 
 \item{title}{Title of the plot. If NULL, the grouping variable names will be taken from the correlation_list object annd used as the title.}
@@ -33,11 +33,6 @@ the experiment object output folder.}
 \item{width}{width of the plot in inches.}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
-
-\item{store}{store the plot object in the experiment objects}
-}
-\value{
-e experiment object
 }
 \description{
 Plot correlation heatmaps
