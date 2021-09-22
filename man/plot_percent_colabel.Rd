@@ -26,8 +26,6 @@ plot_percent_colabel(
 \arguments{
 \item{e}{experiment object}
 
-\item{by}{}
-
 \item{error_bar}{(str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.}
 }
 \value{

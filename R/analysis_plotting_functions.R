@@ -513,7 +513,6 @@ summarise_networks <- function(e,
 }
 
 
-
 ##_____________________ Plotting functions ___________________________
 ## This needs to be cleaned up so that patterns are optional
 #' plot_colabel_percent

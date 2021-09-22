@@ -37,7 +37,8 @@ plot_networks(
 \item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.
 the experiment object output folder.}
 
-\item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the}
+\item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
+the experiment object output folder.}
 }
 \description{
 Plot the networks stored in an experiment object
