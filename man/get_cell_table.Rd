@@ -17,7 +17,7 @@ m mouse object
 \description{
 This function stores a list in a mouse object that is the length of the channels parameter. Each element of the list is a dataframe
 containing combined cell counts for one channel across all slices processed for that mouse.
-By default, if one slices has no dataset processed for that particular channel, that slice will be skipped over.
+By default, if one slice has no dataset processed for that particular channel, that slice will be skipped over.
 The function will run properly but a warning will be thrown indicating you should go back and
 generate a mapped dataset for that particular slice and channel.
 }

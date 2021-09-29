@@ -97,8 +97,8 @@ exclude_anatomy <- function(x, ...){
 #' @return
 #' @export
 
-get_registered_areas <- function(x, ...){
-  UseMethod('get_registered_areas')
+get_registered_volumes <- function(x, ...){
+  UseMethod('get_registered_volumes')
 }
 
 
@@ -1067,29 +1067,31 @@ exclude_anatomy.slice <- function(s,
 
 
 
-# ##____Method for getting regional areas per slice ____
-#' Method for getting regional areas per slice
-#' @rdname get_registered_areas
-#' @description Calculate the registered area (in microns^2^) of all regions contained in a slice.
+# ##____Method for getting regional areas and volumes per slice ____
+#' Method for getting regional areas and volumes per slice
+#' @rdname get_registered_volumes
+#' @description Calculate the registered area (microns^2^) and the regional volumes (microns^3^) of all regions contained in a slice.
 #' @param s slice object
-#' @return s slice object with a stored dataframe with columns 'name' (full region name), 'acronym', 'area' (in microns^2^), 'right.hemisphere'
+#' @return s slice object with a stored dataframe with columns 'name' (full region name), 'acronym', 'area' (in microns^2^), 'volume' (in microns^3^) 'right.hemisphere'
 #' @examples s <- get_registered_areas(s)
 #' @export
 #' @md
 
-get_registered_areas.slice <- function(s){
+get_registered_volumes.slice <- function(s){
 
   # Get conversion factor from microns to pixels
+  # get z-width of this slice (in microns)
     cf <- attr(s, 'info')$conversion_factor
-    s$areas <- get.registered.areas(s$forward_warped_data, registration = s$registration_obj, conversion.factor = cf)
-    tidyr::drop_na(s$areas)
+    z_width <- attr(s, 'info')$z_width
 
+    s$volumes <- get.registered.areas(s$forward_warped_data, registration = s$registration_obj, conversion.factor = cf) %>%
+      dplyr::mutate(volume = area*z_width) %>% tidyr::drop_na()
     return(s)
 }
 
 
-## ___ Method for getting regional areas per slice
-#' Method for getting regional areas per slice in a mouse object
+## ___ Method for getting regional areas and volumes per slice
+#' Method for getting regional areas and volumes for each slice in a mouse object
 #' @rdname get_registered_areas
 #' @param m mouse object
 #' @param slice_ID (str) ID of slice
@@ -1097,7 +1099,8 @@ get_registered_areas.slice <- function(s){
 #' @return m mouse object
 #' @examples m <- get_registered_areas(m, slice_ID = "1_10", hemisphere = "left", replace = FALSE)
 #' @export
-get_registered_areas.mouse <- function(m,
+
+get_registered_volumes.mouse <- function(m,
                                        slice_ID,
                                        hemisphere = NULL,
                                        replace = FALSE){
@@ -1118,18 +1121,18 @@ get_registered_areas.mouse <- function(m,
     if (identical(stored_name, slice_name)){
       match <- slice_name
 
-      # Check if areas data already exists
-      if (!is.null(m$slices[[match]]$areas)){
+      # Check if volumes data already exists
+      if (!is.null(m$slices[[match]]$volumes)){
 
         # Check if user wants existing data to be overwritten
         if (replace){
-          m$slices[[match]] <- get_registered_areas(m$slices[[match]])
+          m$slices[[match]] <- get_registered_volumes(m$slices[[match]])
 
         } else {
-          stop(paste0("There is an existing areas data for this slice! If you want to overwrite it, set replace to TRUE."))
+          stop(paste0("There is an existing volume data for this slice! If you want to overwrite it, set replace to TRUE."))
         }
       } else {
-        m$slices[[match]] <- get_registered_areas(m$slices[[match]])
+        m$slices[[match]] <- get_registered_volumes(m$slices[[match]])
       }
     }
   }
@@ -1138,17 +1141,6 @@ get_registered_areas.mouse <- function(m,
   }
 return(m)
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1201,12 +1193,10 @@ adjust_brain_outline <- function(s){
 #__________________ Mouse object specific functions __________________________
 
 
-
-
 #' Get cell tables
 #' @description This function stores a list in a mouse object that is the length of the channels parameter. Each element of the list is a dataframe
 #' containing combined cell counts for one channel across all slices processed for that mouse.
-#' By default, if one slices has no dataset processed for that particular channel, that slice will be skipped over.
+#' By default, if one slice has no dataset processed for that particular channel, that slice will be skipped over.
 #' The function will run properly but a warning will be thrown indicating you should go back and
 #' generate a mapped dataset for that particular slice and channel.
 #' @param m mouse object
@@ -1302,10 +1292,10 @@ normalize_cell_counts <- function(m,
         slice_name <- paste0(slice_ID, "_", hemisphere)
       }
 
-      ## Check that this slice has run get_registered_areas
-      if (is.null(s$areas)){
+      ## Check that this slice has run get_registered_volumes
+      if (is.null(s$volumes)){
         stop(paste0("Slice ", slice_name ," in your mouse dataset has an empty areas vector.\n",
-                    "Run the function get_registered_areas() for this slice before you can normalized all your cell counts by total area or by volume."))
+                    "Run the function get_registered_volumes() for this slice before you can normalized all your cell counts by total area or by volume."))
         }
     }
 
@@ -1313,22 +1303,16 @@ normalize_cell_counts <- function(m,
   # 2)  Getting total areas across all slices, separated by hemisphere
 
   # rbind all the areas table
-  aggregate_areas <- m$slices[[1]]$areas
+  aggregate_volumes <- m$slices[[1]]$volumes
   if (length(m$slices)  >=  2){
     for (k in 2:length(m$slices)){
-      aggregate_areas <- rbind(aggregate_areas, m$slices[[k]]$areas)
+      aggregate_volumes <- rbind(aggregate_volumes, m$slices[[k]]$volumes)
     }
   }
 
-  # Drop any NAs
-  aggregate_areas <- tidyr::drop_na(aggregate_areas)
-
-  # Get z_width from slice attributes of the first slice
-  z_width <- attr(m$slices[[1]], "info")$z_width
-
   # Summarize by acronym and right.hemisphere
-  total_volumes <- dplyr::group_by(aggregate_areas, acronym, right.hemisphere, name) %>%
-    dplyr::summarise(area.mm2 = sum(area)*1e-6, volume.mm3 = area.mm2*z_width*1e-3)
+  total_volumes <- dplyr::group_by(aggregate_volumes, acronym, right.hemisphere, name) %>%
+    dplyr::summarise(area.mm2 = sum(area)*1e-6, volume.mm3 = volume*1e-9)
   m$total_volumes <- total_volumes
 
   # ____________________________________________________________________________
@@ -1626,29 +1610,25 @@ get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2",
 
   # Loop through all slices and concatenate ONLY areas from the hippocampus.
   # Split these areas into dorsal and ventral
-
-  aggregate_areas_dorsal <- data.frame()
-  aggregate_areas_ventral <- data.frame()
+  aggregate_volumes_dorsal <- data.frame()
+  aggregate_volumes_ventral <- data.frame()
   for (slice in m$slices){
     coordinate <- attr(slice, "info")$coordinate
     if (coordinate %in% hipp_AP_coordinates){
       # dorsal
       if (coordinate > AP_coord){
-        aggregate_areas_dorsal <- rbind(aggregate_areas_dorsal, slice$areas)
+        aggregate_volumes_dorsal <- rbind(aggregate_volumes_dorsal, slice$volumes)
       }
       # Ventral
       if (coordinate <= AP_coord){
-        aggregate_areas_ventral <- rbind(aggregate_areas_ventral, slice$areas)
+        aggregate_volumes_ventral <- rbind(aggregate_volumes_ventral, slice$volumes)
       }
     }
   }
 
   # Drop any NA values
-  aggregate_areas_dorsal  <- tidyr::drop_na(aggregate_areas_dorsal)
-  aggregate_areas_ventral <- tidyr::drop_na(aggregate_areas_ventral)
-
-  # Get z_width from slice attributes of the first slice
-  z_width <- attr(m$slices[[1]], "info")$z_width
+  aggregate_volumes_dorsal  <- tidyr::drop_na(aggregate_volumes_dorsal)
+  aggregate_volumes_ventral <- tidyr::drop_na(aggregate_volumes_ventral)
 
   # Store total volumes
   total_volumes_hipp <- vector(mode = "list", length = 2)
@@ -1656,10 +1636,10 @@ get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2",
 
   # iterator
   k <- 1
-  for (areas in list(aggregate_areas_dorsal, aggregate_areas_ventral)){
-    if (length(areas) > 0){
-      total_volumes_hipp[[k]] <- dplyr::group_by(areas, acronym, right.hemisphere, name) %>%
-        dplyr::summarise(area.mm2 = sum(area)*1e-6, volume.mm3 = area.mm2*24*1e-3 )
+  for (volumes in list(aggregate_volumes_dorsal, aggregate_volumes_ventral)){
+    if (length(volumes) > 0){
+      total_volumes_hipp[[k]] <- volumes %>% dplyr::group_by(area, acronym, right.hemisphere, name) %>%
+        dplyr::summarise(area.mm2 = sum(area)*1e-6, volume.mm3 = volume*1e-9)
 
       # Store only regions in the hippocampus
       total_volumes_hipp[[k]] <- total_volumes_hipp[[k]][total_volumes_hipp[[k]]$acronym %in% regions,]
@@ -1673,8 +1653,6 @@ get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2",
 
   return(total_volumes_hipp)
 }
-
-
 
 
 

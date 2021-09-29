@@ -12,7 +12,7 @@ NULL
 
 ##_____________________ Analysis functions ___________________________
 
-#Calculate percentage colabeled over cfos and eyfp. Specify which ROIS you want
+# Calculate percentage colabeled over cfos and eyfp. Specify which ROIS you want
 
 
 #' Get the percentage of colabelled cells over cfos or eyfp channels
