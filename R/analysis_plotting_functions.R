@@ -737,7 +737,6 @@ plot_correlation_heatmaps <- function(e, correlation_list_name = "female_AD", co
      dplyr::left_join(corr_df$sig, by = c("row_acronym", "col_acronym")) %>%
      dplyr::mutate(sig_text = dplyr::if_else(sig == TRUE, "*", ""))
 
-
   # Generate a correlation heatmap in anatomical order
   p <-  ggplot(df, aes(row_acronym, col_acronym, fill = r)) +
         geom_tile() +
@@ -751,7 +750,6 @@ plot_correlation_heatmaps <- function(e, correlation_list_name = "female_AD", co
     quartz()
     print(p)
   }
-
 
   if(save_plot){
     # Plot the heatmap
@@ -770,10 +768,7 @@ plot_correlation_heatmaps <- function(e, correlation_list_name = "female_AD", co
   }
 }
 
-
 # plot_permutation_histogram <- function(e, roi = "dDG"){
-#
-#
 # }
 
 #' Create a Volcano plot.

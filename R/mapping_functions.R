@@ -1353,7 +1353,7 @@ normalize_cell_counts <- function(m,
 ## Auto split the HPF dataset into Dorsal and Ventral
 
 #' Split the hippocampal dataset to dorsal and ventral regions. If [normalize_cell_counts()] has already been run,
-#' the existing hippocampus data will be deleted and either replaced with new dorsal/ventral hippocampus data with merge (recommended) or
+#' the existing hippocampus data will be deleted and either replaced with new dorsal/ventral hippocampus data when merge = TRUE (recommended) or
 #' it will be stored in a separate dataframe if the user wants analyze the hippocampus separately for specialized analysis.
 #' @param m mouse object
 #' @param AP_coord (double) The AP coordinate which separates dorsal hippocampus from ventral hippocampus. Counts anterior to this are considered dorsal, counts posterior to
@@ -1638,14 +1638,14 @@ get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2",
   k <- 1
   for (volumes in list(aggregate_volumes_dorsal, aggregate_volumes_ventral)){
     if (length(volumes) > 0){
-      total_volumes_hipp[[k]] <- volumes %>% dplyr::group_by(area, acronym, right.hemisphere, name) %>%
+      total_volumes_hipp[[k]] <- volumes %>% dplyr::group_by(area, volume, acronym, right.hemisphere, name) %>%
         dplyr::summarise(area.mm2 = sum(area)*1e-6, volume.mm3 = volume*1e-9)
 
       # Store only regions in the hippocampus
       total_volumes_hipp[[k]] <- total_volumes_hipp[[k]][total_volumes_hipp[[k]]$acronym %in% regions,]
 
     } else {
-      message("There was no area data found for the ", DV[k], " hippocampus!")
+      message("There was no volume data found for the ", DV[k], " hippocampus!")
       total_volumes_hipp[[DV[k]]] <- NULL
     }
     k <- k + 1
