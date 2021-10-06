@@ -1419,7 +1419,7 @@ split_hipp_DV <- function(m,
     hipp_AP_coordinates <- c(hipp_AP_coordinates, hipp_df$AP) %>% unique()
 
     # Remove existing hippocampus data from the normalized cell counts table if it exists
-    if (!is.null(m$normalized_counts)){
+    if (!is.null(m$normalized_counts) & merge){
       hipp_delete <- which(m$normalized_counts[[channel]]$acronym %in% regions)
       m$normalized_counts[[channel]] <- m$normalized_counts[[channel]][-hipp_delete,]
 
@@ -1484,6 +1484,8 @@ split_hipp_DV <- function(m,
     }
   }
 
+
+  suppressWarnings(
   # Whether to merge the information in each channel to the large normalized counts dataframe
   if (merge){
     # merged right.hemisphere check
@@ -1506,10 +1508,11 @@ split_hipp_DV <- function(m,
     m$hipp_DV_normalized_counts <- hipp_norm_counts
     message("Data is now stored in hipp_DV_normalized_counts dataframe. Future analysis of the hippocampus will be stored separately.\n")
   }
+  )
   return(m)
 }
 
-#__________________ Experiment object specific functions __________________________
+ #__________________ Experiment object specific functions __________________________
 
 
 #' Combine cell counts across the mice in an experiment

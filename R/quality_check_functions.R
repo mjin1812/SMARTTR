@@ -35,20 +35,20 @@ detect_single_slice_regions <- function(m, remove = FALSE, log = TRUE){
 #_____________________ For experiment objects _________________________
 
 #' Remove outlier counts
-#' @description remove any normalized regions counts that are more than X standard deviations (default = 2) higher
+#' @description remove any normalized regions counts that are more than `n_sd` standard deviations (default = 2) higher
 # than their cohort mean.
 #'
 #' @param e experiment object
 #' @param by (str, default = c("group", "sex")) The mice attributes used to group the datasets into comparison groups.
 #' @param n_sd (int, default = 2). Number of standards deviations above and below which categorizes outliers.
-#' @param remove (bool, default = TRUE) Remove all outlier rows from the combined normalized counts dataframe in the experiment object.
+#' @param remove (bool, default = FALSE) Remove all outlier rows from the combined normalized counts dataframe in the experiment object.
 #' @param log (bool, default = TRUE) Save the logged outlier regions into a csv file in the output folder.
 #'
 #' @return e experiment object. Outlier counts in the experiment object are removed if remove = TRUE.
 #' @export
+#' @examples e <- find_outlier_counts(e, by = c("group","sex"), n_sd = 2, remove = FALSE, log = TRUE)
 #'
-#' @examples
-find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = TRUE, log = TRUE){
+find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FALSE, log = TRUE){
 
   # Get the channels for an experiment
   e_info <- attr(e, "info")
@@ -80,7 +80,7 @@ find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = TR
       if (length(log_df$mouse_ID) > 0 ){
         message("There were ", length(log_df$mouse_ID),
                 " outliers found. Outliers were based on within group mean and standard deviation.")
-        out_path <- file.path(e_info$output_path, "region_count_outliers_within_groups.csv")
+        out_path <- file.path(e_info$output_path, paste0("region_count_outliers_", channel,".csv"))
         write.csv(log_df, file = out_path)
         message(paste0("Saved regions outliers dataframe at:\n", out_path))
       } else {
@@ -114,7 +114,7 @@ find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = TR
 #' @export
 #' @examples e <- enough_mice_per_group(e, by = c("group", "sex"), min_n = 4, remove = TRUE, log = TRUE)
 #'
-enough_mice_per_group<- function(e, by = c("group", "sex"), min_n = 4, remove = TRUE, log = TRUE){
+enough_mice_per_group <- function(e, by = c("group", "sex"), min_n = 4, remove = TRUE, log = TRUE){
 
   # Get the channels for an experiment
   e_info <- attr(e, "info")

@@ -9,7 +9,7 @@ get_percent_colabel(
   by = NULL,
   channel = "eyfp",
   save_table = TRUE,
-  rois = "dDG",
+  rois = NULL,
   individual = TRUE
 )
 }
@@ -30,5 +30,8 @@ e experiment object with colabel percentage table stored in it.
 }
 \description{
 This analysis will only include common regions that are included in both the colabelled and
-cfos or eyfp channels. The colabelled percentage of individual animals will be extracted. These can be
+cfos or eyfp channels. The colabelled percentage of individual animals will be calculated with the option to export the data.
+}
+\examples{
+e <- get_percent_colabel(e, c("group", "sex", channel = "eyfp"))
 }

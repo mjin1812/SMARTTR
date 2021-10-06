@@ -8,7 +8,7 @@ find_outlier_counts(
   e,
   by = c("group", "sex"),
   n_sd = 2,
-  remove = TRUE,
+  remove = FALSE,
   log = TRUE
 )
 }
@@ -19,7 +19,7 @@ find_outlier_counts(
 
 \item{n_sd}{(int, default = 2). Number of standards deviations above and below which categorizes outliers.}
 
-\item{remove}{(bool, default = TRUE) Remove all outlier rows from the combined normalized counts dataframe in the experiment object.}
+\item{remove}{(bool, default = FALSE) Remove all outlier rows from the combined normalized counts dataframe in the experiment object.}
 
 \item{log}{(bool, default = TRUE) Save the logged outlier regions into a csv file in the output folder.}
 }
@@ -27,5 +27,9 @@ find_outlier_counts(
 e experiment object. Outlier counts in the experiment object are removed if remove = TRUE.
 }
 \description{
-remove any normalized regions counts that are more than X standard deviations (default = 2) higher
+remove any normalized regions counts that are more than \code{n_sd} standard deviations (default = 2) higher
+}
+\examples{
+e <- find_outlier_counts(e, by = c("group","sex"), n_sd = 2, remove = FALSE, log = TRUE)
+
 }

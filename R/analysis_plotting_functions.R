@@ -17,7 +17,7 @@ NULL
 
 #' Get the percentage of colabelled cells over cfos or eyfp channels
 #' @description This analysis will only include common regions that are included in both the colabelled and
-#' cfos or eyfp channels. The colabelled percentage of individual animals will be extracted. These can be
+#' cfos or eyfp channels. The colabelled percentage of individual animals will be calculated with the option to export the data.
 #'
 #' @param e
 #' @param channel (str, default = "cfos") The channel used as denominator in fraction counts.
@@ -29,8 +29,8 @@ NULL
 #' @return e experiment object with colabel percentage table stored in it.
 #' @export
 #'
-#' @examples
-get_percent_colabel <-function(e, by = NULL, channel = "eyfp", save_table = TRUE, rois = "dDG", individual = TRUE){
+#' @examples e <- get_percent_colabel(e, c("group", "sex", channel = "eyfp"))
+get_percent_colabel <-function(e, by = NULL, channel = "eyfp", save_table = TRUE, rois = NULL, individual = TRUE){
   # # correct mismatched attributes typed by users
   # by <- match_m_attr(by)
 
@@ -200,8 +200,10 @@ get_correlations <- function(e, by = c("sex", "group"), values = c("female", "AD
 
 
 
-#' correlation_diff_permutation
-#' Note that these correlation lists must have the same number of channels to compare
+#' This function performs a permutation analysis to compare the region pairwise correlation coefficients between two different analysis groups
+#' specified by `correlation_list_name_1` and `correlation_list_name_2.` Note that both of these analysis groups must have the same
+#' number of channels to compare. The functions `get_correlations()` needs to have been run for each of these analysis groups prior to
+#' running this function.
 #'
 #' @param e experiment object
 #' @param correlation_list_name_1 (default = "AD") The name of the correlation list object used as the first group for comparison.
