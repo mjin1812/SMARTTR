@@ -11,6 +11,7 @@ volcano_plot(
   colors = c("#be0000", "#00782e", "#f09b08"),
   save_plot = TRUE,
   title = NULL,
+  ylim = c(0, 3),
   height = 8,
   width = 10,
   print_plot = TRUE,

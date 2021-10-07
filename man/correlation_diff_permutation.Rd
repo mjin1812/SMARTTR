@@ -2,8 +2,10 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{correlation_diff_permutation}
 \alias{correlation_diff_permutation}
-\title{correlation_diff_permutation
-Note that these correlation lists must have the same number of channels to compare}
+\title{This function performs a permutation analysis to compare the region pairwise correlation coefficients between two different analysis groups
+specified by \code{correlation_list_name_1} and \code{correlation_list_name_2.} Note that both of these analysis groups must have the same
+number of channels to compare. The functions \code{get_correlations()} needs to have been run for each of these analysis groups prior to
+running this function.}
 \usage{
 correlation_diff_permutation(
   e,
@@ -29,8 +31,8 @@ correlation_diff_permutation(
 \item{alpha}{(float, default = 0.05) The alpha cutoff for significance between region pairwise correlation differences}
 
 \item{p_adjust_method}{(bool or str, default = "BH") Benjamini-Hochberg method is recommended.
-Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE
-to keep "raw" p values.}
+Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE or "none"
+to keep "raw" p values. See also \code{\link[stats:p.adjust]{stats::p.adjust()}} for the correction options.}
 
 \item{seed}{(int, default = 5) Random seed for future replication.}
 
@@ -43,6 +45,8 @@ e experiment object. The experiment object now has a list called \code{permutati
 the outputs of different permutation comparison analyses. These elements are named by the groups that were compared.
 }
 \description{
-correlation_diff_permutation
-Note that these correlation lists must have the same number of channels to compare
+This function performs a permutation analysis to compare the region pairwise correlation coefficients between two different analysis groups
+specified by \code{correlation_list_name_1} and \code{correlation_list_name_2.} Note that both of these analysis groups must have the same
+number of channels to compare. The functions \code{get_correlations()} needs to have been run for each of these analysis groups prior to
+running this function.
 }

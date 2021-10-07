@@ -114,7 +114,7 @@ get_percent_colabel <-function(e, by = NULL, channel = "eyfp", save_table = TRUE
   }
 
   if (save_table){
-      out_path <- file.path(e_info$output_path, paste0("colabel_percentage_", channel, "_", indiv_or_avg, "_.csv"))
+      out_path <- file.path(e_info$output_path, paste0("colabel_percentage_", channel, "_", indiv_or_avg, ".csv"))
       write.csv(master_counts, file = out_path)
       message(paste0("Saved colabel count percentages at location: ", out_path))
   }
@@ -131,8 +131,8 @@ get_percent_colabel <-function(e, by = NULL, channel = "eyfp", save_table = TRUE
 #' @param values The value of the variables to filter the combined normalized counts df by.
 #' @param channels The channels to correlate.
 #' @param p_adjust_method (bool or str, default = "BH") Benjamini-Hochberg method is recommended.
-#'  Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE
-#'  to keep "raw" p values.
+#'  Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE or "none"
+#'  to keep "raw" p values. See also [stats::p.adjust()] for the correction options.
 #' @param alpha The alpha level for p adjustment.
 #'
 #' @return e experiment object. The experiment object now has a named `correlation_list` object stored in it.
@@ -211,8 +211,8 @@ get_correlations <- function(e, by = c("sex", "group"), values = c("female", "AD
 #' @param n_shuffle (int, default = 1000) The number of permutation shuffles.
 #' @param alpha (float, default = 0.05) The alpha cutoff for significance between region pairwise correlation differences
 #' @param p_adjust_method (bool or str, default = "BH") Benjamini-Hochberg method is recommended.
-#'  Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE
-#'  to keep "raw" p values.
+#'  Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE or "none"
+#'  to keep "raw" p values. See also [stats::p.adjust()] for the correction options.
 #' @param seed (int, default = 5) Random seed for future replication.
 #' @param ... additional parameters to [RcppAlgos::permuteGeneral()] aside from n, m, Parallel and repetition
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
@@ -621,7 +621,7 @@ plot_percent_colabel <- function(e, by = NULL, channel = "cfos",  rois = c("AAA"
   p <- ggplot(e$colabel_percent[[channel]]$average, aes(x = interaction(!!pattern_var, !!color_var),
                                                         y = colabel_percentage.mean,
                                                         fill = !!color_var)) +
-    geom_bar_pattern(aes(pattern_type = !!pattern_var),
+    ggpattern::geom_bar_pattern(aes(pattern_type = !!pattern_var),
                      stat = "identity",
                      color = "black",
                      pattern_color = "black",
@@ -798,6 +798,7 @@ volcano_plot <- function(e,
                          colors =  c("#be0000", "#00782e", "#f09b08"),
                          save_plot = TRUE,
                          title = NULL,
+                         ylim = c(0, 3),
                          height = 8,
                          width = 10,
                          print_plot = TRUE,
@@ -829,7 +830,7 @@ volcano_plot <- function(e,
       tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
 
     # Pivot long
-    p_vals <- p_vals %>% pivot_longer(col = - "rowreg", values_drop_na = TRUE,
+    p_vals <- p_vals %>% pivot_longer(col = -"rowreg", values_drop_na = TRUE,
                                       values_to = "p_val", names_to = "colreg")
     corr_diffs <- corr_diffs %>% pivot_longer(col = - "rowreg", values_drop_na = TRUE,
                                               values_to = "corr_diff", names_to = "colreg")
@@ -847,7 +848,7 @@ volcano_plot <- function(e,
       geom_vline(xintercept = c(-1, 1), color = colors[k], size = 1) +
       geom_hline(yintercept = -log10(alpha), color = colors[k], size = 1) +
       xlim(c(-2, 2)) +
-      ylim(c(0, 3)) +
+      ylim(ylim) +
       labs(title = title, x = "Correlation Difference", y = "-log(p-value)") +
       plot_theme
 
@@ -884,8 +885,8 @@ volcano_plot <- function(e,
 #' @param permutation_comparison The name of the correlation group comparisons to plot.
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) channels to plot
 #' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal codes corresponding to the channels (respectively) to plot.
-#' @param x_label_group_1
-#' @param x_label_group_2
+#' @param x_label_group_1 (str, NULL)
+#' @param x_label_group_2 (str, NULL)
 #' @param  height height of the plot in inches.
 #' @param  width width of the plot in inches.
 #' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
@@ -938,10 +939,6 @@ parallel_coordinate_plot <- function(e,
       tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
     sigs <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$sig %>%
       tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
-    sigs <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$sig %>%
-      tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
-    sigs <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$sig %>%
-      tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
     group_1_pearson <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$group_1_pearson %>%
       tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
     group_2_pearson <- e$permutation_p_matrix[[permutation_comparison]][[channels[k]]]$group_2_pearson %>%
@@ -965,12 +962,12 @@ parallel_coordinate_plot <- function(e,
       dplyr::inner_join(sigs, by = c("rowreg", "colreg")) %>%
       dplyr::inner_join(group_1_pearson, by = c("rowreg", "colreg")) %>%
       dplyr::inner_join(group_2_pearson, by = c("rowreg", "colreg")) %>%
-      tidyr::pivot_longer(cols = c(group_1, group_2), names_to = "group", values_to = "corr")
+      tidyr::pivot_longer(cols = dplyr::all_of(c(group_1, group_2)), names_to = "group", values_to = "corr")
 
 
 
     df <- df %>% dplyr::filter(sig, abs(corr_diff) >= 1) %>%
-      dplyr::mutate(sign = factor(ifelse(corr>0,"P","N"))) %>%
+      dplyr::mutate(sign = factor(ifelse(corr > 0,"P","N"))) %>%
       dplyr::mutate(group = factor(group, levels = c(group_2, group_1)),
              nudge = ifelse(group == group_1, 0.1, -0.1)) %>%
       dplyr::arrange(group, corr_diff) %>%
@@ -996,7 +993,8 @@ parallel_coordinate_plot <- function(e,
                       segment.alpha = 0.3,
                       nudge_x = dplyr::pull(df, nudge)*1:5, max.iter = 20000) +
       ggplot2::geom_hline(yintercept = 0,linetype=2,size=1.2) +
-      xlab("Group") + ylab("Correlation") + expand_limits(y=c(-1,1)) + theme.small.xh
+      xlab("Group") + ylab("Correlation") +
+      expand_limits(y=c(-1,1)) + theme.small.xh
 
 
     if (print_plot){
@@ -1023,7 +1021,6 @@ parallel_coordinate_plot <- function(e,
   }
 
 }
-
 
 
 
@@ -1127,17 +1124,16 @@ plot_networks <- function(e,
 }
 
 
-
 #' Plot the degree distributions
 #' @description
 #' Plot a stacked bar plot of the degree distributions
+#'
 #' @param e experiment object
-#' @param labels The legend labels to correspond with your network names.
+#' @param labels (e.g. labels = c(network1_name = "network 1 label", network2_name = "network 2 label)) The legend labels to correspond with your network names.
 #' @param color_palettes (str, default = c("reds", "greens")) Color palettes from [grDevices::hcl.colors] that are used to for plotting networks for each channel, respectively.
 #' @param colors_manual (str, default = NULL ) Manually choose the hexadecimal color codes to create a custom color palette, e.g. colors_manual = c("#660000", "#FF0000", "#FF6666").
 #' Warning: this will be applied to all channels. It's recommended to set the channels parameter to a single channel if this parameter is used.
-#' @param channels (str, default = c("cfos", "eyfp", "colabel")) Channels to plot
-#' @param (str, default = NULL) title of plot
+#' @param channels (str, default = c("cfos", "eyfp", "colabel")) Channels to plot.
 #' @param height (int, default = 15) Height of the plot in inches.
 #' @param width (int, default = 15) Width of the plot in inches.
 #' @param xlim (vec, default = c(0,20)) axes limits x-axis
@@ -1146,6 +1142,7 @@ plot_networks <- function(e,
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
 #' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
+#' @param title (str, default = "my_title")
 #'  the experiment object output folder.
 #' @return
 #' @export
@@ -1155,7 +1152,7 @@ plot_degree_distributions <- function(e,
                                       color_palettes = c("reds", "greens"),
                                       colors_manual = NULL,
                                       channels = c("cfos", "eyfp"),
-                                      labels = c("AD" = "AD_label", "control" = "control_label") ,
+                                      labels = c(female_AD = "female_AD_label", female_control = "female_control_label") ,
                                       title = "my_title",
                                       height = 15,
                                       width = 15,
@@ -1237,7 +1234,7 @@ plot_degree_distributions <- function(e,
 #' Plot the mean degree of the networks in a barplot. Error bars are plotted as SEM.
 #'
 #' @param e experiment object
-#' @param labels The labels to correspond with your network names.
+#' @param labels (e.g. labels = c(network1_name = "network 1 label", network2_name = "network 2 label)) The legend labels to correspond with your network names.
 #' @param title (str, default = "my_title) plot title
 #' @param color_palettes (str, default = c("reds", "greens")) Color palettes from [grDevices::hcl.colors] that are used to for plotting networks for each channel, respectively.
 #' @param colors_manual (str, default = NULL ) Manually choose the hexadecimal color codes to create a custom color palette, e.g. colors_manual = c("#660000", "#FF0000", "#FF6666").
@@ -1265,7 +1262,7 @@ plot_mean_degree <- function(e,
                              height = 10,
                              width = 10,
                              rev_x_scale = FALSE,
-                             ylim = c(0, 10),
+                             ylim = c(0, 70),
                              image_ext = ".png",
                              print_plot = TRUE,
                              save_plot = TRUE){
@@ -1348,8 +1345,9 @@ plot_mean_degree <- function(e,
 #' Plot mean clustering coefficient
 #' @description
 #' Plot the mean clustering coefficients of the networks in a barplot. Error bars are plotted as SEM.
+#'
 #' @param e experiment object
-#' @param labels The labels to correspond with your network names.
+#' @param labels (e.g. labels = c(network1_name = "network 1 label", network2_name = "network 2 label)) The legend labels to correspond with your network names.
 #' @param title (str, default = "my_title) plot title
 #' @param color_palettes (str, default = c("reds", "greens")) Color palettes from [grDevices::hcl.colors] that are used to for plotting networks characteristics for each channel, respectively.
 #' @param colors_manual (str, default = NULL ) Manually choose the hexadecimal color codes to create a custom color palette, e.g. colors_manual = c("#660000", "#FF0000", "#FF6666").
@@ -1460,6 +1458,7 @@ plot_mean_clust_coeff <- function(e,
 #' Plot mean global efficiency
 #' @description
 #' Plot the mean global efficiency of the networks in a barplot. Error bars are plotted as SEM.
+#'
 #' @param e experiment object
 #' @param labels The labels to correspond with your network names.
 #' @param title (str, default = "my_title) plot title
@@ -1575,6 +1574,7 @@ plot_mean_global_effic <- function(e,
 #' Plot mean betweenness centrality
 #' @description
 #' Plot the mean betweenness centrality of the networks in a barplot. Error bars are plotted as SEM.
+#'
 #' @param e experiment object
 #' @param labels The labels to correspond with your network names.
 #' @param title (str, default = "my_title) plot title

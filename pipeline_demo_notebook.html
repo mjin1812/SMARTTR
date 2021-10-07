@@ -640,7 +640,7 @@ print(attr(mouse_325$slices$`1_1`, &quot;info&quot;)$left_regions_excluded)</cod
 <p>Getting cell counts per region normalized by volume or area in mm<sup>3</sup> or mm<sup>2</sup> respectively.</p>
 <div id="get-slice-volumes" class="section level2">
 <h2>8.1 Get slice volumes</h2>
-<p>In order to get cell counts per region in each mouse normalized by volume, the exact volume of each region in each slice needs to be calculated. This is accomplished with the function <code>get_registered_volumes()</code>. The function will automatically calculate region volumes per hemisphere for each slice.</p>
+<p>In order to get cell counts per region in each mouse normalized by volume, the exact volume of each region in each slice needs to be calculated. This is accomplished with the function <code>get_registered_volumes()</code>. The function will automatically calculate region volumes per hemisphere foreach slice.</p>
 <pre class="r"><code># Calculate region volumes for the full slice
 mouse_325 &lt;- get_registered_volumes(mouse_325,
                                   slice_ID = &quot;1_1&quot;,
@@ -653,7 +653,7 @@ mouse_325 &lt;- get_registered_volumes(mouse_325,
 </div>
 <div id="get-a-combined-cell-data-table" class="section level2">
 <h2>8.2 Get a combined cell data table</h2>
-<p>The <code>get_cell_table()</code> function will aggregate all forward warped cell counts across all slices one data frame named <code>cell_table</code>. This can be especially useful for plotting purposes.</p>
+<p>The <code>get_cell_table()</code> function will aggregate all forward warped cell counts across all slices into one data frame named <code>cell_table</code>. This can be especially useful for plotting purposes.</p>
 <p>To save time, we will now pre-load mouse_325 containing multiple slice objects that have been registered, forward-warped, and cleaned, with registered volumes calculated.</p>
 <pre class="r"><code># Pre-load saved processed mouse  Modify the path to server V if necessary
 load(&quot;V:/Michelle Jin/Sundowning/PipelineDemo/Mouse_example/mouse_325_pre-registered_forward_warped.RDATA&quot;)</code></pre>
@@ -706,7 +706,7 @@ sundowning &lt;- add_mouse(sundowning, mouse_325)</code></pre>
 <h2>9.2 Combine cell counts</h2>
 <p>Once you’ve added enough mice to perform an analysis, we want to aggregate all the data for each mouse together into one dataframe to perform analysis on. This is done with the <code>combine_norm_cell_counts()</code> function.</p>
 <p><code>by</code> is a special parameter that will allow up to take advantage of the many mouse attributes that we have recorded during creation of a mouse object. It is a vector of the mouse attributes we will use to split our dataset into subgroups for comparison. In the example below, we use the <code>group</code> and <code>sex</code> mouse attributes to compare <code>AD</code> and <code>control</code> groups and the <code>male</code> and <code>female</code> mice. Sometimes, certain attributes like <code>drug</code> may not apply to your experiment, so <code>by</code> should only include the variables that you intend on using for group comparisons during analysis.</p>
-<p>For now we will load a saved example experiment object named <code>sundowning</code>. <em>Please note</em> that the data in this object is fabricated. It is simply mouse_325’s data with added noise. This is because we are still currently in the process of generating all the segmentation data for Holly. The following analyses and plots will not be scientifically informative.</p>
+<p>For now we will load a saved example experiment object named <code>sundowning</code>. <em>Please note</em> that the data in this object is fabricated. It is simply mouse_325’s data with added noise. This is because we are still currently in the process of generating all the segmentation data for the sundowning project.</p>
 <pre class="r"><code>load(&quot;V:\\Michelle Jin\\Sundowning\\PipelineDemo\\Experiment_example\\experiment_demo_saved.Rdata&quot;)
 
 sundowning &lt;- combine_norm_cell_counts(sundowning, by = c(&#39;group&#39;, &#39;sex&#39;))</code></pre>
@@ -718,8 +718,7 @@ sundowning &lt;- combine_norm_cell_counts(sundowning, by = c(&#39;group&#39;, &#
 <div id="check-for-outlier-counts" class="section level2">
 <h2>10.1 Check for outlier counts</h2>
 <p>The function <code>find_outlier_counts()</code> will first organize counts into analysis groups stratified based on the <code>by</code> parameter. Then the mean cell counts for each analysis group and their standard deviation are calculated. If any regions counts for a mouse exceed greater than <code>n_sd</code> (default = 2) for their analysis group, the region and mouse will be marked as an outlier. If <code>log = TRUE</code> then, the output is stored in a csv file with the file stem <code>region_count_outliers_[channel]</code>. This may be helpful to look back at the raw data and examine whether the segmentation algorithm is doing a good job around these regions for a given mouse.</p>
-<pre class="r"><code>#
-sundowning &lt;- find_outlier_counts(sundowning, by = c(&quot;group&quot;, &quot;sex&quot;), n_sd = 2, remove = FALSE, log = TRUE)</code></pre>
+<pre class="r"><code>sundowning &lt;- find_outlier_counts(sundowning, by = c(&quot;group&quot;, &quot;sex&quot;), n_sd = 2, remove = FALSE, log = TRUE)</code></pre>
 <blockquote>
 <p>Set <code>remove</code> to <code>TRUE</code> if you want to permanantly remove outlier regions from the experiment object</p>
 </blockquote>
@@ -752,7 +751,7 @@ sundowning &lt;- find_outlier_counts(sundowning, by = c(&quot;group&quot;, &quot
 <pre class="r"><code># Get region pairwise correlation coefficients for female ADs
 sundowning &lt;- get_correlations(sundowning,
                                by = c(&quot;sex&quot;, &quot;group&quot;), 
-                               values = c(&quot;female&quot;, &quot;AD&quot;), 
+                               values = c(&quot;male&quot;, &quot;AD&quot;), 
                                channels = c(&quot;cfos&quot;, &quot;eyfp&quot;, &quot;colabel&quot;),  
                                p_adjust_method = &quot;BH&quot;, 
                                alpha = 0.05)</code></pre>
@@ -762,21 +761,24 @@ sundowning &lt;- get_correlations(sundowning,
 <pre class="r"><code># Get region pairwise correlation coefficients for female controls
 sundowning &lt;- get_correlations(sundowning,
                                by = c(&quot;sex&quot;, &quot;group&quot;), 
-                               values = c(&quot;female&quot;, &quot;control&quot;), 
+                               values = c(&quot;male&quot;, &quot;control&quot;), 
                                channels = c(&quot;cfos&quot;, &quot;eyfp&quot;, &quot;colabel&quot;),  
                                p_adjust_method = &quot;BH&quot;, 
                                alpha = 0.05)</code></pre>
 </div>
-<div id="permute-pairwise-region-correlation-difference-between-groups" class="section level2">
-<h2>11.3 Permute pairwise region correlation difference between groups</h2>
+<div id="permute-pairwise-region-correlation-differences-between-groups" class="section level2">
+<h2>11.3 Permute pairwise region correlation differences between groups</h2>
 <p>We can compare the difference between pairwise region correlations between two different analysis functions using a permutation analysis. For this we’ll use the function <code>correlation_diff_permutation()</code>. This function requires you to have run <code>get_correlations()</code> for each analysis group that you want to compare prior to using it.</p>
-<p>It also allows you to specify the number of shuffles, the random seed number (for figure replication), as well as a multiple comparisons adjustment (the previous adjustment from <code>get_correlations()</code> is not redundantly applied).</p>
+<p>It also allows you to specify the number of shuffles, the random seed number (for figure replication), as well as a multiple comparisons adjustment (the previous adjustment from <code>get_correlations()</code> is not redundantly applied). Not that when the multiple comparison’s adjustment is applied, this will change the p-value that is plotted in a volcano plot.</p>
 <p>In the example below, we will compare the <code>female_AD</code> analysis group with the <code>female_control</code> group.</p>
 <pre class="r"><code>sundowning &lt;- correlation_diff_permutation(sundowning,
-                                           correlation_list_name_1 = &quot;female_AD&quot;,
-                                           correlation_list_name_2 = &quot;female_control&quot;,
+                                           correlation_list_name_1 = &quot;male_AD&quot;,
+                                           correlation_list_name_2 = &quot;male_control&quot;,
                                            n_shuffles = 1000,
-                                           seed = 5, 
+                                           seed = 5,
+                                           alpha = 0.005,
+                                           ylim = c(0, 4),
+                                           p_adjust_method = FALSE,
                                            channels = c(&quot;cfos&quot;, &quot;eyfp&quot;, &quot;colabel&quot;))</code></pre>
 <p>The results of the analysis are stored withing the experiment object in list called <code>permutation_p_matrix</code></p>
 <pre class="r"><code>sundowning$permutation_p_matrix$</code></pre>
@@ -784,41 +786,163 @@ sundowning &lt;- get_correlations(sundowning,
 <div id="create-region-networks-with-summary-stats" class="section level2">
 <h2>11.4 Create region networks with summary stats</h2>
 <p>Now we can move on to the process of automatically creating networks in R using the <code>create_networks()</code> function. This function is also contingent on running <code>get_correlations()</code> first because these networks are constructed on the correlation coefficents. There a some customizable features such as setting the edge color (taken as a hexadecimal string) if you have pre-chosen colors for your analysis groups. In the example below, we will just take the default edge color.</p>
+<p>The <code>alpha</code> parameters specifies at which threshold a node is included in the networks based on p-values of pairwise-region correlation coefficients.</p>
 <pre class="r"><code># Create a network for the female AD group
 sundowning &lt;- create_networks(sundowning, 
                               correlation_list_name = &quot;female_AD&quot;,
-                              alpha = 0.05)
+                              alpha = 0.1)
 
 
 # Create a network for the female control group
 sundowning &lt;- create_networks(sundowning, 
                               correlation_list_name = &quot;female_control&quot;,
-                              alpha = 0.05)</code></pre>
+                              alpha = 0.02)</code></pre>
 <p>After running this function, you may be wondering where the network is. Rest assured that a network object for each channel per analysis group was created using <code>tidygraph</code> and they have been stored in our experiment object. We can access the data with <code>sundowning$networks$network_name</code> where network_name is identical to the <code>correlation_list_name</code> used to generate the network.</p>
-<p>Now there are some network summary statistics that we can calculate using our network object. We will calculate them using the function <code>summarise_networks()</code>. This function is designed to summarise the stats of multiple networks at once if they are supplied to the parameter <code>network_names.</code></p>
+<p>Now there are some network summary statistics that we can calculate using our network object. We will calculate them using the function <code>summarise_networks()</code>. This function is designed to summarize the stats of multiple networks at once if they are supplied to the parameter <code>network_names.</code></p>
 <p>The additional parameters <code>save_stats</code>, <code>save_degree_distribution</code>, and <code>save_betweenness_distribution</code> are used to save the general network summary statistics, the network degree distributions, and the betweenness distributions as csv files in the experiment object folder. This is handy if you would prefer to graph these values in Prism instead of R.</p>
 <pre class="r"><code>sundowning &lt;- summarise_networks(sundowning, 
                                  network_names = c(&quot;female_AD&quot;, &quot;female_control&quot;),
                                  save_stats = TRUE,
                                  save_degree_distribution = TRUE,
                                  save_betweenness_distribution = TRUE)</code></pre>
+<p>The output of this function can be found at <code>sundowning$network_summaries</code>.</p>
 </div>
 </div>
 <div id="plotting-functions" class="section level1">
 <h1>12 Plotting functions</h1>
-<p>Hooray! All of this hard work will allow use to generate some beautiful and hopefully informative plots (for real datasets).</p>
+<p>Hooray! All of this hard work will allow use to generate some beautiful and hopefully informative plots (for real datasets). First there are some conventions to note for plotting functions. Unlike all the other package functions presented here, we will <em>not</em> be assigning the output of a plotting function to our experiment object. There is no return value for plotting functions. This is because no analysis is being done and the primary output that we want is either a graphics window, or an image save to our output folder.</p>
+<p>Almost all the functions will have parameters allowing you to specify the height and width in inches, the image extension (e.g. “.png”, “.jpg”), as well as colors (or color palettes) to save your plot as. Some of the functions will allow you to adjust the xlim and the ylim of your axes in order to fit the data. Pay close attention to the help pages to see what plot characteristics are customizable for each function.</p>
 <div id="plot-percentage-colabel" class="section level2">
 <h2>12.1 Plot percentage colabel</h2>
-<p>The first thing we may want to plot is</p>
+<p>The first thing we may want to plot is percentage of colabelled counts over a given channel.</p>
+<p>This plot is designed to take up to 2 “mapping” variables to display on the barplot.</p>
+<p>TODO fix this function ASAP</p>
+<pre class="r"><code>plot_percent_colabel(sundowning,
+                     channel = &quot;eyfp&quot;,
+                     color_mapping = &quot;sex&quot;,
+                     colors = c(&quot;#952899&quot;, &quot;#358a9c&quot;),
+                     pattern_mapping = &quot;group&quot;,
+                     plot_individual = TRUE,
+                     print_plot = TRUE,
+                     rois = c(&quot;dDG&quot;))</code></pre>
 </div>
 <div id="plot-heatmaps-of-region-correlations" class="section level2">
 <h2>12.2 Plot heatmaps of region correlations</h2>
+<p>We can automatically plot heatmaps of the pairwise region correlations using the function <code>plot_correlation_heatmaps()</code>. Here we simply specify the name of the correlation list and the respective colors (in a hexadecimal string) corresponding to the channels that were specified in <code>get_correlations()</code></p>
+<pre class="r"><code>plot_correlation_heatmaps(sundowning, 
+                          correlation_list_name = &quot;female_AD&quot;,
+                          colors = c(&quot;#be0000&quot;, &quot;#00782e&quot;, &quot;#f09b08&quot;),  
+                          )</code></pre>
 </div>
-<div id="plot-permutation-analysis-volcano-plots-parallel-coordinate-plots" class="section level2">
-<h2>12.3 Plot permutation analysis (volcano plots &amp; parallel coordinate plots)</h2>
+<div id="plot-permutation-analysis-results-volcano-plots-parallel-coordinate-plots" class="section level2">
+<h2>12.3 Plot permutation analysis results (volcano plots &amp; parallel coordinate plots)</h2>
+<p>A volcano plot can show us the the pairwise regions whose correlations are significantly different between analysis groups. The colored dots represent the region pairs that are significantly different between the groups, and have pearson correlation coefficient differences that are greater than +/- 1.</p>
+<pre class="r"><code>volcano_plot(sundowning,
+             permutation_comparison = &quot;male_AD_vs_male_control&quot;,
+             channels = c(&quot;cfos&quot;, &quot;eyfp&quot;),
+             title = &quot;Male AD vs Male CTRL&quot;,
+             ylim = c(0,4))</code></pre>
+<p>A parallel coordinate plot allows us to see which actual region pairs are different between our two analysis groups and in which direction their correlation coefficients change. Only region pairs from the volcano plot that are above the alpha level and have correlation coefficient differences greater than absolute one are included in this graph.</p>
+<pre class="r"><code>parallel_coordinate_plot(sundowning,
+                         permutation_comparison = &quot;male_AD_vs_male_control&quot;,
+                         channels = c(&quot;eyfp&quot;, &quot;cfos&quot;, &quot;colabel&quot;),
+                         )</code></pre>
 </div>
-<div id="plot-network-analysis-and-network-summary-statistics" class="section level2">
-<h2>12.4 Plot network analysis and network summary statistics</h2>
+<div id="plot-network-graphs" class="section level2">
+<h2>12.4 Plot network graphs</h2>
+<p>The <code>plot_networks()</code> functions will automatically plot the output of <code>create_networks()</code>. You must specify the name of the network you want to plot and you can also change the edge colors for regions that are positively correlated. The default color is “firebrick”. Below we will plot the network for only female AD mice.</p>
+<pre class="r"><code>plot_networks(sundowning,
+              network_name = &quot;female_AD&quot;,
+              channels = c(&quot;cfos&quot;, &quot;eyfp&quot;, &quot;colabel&quot;),
+              title = &quot;Female CTRL&quot;,
+              edge_color = &quot;firebrick&quot;, 
+              )</code></pre>
+</div>
+<div id="plot-network-summary-statistics" class="section level2">
+<h2>12.5 Plot network summary statistics</h2>
+<div id="degree-distributions" class="section level3">
+<h3>Degree distributions</h3>
+<p>After we have plotted our network graphs, it is useful to also plot the summary statistics and measurements of node centrality within our networks.</p>
+<p>Degree is a measurement of how many nodes each node is connection to. We can plot a stacked histogram of degree distributions of a network in a stacked histogram using the function <code>plot_degree_distribution()</code>. Remember that we were able to summarize multiple networks using the function <code>SMARTR::summarise_networks()</code>, so we can actually plot both networks on one graph. Check out the example below for plotting the <code>female_AD</code> group and the <code>female_control</code> networks.</p>
+<p>If you want to change the legend label of your groups, map the corresponding <code>network_name</code> to the label you want using the <code>labels</code> parameter. Below is an example of mapping the <code>female_AD</code> group and <code>female_control</code> group to the legend labels “Female AD” and “Female CTRL” respectively.</p>
+<pre class="r"><code>plot_degree_distributions(sundowning,
+                          color_palettes = c(&quot;reds&quot;, &quot;greens&quot;),
+                          channels = c(&quot;cfos&quot;, &quot;eyfp&quot;),
+                          title = &quot;Degree distribution&quot;,
+                          labels = c(female_AD = &quot;Female AD&quot;,
+                                     female_control = &quot;Female CTRL&quot;),
+                          xlim = c(0,25),
+                          save_plot = TRUE,
+                          print_plot = TRUE)</code></pre>
+</div>
+<div id="mean-degree" class="section level3">
+<h3>Mean degree</h3>
+<p>We can also plot the mean degree between the networks on a bar graph. Here the parameter <code>rev_x_scale</code> allows us the change the order of our groups on the barplot. In this case, setting it to <code>TRUE</code> will keep the control analysis group on the left.</p>
+<pre class="r"><code>plot_mean_degree(sundowning,
+                 color_palettes = c(&quot;reds&quot;, &quot;greens&quot;),
+                 channels = c(&quot;cfos&quot;, &quot;eyfp&quot;),
+                 title = &quot;Mean degree&quot;,
+                 labels = c(&quot;female_AD&quot; = &quot;Female AD&quot;,
+                            &quot;female_control&quot; = &quot;Female CTRL&quot;),
+                 ylim = c(0, 10),
+                 rev_x_scale = TRUE,
+                 )</code></pre>
+<p>Also, Keep in mind that you may need to tweak the <code>ylim</code> of your graph to ensure that all the data can fit within the axes limits. If one bar seems to not plot, try changing this parameter first.</p>
+</div>
+<div id="clustering-coefficient" class="section level3">
+<h3>Clustering coefficient</h3>
+<p>The clustering coefficient is a measurement of how many neighboring nodes to a given node are mutually connected, i.e. the strength of local clusters. We can use the function <code>plot_mean_clust_coeff()</code> to compare the average clustering coefficient for each network.</p>
+<pre class="r"><code>plot_mean_clust_coeff(sundowning, 
+                      color_palettes = c(&quot;reds&quot;, &quot;greens&quot;),
+                      channels = &quot;eyfp&quot;,
+                      rev_x_scale = TRUE
+                      )</code></pre>
+</div>
+<div id="mean-global-efficiency" class="section level3">
+<h3>Mean global efficiency</h3>
+<p>Efficiency is a measure of the average number of nodes necessary to cross to get from any node to another. Efficiency is the inverse of the average shortest path. To make an analogy, think about the game “6 degrees of Kevin Bacon”. One person in our lab is 6 degrees away from Kevin, while another is only 3 degrees away (distant cousins I guess). The our efficiency in our connection to Kevin Bacon is 1/average_degree = 1/4.5.</p>
+<pre class="r"><code>plot_mean_global_effic(sundowning,
+                       color_palettes = c(&quot;reds&quot;, &quot;greens&quot;),
+                       labels = c(&quot;female_AD&quot; = &quot;Female AD&quot;,
+                            &quot;female_control&quot; = &quot;Female CTRL&quot;),
+                       title = &quot;Mean global efficiency&quot;,
+                       ylim = c(0, 0.4),
+                       rev_x_scale = TRUE)</code></pre>
+</div>
+<div id="mean-betweenness-centrality" class="section level3">
+<h3>Mean betweenness centrality</h3>
+<p>A related concept is betweenness centrality. This measures how many shortest paths pass through a given node, and it is one indication of how important or central a given node is.</p>
+<pre class="r"><code>plot_mean_between_centrality(sundowning,
+                             color_palettes = c(&quot;reds&quot;, &quot;greens&quot;),
+                             channels = c(&quot;cfos&quot;, &quot;eyfp&quot;),
+                             title = &quot;Mean betweenness centrality&quot;,
+                             labels = c(&quot;female_AD&quot; = &quot;Female AD&quot;,
+                                        &quot;female_control&quot; = &quot;Female CTRL&quot;),
+                             ylim = c(0, 100),
+                             rev_x_scale = TRUE)</code></pre>
+</div>
+<div id="region-degree" class="section level3">
+<h3>Region degree</h3>
+<p>For a single network, We can also examine which individual regions have the highest degree. This will give use an indication of how central some of these regions are in their network and presumably related to how functionally important they are. We can do this by plotting region degrees in descending order.</p>
+<p>The example below plots the “female_AD” network region degrees.</p>
+<pre class="r"><code>plot_degree_regions(sundowning,
+                    network = &quot;female_AD&quot;, 
+                    channels = c(&quot;cfos&quot;, &quot;eyfp&quot;),
+                    colors = c(&quot;#be0000&quot;, &quot;#00782e&quot;),
+                    ylim = c(0, 10),
+                    title = &quot;Region degree&quot;
+                    )</code></pre>
+</div>
+<div id="region-betweenness" class="section level3">
+<h3>Region betweenness</h3>
+<p>Similarly to degree, we can plot the the betweenness centrality for individual regions in descending order.</p>
+<pre class="r"><code>plot_betweenness_regions(sundowning,
+                         channels = c(&quot;cfos&quot;, &quot;eyfp&quot;),
+                         colors = c(&quot;#be0000&quot;, &quot;#00782e&quot;),
+                         title = &quot;Betweenness&quot;,
+                         save_plot = TRUE,
+                         print_plot = TRUE)</code></pre>
+</div>
 </div>
 </div>
 <div id="scripting" class="section level1">

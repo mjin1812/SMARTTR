@@ -9,7 +9,7 @@ plot_degree_distributions(
   color_palettes = c("reds", "greens"),
   colors_manual = NULL,
   channels = c("cfos", "eyfp"),
-  labels = c(AD = "AD_label", control = "control_label"),
+  labels = c(female_AD = "female_AD_label", female_control = "female_control_label"),
   title = "my_title",
   height = 15,
   width = 15,
@@ -28,9 +28,12 @@ plot_degree_distributions(
 \item{colors_manual}{(str, default = NULL ) Manually choose the hexadecimal color codes to create a custom color palette, e.g. colors_manual = c("#660000", "#FF0000", "#FF6666").
 Warning: this will be applied to all channels. It's recommended to set the channels parameter to a single channel if this parameter is used.}
 
-\item{channels}{(str, default = c("cfos", "eyfp", "colabel")) Channels to plot}
+\item{channels}{(str, default = c("cfos", "eyfp", "colabel")) Channels to plot.}
 
-\item{labels}{The legend labels to correspond with your network names.}
+\item{labels}{(e.g. labels = c(network1_name = "network 1 label", network2_name = "network 2 label)) The legend labels to correspond with your network names.}
+
+\item{title}{(str, default = "my_title")
+the experiment object output folder.}
 
 \item{height}{(int, default = 15) Height of the plot in inches.}
 
@@ -42,13 +45,10 @@ Warning: this will be applied to all channels. It's recommended to set the chann
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 
-\item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.s
-the experiment object output folder.}
+\item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.s}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}
-
-\item{(str, }{default = NULL) title of plot}
 }
 \value{
 

@@ -30,7 +30,7 @@ Warning: this will be applied to all channels. It's recommended to set the chann
 
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel")) Channels to plot}
 
-\item{labels}{The labels to correspond with your network names.}
+\item{labels}{(e.g. labels = c(network1_name = "network 1 label", network2_name = "network 2 label)) The legend labels to correspond with your network names.}
 
 \item{title}{(str, default = "my_title) plot title}
 

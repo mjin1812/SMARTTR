@@ -23,8 +23,8 @@ get_correlations(
 \item{channels}{The channels to correlate.}
 
 \item{p_adjust_method}{(bool or str, default = "BH") Benjamini-Hochberg method is recommended.
-Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE
-to keep "raw" p values.}
+Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE or "none"
+to keep "raw" p values. See also \code{\link[stats:p.adjust]{stats::p.adjust()}} for the correction options.}
 
 \item{alpha}{The alpha level for p adjustment.}
 }
