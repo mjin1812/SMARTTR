@@ -406,8 +406,6 @@ acronym.from.id <- function (x)
   }))
 }
 
-
-
 #' @export
 # Get current OS
 get_os <- function(){

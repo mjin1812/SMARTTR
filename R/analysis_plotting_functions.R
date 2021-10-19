@@ -12,9 +12,6 @@ NULL
 
 ##_____________________ Analysis functions ___________________________
 
-# Calculate percentage colabeled over cfos and eyfp. Specify which ROIS you want
-
-
 #' Get the percentage of colabelled cells over either cfos or eyfp channels.
 #' @description This analysis will only include common regions that are included in both the colabelled and
 #' cfos or eyfp channels. The colabelled percentage of individual animals will be calculated with the option to export the data.
@@ -27,7 +24,7 @@ NULL
 #' @param individual (bool, default = FALSE) Whether the data should include individual mouse colabelled percentages rather than the average.
 #' If FALSE the colabel percentages are averaged across all analysis subgroups determined by the `by` parameter
 #' @return e experiment object with colabelled percentage table stored in it.
-#' @export e <- get_percent_colabel(e, by = c("group", "sex"), channel = "eyfp", save_table = TRUE, rois = NULL, individual = FALSE)
+#' @export
 #' @examples e <- get_percent_colabel(e, c("group", "sex", channel = "eyfp"))
 get_percent_colabel <-function(e, by, channel = "eyfp", save_table = TRUE, rois = NULL, individual = TRUE){
 
@@ -424,8 +421,6 @@ create_networks <- function(e,
   e$networks[[correlation_list_name]] <- networks
   return(e)
 }
-
-
 
 #' Summarize multiple networks. Create summary dataframes of for multiple networks and
 #' calculate network statistics for each network.

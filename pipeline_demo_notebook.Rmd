@@ -854,8 +854,6 @@ In the example below, we will compare the `female_AD` analysis group with the `f
 
 ```{r}
 
-suppressWarnings(
-
 sundowning <- correlation_diff_permutation(sundowning,
                                            correlation_list_name_1 = "female_AD",
                                            correlation_list_name_2 = "female_control",
