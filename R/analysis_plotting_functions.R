@@ -15,31 +15,28 @@ NULL
 # Calculate percentage colabeled over cfos and eyfp. Specify which ROIS you want
 
 
-#' Get the percentage of colabelled cells over cfos or eyfp channels
+#' Get the percentage of colabelled cells over either cfos or eyfp channels.
 #' @description This analysis will only include common regions that are included in both the colabelled and
 #' cfos or eyfp channels. The colabelled percentage of individual animals will be calculated with the option to export the data.
-#'
-#' @param e
-#' @param channel (str, default = "cfos") The channel used as denominator in fraction counts.
-#' @param save_table (bool, default = TRUE) Whether to save the output table as a csv in the experiment object output folder.
-#' @param roi (str, default = NULL) Whether to generate colabelled percentages for only specific regions of interest. The default is
-#' @param individual (bool, default = TRUE) Whether the data should include individual mouse colabelled. If FALSE the colabel percentages are
-#' @param by (str, default = NULL) Attribute names to group by, e.g. by = c("group", "sex")
+#' @param e experiment object
+#' @param by (str) Attribute names to group by, e.g. by = c("group", "sex"). These will generate analysis subgroups that are
 #' averaged together to assess across all rois.
-#' @return e experiment object with colabel percentage table stored in it.
-#' @export
-#'
+#' @param channel (str, default = "eyfp") The channel used as denominator in fraction counts.
+#' @param save_table (bool, default = TRUE) Whether to save the output table as a csv in the experiment object output folder.
+#' @param rois (str, default = NULL) Whether to generate colabelled percentages for only specific regions of interest, e.g. rois = c("HY", "DG")
+#' @param individual (bool, default = FALSE) Whether the data should include individual mouse colabelled percentages rather than the average.
+#' If FALSE the colabel percentages are averaged across all analysis subgroups determined by the `by` parameter
+#' @return e experiment object with colabelled percentage table stored in it.
+#' @export e <- get_percent_colabel(e, by = c("group", "sex"), channel = "eyfp", save_table = TRUE, rois = NULL, individual = FALSE)
 #' @examples e <- get_percent_colabel(e, c("group", "sex", channel = "eyfp"))
-get_percent_colabel <-function(e, by = NULL, channel = "eyfp", save_table = TRUE, rois = NULL, individual = TRUE){
-  # # correct mismatched attributes typed by users
-  # by <- match_m_attr(by)
+get_percent_colabel <-function(e, by, channel = "eyfp", save_table = TRUE, rois = NULL, individual = TRUE){
 
+  # correct mismatched attributes typed by users
   e_info <- attr(e, "info")
 
   # Get common regions that are present across both channels
   common_reg <- e$combined_normalized_counts[["colabel"]]$acronym %>% unique() %>%
     intersect( e$combined_normalized_counts[[channel]]$acronym )
-
 
   # Check if user only wants a specific roi in common regions
   if (!is.null(rois)){
@@ -56,7 +53,6 @@ get_percent_colabel <-function(e, by = NULL, channel = "eyfp", save_table = TRUE
   }
 
   if (is.null(by)){
-
     # Join by all attributes in the dataset
     by <- names(e$combined_normalized_counts$colabel) %>% setdiff(c("area.mm2", "volume.mm3",
                                                                     "normalized.count.by.area",
@@ -77,7 +73,6 @@ get_percent_colabel <-function(e, by = NULL, channel = "eyfp", save_table = TRUE
 
   # Create master counts table of percentage colabels
   # Inner join deletes any mice with na values for counts
-
   var <- sym(paste0("count.", channel)) # symbol for mutate function
 
   master_counts <- colabel_counts %>%
@@ -124,24 +119,24 @@ get_percent_colabel <-function(e, by = NULL, channel = "eyfp", save_table = TRUE
 }
 
 
-#' get_correlations
-#'
+#' Get regional cross correlations and their p-values in a correlation list object.
 #' @param e experiment object
-#' @param by The variable names (columns) to filter the dataframe selection.
-#' @param values The value of the variables to filter the combined normalized counts df by.
-#' @param channels The channels to correlate.
+#' @param by (str) Attribute names to group by, e.g. c("sex", "group")
+#' @param values (str) The respective values of the attributes entered for the `by` parameter to generate a specific analysis group,
+#' e.g.values = c("female", "AD").
+#' @param channels (str, channels =  c("cfos", "eyfp", "colabel") The channels to process.
 #' @param p_adjust_method (bool or str, default = "BH") Benjamini-Hochberg method is recommended.
-#'  Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE or "none"
+#'  Apply the named method to control for the inflated false discovery rate or family wise error rate (FWER). Set to FALSE or "none"
 #'  to keep "raw" p values. See also [stats::p.adjust()] for the correction options.
-#' @param alpha The alpha level for p adjustment.
-#'
+#' @param alpha (num, default = 0.05) The alpha level for significance applied after p-adjustment.
 #' @return e experiment object. The experiment object now has a named `correlation_list` object stored in it.
 #' The name of the correlation object is the concatenation of the variable values separated by a "_".
-#' This name allows for unambiguous identification of different group correlations analysis in the future.
+#' This name allows for unambiguous identification of different analysis subgroups in the future.
 #' @export
-#'
-#' @examples
-get_correlations <- function(e, by = c("sex", "group"), values = c("female", "AD"),
+#' @examples e <- get_correlations(e, by = c("sex", "group"), values = c("female", "AD"),
+#' channels = c("cfos", "eyfp", "colabel"),  p_adjust_method = "BH", alpha = 0.05)
+#' @seealso [Hmisc::rcorr()]
+get_correlations <- function(e, by, values,
                              channels = c("cfos", "eyfp", "colabel"),  p_adjust_method = "BH", alpha = 0.05){
   corr_list <- list()
   names(corr_list) <- names(channels)
@@ -198,38 +193,44 @@ get_correlations <- function(e, by = c("sex", "group"), values = c("female", "AD
   return(e)
 }
 
-
-
 #' This function performs a permutation analysis to compare the region pairwise correlation coefficients between two different analysis groups
 #' specified by `correlation_list_name_1` and `correlation_list_name_2.` Note that both of these analysis groups must have the same
 #' number of channels to compare. The functions `get_correlations()` needs to have been run for each of these analysis groups prior to
 #' running this function.
-#'
 #' @param e experiment object
-#' @param correlation_list_name_1 (default = "AD") The name of the correlation list object used as the first group for comparison.
-#' @param correlation_list_name_2 (default = "control") The name of the correlation list object used as the second group for comparison.
+#' @param correlation_list_name_1 (str) The name of the correlation list object used as the first group for comparison.
+#' @param correlation_list_name_2 (str) The name of the correlation list object used as the second group for comparison.
+#' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
 #' @param n_shuffle (int, default = 1000) The number of permutation shuffles.
-#' @param alpha (float, default = 0.05) The alpha cutoff for significance between region pairwise correlation differences
+#' @param seed (int, default = 5) Random seed for future replication.
 #' @param p_adjust_method (bool or str, default = "BH") Benjamini-Hochberg method is recommended.
 #'  Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE or "none"
 #'  to keep "raw" p values. See also [stats::p.adjust()] for the correction options.
-#' @param seed (int, default = 5) Random seed for future replication.
-#' @param ... additional parameters to [RcppAlgos::permuteGeneral()] aside from n, m, Parallel and repetition
-#' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
+#' @param alpha (float, default = 0.05) The alpha cutoff for significance between region pairwise correlation differences
+# @param ... additional parameters to [RcppAlgos::permuteGeneral()] aside from n, m, Parallel and repetition
 #' @return e experiment object. The experiment object now has a list called `permutation_p_matrix` stored in it. Elements of this `permutation_p_matrix` list are
 #' the outputs of different permutation comparison analyses. These elements are named by the groups that were compared.
 #' @export
-#' @examples
+#' @seealso [SMARTR::get_correlations()]
+#' @examples e <- correlation_diff_permutation(sundowning,
+#'                                             correlation_list_name_1 = "female_AD",
+#'                                             correlation_list_name_2 = "female_control",
+#'                                             channels = c("cfos", "eyfp", "colabel"),
+#'                                             n_shuffles = 1000,
+#'                                             seed = 5,
+#'                                             p_adjust_method = FALSE
+#'                                             alpha = 0.001,
+#'                                             )
+#'
 correlation_diff_permutation <- function(e,
-                                         correlation_list_name_1 = "AD",
-                                         correlation_list_name_2 = "control",
-                                         n_shuffle = 1000,
-                                         alpha = 0.05,
-                                         p_adjust_method = "BH",
-                                         seed = 5,
+                                         correlation_list_name_1,
+                                         correlation_list_name_2,
                                          channels = c("cfos", "eyfp", "colabel"),
+                                         n_shuffle = 1000,
+                                         seed = 5,
+                                         p_adjust_method = "BH",
+                                         alpha = 0.05,
                                          ...){
-
 
   # Return the correlations list data showing the grouping and the values
   attr_group_1 <- attributes(e$correlation_list[[correlation_list_name_1]])
@@ -240,7 +241,6 @@ correlation_diff_permutation <- function(e,
   names(p_matrix_list) <- channels
 
   for (channel in channels) {
-
     # Obtain combined cell count table for this channel
     df_channel <- e$combined_normalized_counts[[channel]]
 
@@ -279,14 +279,17 @@ correlation_diff_permutation <- function(e,
       as.matrix() %>% Hmisc::rcorr()
     test_statistic <- group_1_corr$r - group_2_corr$r
 
-    # # Get an array of distribution of correlation differences
+    # Get an array of distribution of correlation differences
     test_statistic_distributions <- permute_corr_diff_distrib(df_channel_groups,
                                                          correlation_list_name_1 = correlation_list_name_1,
                                                          correlation_list_name_2 = correlation_list_name_2,
                                                          n_shuffle = n_shuffle,
                                                          seed = seed, ...)
     # For each pairwise distribution, sort the values
-    test_statistic_distributions <- apply(test_statistic_distributions, 1:2, sort) %>% aperm( c(3, 2, 1))
+    test_statistic_distributions <- apply(test_statistic_distributions, 1:2, sort)
+    # do.call(sort, 1:2)
+    # test_statistic_distributions <- test_statistic_distributions %>% aperm(c(1, 2, 3))
+    # aperm(c(3, 2, 1))
 
     # calculate the p-value of the permutation
     p_matrix <- matrix(nrow = length(common_regions_btwn_groups),
@@ -296,7 +299,7 @@ correlation_diff_permutation <- function(e,
     l_reg <- length(common_regions_btwn_groups)
     for (i in 1:l_reg){
       for (j in 1:l_reg){
-        null_distrib <- test_statistic_distributions[i,j,]
+        null_distrib <- test_statistic_distributions[i,j] %>% unlist()
         p_matrix[i,j] <-  (sum(abs(null_distrib) >= abs(test_statistic[i,j])) + 1) / (n_shuffle + 1)
         if(j>=i){
           p_matrix[i,j:l_reg] <- NA
@@ -329,26 +332,23 @@ correlation_diff_permutation <- function(e,
   return(e)
 }
 
-
-
-
-#' Create network graph objects for plotting
-#' @description
+#' Create network graph objects for plotting different analysis subgroups.
 #' @param e experiment object
-#' @param correlation_list_name (str, default = "AD") Name of the correlation list object used to generate the networks.
+#' @param correlation_list_name (str) Name of the correlation list object used to generate the networks.
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
 #' @param alpha (float, default = 0.05) The significance cutoff for including brain regions in the network.
-#' @return e experiment object. This object now has a `networks` list with each element of the list storing network data. The name of
-#' each network (`network_name`)is the same as the `correlation_list_name` used to generate the network. This `network_name` is fed into
-#' [SMARTR::plot_network()] as a parameter.
-#' @export
 #'
-#' @examples
+#' @return e experiment object. This object now has a new added element called `networks.` This is a list storing a
+#' graph object per channel for each network analysis run.
+#' The name of each network (`network_name`) is the same as the `correlation_list_name`
+#' used to generate the network. This `network_name` is fed as a parameter into the
+#' [SMARTR::plot_network()] function.
+#' @export
+#' @examples e sundowning <- create_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
 #' @seealso [SMARTR::plot_networks()]
 create_networks <- function(e,
-                            correlation_list_name = "AD",
+                            correlation_list_name,
                             channels = c("cfos", "eyfp", "colabel"),
-                            edge_color = "firebrick",
                             alpha = 0.05){
 
   # List to store the networks
@@ -356,6 +356,7 @@ create_networks <- function(e,
   names(networks) <- channels
 
   for (channel in channels){
+
     #__________________ Create Edge Tibble _____________
     corr_df <-  e$correlation_list[[correlation_list_name]][[channel]] %>% purrr::map(tibble::as_tibble)
     val_names <- names(corr_df)
@@ -426,21 +427,20 @@ create_networks <- function(e,
 
 
 
-#' Summarize multiple networks
-#' @description Create summary dataframes of all networks and create network statistics for multiple networks
+#' Summarize multiple networks. Create summary dataframes of for multiple networks and
+#' calculate network statistics for each network.
 #' @param e experiment object
-#' @param network_names (str, default = NULL) The names of the networks to generate summary tables for.
+#' @param network_names (str) The names of the networks to generate summary tables for, e.g. network_names = c("female_AD", "female_control")
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
 #' @param save_stats (bool, default = TRUE) Save the summary stats as a csv file in the output folder
 #' @param save_degree_distribution (bool, default = TRUE) Save the network degree distributions (frequencies of each degree) across each comparison group as a csv file.
 #' @param save_betweenness_distribution (bool, default = TRUE) Save the betweenness distribution.
 #' @return e experiment object
 #' @export
-#' @examples e <- get_network_statistics(e, network_names = c("AD", "control"),
-#' channels = c("cfos", "eyfp", "colabel"),
-#' save_stats = TRUE, save_degree_distribution = TRUE)
+#' @examples e <- get_network_statistics(e,  network_names = c("female_AD", "female_control"),
+#' channels = c("cfos", "eyfp", "colabel"), save_stats = TRUE, save_degree_distribution = TRUE)
 summarise_networks <- function(e,
-                               network_names = c("AD", "control"),
+                               network_names,
                                channels = c("cfos", "eyfp", "colabel"),
                                save_stats = TRUE,
                                save_degree_distribution = TRUE,
@@ -530,8 +530,10 @@ summarise_networks <- function(e,
 #' @param by
 #' @return
 #' @export
-#' @examples
-plot_percent_colabel <- function(e, by = NULL, channel = "cfos",  rois = c("AAA", "dDG", "HY"),
+#' @examples plot_percentage_colabel
+plot_percent_colabel <- function(e,
+                                 by = NULL,
+                                 channel = "cfos",  rois = c("AAA", "dDG", "HY"),
                                  color_mapping = "sex",
                                  colors = c("#952899", "#358a9c"),
                                  pattern_mapping = "group",
@@ -676,23 +678,27 @@ plot_percent_colabel <- function(e, by = NULL, channel = "cfos",  rois = c("AAA"
 }
 
 #' Plot correlation heatmaps
-#' @param e experiment object that contains a named correlation_list object generated by [SMARTR::get_correlations()]
-#' @param correlation_list_name The name of the correlation object generated by [SMARTR::get_correlations()]
-#' @param colors Hexadecimal code for the colors corresponding to the channels attribute of the correlation_list.
-#' @param title Title of the plot. If NULL, the grouping variable names will be taken from the correlation_list object annd used as the title.
-#' @param height Height of the plot in inches.
-#' @param width width of the plot in inches.
-#' @param image_ext (default = ".png") image extension to the plot as.
+#'
+#' @param e experiment object. Must contain a named correlation_list object generated by [SMARTR::get_correlations()]
+#' @param correlation_list_name (str) The name of the correlation object generated by [SMARTR::get_correlations()]
+#' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal code for the colors corresponding to the channels attribute of the correlation_list. Color values can also be
+#' input compatible with ggplot2 plotting functions.
+#' @param print_plot (bool, default = TRUE) Print the plot as graphics windows.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
-#'  the experiment object output folder.
+#' the experiment object output folder.
+#' @param image_ext (default = ".png") image extension to the plot as.
+#' @param title (str, default = NULL) If NULL, the `correlation_list_name` will used as the title with underscores removed.
+#' @param height (int) Height of the plot in inches.
+#' @param width (int) Width of the plot in inches.
 #' @export
-#' @examples
+#' @examples plot_correlation_heatmaps(e, correlation_list_name = "female_AD") # No return value
+#' @seealso [SMARTR::get_correlations()]
 
-plot_correlation_heatmaps <- function(e, correlation_list_name = "female_AD", colors = c("#be0000", "#00782e", "#f09b08"),
-                                      print_plot = TRUE, save_plot = TRUE,
-                                      title = NULL, height = 10, width = 10, image_ext = ".png"){
+plot_correlation_heatmaps <- function(e, correlation_list_name , colors = c("#be0000", "#00782e", "#f09b08"),
+                                      print_plot = TRUE, save_plot = TRUE, image_ext = ".png",
+                                      title = NULL, height = 10, width = 10){
 
-  # Detect the OS and set quartz( as graphing function)
+  # Detect the OS and set quartz (as graphing function)
   if(get_os() != "osx"){
     quartz <- X11
   }
@@ -780,18 +786,23 @@ plot_correlation_heatmaps <- function(e, correlation_list_name = "female_AD", co
 #'
 #' @param e experiment object
 #' @param permutation_comparison The name of the correlation group comparisons to plot.
+#' @param channels (str, default = c("cfos", "eyfp", "colabel")) channels to plot.
+#' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal code for the colors corresponding to the
+#' channels attribute of the correlation_list. Color values can also be input compatible with ggplot2 plotting functions.
+#' @param print_plot (bool, default = TRUE) Print the plot as graphics windows.
+#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
+#' the experiment object output folder.
+#' @param image_ext (default = ".png") image extension to save the plot as.
 #' @param title Title of the plot.
 #' @param height height of the plot in inches.
 #' @param width width of the plot in inches.
-#' @param image_ext (default = ".png") image extension to save the plot as.
-#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
-#'  the experiment object output folder.
-#' @param channels (str, default = c("cfos", "eyfp", "colabel")) channels to plot.
-#' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
-#' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal codes corresponding to the channels (respectively) to plot.
-#'
 #' @export
-#' @examples
+#' @examples volcano_plot(e, permutation_comparison = "female_AD_vs_male_AD", channels = c("cfos", "eyfp", "colabel"),
+#' colors =  c("#be0000", "#00782e", "#f09b08"), save_plot = TRUE, title = NULL, ylim = c(0, 3), height = 8,
+#' width = 10, print_plot = TRUE, image_ext = ".png")
+#'
+
+
 volcano_plot <- function(e,
                          permutation_comparison = "female_AD_vs_male_AD",
                          channels = c("cfos", "eyfp", "colabel"),
@@ -877,7 +888,6 @@ volcano_plot <- function(e,
 }
 
 
-
 #' Create a parallel coordinate plot
 #' @description Plot the correlation difference between two comparison groups into a parallel coordinate plot. The function
 #' [SMARTR::correlation_diff_permutation()] must be run first in order to generate results to plot.
@@ -885,8 +895,8 @@ volcano_plot <- function(e,
 #' @param permutation_comparison The name of the correlation group comparisons to plot.
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) channels to plot
 #' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal codes corresponding to the channels (respectively) to plot.
-#' @param x_label_group_1 (str, NULL)
-#' @param x_label_group_2 (str, NULL)
+#' @param x_label_group_1 (str, NULL) The label for the first group in the permutation analysis.
+#' @param x_label_group_2 (str, NULL) The label for the second group in the permutaiton analysis.
 #' @param  height height of the plot in inches.
 #' @param  width width of the plot in inches.
 #' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
@@ -967,7 +977,6 @@ parallel_coordinate_plot <- function(e,
 
 
     df <- df %>% dplyr::filter(sig, abs(corr_diff) >= 1) %>%
-      dplyr::mutate(sign = factor(ifelse(corr > 0,"P","N"))) %>%
       dplyr::mutate(group = factor(group, levels = c(group_2, group_1)),
              nudge = ifelse(group == group_1, 0.1, -0.1)) %>%
       dplyr::arrange(group, corr_diff) %>%
@@ -1022,10 +1031,7 @@ parallel_coordinate_plot <- function(e,
 
 }
 
-
-
 #' Plot the networks stored in an experiment object
-#'
 #' @param e experiment object
 #' @param network_name (str, default = "AD")
 #' @param title (str, default = NULL) Title of network plot
@@ -1035,9 +1041,10 @@ parallel_coordinate_plot <- function(e,
 #' @param image_ext (default = ".png") image extension to the plot as.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
-#' @param edge_color (str, default = "firebrick") Color of the network edges. Can also be a dexadecimal color code written as a string.
 #' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.
 #'  the experiment object output folder.
+#' @param edge_color (str, default = "firebrick") Color of the network edges.
+#' Can also be a hexadecimal color code written as a string.
 #' @export
 #' @examples
 plot_networks <- function(e,
@@ -1126,33 +1133,34 @@ plot_networks <- function(e,
 
 #' Plot the degree distributions
 #' @description
-#' Plot a stacked bar plot of the degree distributions
-#'
+#' Plot a stacked bar plot of the degree distributions.
 #' @param e experiment object
-#' @param labels (e.g. labels = c(network1_name = "network 1 label", network2_name = "network 2 label)) The legend labels to correspond with your network names.
+#' @param channels (str, default = c("cfos", "eyfp", "colabel")) Channels to plot.
 #' @param color_palettes (str, default = c("reds", "greens")) Color palettes from [grDevices::hcl.colors] that are used to for plotting networks for each channel, respectively.
 #' @param colors_manual (str, default = NULL ) Manually choose the hexadecimal color codes to create a custom color palette, e.g. colors_manual = c("#660000", "#FF0000", "#FF6666").
-#' Warning: this will be applied to all channels. It's recommended to set the channels parameter to a single channel if this parameter is used.
-#' @param channels (str, default = c("cfos", "eyfp", "colabel")) Channels to plot.
+#' Warning: this color will be applied to all channels. It's recommended to set the channels parameter to a single channel if this parameter is used.
+#' @param title (str, default = "my_title")
+#'  the experiment object output folder.
+#' @param labels (e.g. labels = c(network1_name = "network 1 label", network2_name = "network 2 label))
+#' The legend labels to correspond with your respective network names.
 #' @param height (int, default = 15) Height of the plot in inches.
 #' @param width (int, default = 15) Width of the plot in inches.
 #' @param xlim (vec, default = c(0,20)) axes limits x-axis
 #' @param ylim (vec, default = c(0,15))axes limits of y-axis
-#' @param image_ext (default = ".png") image extension to the plot as.
+#' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
-#' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
-#' @param title (str, default = "my_title")
-#'  the experiment object output folder.
+#' @param image_ext (default = ".png") image extension to the plot as.
 #' @return
 #' @export
 #' @examples
 
 plot_degree_distributions <- function(e,
+                                      channels = c("cfos", "eyfp"),
                                       color_palettes = c("reds", "greens"),
                                       colors_manual = NULL,
-                                      channels = c("cfos", "eyfp"),
-                                      labels = c(female_AD = "female_AD_label", female_control = "female_control_label") ,
+                                      labels = c(female_AD = "female_AD_label",
+                                                 female_control = "female_control_label") ,
                                       title = "my_title",
                                       height = 15,
                                       width = 15,
@@ -1229,26 +1237,25 @@ plot_degree_distributions <- function(e,
 
 
 
-#' Plot mean degree
-#' @description
 #' Plot the mean degree of the networks in a barplot. Error bars are plotted as SEM.
-#'
 #' @param e experiment object
-#' @param labels (e.g. labels = c(network1_name = "network 1 label", network2_name = "network 2 label)) The legend labels to correspond with your network names.
-#' @param title (str, default = "my_title) plot title
+#' @param labels (str) The legend labels to correspond with your network names, e.g. labels = c(network1_name = "network 1 label", network2_name = "network 2 label).
+#' These are the same network names used in the function [`SMARTR::summarise_networks()`].
+#' @param channels (str, default = c("cfos", "eyfp", "colabel")) Channels to plot
 #' @param color_palettes (str, default = c("reds", "greens")) Color palettes from [grDevices::hcl.colors] that are used to for plotting networks for each channel, respectively.
 #' @param colors_manual (str, default = NULL ) Manually choose the hexadecimal color codes to create a custom color palette, e.g. colors_manual = c("#660000", "#FF0000", "#FF6666").
 #' Warning: this will be applied to all channels. It's recommended to set the channels parameter to a single channel if this parameter is used.
-#' @param channels (str, default = c("cfos", "eyfp", "colabel")) Channels to plot
-#' @param height (int, default = 10) Height of the plot in inches.
-#' @param width (int, default = 10) Width of the plot in inches.
-#' @param ylim (vec, default = c(0,10)) Axes limits of y-axis
-#' @param image_ext (default = ".png") image extension to the plot as.
+#' @param title (str, default = "my_title) plot title
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
 #' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
 #' @param rev_x_scale (bool, default = FALSE) Reveres the scale of the categorical variables
 #'  the experiment object output folder.
+
+#' @param height (int, default = 10) Height of the plot in inches.
+#' @param width (int, default = 10) Width of the plot in inches.
+#' @param ylim (vec, default = c(0,10)) Axes limits of y-axis
+#' @param image_ext (default = ".png") image extension to the plot as.
 #' @return
 #' @export
 #' @examples
@@ -1823,7 +1830,6 @@ plot_betweenness_regions <- function(e,
           legend.text = element_text(size = 20),
           legend.title = element_text(size = 24))
 
-
   for (k in 1:length(channels)){
 
     channel <- channels[[k]]
@@ -1839,9 +1845,6 @@ plot_betweenness_regions <- function(e,
       xlab("Brain Region") + ylab("Betweenness") +
       ylim(ylim) +
       theme.bar
-
-
-
 
     if (!is.null(title)){
       title <- paste(title)
@@ -1870,9 +1873,6 @@ plot_betweenness_regions <- function(e,
     }
   }
 }
-
-
-
 
 
 

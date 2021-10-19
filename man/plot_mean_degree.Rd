@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{plot_mean_degree}
 \alias{plot_mean_degree}
-\title{Plot mean degree}
+\title{Plot the mean degree of the networks in a barplot. Error bars are plotted as SEM.}
 \usage{
 plot_mean_degree(
   e,
@@ -30,7 +30,8 @@ Warning: this will be applied to all channels. It's recommended to set the chann
 
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel")) Channels to plot}
 
-\item{labels}{(e.g. labels = c(network1_name = "network 1 label", network2_name = "network 2 label)) The legend labels to correspond with your network names.}
+\item{labels}{(str) The legend labels to correspond with your network names, e.g. labels = c(network1_name = "network 1 label", network2_name = "network 2 label).
+These are the same network names used in the function \code{\link[=summarise_networks]{summarise_networks()}}.}
 
 \item{title}{(str, default = "my_title) plot title}
 

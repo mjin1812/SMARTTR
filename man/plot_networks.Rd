@@ -26,7 +26,8 @@ plot_networks(
 
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel"))}
 
-\item{edge_color}{(str, default = "firebrick") Color of the network edges. Can also be a dexadecimal color code written as a string.}
+\item{edge_color}{(str, default = "firebrick") Color of the network edges.
+Can also be a hexadecimal color code written as a string.}
 
 \item{height}{Height of the plot in inches.}
 

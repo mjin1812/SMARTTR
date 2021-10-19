@@ -1,7 +1,7 @@
 ---
 title: "Denny Lab Wholebrain Pipeline Demo"
 author: ' by Michelle Jin'
-date: "Septermber 30, 2021"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     toc: true
@@ -105,12 +105,12 @@ VIII.   Obtaining cell counts normalized by region volume (per mm^2^) and region
 IX.   Splitting the hippocampal cell counts into Dorsal and Ventral based on a user-defined AP coordinate ranges.
 X.    Aggregating cell counts across multiple animals.
 XI.   Quality checks to look for outliers in region cell counts prior to analysis.  
-XI.   Functions for easy analysis, based on categorical variables entered as mouse attributes, e.g. cross correlations and network analysis.
+XI.   Functions for easy analysis, based on categorical variables entered as mouse attributes. These will include functions for region cross correlations and network analyses.
   
   
 ## 1.1 OOP in R
 
-Before getting started, it's helpful to get a sense of a how the structure of data is handled and bundled together in this pipeline. Data is now stored in S3 data type objects called `slice` and `mouse`. The data in these objects will be manipulated by a special type of function called a generic function (this is analogous to an object method in python). Generic functions allow you to pass objects of different classes to the same function, and it can recognize and perform different operations on objects depending on their class. If this is all confusing to you, don't worry at all! This is much more information than you actually need to know to use this pipeline. It's just helpful to better understand the architecture of the package.  
+Before getting started, it's helpful to get a sense of a how the structure of data is handled and bundled together in this pipeline. Data is now stored in S3 data type objects called `slice`, `mouse`, and `experiment`. The data in these objects will be manipulated by a special type of function called a generic function (this is analogous to an object method in python). Generic functions allow you to pass objects of different classes to the same function, and it can recognize and perform different operations on objects depending on their class. If this is all confusing to you, don't worry at all! This is much more information than you actually need to know to use this pipeline. It's just helpful to better understand the architecture of the package.  
 
 
 To get an excellent brief overview of what object oriented programming (OOP) is and it's advantages over procedural programming, check out this excellent 
@@ -124,7 +124,7 @@ To get an excellent brief overview of what object oriented programming (OOP) is 
 
 ## 2.1 Install `wholebrain`
 
-Installing `wholebrain` is quite finicky. The most updated instructions on installing `wholebrain` for Windows is found here [!]. 
+Installing `wholebrain` is quite finicky. The most updated instructions on installing `wholebrain` for Windows is found [here](https://matiasandina.github.io/wholebrain_install/) . 
 
 For Macs, the instructions are found on the Denny lab google drive under Protocols > Whole-Brain > Installation
 
@@ -192,9 +192,13 @@ Run the code below to used the `?` operator to pull up the documentation for a `
 
 ## 3.2 Mouse objects
 
-A `mouse` object is an object that will store multiple `slice` objects (and therefore all the information in it), and will eventually store the combined cell data and the  region cell counts normalized by volume. Like a `slice`, it will also contain "metadata" about your mouse stored as attributes. Now, try pulling up the help page yourself for the `mouse` object to see all attributes you can store!
+A `mouse` object is an object that will store multiple `slice` objects (and therefore all the information in it), and will eventually store the combined cell data and the  region cell counts normalized by volume. Like a `slice`, it will also contain "metadata" about your mouse stored as string attributes. Now, try pulling up the help page yourself for the `mouse` object to see all attributes you can store!
 
 <br>  
+
+## 3.3 Experiment object
+
+An experiment object will primarily store the processed information from multiple `mouse` objects. Some experimental attributes will auto populate based on mouse attributes. For example, if multiple mice are added to an experiment with the `drug` attribute values `ketamine` or `saline`, the experiment attribute `drug_groups` will be a vector with the values `ketamine` and `saline`. 
 
 
 # 4 Pipeline setup
@@ -367,7 +371,7 @@ Before we register we must first check that the contours of our brain sample can
 
 To get a good outline of our brain, we need to modify a critical parameter called the `brain.threshold`. The `brain.threshold` is 
 just one of many parameters that are stored in a `filter` list. This filter is passed on to various wholebrain functions. Later,
-we will pass this filter to`SMARTR::register()` so knows the function knows which `brain.threshold` to use. 
+we will pass this filter to`SMARTR::register()` so the function knows which `brain.threshold` to use. 
 
 We will adjust and check the effects of changing the `brain.threshold` parameter using the function `adjust_brain_outline()` This function uses a default `brain.threshold` of 10 and pops up a window showing the detected contours in a blue line. If the contours are unsatisfactory, you can use the interactive console interface to modify the value. I recommend modifying the value in steps of +/- 2.
 
@@ -411,7 +415,7 @@ mouse_325 <- register(mouse_325,
 which `hemisphere` you want to register
 
 
-At this point, you may find it useful to save all your hard work after perfecting the registration. You can save to the mouse output folder with the command below.
+At this point, you may find it useful to save all your hard work after perfecting the registration. You can save the mouse object to its output folder with the command below.
 
 ```{r, eval = FALSE}
 save_mouse(mouse_325)
@@ -440,7 +444,7 @@ load("V:/Michelle Jin/Sundowning/PipelineDemo/Mouse_example/mouse_325_pre-regist
 
 The segmentation data from ImageJ is stored into .txt files. We can use the `import_segmentation()` generic function to import the raw data. 
 
-Note that currently, this method is dependent on the naming conventions of the txt file, and therefore may be specific to Holly's data right now. In the future, if there are multiple different ImageJ segmentation macros with different naming conventions being used in the lab, we just need to write multiple custom import functions. This won't interfere with the rest of the pipeline.
+Note that currently, this method is dependent on the naming conventions of the ImageJ macro used to create and save the txt file. In the future, if there are multiple different ImageJ segmentation macros with different naming conventions being used in the lab, we just need to standardize the macro to fit adhere to the current naming conventions. Alternatively, you could write multiple custom import functions. 
 
 ```{r}
 mouse_325 <- import_segmentation(mouse_325,
@@ -680,14 +684,12 @@ print(mouse_325$hipp_DV_normalized_counts)
 
 ```
 
-We can choose to overwrite the existing hippocampal data stored in the `cell_table` with the hippocampal data split dorsal and ventrally by setting the `merge` parameter to `TRUE`. I recommend this option, as all future analysis functions are designed to operate on this data. 
+We can choose to overwrite the existing hippocampal data stored in the `normalized_counts` dataframe with the hippocampal data split dorsal and ventrally by setting the `merge` parameter to `TRUE`. I recommend this option, as all future analysis functions are designed to operate on this data. 
 
 ```{r}
 
 mouse_325 <- split_hipp_DV(mouse_325, AP_coord = -2.7, combine_hemispheres = TRUE, simplify_regions = TRUE, merge = TRUE)
 ```
-
-
 
 
 
@@ -699,7 +701,7 @@ mouse_325 <- split_hipp_DV(mouse_325, AP_coord = -2.7, combine_hemispheres = TRU
 Once you've registered enough mice, you can begin adding them into an experiment object. Creating an experiment object is very similar to the way we created mouse and slice objects with one exception: there are certain experimental attributes that are meant to be autopopulated when we add a mouse object to it and should be left alone during object construction. 
 
 
-For example, if multiple mice are added to an experiment object from three different `drug` conditions, the experiment object's attribute `drug_groups` will consist of the names of the three drugs given. Check the help page to see which experiment attributes are autogenerated. You'll see that the `experiment_name`, `experimenters`, and `output_path` parameters are the only ones that really need to be set manually. 
+For example, if multiple mice are added to an experiment object from three different `drug` conditions, the experiment object's attribute `drug_groups` will consist of the names of the three drugs given. Check the help page to see which experiment attributes are autogenerated. You'll see that the `experiment_name`, `experimenters`, and `output_path` parameters are the only ones we need to be set manually. 
 
 
 Additionally, know that adding mice to an experiment will keep only the processed neural mapping information, not the individual slice information. This is to ensure that unnecessary computer memory isn't being used during analysis. Therefore, any changes you want to make to cleaning up or modifying individual slice data should be done at the mouse object level. 
@@ -707,11 +709,12 @@ Additionally, know that adding mice to an experiment will keep only the processe
 
 
 ```{r}
-
+# Initialize an experiment object
 sundowning <- experiment(experiment_name = "sundowning",
-                         experimenters = c("HH", "AW", "MJ"),
+                         experimenters = c("HH", "MJ", "AW", "RC"),
                          output_path = "V:\\Michelle Jin\\Sundowning\\PipelineDemo\\Experiment_example")
  
+# Add a mouse to the experiment
 sundowning <- add_mouse(sundowning, mouse_325)
 
 ```
@@ -729,16 +732,16 @@ save_experiment(sundowning)
 Once you've added enough mice to perform an analysis, we want to aggregate all the data for each mouse together into one dataframe to perform analysis on. This is done with the `combine_norm_cell_counts()` function.  
 
 
-`by` is a special parameter that will allow up to take advantage of the many mouse attributes that we have recorded during creation of a mouse object. It is a vector of the mouse attributes we will use to split our dataset into subgroups for comparison. In the example below, we use the `group` and `sex` mouse attributes to compare `AD` and `control` groups and the `male` and `female` mice. Sometimes, certain attributes like `drug` may not apply to your experiment, so `by` should only include the variables that you intend on using for group comparisons during analysis. 
+`by` is a special parameter that will allow up to take advantage of the many mouse attributes that we have recorded during creation of a mouse object. It is a vector of the mouse attributes we will use to split our dataset into subgroups for comparison. In the example below, we use the `group`, `sex`, and `age` mouse attributes to compare `AD` and `control` groups and the `male` and `female` mice that are 2 months old. Sometimes, certain attributes like `drug` may not apply to your experiment, so `by` should only include the variables that you intend on using for group comparisons during analysis to avoid cluttering your combined dataframe. For consistency in the functions used to filter out subgroups, the values of the attributes will all be converted to strings.
 
 
-For now we will load a saved example experiment object named `sundowning`. *Please note* that the data in this object is fabricated. It is simply mouse_325's data with added noise. This is because we are still currently in the process of generating all the segmentation data for the sundowning project. 
+For now we will load a saved example experiment object named `sundowning` that already contains many mouse objects. *Please note* that the data in this object is fabricated. It is simply mouse_325's data with added noise. This is because we are still currently in the process of generating all the segmentation data for the sundowning project. Additionally, a random number of regions have been deleted across the mice to simulate differences in omitted regions in slices registered across mice.
 
 ```{r}
 
 load("V:\\Michelle Jin\\Sundowning\\PipelineDemo\\Experiment_example\\experiment_demo_saved.Rdata")
 
-sundowning <- combine_norm_cell_counts(sundowning, by = c('group', 'sex'))
+sundowning <- combine_norm_cell_counts(sundowning, by = c('group', 'sex', 'age'))
 
 ```
 
@@ -752,9 +755,8 @@ The quality of the segmentation data may depend on many factors including immuno
 
 The function `find_outlier_counts()` will first organize counts into analysis groups stratified based on the `by` parameter. Then the mean cell counts for each analysis group and their standard deviation are calculated. If any regions counts for a mouse exceed greater than `n_sd` (default = 2) for their analysis group, the region and mouse will be marked as an outlier. If `log = TRUE` then, the output is stored in a csv file with the file stem `region_count_outliers_[channel]`. This may be helpful to look back at the raw data and examine whether the segmentation algorithm is doing a good job around these regions for a given mouse. 
 
-
 ```{r}
-sundowning <- find_outlier_counts(sundowning, by = c("group", "sex"), n_sd = 2, remove = FALSE, log = TRUE)
+sundowning <- find_outlier_counts(sundowning, by = c("group", "sex", "age"), n_sd = 2, remove = TRUE, log = TRUE)
 
 ```
 
@@ -768,7 +770,7 @@ In an ideal world, we would have all the same regions count data across all the 
 This is done with the `enough_mice_per_group()` function. The usage is similar to the function for finding outlier counts. When `log = TRUE`, the csv file `regions_below_N_thresh.csv` in saved in the experimental output folder.
 
 ```{r}
-sundowning <- enough_mice_per_group(sundowning, by = c("group", "sex"), min_n = 5, remove = FALSE, log = TRUE)
+sundowning <- enough_mice_per_group(sundowning, by = c("group", "sex", "age"), min_n = 5, remove = TRUE, log = TRUE)
 ```
 
 
@@ -776,31 +778,29 @@ sundowning <- enough_mice_per_group(sundowning, by = c("group", "sex"), min_n = 
 
 This section will cover functions that analyze our data. Plotting of the output from these functions will be covered in section 12. The data output from these functions will always be stored in the experiment object and depending on the function, it can be exported as a csv file to the experiment output folder. 
 
-
 ## 11.1 Get colabel percentages
 
 The function `get_percent_colabel()` will calculate the percentage of colabelled cells over either the eyfp or the cfos channels. Only the common regions between the colabelled and the chosen reference channel will be used during the calculation.
 
-There are also different ways to calculate the data. If the parameter `individual` is set to `TRUE`, then the counts for each individual mice are preserved.  If `individual` is set to `FALSE` then individual percentage colabelled cells are collapsed into an analysis group average. The `by` parameter is used to determine the analysis groups. There is an additional `roi` parameter which allows for calculating the percentage of colabelled cells for a specific brain region. Below are examples of different ways to use the function:
-
-
-Calculate percent colabel for individual mice and save it to the output folder
-
-```{r,  }
-sundowning <- get_percent_colabel(sundowning, channel = "eyfp", save_table = TRUE, individual = TRUE)
-```
-
+There are also different ways to calculate the data. If the parameter `individual` is set to `TRUE`, then the counts for each individual mice are preserved.  If `individual` is set to `FALSE` then individual percentage colabelled cells are collapsed into an analysis group average. The `by` parameter is used to determine the analysis groups. There is an additional `roi` parameter which allows for the additional option of filtering for a specific brain region. Below are examples of different ways to use the function:
 
 Calculate percent colabel for mice grouped by experimental group and sex and save it to the output folder
 
 ```{r,  }
-sundowning <- get_percent_colabel(sundowning, by = c("group", "sex"), channel = "eyfp", save_table = TRUE, individual = FALSE)
+sundowning <- get_percent_colabel(sundowning, by = c("group", "sex", "age"), channel = "eyfp", save_table = TRUE, individual = FALSE)
 ```
+
+Calculate percent colabel for individual mice and save it to the output folder
+
+```{r,  }
+sundowning <- get_percent_colabel(sundowning, by = c("group", "sex", "age"), channel = "eyfp", save_table = TRUE, individual = TRUE)
+```
+
 
 Calculate percent colabel for mice grouped by experimental group and sex for just the dorsal DG and save it to the output folder
 
 ```{r}
-sundowning <- get_percent_colabel(sundowning, by = c("group", "sex"), channel = "eyfp", roi = "dDG", save_table = TRUE, individual = FALSE)
+sundowning <- get_percent_colabel(sundowning, by = c("group", "sex", "age"), channel = "eyfp", roi = "dDG", save_table = TRUE, individual = FALSE)
 ```
 
 
@@ -815,7 +815,7 @@ Like previous functions, there is a `by` parameter so the function can determine
 # Get region pairwise correlation coefficients for female ADs
 sundowning <- get_correlations(sundowning,
                                by = c("sex", "group"), 
-                               values = c("male", "AD"), 
+                               values = c("female", "AD"), 
                                channels = c("cfos", "eyfp", "colabel"),  
                                p_adjust_method = "BH", 
                                alpha = 0.05)
@@ -829,13 +829,13 @@ Because the values of the grouping variables identify a unique analysis group, t
 sundowning$correlation_list$female_AD
 ```
 
-Let do the same thing for the female controls.
+But first, let's do the same thing for the female controls.
 
 ```{r,  }
 # Get region pairwise correlation coefficients for female controls
 sundowning <- get_correlations(sundowning,
                                by = c("sex", "group"), 
-                               values = c("male", "control"), 
+                               values = c("female", "control"), 
                                channels = c("cfos", "eyfp", "colabel"),  
                                p_adjust_method = "BH", 
                                alpha = 0.05)
@@ -845,25 +845,26 @@ sundowning <- get_correlations(sundowning,
 ## 11.3 Permute pairwise region correlation differences between groups
 
 
-We can compare the difference between pairwise region correlations between two different analysis functions using a permutation analysis. For this we'll use the function `correlation_diff_permutation()`. This function requires you to have run `get_correlations()` for each analysis group that you want to compare prior to using it. 
+We can compare the difference between pairwise region correlations between two different analysis groups using a permutation analysis. For this we'll use the function `correlation_diff_permutation()`. This function requires you to have run `get_correlations()` for each analysis group that you want to compare prior to using it. 
 
-It also allows you to specify the number of shuffles, the random seed number (for figure replication), as well as a multiple comparisons adjustment (the previous adjustment from `get_correlations()` is not redundantly applied). Not that when the multiple comparison's adjustment is applied, this will change the p-value that is plotted in a volcano plot. 
+It also allows you to specify the number of shuffles, the random seed number (for figure replication), as well as a multiple comparisons adjustment (the previous adjustment from `get_correlations()` is not redundantly applied). Note that when the multiple comparison's adjustment is applied, this will change the p-value that is plotted in a volcano plot. 
 
 
 In the example below, we will compare the `female_AD` analysis group with the `female_control` group.
 
-```{r, }
+```{r}
+
+suppressWarnings(
 
 sundowning <- correlation_diff_permutation(sundowning,
-                                           correlation_list_name_1 = "male_AD",
-                                           correlation_list_name_2 = "male_control",
-                                           n_shuffles = 1000,
+                                           correlation_list_name_1 = "female_AD",
+                                           correlation_list_name_2 = "female_control",
+                                           n_shuffles = 100,
                                            seed = 5,
-                                           alpha = 0.005,
-                                           ylim = c(0, 4),
+                                           alpha = 0.001,
                                            p_adjust_method = FALSE,
                                            channels = c("cfos", "eyfp", "colabel"))
-
+)
 
 
 ```
@@ -886,17 +887,17 @@ The `alpha` parameters specifies at which threshold a node is included in the ne
 # Create a network for the female AD group
 sundowning <- create_networks(sundowning, 
                               correlation_list_name = "female_AD",
-                              alpha = 0.1)
+                              alpha = 0.90)
 
 
 # Create a network for the female control group
 sundowning <- create_networks(sundowning, 
                               correlation_list_name = "female_control",
-                              alpha = 0.02)
+                              alpha = 0.90)
 
 ```
 
-After running this function, you may be wondering where the network is. Rest assured that a network object for each channel per analysis group was created using `tidygraph` and they have been stored in our experiment object. We can access the data with `sundowning$networks$network_name` where network_name is identical to the `correlation_list_name` used to generate the network. 
+After running this function, you may be wondering where the network is. Rest assured that a network object for each channel per analysis group was created using `tidygraph` and they have been stored in our experiment object. We can access the data with `sundowning$networks$<network_name>` where `network_name` is identical to the `correlation_list_name` used to generate the network. 
 
 Now there are some network summary statistics that we can calculate using our network object. We will calculate them using the function `summarise_networks()`. This function is designed to summarize the stats of multiple networks at once if they are supplied to the parameter `network_names.`
 
@@ -917,7 +918,7 @@ The output of this function can be found at `sundowning$network_summaries`.
 
 # 12 Plotting functions
 
-Hooray! All of this hard work will allow use to generate some beautiful and hopefully informative plots (for real datasets). First there are some conventions to note for plotting functions. Unlike all the other package functions presented here, we will *not* be assigning the output of a plotting function to our experiment object. There is no return value for plotting functions. This is because no analysis is being done and the primary output that we want is either a graphics window, or an image save to our output folder.
+Hooray! All of this hard work will allow use to generate some beautiful and hopefully informative plots (for real datasets). First there are some conventions to note for plotting functions. Unlike all the other package functions presented here, we will *not* be assigning the output of a plotting function to our experiment object. There is no return value for plotting functions. This is because no analysis is being done and the primary output that we want is either a graphics window, or an image saves to our output folder.
 
 Almost all the functions will have parameters allowing you to specify the height and width in inches, the image extension (e.g. ".png", ".jpg"), as well as colors (or color palettes) to save your plot as. Some of the functions will allow you to adjust the xlim and the ylim of your axes in order to fit the data. Pay close attention to the help pages to see what plot characteristics are customizable for each function. 
 
@@ -940,7 +941,9 @@ plot_percent_colabel(sundowning,
                      pattern_mapping = "group",
                      plot_individual = TRUE,
                      print_plot = TRUE,
-                     rois = c("dDG"))
+                     save_plot = FALSE,
+                     rois = c("dDG"),
+                     ylim = c(0, 10))
 
 ```
 
@@ -963,9 +966,9 @@ A volcano plot can show us the the pairwise regions whose correlations are signi
 
 ```{r,  }
 volcano_plot(sundowning,
-             permutation_comparison = "male_AD_vs_male_control",
+             permutation_comparison = "female_AD_vs_female_control",
              channels = c("cfos", "eyfp"),
-             title = "Male AD vs Male CTRL",
+             title = "Female AD vs female CTRL",
              ylim = c(0,4))
 ```
 
@@ -974,8 +977,8 @@ A parallel coordinate plot allows us to see which actual region pairs are differ
 
 ```{r,  }
 parallel_coordinate_plot(sundowning,
-                         permutation_comparison = "male_AD_vs_male_control",
-                         channels = c("eyfp", "cfos", "colabel"),
+                         permutation_comparison = "female_AD_vs_female_control",
+                         channels = c("cfos", "eyfp"),
                          )
 ```
 
@@ -985,9 +988,9 @@ The `plot_networks()` functions will automatically plot the output of `create_ne
 
 ```{r,  }
 plot_networks(sundowning,
-              network_name = "female_AD",
-              channels = c("cfos", "eyfp", "colabel"),
-              title = "Female CTRL",
+              network_name = "female_control",
+              channels = c("eyfp"),
+              title = "Female AD",
               edge_color = "firebrick", 
               )
 
@@ -1008,9 +1011,10 @@ plot_degree_distributions(sundowning,
                           color_palettes = c("reds", "greens"),
                           channels = c("cfos", "eyfp"),
                           title = "Degree distribution",
-                          labels = c(female_AD = "Female AD",
-                                     female_control = "Female CTRL"),
-                          xlim = c(0,25),
+                          labels = c("female_AD" = "Female AD",
+                                     "female_control" = "Female CTRL"),
+                          xlim = c(0,20),
+                          ylim = c(0,100),
                           save_plot = TRUE,
                           print_plot = TRUE)
 ```
@@ -1040,7 +1044,7 @@ The clustering coefficient is a measurement of how many neighboring nodes to a g
 ```{r,  }
 plot_mean_clust_coeff(sundowning, 
                       color_palettes = c("reds", "greens"),
-                      channels = "eyfp",
+                      channels = "eyfp"
                       rev_x_scale = TRUE
                       )
 ```
@@ -1240,8 +1244,90 @@ for (s in 1:length(df$slice)){
 
 ## 13.2 Looping through the registration process
 
+We can also automatically loop through the registration process all the slices in a given mouse object. The script below is an example for how to process `mouse_325.`It will loop through each slice, setting the correct ID and hemisphere parameters, and allow for interactive adjustment of the `brain.threshold` and registration. 
+
+
+```{r}
+# Autolooping script to do set a brain threshold and do registrations
+# Use this script when you are trying to register all of the slices in a mouse object.
+# First go to the mouse folder on the server and load the mouse object.
+# Set the current slice you want to start processing. This script will loop through the remaining slices.
+# This script will first interactively ask you to try setting different brain thresholds prior to registration each slice.
+# I recommend a brain threshold setting between 6-12. Anything above this may be too sensitive.
+
+
+#_____________ Set the user-defined variables below _________________
+
+# Enter the name of the mouse you are processing as a string
+mouse_name <- "mouse_325"
+
+# Enter the number of the slice where you left off/want to start
+curr_slice <- 1
+
+
+#______ End of user defined variables. Highlight and run the code below to start the registration loop _________________
+
+# Load library
+library(SMARTR)
+
+# Set current mouse to the user specified name
+eval((parse(text=paste0("mouse <- ", mouse_name))))
+
+# Process the slice names for looping
+slices <- names(mouse$slices)
+rights_hemi <- grep("_right", slices)
+lefts_hemi <- grep("_left", slices)
+
+# remove hemispheres from slice names
+slice_ID <- gsub("_right", "", slices)
+slice_ID <- gsub("_left", "", slice_ID)
+
+
+# Set brain threshold and register
+for (s in curr_slice:length(slices)){
+  if(s %in% rights_hemi){
+    hemi <- "right"
+  } else if (s %in% lefts_hemi){
+    hemi <- "left"
+  } else {
+    hemi <- NULL
+  }
+
+  # Adjust the brain filter
+  filter <- adjust_brain_outline(mouse$slices[[slices[s]]])
+
+  ## Print information about slice before the registration
+  coordinate <- attr(mouse$slices[[slices[s]]],"info")$coordinate
+  message(paste0("\n\nYour current slice is: ", slice_ID[s],
+                 "\n The coordinate is:", coordinate,
+                 "\nThe hemisphere is: ", ifelse(is.null(hemi), "both", hemi)))
+
+  # Interactive registration
+  mouse <- register(mouse,
+                        slice_ID = slice_ID[s],
+                        hemisphere = hemi,
+                        filter = filter)
+  
+  # Automatically update the mouse object
+  eval((parse(text=paste0(mouse_name, " <- mouse"))))
+}
+
+
+#_____________ Run the code below to periodically save your work  _________________
+
+# I recommend doing this after every registration
+eval((parse(text=paste0("save_mouse(", mouse_name, ", timestamp = TRUE)"))))
+
+```
+
 
 ## 13.3 Looping through segmentation and filtering
+
+
+
+
+
+
 
 ## 13.4 Looping through cleaning up cell counts
 
@@ -1329,20 +1415,6 @@ e <- enough_mice_per_group(e, by = c("group", "sex"), min_n = 4)
 save_experiment(e, timestamp = TRUE)
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ## Create a fake experiment

@@ -6,9 +6,9 @@
 \usage{
 plot_degree_distributions(
   e,
+  channels = c("cfos", "eyfp"),
   color_palettes = c("reds", "greens"),
   colors_manual = NULL,
-  channels = c("cfos", "eyfp"),
   labels = c(female_AD = "female_AD_label", female_control = "female_control_label"),
   title = "my_title",
   height = 15,
@@ -23,14 +23,15 @@ plot_degree_distributions(
 \arguments{
 \item{e}{experiment object}
 
+\item{channels}{(str, default = c("cfos", "eyfp", "colabel")) Channels to plot.}
+
 \item{color_palettes}{(str, default = c("reds", "greens")) Color palettes from \link[grDevices:palettes]{grDevices::hcl.colors} that are used to for plotting networks for each channel, respectively.}
 
 \item{colors_manual}{(str, default = NULL ) Manually choose the hexadecimal color codes to create a custom color palette, e.g. colors_manual = c("#660000", "#FF0000", "#FF6666").
-Warning: this will be applied to all channels. It's recommended to set the channels parameter to a single channel if this parameter is used.}
+Warning: this color will be applied to all channels. It's recommended to set the channels parameter to a single channel if this parameter is used.}
 
-\item{channels}{(str, default = c("cfos", "eyfp", "colabel")) Channels to plot.}
-
-\item{labels}{(e.g. labels = c(network1_name = "network 1 label", network2_name = "network 2 label)) The legend labels to correspond with your network names.}
+\item{labels}{(e.g. labels = c(network1_name = "network 1 label", network2_name = "network 2 label))
+The legend labels to correspond with your respective network names.}
 
 \item{title}{(str, default = "my_title")
 the experiment object output folder.}
@@ -45,7 +46,7 @@ the experiment object output folder.}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 
-\item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.s}
+\item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}
@@ -54,5 +55,5 @@ the experiment object output folder.}
 
 }
 \description{
-Plot a stacked bar plot of the degree distributions
+Plot a stacked bar plot of the degree distributions.
 }

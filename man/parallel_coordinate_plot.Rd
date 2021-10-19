@@ -27,6 +27,10 @@ parallel_coordinate_plot(
 
 \item{colors}{(str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal codes corresponding to the channels (respectively) to plot.}
 
+\item{x_label_group_1}{(str, NULL) The label for the first group in the permutation analysis.}
+
+\item{x_label_group_2}{(str, NULL) The label for the second group in the permutaiton analysis.}
+
 \item{height}{height of the plot in inches.}
 
 \item{width}{width of the plot in inches.}

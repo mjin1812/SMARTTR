@@ -25,7 +25,8 @@ volcano_plot(
 
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel")) channels to plot.}
 
-\item{colors}{(str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal codes corresponding to the channels (respectively) to plot.}
+\item{colors}{(str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal code for the colors corresponding to the
+channels attribute of the correlation_list. Color values can also be input compatible with ggplot2 plotting functions.}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}
@@ -36,11 +37,17 @@ the experiment object output folder.}
 
 \item{width}{width of the plot in inches.}
 
-\item{print_plot}{(bool, default = TRUE) Whether to display the plot (in addition to saving the plot)}
+\item{print_plot}{(bool, default = TRUE) Print the plot as graphics windows.}
 
 \item{image_ext}{(default = ".png") image extension to save the plot as.}
 }
 \description{
 Plot the correlation difference between two comparison groups into a volcano plot. The function
 \code{\link[=correlation_diff_permutation]{correlation_diff_permutation()}} must be run first in order to generate results to plot.
+}
+\examples{
+volcano_plot(e, permutation_comparison = "female_AD_vs_male_AD", channels = c("cfos", "eyfp", "colabel"),
+colors =  c("#be0000", "#00782e", "#f09b08"), save_plot = TRUE, title = NULL, ylim = c(0, 3), height = 8,
+width = 10, print_plot = TRUE, image_ext = ".png")
+
 }

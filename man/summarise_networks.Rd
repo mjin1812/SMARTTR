@@ -2,11 +2,12 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{summarise_networks}
 \alias{summarise_networks}
-\title{Summarize multiple networks}
+\title{Summarize multiple networks. Create summary dataframes of for multiple networks and
+calculate network statistics for each network.}
 \usage{
 summarise_networks(
   e,
-  network_names = c("AD", "control"),
+  network_names,
   channels = c("cfos", "eyfp", "colabel"),
   save_stats = TRUE,
   save_degree_distribution = TRUE,
@@ -16,7 +17,7 @@ summarise_networks(
 \arguments{
 \item{e}{experiment object}
 
-\item{network_names}{(str, default = NULL) The names of the networks to generate summary tables for.}
+\item{network_names}{(str) The names of the networks to generate summary tables for, e.g. network_names = c("female_AD", "female_control")}
 
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel")) The channels to process.}
 
@@ -30,10 +31,10 @@ summarise_networks(
 e experiment object
 }
 \description{
-Create summary dataframes of all networks and create network statistics for multiple networks
+Summarize multiple networks. Create summary dataframes of for multiple networks and
+calculate network statistics for each network.
 }
 \examples{
-e <- get_network_statistics(e, network_names = c("AD", "control"),
-channels = c("cfos", "eyfp", "colabel"),
-save_stats = TRUE, save_degree_distribution = TRUE)
+e <- get_network_statistics(e,  network_names = c("female_AD", "female_control"),
+channels = c("cfos", "eyfp", "colabel"), save_stats = TRUE, save_degree_distribution = TRUE)
 }

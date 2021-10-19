@@ -2,12 +2,12 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{get_correlations}
 \alias{get_correlations}
-\title{get_correlations}
+\title{Get regional cross correlations and their p-values in a correlation list object.}
 \usage{
 get_correlations(
   e,
-  by = c("sex", "group"),
-  values = c("female", "AD"),
+  by,
+  values,
   channels = c("cfos", "eyfp", "colabel"),
   p_adjust_method = "BH",
   alpha = 0.05
@@ -16,23 +16,31 @@ get_correlations(
 \arguments{
 \item{e}{experiment object}
 
-\item{by}{The variable names (columns) to filter the dataframe selection.}
+\item{by}{(str) Attribute names to group by, e.g. c("sex", "group")}
 
-\item{values}{The value of the variables to filter the combined normalized counts df by.}
+\item{values}{(str) The respective values of the attributes entered for the \code{by} parameter to generate a specific analysis group,
+e.g.values = c("female", "AD").}
 
-\item{channels}{The channels to correlate.}
+\item{channels}{(str, channels =  c("cfos", "eyfp", "colabel") The channels to process.}
 
 \item{p_adjust_method}{(bool or str, default = "BH") Benjamini-Hochberg method is recommended.
-Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE or "none"
+Apply the named method to control for the inflated false discovery rate or family wise error rate (FWER). Set to FALSE or "none"
 to keep "raw" p values. See also \code{\link[stats:p.adjust]{stats::p.adjust()}} for the correction options.}
 
-\item{alpha}{The alpha level for p adjustment.}
+\item{alpha}{(num, default = 0.05) The alpha level for significance applied after p-adjustment.}
 }
 \value{
 e experiment object. The experiment object now has a named \code{correlation_list} object stored in it.
 The name of the correlation object is the concatenation of the variable values separated by a "_".
-This name allows for unambiguous identification of different group correlations analysis in the future.
+This name allows for unambiguous identification of different analysis subgroups in the future.
 }
 \description{
-get_correlations
+Get regional cross correlations and their p-values in a correlation list object.
+}
+\examples{
+e <- get_correlations(e, by = c("sex", "group"), values = c("female", "AD"),
+channels = c("cfos", "eyfp", "colabel"),  p_adjust_method = "BH", alpha = 0.05)
+}
+\seealso{
+\code{\link[Hmisc:rcorr]{Hmisc::rcorr()}}
 }

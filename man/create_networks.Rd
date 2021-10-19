@@ -2,32 +2,36 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{create_networks}
 \alias{create_networks}
-\title{Create network graph objects for plotting}
+\title{Create network graph objects for plotting different analysis subgroups.}
 \usage{
 create_networks(
   e,
-  correlation_list_name = "AD",
+  correlation_list_name,
   channels = c("cfos", "eyfp", "colabel"),
-  edge_color = "firebrick",
   alpha = 0.05
 )
 }
 \arguments{
 \item{e}{experiment object}
 
-\item{correlation_list_name}{(str, default = "AD") Name of the correlation list object used to generate the networks.}
+\item{correlation_list_name}{(str) Name of the correlation list object used to generate the networks.}
 
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel")) The channels to process.}
 
 \item{alpha}{(float, default = 0.05) The significance cutoff for including brain regions in the network.}
 }
 \value{
-e experiment object. This object now has a \code{networks} list with each element of the list storing network data. The name of
-each network (\code{network_name})is the same as the \code{correlation_list_name} used to generate the network. This \code{network_name} is fed into
-\code{\link[=plot_network]{plot_network()}} as a parameter.
+e experiment object. This object now has a new added element called \code{networks.} This is a list storing a
+graph object per channel for each network analysis run.
+The name of each network (\code{network_name}) is the same as the \code{correlation_list_name}
+used to generate the network. This \code{network_name} is fed as a parameter into the
+\code{\link[=plot_network]{plot_network()}} function.
 }
 \description{
-Create network graph objects for plotting
+Create network graph objects for plotting different analysis subgroups.
+}
+\examples{
+e sundowning <- create_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
 }
 \seealso{
 \code{\link[=plot_networks]{plot_networks()}}

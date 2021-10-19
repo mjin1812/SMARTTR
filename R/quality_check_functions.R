@@ -31,12 +31,11 @@ detect_single_slice_regions <- function(m, remove = FALSE, log = TRUE){
   }
 }
 
-
 #_____________________ For experiment objects _________________________
 
-#' Remove outlier counts
-#' @description remove any normalized regions counts that are more than `n_sd` standard deviations (default = 2) higher
-# than their cohort mean.
+#' Detect, log, and remove outlier counts. This function
+#' removes any normalized regions counts that are more than `n_sd` standard deviations (default = 2) higher
+#' than their cohort mean.
 #'
 #' @param e experiment object
 #' @param by (str, default = c("group", "sex")) The mice attributes used to group the datasets into comparison groups.
@@ -56,12 +55,9 @@ find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FA
   # correct mismatched attributes typed by users
   by <- match_m_attr(by)
 
-
   for (channel in e_info$channels){
 
     # Get the mean and sd of each group
-
-    ## Get mouse counts
     stats_df <- e$combined_normalized_counts[[channel]] %>%
       dplyr::group_by(across(all_of(c(by, "acronym")))) %>%
       dplyr::summarise(mean_norm_counts = mean(normalized.count.by.volume),
@@ -71,7 +67,6 @@ find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FA
       dplyr::mutate(outlier = ifelse(normalized.count.by.volume > mean_norm_counts + sd_norm_counts*n_sd | normalized.count.by.volume < mean_norm_counts - sd_norm_counts*n_sd, TRUE, FALSE))
 
     # Create a list of outliers to print
-
     if (isTRUE(log)){
       log_df <- joined_df %>% dplyr::filter(outlier) %>%
         dplyr::select(-c(mean_norm_counts,sd_norm_counts)) %>%
@@ -97,24 +92,21 @@ find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FA
 }
 
 
-
-
-#' Check if there are enough mice per group
-#' @description Check if there are enough mice per group across all regions
+#' Check if there are enough mice per analysis subgroup across all regions.
 #' if the normalized counts data sets are split by specified grouping variables.
 #' This function also automatically keeps only the common regions that are found across all comparison groups.
 #'
 #' @param e experiment object
 #' @param by (str, default = c("group", "sex")) The mice attributes used to group the datasets into comparison groups.
-#' @param min_n (int, default = 4) The minimum number of mice in each group for region comparisons.
+#' @param min_n (int, default = 5) The minimum number of mice in each group for region comparisons.
 #' @param remove (bool, TRUE) Remove any regions in the combined normalized count dataframes that don't have enough n to do a comparison on.
 #' These regions are removed across all comparison groups.
-#' @param log (bool, TRUE) Save the regions that don't have enough n into a .csv file in the output folder.
+#' @param log (bool, TRUE) Save the regions that don't have enough n into a '.csv' file in the output folder.
 #' @return e experiment object
 #' @export
 #' @examples e <- enough_mice_per_group(e, by = c("group", "sex"), min_n = 4, remove = TRUE, log = TRUE)
 #'
-enough_mice_per_group <- function(e, by = c("group", "sex"), min_n = 4, remove = TRUE, log = TRUE){
+enough_mice_per_group <- function(e, by = c("group", "sex"), min_n = 5, remove = TRUE, log = TRUE){
 
   # Get the channels for an experiment
   e_info <- attr(e, "info")

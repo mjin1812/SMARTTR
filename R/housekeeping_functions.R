@@ -281,7 +281,6 @@ match_m_attr <- function(attribs){
 
 
 # Copies of Wholebrain's ontology search functions applied to the SMARTR custom ontology for the hippocampus
-
 #' @export
 name.from.acronym <- function (x)
 {
@@ -409,7 +408,7 @@ acronym.from.id <- function (x)
 
 
 
-
+#' @export
 # Get current OS
 get_os <- function(){
   sysinf <- Sys.info()

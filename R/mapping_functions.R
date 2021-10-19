@@ -1515,16 +1515,16 @@ split_hipp_DV <- function(m,
  #__________________ Experiment object specific functions __________________________
 
 
-#' Combine cell counts across the mice in an experiment
-#'
+#' This function combine cell counts across all mice in an experiment into a single dataframe.
+#' It also stores the mouse attribute names (not experiment attributes) as columns that will be used as categorical variables to make analysis subgroups.
+#' The values of these attributes (`group`, `drug`, `age`) will automatically be converted to a string values for consistency.
 #' @param e experiment object
-#' @param by (str) names of the experiment attributes used to divide up the cell counts. Will be same attributes to group by during analysis.
-#'
+#' @param by (str) names of the experiment attributes (categorical variables) that will be used to create analysis subgroups.
 #' @return
 #' @export
-#'
 #' @examples e <- combine_norm_cell_counts(e, by = c('groups', 'sex'))
-combine_norm_cell_counts <- function(e, by = c("groups", "sex")){
+
+combine_norm_cell_counts <- function(e, by){
 
   # Get experiment info
   e_info <- attr(e, "info")
@@ -1545,9 +1545,8 @@ combine_norm_cell_counts <- function(e, by = c("groups", "sex")){
       m_info <- attr(e$mice[[m]], "info")
       df <- e$mice[[m]]$normalized_counts[[channel]]
       for (attrib in by){
-
         # Add column keeping track of the mouse attribute
-        add_col <- tibble::tibble(m_info[[e2m_attr(attrib)]])
+        add_col <- m_info[[e2m_attr(attrib)]] %>% toString() %>% tibble::tibble()
         names(add_col)  <- e2m_attr(attrib)
         df <- df %>% tibble::add_column(add_col, .before = TRUE)
       }

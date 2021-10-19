@@ -34,3 +34,6 @@ plot_percent_colabel(
 \description{
 plot_colabel_percent
 }
+\examples{
+plot_percentage_colabel
+}

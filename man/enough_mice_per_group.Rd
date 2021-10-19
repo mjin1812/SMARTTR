@@ -2,12 +2,14 @@
 % Please edit documentation in R/quality_check_functions.R
 \name{enough_mice_per_group}
 \alias{enough_mice_per_group}
-\title{Check if there are enough mice per group}
+\title{Check if there are enough mice per analysis subgroup across all regions.
+if the normalized counts data sets are split by specified grouping variables.
+This function also automatically keeps only the common regions that are found across all comparison groups.}
 \usage{
 enough_mice_per_group(
   e,
   by = c("group", "sex"),
-  min_n = 4,
+  min_n = 5,
   remove = TRUE,
   log = TRUE
 )
@@ -17,18 +19,18 @@ enough_mice_per_group(
 
 \item{by}{(str, default = c("group", "sex")) The mice attributes used to group the datasets into comparison groups.}
 
-\item{min_n}{(int, default = 4) The minimum number of mice in each group for region comparisons.}
+\item{min_n}{(int, default = 5) The minimum number of mice in each group for region comparisons.}
 
 \item{remove}{(bool, TRUE) Remove any regions in the combined normalized count dataframes that don't have enough n to do a comparison on.
 These regions are removed across all comparison groups.}
 
-\item{log}{(bool, TRUE) Save the regions that don't have enough n into a .csv file in the output folder.}
+\item{log}{(bool, TRUE) Save the regions that don't have enough n into a '.csv' file in the output folder.}
 }
 \value{
 e experiment object
 }
 \description{
-Check if there are enough mice per group across all regions
+Check if there are enough mice per analysis subgroup across all regions.
 if the normalized counts data sets are split by specified grouping variables.
 This function also automatically keeps only the common regions that are found across all comparison groups.
 }

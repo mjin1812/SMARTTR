@@ -2,7 +2,9 @@
 % Please edit documentation in R/quality_check_functions.R
 \name{find_outlier_counts}
 \alias{find_outlier_counts}
-\title{Remove outlier counts}
+\title{Detect, log, and remove outlier counts. This function
+removes any normalized regions counts that are more than \code{n_sd} standard deviations (default = 2) higher
+than their cohort mean.}
 \usage{
 find_outlier_counts(
   e,
@@ -27,7 +29,9 @@ find_outlier_counts(
 e experiment object. Outlier counts in the experiment object are removed if remove = TRUE.
 }
 \description{
-remove any normalized regions counts that are more than \code{n_sd} standard deviations (default = 2) higher
+Detect, log, and remove outlier counts. This function
+removes any normalized regions counts that are more than \code{n_sd} standard deviations (default = 2) higher
+than their cohort mean.
 }
 \examples{
 e <- find_outlier_counts(e, by = c("group","sex"), n_sd = 2, remove = FALSE, log = TRUE)

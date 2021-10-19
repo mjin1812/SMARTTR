@@ -9,36 +9,34 @@ running this function.}
 \usage{
 correlation_diff_permutation(
   e,
-  correlation_list_name_1 = "AD",
-  correlation_list_name_2 = "control",
-  n_shuffle = 1000,
-  alpha = 0.05,
-  p_adjust_method = "BH",
-  seed = 5,
+  correlation_list_name_1,
+  correlation_list_name_2,
   channels = c("cfos", "eyfp", "colabel"),
+  n_shuffle = 1000,
+  seed = 5,
+  p_adjust_method = "BH",
+  alpha = 0.05,
   ...
 )
 }
 \arguments{
 \item{e}{experiment object}
 
-\item{correlation_list_name_1}{(default = "AD") The name of the correlation list object used as the first group for comparison.}
+\item{correlation_list_name_1}{(str) The name of the correlation list object used as the first group for comparison.}
 
-\item{correlation_list_name_2}{(default = "control") The name of the correlation list object used as the second group for comparison.}
+\item{correlation_list_name_2}{(str) The name of the correlation list object used as the second group for comparison.}
+
+\item{channels}{(str, default = c("cfos", "eyfp", "colabel")) The channels to process.}
 
 \item{n_shuffle}{(int, default = 1000) The number of permutation shuffles.}
 
-\item{alpha}{(float, default = 0.05) The alpha cutoff for significance between region pairwise correlation differences}
+\item{seed}{(int, default = 5) Random seed for future replication.}
 
 \item{p_adjust_method}{(bool or str, default = "BH") Benjamini-Hochberg method is recommended.
 Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE or "none"
 to keep "raw" p values. See also \code{\link[stats:p.adjust]{stats::p.adjust()}} for the correction options.}
 
-\item{seed}{(int, default = 5) Random seed for future replication.}
-
-\item{channels}{(str, default = c("cfos", "eyfp", "colabel")) The channels to process.}
-
-\item{...}{additional parameters to \code{\link[RcppAlgos:combinatoricsGeneral]{RcppAlgos::permuteGeneral()}} aside from n, m, Parallel and repetition}
+\item{alpha}{(float, default = 0.05) The alpha cutoff for significance between region pairwise correlation differences}
 }
 \value{
 e experiment object. The experiment object now has a list called \code{permutation_p_matrix} stored in it. Elements of this \code{permutation_p_matrix} list are
@@ -49,4 +47,19 @@ This function performs a permutation analysis to compare the region pairwise cor
 specified by \code{correlation_list_name_1} and \code{correlation_list_name_2.} Note that both of these analysis groups must have the same
 number of channels to compare. The functions \code{get_correlations()} needs to have been run for each of these analysis groups prior to
 running this function.
+}
+\examples{
+e <- correlation_diff_permutation(sundowning,
+                                            correlation_list_name_1 = "female_AD",
+                                            correlation_list_name_2 = "female_control",
+                                            channels = c("cfos", "eyfp", "colabel"),
+                                            n_shuffles = 1000,
+                                            seed = 5,
+                                            p_adjust_method = FALSE
+                                            alpha = 0.001,
+                                            )
+
+}
+\seealso{
+\code{\link[=get_correlations]{get_correlations()}}
 }

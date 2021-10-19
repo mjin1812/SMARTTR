@@ -2,11 +2,11 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{get_percent_colabel}
 \alias{get_percent_colabel}
-\title{Get the percentage of colabelled cells over cfos or eyfp channels}
+\title{Get the percentage of colabelled cells over either cfos or eyfp channels.}
 \usage{
 get_percent_colabel(
   e,
-  by = NULL,
+  by,
   channel = "eyfp",
   save_table = TRUE,
   rois = NULL,
@@ -14,19 +14,22 @@ get_percent_colabel(
 )
 }
 \arguments{
-\item{by}{(str, default = NULL) Attribute names to group by, e.g. by = c("group", "sex")
+\item{e}{experiment object}
+
+\item{by}{(str) Attribute names to group by, e.g. by = c("group", "sex"). These will generate analysis subgroups that are
 averaged together to assess across all rois.}
 
-\item{channel}{(str, default = "cfos") The channel used as denominator in fraction counts.}
+\item{channel}{(str, default = "eyfp") The channel used as denominator in fraction counts.}
 
 \item{save_table}{(bool, default = TRUE) Whether to save the output table as a csv in the experiment object output folder.}
 
-\item{individual}{(bool, default = TRUE) Whether the data should include individual mouse colabelled. If FALSE the colabel percentages are}
+\item{rois}{(str, default = NULL) Whether to generate colabelled percentages for only specific regions of interest, e.g. rois = c("HY", "DG")}
 
-\item{roi}{(str, default = NULL) Whether to generate colabelled percentages for only specific regions of interest. The default is}
+\item{individual}{(bool, default = FALSE) Whether the data should include individual mouse colabelled percentages rather than the average.
+If FALSE the colabel percentages are averaged across all analysis subgroups determined by the \code{by} parameter}
 }
 \value{
-e experiment object with colabel percentage table stored in it.
+e experiment object with colabelled percentage table stored in it.
 }
 \description{
 This analysis will only include common regions that are included in both the colabelled and
