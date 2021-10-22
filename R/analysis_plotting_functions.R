@@ -4,10 +4,13 @@ NULL
 #' @importFrom tidyselect all_of
 NULL
 
-#' @importFrom dplyr n mutate summarize summarise
+#' @importFrom dplyr n mutate summarize summarise across
 NULL
 
 #' @importFrom tidygraph activate
+NULL
+
+#' @importFrom tidyr pivot_longer pivot_wider
 NULL
 
 ##_____________________ Analysis functions ___________________________
@@ -20,7 +23,8 @@ NULL
 #' averaged together to assess across all rois.
 #' @param channel (str, default = "eyfp") The channel used as denominator in fraction counts.
 #' @param save_table (bool, default = TRUE) Whether to save the output table as a csv in the experiment object output folder.
-#' @param rois (str, default = NULL) Whether to generate colabelled percentages for only specific regions of interest, e.g. rois = c("HY", "DG")
+#' @param rois (str, default = NULL) Whether to generate colabelled percentages for only specific regions of interest, e.g. rois = c("HY", "DG").
+#' Child regions of specified rois will also be searched for.
 #' @param individual (bool, default = FALSE) Whether the data should include individual mouse colabelled percentages rather than the average.
 #' If FALSE the colabel percentages are averaged across all analysis subgroups determined by the `by` parameter
 #' @return e experiment object with colabelled percentage table stored in it.
@@ -37,15 +41,26 @@ get_percent_colabel <-function(e, by, channel = "eyfp", save_table = TRUE, rois 
 
   # Check if user only wants a specific roi in common regions
   if (!is.null(rois)){
-    if (!all(rois %in% common_reg)){
-      message(paste0("The roi(s) specified is not a common region found in both channels. ",
+
+      # Get rois of all the child regions
+      child_r <- SMARTR::get.acronym.child(rois)
+      while (length(child_r) > 0){
+        rois <- c(rois, child_r)
+        child_r <- SMARTR::get.acronym.child(child_r) %>% na.omit()
+      }
+
+      message("Checking also for child regions of specified roi(s). Only rois and child rois that overlap with common
+              regions of both channels will be used.")
+
+    if (all(!rois %in% common_reg)){
+      message(paste0("None of the roi(s) specified or their child regions is a common region found in both channels. ",
                      "Common regions include:\n"))
       for (reg in common_reg){
         message(reg)
       }
       stop("Set the rois argument to a subset of these acronyms.")
     } else{
-      common_reg <- rois
+      common_reg <- intersect(rois, common_reg)
     }
   }
 
@@ -329,7 +344,7 @@ correlation_diff_permutation <- function(e,
   return(e)
 }
 
-#' Create network graph objects for plotting different analysis subgroups.
+#' Create %>% graph objects for plotting different analysis subgroups.
 #' @param e experiment object
 #' @param correlation_list_name (str) Name of the correlation list object used to generate the networks.
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
@@ -410,9 +425,9 @@ create_networks <- function(e,
     d[which(!is.finite(d))] <- NA
     diag(d) <- NA
     network <- network %>%
-      mutate(avg.dist = rowSums(d, na.rm = TRUE)/(n()-1),
+      dplyr::mutate(avg.dist = rowSums(d, na.rm = TRUE)/(n()-1),
              efficiency = rowSums(d^(-1),na.rm = TRUE)/(n()-1),
-             btw = tidygraph::centrality_betweenness(weights = rep(1,nrow(.E())),
+             btw = tidygraph::centrality_betweenness(weights = rep(1,nrow(tidygraph::.E())),
                                           directed = FALSE),
              group = as.factor(tidygraph::group_walktrap()))
     networks[[channel]] <- network
@@ -511,31 +526,36 @@ summarise_networks <- function(e,
 
 
 ##_____________________ Plotting functions ___________________________
-## This needs to be cleaned up so that patterns are optional
-#' plot_colabel_percent
+
+#' This function allows for plotting of colabelled cells over either the "cfos" or "eyfp" channels. And allows for specification
+#' of specific brain regions to plot. Two different mouse attributes can be used as categorical variables to map to either the color or
+#' pattern aesthetics of the bar plot, e.g. sex and experimental group.
+#' The color aesthetic takes precedence over the pattern aesthetic so if you only want to use one mouse attribute, for plotting
+#' set it to the `color_mapping` parameter and set the `pattern_mapping` parameter to NULL.
 #'
 #' @param e experiment object
-#' @param channel
+#' @param channel (str, default = "eyfp") The channel used as denominator in fraction counts.
 #' @param rois
 #' @param color_mapping
 #' @param colors
 #' @param pattern_mapping
 #' @param patterns
 #' @param error_bar (str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.
-#' @param by
 #' @return
 #' @export
 #' @examples plot_percentage_colabel
 plot_percent_colabel <- function(e,
-                                 by = NULL,
-                                 channel = "cfos",  rois = c("AAA", "dDG", "HY"),
+                                 channel = "eyfp",
+                                 rois = c("AAA", "dDG", "HY"),
                                  color_mapping = "sex",
                                  colors = c("#952899", "#358a9c"),
-                                 pattern_mapping = "group",
+                                 pattern_mapping = NULL,
                                  patterns = c("gray100", 'hs_fdiagonal', "hs_horizontal", "gray90", "hs_vertical"),
-                                 error_bar = "sem", ylim = c(0, 100),
+                                 error_bar = "sem",
+                                 ylim = c(0, 100),
                                  plot_individual = TRUE,
-                                 height = 10, width = 10,
+                                 height = 8,
+                                 width = 8,
                                  print_plot = TRUE,
                                  save_plot = TRUE,
                                  image_ext = ".png"){
@@ -545,60 +565,67 @@ plot_percent_colabel <- function(e,
     quartz <- X11
   }
 
-  # Check if ggpattern is installed
-  if (!requireNamespace("ggpattern", quietly = TRUE)) {
-    stop("Package \"ggpattern\" (>= 0.2.0) is needed for this function to work. Please install it now.",
-         call. = FALSE)
+  # Re-running the get_percent_colabel function for the color &/or pattern mapping
+  if(is.null(pattern_mapping)){
+    by <- match_m_attr(color_mapping)
+  } else{
+    by <- match_m_attr(c(color_mapping, pattern_mapping))
   }
 
-  # Check that a colabel percentage dataframe exists for this channel
-  if(is.null(e$colabel_percent[[channel]])){
-    message("The percent colabelled data does not exist in your experiment object for this channel. Autorunning the function now...")
-    e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = FALSE)
-    e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = TRUE)
+  # If rois aren't supplied, set as the rois in the saved colabel dataset
+  # if (is.null(rois)){
+  #   rois <- unique(e$colabel_percent[[channel]]$average$acronym)
+  # }
+
+  # Get the average and individual percentages
+  e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = FALSE)
+  e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = TRUE)
+
+  # Get rois of all the child regions
+  child_r <- SMARTR::get.acronym.child(rois)
+  while (length(child_r) > 0){
+    rois <- c(rois, child_r)
+    child_r <- SMARTR::get.acronym.child(child_r) %>% na.omit()
   }
+
+  # # Check that a colabel percentage dataframe exists for this channel
+  # if(is.null(e$colabel_percent[[channel]])){
+  #   message("The percent colabelled data does not exist in your experiment object for this channel. Autorunning the function now...")
+  #   e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = FALSE)
+  #   e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = TRUE)
+  # }
 
   # Make sure the by (if not NULL) is equal to the by parameter fed to get_percent_colabel() used to generate the dataframes
-  attrib <- attributes(e$colabel_percent[[channel]]$average)
-  stored_by <- names(attrib$groups) %>% setdiff(c("acronym", ".rows"))
-
-  if (!is.null(by) && !setequal(stored_by, by)){
-    loop <- TRUE
-    while(loop){
-      message("The 'by' parameter used here is not identical to the 'by' parameter that was used in get_percent_colabel().\n",
-              "The groups that you intend to compare may be different.")
-
-      inp <- readline("Would you like to rerun the get_percent_colabel() function using the new 'by' parameters for grouping?: Y/N?" )
-      if (inp=="Y" || inp=="y") {
-
-        e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = FALSE)
-        e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = TRUE)
-        loop <- FALSE
-      } else if ( inp=="N" || inp == "n") {
-        stop("Cannot continue with plotting using the current function parameters.")
-      }
-    }
-  } else{
-    by <- stored_by
-  }
-
-  # If rois aren't supplied, set as the rois in the dataset
-  if (is.null(rois)){
-    rois <- unique(e$colabel_percent[[channel]]$average$acronym)
-  }
+  # attrib <- attributes(e$colabel_percent[[channel]]$average)
+  # stored_by <- names(attrib$groups) %>% setdiff(c("acronym", ".rows"))
+  #
+  # if (!is.null(by) && all(by %in% stored_by)){
+  #   loop <- TRUE
+  #   while(loop){
+  #     message("The 'by' parameter used here doesn't include attributes input to the 'by' parameter that was used in get_percent_colabel().\n",
+  #             "The groups that you intend to compare may be different.")
+  #
+  #     inp <- readline("Would you like to rerun the get_percent_colabel() function using the new 'by' parameters for grouping?: Y/N?" )
+  #     if (inp=="Y" || inp=="y") {
+  #       e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = FALSE)
+  #       e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = TRUE)
+  #       loop <- FALSE
+  #     } else if ( inp=="N" || inp == "n") {
+  #       stop("Cannot continue with plotting using the current function parameters.")
+  #     }
+  #   }
+  # } else{
+  #   by <- stored_by
+  # }
 
   # Error bar check
   if (error_bar == "sem"){
-    error_var <- sym("colabel_percentage.sd")
-  } else if (error_bar == "sd") {
     error_var <- sym("colabel_percentage.sem")
+  } else if (error_bar == "sd") {
+    error_var <- sym("colabel_percentage.sd")
   } else {
     stop("You did not supply a valid option for the error_bar. Valid options are 'sem' and 'sd'.")
   }
-
-  # Create  variable names for mapping
-  color_var <- sym(color_mapping)
-  pattern_var <- sym(pattern_mapping)
 
   # Set up custom bar plot theme
   bar_theme <- theme(axis.title.x=element_blank(),
@@ -614,41 +641,91 @@ plot_percent_colabel <- function(e,
                      # axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
                      axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))
 
-  # Create the plot
-  p <- ggplot(e$colabel_percent[[channel]]$average, aes(x = interaction(!!pattern_var, !!color_var),
-                                                        y = colabel_percentage.mean,
-                                                        fill = !!color_var)) +
-    ggpattern::geom_bar_pattern(aes(pattern_type = !!pattern_var),
-                     stat = "identity",
-                     color = "black",
-                     pattern_color = "black",
-                     pattern_fill = "black",
-                     pattern = "magick",
-                     position = position_dodge(width = .5),
-                     show.legend = TRUE,
-                     width = 0.4) +
-    scale_fill_manual(values = colors) +
-    scale_pattern_type_manual(values = patterns) +
-    geom_errorbar(aes(ymin = colabel_percentage.mean - !!error_var,
-                      ymax = colabel_percentage.mean + !!error_var),
-                  width=.2,
-                  position = position_dodge(width = .5)) +
-    geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
-    facet_wrap(~acronym,
-               strip.position = "bottom") +
-    coord_cartesian(ylim = ylim) +
-    geom_text(aes(x=c(2.5), y= 0.4, label=c("|")),
-              vjust=1.2, size=3) +
-    labs(y = paste0("co-labeled / ", channel, "+ cells (%)")) +
-    bar_theme
+  # Create  variable names for mapping
+  color_var <- sym(color_mapping)
 
-  if (plot_individual){
-    df <- e$colabel_percent[[channel]]$individual %>% dplyr::filter(acronym %in% rois)
-    p <- p + geom_jitter(data = df,
-                         aes(x = interaction(!!pattern_var, !!color_var),
-                             y = colabel_percentage),
-                         size = 2,
-                         width = 0.1)
+  # Use pattern as a variable if not NULL
+  if (!is.null(pattern_mapping)){
+
+    # Check if ggpattern is installed
+    if (!requireNamespace("ggpattern", quietly = TRUE)) {
+      stop("Package \"ggpattern\" (>= 0.2.0) is needed for the pattern mapping to work. Please install it now.",
+           call. = FALSE)
+    }
+
+    pattern_var <- sym(pattern_mapping)
+
+    # Create the plot
+    p <- ggplot(e$colabel_percent[[channel]]$average %>% dplyr::filter(acronym %in% rois),
+                aes(x = interaction(!!pattern_var, !!color_var),
+                    y = colabel_percentage.mean,
+                    fill = !!color_var)) +
+      ggpattern::geom_bar_pattern(aes(pattern_type = !!pattern_var),
+                                  stat = "identity",
+                                  color = "black",
+                                  pattern_color = "black",
+                                  pattern_fill = "black",
+                                  pattern = "magick",
+                                  position = position_dodge(width = .5),
+                                  show.legend = TRUE,
+                                  width = 0.4) +
+      ggplot2::scale_fill_manual(values = colors) +
+      ggpattern::scale_pattern_type_manual(values = patterns) +
+      geom_errorbar(aes(ymin = colabel_percentage.mean - !!error_var,
+                        ymax = colabel_percentage.mean + !!error_var),
+                    width=.2,
+                    position = position_dodge(width = .5)) +
+      geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
+      facet_wrap(~acronym,
+                 strip.position = "bottom") +
+      ylim(ylim) +
+      geom_text(aes(x=c(2.5), y= 0.4, label=c("|")),
+                vjust=1.2, size=3) +
+      labs(y = paste0("co-labeled / ", channel, "+ cells (%)")) +
+      bar_theme
+
+    if (plot_individual){
+      df <- e$colabel_percent[[channel]]$individual %>% dplyr::filter(acronym %in% rois)
+      p <- p + geom_jitter(data = df,
+                           aes(x = interaction(!!pattern_var, !!color_var),
+                               y = colabel_percentage),
+                           size = 2,
+                           width = 0.1)
+    }
+  } else{
+
+    # Create the plot
+    p <-ggplot(e$colabel_percent[[channel]]$average %>% dplyr::filter(acronym %in% rois),
+               aes(x = !!color_var,
+                   y = colabel_percentage.mean,
+                   fill = !!color_var)) +
+      ggplot2::geom_bar(stat='identity',
+                        position = position_dodge(width = .5),
+                        color = "black",
+                        show.legend = TRUE,
+                        width = 0.4) +
+      scale_fill_manual(values = colors) +
+      geom_errorbar(aes(ymin = colabel_percentage.mean - !!error_var,
+                        ymax = colabel_percentage.mean + !!error_var),
+                    width=.2,
+                    position = position_dodge(width = .5)) +
+      geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
+      facet_wrap(~acronym,
+                 strip.position = "bottom") +
+      ylim(ylim) +
+      geom_text(aes(x=c(2.5), y= 0.4, label=c("|")),
+                vjust=1.2, size=3) +
+      labs(y = paste0("co-labeled / ", channel, "+ cells (%)")) +
+      bar_theme
+
+    if (plot_individual){
+      df <- e$colabel_percent[[channel]]$individual %>% dplyr::filter(acronym %in% rois)
+      p <- p + geom_jitter(data = df,
+                           aes(x = !!color_var,
+                               y = colabel_percentage),
+                           size = 2,
+                           width = 0.1)
+    }
   }
 
   if (print_plot){
@@ -668,8 +745,9 @@ plot_percent_colabel <- function(e,
     image_file <- file.path(output_dir,
                             paste0("Colabeled_over_", channel, "_plot_by_", paste0(by, collapse = "_"), image_ext))
     ggsave(filename = image_file,  width = width, height = height, units = "in")
-    dev.off()
   }
+
+
 }
 
 #' Plot correlation heatmaps
@@ -766,7 +844,6 @@ plot_correlation_heatmaps <- function(e, correlation_list_name , colors = c("#be
     }
     image_file <- file.path(output_dir, paste0("heatmap_", str_replace(title, " ", "_"), "_", channel, image_ext))
     ggsave(filename = image_file,  width = width, height = height, units = "in")
-    dev.off()
     }
   }
 }
@@ -836,11 +913,11 @@ volcano_plot <- function(e,
       tibble::as_tibble(rownames = NA) %>% tibble::rownames_to_column(var = "rowreg")
 
     # Pivot long
-    p_vals <- p_vals %>% pivot_longer(col = -"rowreg", values_drop_na = TRUE,
+    p_vals <- p_vals %>% tidyr::pivot_longer(col = -"rowreg", values_drop_na = TRUE,
                                       values_to = "p_val", names_to = "colreg")
-    corr_diffs <- corr_diffs %>% pivot_longer(col = - "rowreg", values_drop_na = TRUE,
+    corr_diffs <- corr_diffs %>% tidyr::pivot_longer(col = - "rowreg", values_drop_na = TRUE,
                                               values_to = "corr_diff", names_to = "colreg")
-    sigs <- sigs %>% pivot_longer(col = - "rowreg", values_drop_na = TRUE,
+    sigs <- sigs %>% tidyr::pivot_longer(col = - "rowreg", values_drop_na = TRUE,
                                   values_to = "sig", names_to = "colreg")
 
     # Combine into master df for plotting
@@ -877,7 +954,6 @@ volcano_plot <- function(e,
       image_file <- file.path(output_dir,
                               paste0("volcano_plot_", str_replace(title, " ", "_"), "_", channels[k], image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
-      dev.off()
     }
   }
 }
@@ -1019,8 +1095,6 @@ parallel_coordinate_plot <- function(e,
       image_file <- file.path(output_dir, paste0(permutation_comparison, "_parallel_coordinate_plot_",
                                                  channels[k], "_", image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
-
-      dev.off()
     }
   }
 
@@ -1063,7 +1137,7 @@ plot_networks <- function(e,
     network <- e$networks[[network_name]][[channel]]
 
     # _______________ Plot the network ________________________________
-    theme.network <- theme_graph() + theme(plot.title = element_text(hjust = 0.5,size = 28),
+    theme.network <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5,size = 28),
                                            legend.text = element_text(size = 15),
                                            legend.title = element_text(size = 15))
 
@@ -1119,10 +1193,8 @@ plot_networks <- function(e,
       }
       image_file <- file.path(output_dir, paste0("network_", network_name, "_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
-      dev.off()
     }
   }
-
 }
 
 
@@ -1225,7 +1297,6 @@ plot_degree_distributions <- function(e,
       }
       image_file <- file.path(output_dir, paste0("networks_degree_distributions_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
-      dev.off()
     }
   }
 }
@@ -1295,7 +1366,7 @@ plot_mean_degree <- function(e,
 
     # Reverse the scale of the categorical variable when plotting
     if (rev_x_scale){
-      p <- ggplot(e$networks_summaries[[channel]]$networks_stats, aes(x = reorder(group, desc(group)), degree.mean))
+      p <- ggplot(e$networks_summaries[[channel]]$networks_stats, aes(x = reorder(group, dplyr::desc(group)), degree.mean))
     } else{
 
       p <- ggplot(e$networks_summaries[[channel]]$networks_stats, aes(group, degree.mean))
@@ -1337,7 +1408,6 @@ plot_mean_degree <- function(e,
       }
       image_file <- file.path(output_dir, paste0("networks_mean_degree_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
-      dev.off()
     }
   }
 }
@@ -1451,7 +1521,6 @@ plot_mean_clust_coeff <- function(e,
       }
       image_file <- file.path(output_dir, paste0("networks_mean_clust_coeff_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
-      dev.off()
     }
   }
 }
@@ -1562,7 +1631,6 @@ plot_mean_global_effic <- function(e,
       }
       image_file <- file.path(output_dir, paste0("networks_mean_global_efficiency_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
-      dev.off()
     }
   }
 }
@@ -1677,7 +1745,6 @@ plot_mean_between_centrality <- function(e,
       }
       image_file <- file.path(output_dir, paste0("networks_mean_betweenness_centrality_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
-      dev.off()
     }
   }
 }
@@ -1772,7 +1839,6 @@ plot_degree_regions <- function(e,
       }
       image_file <- file.path(output_dir, paste0("networks_degree_per_region_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
-      dev.off()
     }
   }
 }
@@ -1784,6 +1850,7 @@ plot_degree_regions <- function(e,
 #' Bar plot of betweenness per region in descending magnitude
 #'
 #' @param e experiment object
+#' @param network (str) Which network to plot the betweenness distribution across regions
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) Channels to plot
 #' @param height (int, default = 15) Height of the plot in inches.
 #' @param width (int, default = 20) Width of the plot in inches.
@@ -1793,7 +1860,6 @@ plot_degree_regions <- function(e,
 #'  the experiment object output folder.
 #' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
 #' @param colors (str, default = ) String vector of hexadecimal color codes corresponding to to each channel plotted.
-#' @param network (str, default = "AD") Which network to plot the betweenness distribution across regions
 #' @param title (str, default = "my_title")
 #'  the experiment object output folder.
 #' @return
@@ -1801,9 +1867,9 @@ plot_degree_regions <- function(e,
 #' @examples
 
 plot_betweenness_regions <- function(e,
+                                     network,
                                      channels = c("cfos", "eyfp"),
                                      colors = c("red", "green"),
-                                     network = "AD",
                                      title = "my_title",
                                      height = 10,
                                      width = 20,
@@ -1862,14 +1928,11 @@ plot_betweenness_regions <- function(e,
       if(!dir.exists(output_dir)){
         dir.create(output_dir)
       }
-      image_file <- file.path(output_dir, paste0("networks_degree_per_region_", channel, image_ext))
+      image_file <- file.path(output_dir, paste0("networks_betweenness_per_region_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
-      dev.off()
     }
   }
 }
-
-
 
 
 

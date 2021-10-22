@@ -23,7 +23,8 @@ averaged together to assess across all rois.}
 
 \item{save_table}{(bool, default = TRUE) Whether to save the output table as a csv in the experiment object output folder.}
 
-\item{rois}{(str, default = NULL) Whether to generate colabelled percentages for only specific regions of interest, e.g. rois = c("HY", "DG")}
+\item{rois}{(str, default = NULL) Whether to generate colabelled percentages for only specific regions of interest, e.g. rois = c("HY", "DG").
+Child regions of specified rois will also be searched for.}
 
 \item{individual}{(bool, default = FALSE) Whether the data should include individual mouse colabelled percentages rather than the average.
 If FALSE the colabel percentages are averaged across all analysis subgroups determined by the \code{by} parameter}

@@ -1552,7 +1552,7 @@ combine_norm_cell_counts <- function(e, by){
       }
 
       # Always add the mouse ID
-      add_col <- tibble(m_info[["mouse_ID"]])
+      add_col <- tibble::tibble(m_info[["mouse_ID"]])
       names(add_col)  <- "mouse_ID"
       df <- df %>% tibble::add_column(add_col, .before = TRUE)
 

@@ -2,22 +2,25 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{plot_percent_colabel}
 \alias{plot_percent_colabel}
-\title{plot_colabel_percent}
+\title{This function allows for plotting of colabelled cells over either the "cfos" or "eyfp" channels. And allows for specification
+of specific brain regions to plot. Two different mouse attributes can be used as categorical variables to map to either the color or
+pattern aesthetics of the bar plot, e.g. sex and experimental group.
+The color aesthetic takes precedence over the pattern aesthetic so if you only want to use one mouse attribute, for plotting
+set it to the \code{color_mapping} parameter and set the \code{pattern_mapping} parameter to NULL.}
 \usage{
 plot_percent_colabel(
   e,
-  by = NULL,
-  channel = "cfos",
+  channel = "eyfp",
   rois = c("AAA", "dDG", "HY"),
   color_mapping = "sex",
   colors = c("#952899", "#358a9c"),
-  pattern_mapping = "group",
+  pattern_mapping = NULL,
   patterns = c("gray100", "hs_fdiagonal", "hs_horizontal", "gray90", "hs_vertical"),
   error_bar = "sem",
   ylim = c(0, 100),
   plot_individual = TRUE,
-  height = 10,
-  width = 10,
+  height = 8,
+  width = 8,
   print_plot = TRUE,
   save_plot = TRUE,
   image_ext = ".png"
@@ -26,13 +29,19 @@ plot_percent_colabel(
 \arguments{
 \item{e}{experiment object}
 
+\item{channel}{(str, default = "eyfp") The channel used as denominator in fraction counts.}
+
 \item{error_bar}{(str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.}
 }
 \value{
 
 }
 \description{
-plot_colabel_percent
+This function allows for plotting of colabelled cells over either the "cfos" or "eyfp" channels. And allows for specification
+of specific brain regions to plot. Two different mouse attributes can be used as categorical variables to map to either the color or
+pattern aesthetics of the bar plot, e.g. sex and experimental group.
+The color aesthetic takes precedence over the pattern aesthetic so if you only want to use one mouse attribute, for plotting
+set it to the \code{color_mapping} parameter and set the \code{pattern_mapping} parameter to NULL.
 }
 \examples{
 plot_percentage_colabel

@@ -6,9 +6,9 @@
 \usage{
 plot_betweenness_regions(
   e,
+  network,
   channels = c("cfos", "eyfp"),
   colors = c("red", "green"),
-  network = "AD",
   title = "my_title",
   height = 10,
   width = 20,
@@ -21,11 +21,11 @@ plot_betweenness_regions(
 \arguments{
 \item{e}{experiment object}
 
+\item{network}{(str) Which network to plot the betweenness distribution across regions}
+
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel")) Channels to plot}
 
 \item{colors}{(str, default = ) String vector of hexadecimal color codes corresponding to to each channel plotted.}
-
-\item{network}{(str, default = "AD") Which network to plot the betweenness distribution across regions}
 
 \item{title}{(str, default = "my_title")
 the experiment object output folder.}

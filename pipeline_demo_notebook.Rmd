@@ -45,9 +45,6 @@ SP8 microscope. The details of the code underlying the segmentation scripts are 
 
 
 ![*Pre-processing workflow for the Sundowning project*](C:\Users\Jinmich\Documents\SMARTR\tutorial\Pipeline_preprocessing.png)
-
-
-
 The schematic above is a color-coded illustration of the pre-processing steps for segmentation and registration data prior to feeding the data into R. Anything in round brackets () is indicative of the particular data file, such as a .txt or .tif that is generated at that step. Anything in square brackets [] is indicative of an ImageJ macro used to generate the files. For now, these macros can be found at `/Michelle Jin/WholebrainSegmentationScripts/Local` on Denny Lab Server V.
 
 Note that some of these scripts have underlying assumptions about the imaging data. For example, `batch_create_tiff_sundowning.ijm` assumes that the `.lif` file from the microscope has the following channel orders:
@@ -65,8 +62,6 @@ First the `.lif` file needs to be converted to a `.tif` file with the same name.
 This `.tif` file is then run through an ImageJ macros for automatic segmentation of the cfos channel. This macro is recursive and will search through all subdirectories for `tif` files with the same name as the original `lif` file. 
 
 A similar script is run for automatic segmentation of the cfos channel and colocalization detection. The output `.txt` files highlighted in red are the segmentation data that get read by this R package. 
-
-
 
 
 ## 0.2 Creating a Max projection
@@ -154,7 +149,7 @@ devtools::install_github("mjin1812/SMARTR@main", auth_token = auth_token)
 
 We can now load the package!
 
-```{r,  , message=FALSE}
+```{r, eval = TRUE, message=FALSE}
 # Load SMARTR
 library(SMARTR)
 ```
@@ -198,7 +193,7 @@ A `mouse` object is an object that will store multiple `slice` objects (and ther
 
 ## 3.3 Experiment object
 
-An experiment object will primarily store the processed information from multiple `mouse` objects. Some experimental attributes will auto populate based on mouse attributes. For example, if multiple mice are added to an experiment with the `drug` attribute values `ketamine` or `saline`, the experiment attribute `drug_groups` will be a vector with the values `ketamine` and `saline`. 
+An experiment object will primarily store the processed information from multiple `mouse` objects. Some experimental attributes will autopopulate based on mouse attributes. For example, if multiple mice are added to an experiment with the `drug` attribute values `ketamine` or `saline`, the experiment attribute `drug_groups` will be a vector with the values `ketamine` and `saline`. 
 
 
 # 4 Pipeline setup
@@ -220,7 +215,7 @@ mouse_325 <- mouse(mouse_ID = "325",
                    experiment = "sundowning",
                    group = "AD",
                    cohort = "3_2_months",
-                   age = 2,
+                   age = "2",
                    output_path = 'V:/Michelle Jin/Sundowning/PipelineDemo/Mouse_example') 
 
 
@@ -306,15 +301,10 @@ attr(slice_1_1, 'info') <- slice_info
 print(slice_1_1)
 
 ```
-TODO: allow slice attributes channels to be the default in the channels parameters in functions if none is supplied.
-
-TODO: allow for relative paths based on the mouse input directory
-
 
 ## 4.5 Adding slice objects to mouse objects
 
 We are ready to bundle our slice information with our mouse. But first...
-
 
 Type the code below into the R console: 
 
@@ -676,10 +666,7 @@ Sometimes, we want to further subdivide the hippocampus into *dorsal* and *ventr
 
 ```{r}
 
-
 mouse_325 <- split_hipp_DV(mouse_325, AP_coord = -2.7, combine_hemispheres = TRUE, simplify_regions = TRUE, merge = FALSE)
-
-
 print(mouse_325$hipp_DV_normalized_counts)
 
 ```
@@ -729,21 +716,29 @@ save_experiment(sundowning)
 
 ## 9.2 Combine cell counts 
 
-Once you've added enough mice to perform an analysis, we want to aggregate all the data for each mouse together into one dataframe to perform analysis on. This is done with the `combine_norm_cell_counts()` function.  
-
-
-`by` is a special parameter that will allow up to take advantage of the many mouse attributes that we have recorded during creation of a mouse object. It is a vector of the mouse attributes we will use to split our dataset into subgroups for comparison. In the example below, we use the `group`, `sex`, and `age` mouse attributes to compare `AD` and `control` groups and the `male` and `female` mice that are 2 months old. Sometimes, certain attributes like `drug` may not apply to your experiment, so `by` should only include the variables that you intend on using for group comparisons during analysis to avoid cluttering your combined dataframe. For consistency in the functions used to filter out subgroups, the values of the attributes will all be converted to strings.
-
+Once you've added enough mice to perform an analysis, we want to aggregate all the data for each mouse together into one dataframe to perform analysis on. 
 
 For now we will load a saved example experiment object named `sundowning` that already contains many mouse objects. *Please note* that the data in this object is fabricated. It is simply mouse_325's data with added noise. This is because we are still currently in the process of generating all the segmentation data for the sundowning project. Additionally, a random number of regions have been deleted across the mice to simulate differences in omitted regions in slices registered across mice.
 
-```{r}
-
+```{r, eval = TRUE}
+# Load the presaved data
 load("V:\\Michelle Jin\\Sundowning\\PipelineDemo\\Experiment_example\\experiment_demo_saved.Rdata")
 
+# Print the names of the mice stores in the sundowning object
+print(names(sundowning$mice))
+
+```
+
+Aggregating the normalized cell counts across mice into one dataframe is done with the `combine_norm_cell_counts()` function.  
+
+
+```{r, eval = TRUE}
 sundowning <- combine_norm_cell_counts(sundowning, by = c('group', 'sex', 'age'))
 
 ```
+
+`by` is a special parameter that will allow up to take advantage of the many mouse attributes that we have recorded during creation of a mouse object. It is a vector of the mouse attributes we will use to split our dataset into subgroups for comparison. In the example above, we use the `group`, `sex`, and `age` mouse attributes to compare `AD` and `control` groups and the `male` and `female` mice that are 2 months old. Sometimes, certain attributes like `drug` may not apply to your experiment, so `by` should only include the variables that you intend on using for group comparisons during analysis to avoid cluttering your combined dataframe. For consistency in the functions used to filter out subgroups, the values of the attributes will all be converted to strings.
+
 
 
 # 10 Quality checking your data
@@ -755,7 +750,7 @@ The quality of the segmentation data may depend on many factors including immuno
 
 The function `find_outlier_counts()` will first organize counts into analysis groups stratified based on the `by` parameter. Then the mean cell counts for each analysis group and their standard deviation are calculated. If any regions counts for a mouse exceed greater than `n_sd` (default = 2) for their analysis group, the region and mouse will be marked as an outlier. If `log = TRUE` then, the output is stored in a csv file with the file stem `region_count_outliers_[channel]`. This may be helpful to look back at the raw data and examine whether the segmentation algorithm is doing a good job around these regions for a given mouse. 
 
-```{r}
+```{r, eval = TRUE}
 sundowning <- find_outlier_counts(sundowning, by = c("group", "sex", "age"), n_sd = 2, remove = TRUE, log = TRUE)
 
 ```
@@ -769,7 +764,7 @@ In an ideal world, we would have all the same regions count data across all the 
 
 This is done with the `enough_mice_per_group()` function. The usage is similar to the function for finding outlier counts. When `log = TRUE`, the csv file `regions_below_N_thresh.csv` in saved in the experimental output folder.
 
-```{r}
+```{r, eval = TRUE}
 sundowning <- enough_mice_per_group(sundowning, by = c("group", "sex", "age"), min_n = 5, remove = TRUE, log = TRUE)
 ```
 
@@ -782,31 +777,30 @@ This section will cover functions that analyze our data. Plotting of the output 
 
 The function `get_percent_colabel()` will calculate the percentage of colabelled cells over either the eyfp or the cfos channels. Only the common regions between the colabelled and the chosen reference channel will be used during the calculation.
 
-There are also different ways to calculate the data. If the parameter `individual` is set to `TRUE`, then the counts for each individual mice are preserved.  If `individual` is set to `FALSE` then individual percentage colabelled cells are collapsed into an analysis group average. The `by` parameter is used to determine the analysis groups. There is an additional `roi` parameter which allows for the additional option of filtering for a specific brain region. Below are examples of different ways to use the function:
+There are also different ways to calculate the data. If the parameter `individual` is set to `TRUE`, then the counts for each individual mice are preserved.  If `individual` is set to `FALSE` then individual percentage colabelled cells are collapsed into an analysis group average. The `by` parameter is used to determine the analysis groups. There is an additional `roi` parameter which allows for the option of filtering for a specific brain region. Below are examples of different ways to use the function:
 
 Calculate percent colabel for mice grouped by experimental group and sex and save it to the output folder
 
-```{r,  }
+```{r}
 sundowning <- get_percent_colabel(sundowning, by = c("group", "sex", "age"), channel = "eyfp", save_table = TRUE, individual = FALSE)
 ```
 
 Calculate percent colabel for individual mice and save it to the output folder
 
-```{r,  }
+```{r}
 sundowning <- get_percent_colabel(sundowning, by = c("group", "sex", "age"), channel = "eyfp", save_table = TRUE, individual = TRUE)
 ```
 
 
-Calculate percent colabel for mice grouped by experimental group and sex for just the dorsal DG and save it to the output folder
+Calculate percent colabel for mice grouped by experimental group and sex for just the the subregions of the DG and save it to the output folder
 
 ```{r}
-sundowning <- get_percent_colabel(sundowning, by = c("group", "sex", "age"), channel = "eyfp", roi = "dDG", save_table = TRUE, individual = FALSE)
+sundowning <- get_percent_colabel(sundowning, by = c("group", "sex", "age"), channel = "eyfp", roi = "DG", save_table = TRUE, individual = FALSE)
 ```
-
 
 ## 11.2 Get pairwise region correlations
 
-The `get_correlations()` function is used to calculate pairwise Pearson correlations across all regions within an analysis group. This can be done for each channel specified. Later we will use this to generate a correlation heatmap. There is also an option to adjust for p-values using different multiple comparisons methods using the and a  user-specified alpha value can also be applied to threshold significance. Check the function's help page for more details.
+The `get_correlations()` function is used to calculate pairwise Pearson correlations across all regions within an analysis group. This can be done for each channel. Later we will use this to generate a correlation heatmap. There is also an option to adjust for p-values using different multiple comparisons methods using the and a  user-specified alpha value can also be applied to threshold significance. Check the function's help page for more details.
 
 Like previous functions, there is a `by` parameter so the function can determine which variables to used to stratify your data into groups, and because each heat map is calculated for one set of grouping variable values, these need to be specified with the `values` parameter. The following example will generated a correlation matrix for cfos and eyfp cell counts from only female AD mice. The Bejamini-Hochberg method will be used to adjust for multiple comparisons and we will use an alpha threshold of 0.05.
 
@@ -852,17 +846,16 @@ It also allows you to specify the number of shuffles, the random seed number (fo
 
 In the example below, we will compare the `female_AD` analysis group with the `female_control` group.
 
-```{r}
-
+```{r echo=FALSE, warning=FALSE}
 sundowning <- correlation_diff_permutation(sundowning,
                                            correlation_list_name_1 = "female_AD",
                                            correlation_list_name_2 = "female_control",
-                                           n_shuffles = 100,
+                                           n_shuffles = 1000,
                                            seed = 5,
                                            alpha = 0.001,
                                            p_adjust_method = FALSE,
                                            channels = c("cfos", "eyfp", "colabel"))
-)
+
 
 
 ```
@@ -881,14 +874,14 @@ Now we can move on to the process of automatically creating networks in R using 
 
 The `alpha` parameters specifies at which threshold a node is included in the networks based on p-values of pairwise-region correlation coefficients. 
 
-```{r,  }
+```{r}
 # Create a network for the female AD group
 sundowning <- create_networks(sundowning, 
                               correlation_list_name = "female_AD",
                               alpha = 0.90)
 
 
-# Create a network for the female control group
+# Create a network for the female control group 
 sundowning <- create_networks(sundowning, 
                               correlation_list_name = "female_control",
                               alpha = 0.90)
@@ -901,8 +894,7 @@ Now there are some network summary statistics that we can calculate using our ne
 
 The additional parameters `save_stats`, `save_degree_distribution`, and `save_betweenness_distribution` are used to save the general network summary statistics, the network degree distributions, and the betweenness distributions as csv files in the experiment object folder. This is handy if you would prefer to graph these values in Prism instead of R.
 
-```{r,  }
-
+```{r}
 sundowning <- summarise_networks(sundowning, 
                                  network_names = c("female_AD", "female_control"),
                                  save_stats = TRUE,
@@ -916,20 +908,16 @@ The output of this function can be found at `sundowning$network_summaries`.
 
 # 12 Plotting functions
 
-Hooray! All of this hard work will allow use to generate some beautiful and hopefully informative plots (for real datasets). First there are some conventions to note for plotting functions. Unlike all the other package functions presented here, we will *not* be assigning the output of a plotting function to our experiment object. There is no return value for plotting functions. This is because no analysis is being done and the primary output that we want is either a graphics window, or an image saves to our output folder.
+Hooray! All of this hard work will allow use to generate some beautiful and hopefully informative plots (for real datasets). First there are some conventions to note for plotting functions. Unlike all the other package functions presented here, we will *not* be assigning the output of a plotting function to our experiment object. There is no return value for plotting functions. This is because no analysis is being done and the primary output that we want is either a graphics window, or an image saved to our output folder.
 
 Almost all the functions will have parameters allowing you to specify the height and width in inches, the image extension (e.g. ".png", ".jpg"), as well as colors (or color palettes) to save your plot as. Some of the functions will allow you to adjust the xlim and the ylim of your axes in order to fit the data. Pay close attention to the help pages to see what plot characteristics are customizable for each function. 
 
 
-
 ## 12.1 Plot percentage colabel
 
-The first thing we may want to plot is percentage of colabelled counts over a given channel. 
+The first thing we may want to do plot is percentage of colabelled counts over a given channel. This can be done in Prism using the '.csv' data files produced by `get_percent_colabel`. This may be a more flexible and preferable for publications. However, it is time-consuming to graph in Prism so for quick visualizations you can use the handy function `plot_percent_colabel`.
 
-This plot is designed to take up to 2 "mapping" variables to display on the barplot. 
-
-
-TODO fix this function ASAP
+This function is designed to take up to two mouse attributes to "map" to the respective graphs aesthetics of color and pattern to display on a bar plot. The `rois` parameter allows for selective plotting of specific regions or subregions of interest. Below we will plot any regions that are subregions of the the Dentate Gyrus or the Cornu Ammonis.
 
 ```{r}
 plot_percent_colabel(sundowning,
@@ -939,11 +927,37 @@ plot_percent_colabel(sundowning,
                      pattern_mapping = "group",
                      plot_individual = TRUE,
                      print_plot = TRUE,
-                     save_plot = FALSE,
-                     rois = c("dDG"),
-                     ylim = c(0, 10))
+                     save_plot = TRUE,
+                     rois = c("DG", "CA"),
+                     ylim = c(-5,50),
+                     image_ext = ".svg")
 
 ```
+
+![](C:\Users\Jinmich\Documents\SMARTR\tutorial\Colabeled_over_eyfp_plot_by_sex_group.svg){width=80%}
+
+> Note: The optional package `ggpattern` is required for mapping to the `pattern` aesthetic using the `pattern_mapping` parameter so make sure it is installed before running this function.  
+
+Plotting using just one attribute is also possible. The `color` aesthetic takes precedence over the `pattern` aesthetics, so just omit the `pattern_mapping` parameter, and it will take the default value of `NULL`. Below we'll only use the `color_mapping` parameter and set it to `group` to plot a separate bar for each experimental group.
+
+```{r}
+plot_percent_colabel(sundowning,
+                     channel = "eyfp",
+                     color_mapping = "group",
+                     colors = c("#952899", "#358a9c"),
+                     plot_individual = TRUE,
+                     print_plot = TRUE,
+                     save_plot = TRUE,
+                     error_bar = "sem",
+                     rois = c("DG", "CA"),
+                     ylim = c(-5, 50))
+
+```
+
+
+![](C:\Users\Jinmich\Documents\SMARTR\tutorial\Colabeled_over_eyfp_plot_by_group.png){width=80%}
+
+
 
 ## 12.2 Plot heatmaps of region correlations
 
@@ -956,6 +970,7 @@ plot_correlation_heatmaps(sundowning,
                           colors = c("#be0000", "#00782e", "#f09b08"),  
                           )
 ```
+![Example heatmap of the cfos channel](C:\Users\Jinmich\Documents\SMARTR\tutorial\heatmap_Female_AD_cfos.png){width=70%} 
 
 ## 12.3 Plot permutation analysis results (volcano plots & parallel coordinate plots)
 
@@ -965,10 +980,14 @@ A volcano plot can show us the the pairwise regions whose correlations are signi
 ```{r,  }
 volcano_plot(sundowning,
              permutation_comparison = "female_AD_vs_female_control",
-             channels = c("cfos", "eyfp"),
+             channels = c("cfos", "eyfp", "colabel"),
              title = "Female AD vs female CTRL",
              ylim = c(0,4))
 ```
+
+
+![Volcano plot of just the cfos channel](C:\Users\Jinmich\Documents\SMARTR\tutorial\volcano_plot_Female_AD vs female CTRL_cfos.png){width=70%}
+
 
 
 A parallel coordinate plot allows us to see which actual region pairs are different between our two analysis groups and in which direction their correlation coefficients change. Only region pairs from the volcano plot that are above the alpha level and have correlation coefficient differences greater than absolute one are included in this graph. 
@@ -976,23 +995,37 @@ A parallel coordinate plot allows us to see which actual region pairs are differ
 ```{r,  }
 parallel_coordinate_plot(sundowning,
                          permutation_comparison = "female_AD_vs_female_control",
-                         channels = c("cfos", "eyfp"),
+                         channels = c("cfos", "eyfp", "colabel"),
                          )
 ```
+![parallel coordinate plot of just the cfos channel](C:\Users\Jinmich\Documents\SMARTR\tutorial\female_AD_vs_female_control_parallel_coordinate_plot_cfos_.png){width=70%}
 
 ## 12.4 Plot network graphs
 
-The `plot_networks()` functions will automatically plot the output of `create_networks()`. You must specify the name of the network you want to plot and you can also change the edge colors for regions that are positively correlated. The default color is "firebrick". Below we will plot the network for only female AD mice. 
+The `plot_networks()` functions will automatically plot the output of `create_networks()`. You must specify the name of the network you want to plot and you can also change the edge colors for regions that are positively correlated. The default color is "firebrick". Below we will plot the network for the cfos channel in only female AD mice. 
 
-```{r,  }
+```{r}
 plot_networks(sundowning,
-              network_name = "female_control",
-              channels = c("eyfp"),
+              network_name = "female_AD",
+              channels = "cfos",
               title = "Female AD",
-              edge_color = "firebrick", 
+              edge_color = "firebrick"
               )
 
 ```
+![AD female network graph for the cfos channel](C:\Users\Jinmich\Documents\SMARTR\tutorial\network_female_AD_cfos.png){width=70%}
+```{r}
+plot_networks(sundowning,
+              network_name = "female_control",
+              channels = "cfos",
+              title = "Female control",
+              edge_color = "firebrick"
+              )
+
+```
+![Control female network graph for cfos channel](C:\Users\Jinmich\Documents\SMARTR\tutorial\network_female_control_cfos.png){width=70%}
+
+
 ## 12.5 Plot network summary statistics
 
 ### Degree distributions
@@ -1006,31 +1039,42 @@ If you want to change the legend label of your groups, map the corresponding `ne
 
 ```{r,  }
 plot_degree_distributions(sundowning,
-                          color_palettes = c("reds", "greens"),
-                          channels = c("cfos", "eyfp"),
+                          color_palettes = "reds",
+                          channels = "cfos",
                           title = "Degree distribution",
                           labels = c("female_AD" = "Female AD",
                                      "female_control" = "Female CTRL"),
-                          xlim = c(0,20),
-                          ylim = c(0,100),
+                          height = 10,
+                          width = 10,
+                          xlim = c(0, 5),
+                          ylim = c(0, 40),
                           save_plot = TRUE,
                           print_plot = TRUE)
 ```
+
+![](C:\Users\Jinmich\Documents\SMARTR\tutorial\networks_degree_distributions_cfos.png){width=60%}
+
+
 ### Mean degree
 
 We can also plot the mean degree between the networks on a bar graph. Here the parameter `rev_x_scale` allows us the change the order of our groups on the barplot. In this case, setting it to `TRUE` will keep the control analysis group on the left. 
 
 ```{r,  }
 plot_mean_degree(sundowning,
-                 color_palettes = c("reds", "greens"),
-                 channels = c("cfos", "eyfp"),
-                 title = "Mean degree",
+                 color_palettes = c("reds"), 
+                 channels = c("cfos"),
+                 title = "",
                  labels = c("female_AD" = "Female AD",
                             "female_control" = "Female CTRL"),
-                 ylim = c(0, 10),
+                 ylim = c(0, 2),
+                 height = 10,
+                 width = 10,
                  rev_x_scale = TRUE,
                  )
 ```
+
+
+![](C:\Users\Jinmich\Documents\SMARTR\tutorial\networks_mean_degree_cfos.png){width=60%}
 
 Also, Keep in mind that you may need to tweak the `ylim` of your graph to ensure that all the data can fit within the axes limits. If one bar seems to not plot, try changing this parameter first.
 
@@ -1041,25 +1085,44 @@ The clustering coefficient is a measurement of how many neighboring nodes to a g
 
 ```{r,  }
 plot_mean_clust_coeff(sundowning, 
-                      color_palettes = c("reds", "greens"),
-                      channels = "eyfp"
-                      rev_x_scale = TRUE
+                      color_palettes = c("reds"),
+                      channels = "cfos",
+                      title = "",
+                      rev_x_scale = TRUE,
+                      ylim = c(0, 0.4),
+                      height = 10, 
+                      width = 10
                       )
 ```
 
+
+![](C:\Users\Jinmich\Documents\SMARTR\tutorial\networks_mean_clust_coeff_cfos.png){width=60%}
+
 ### Mean global efficiency
 
-Efficiency is a measure of the average number of nodes necessary to cross to get from any node to another. Efficiency is the inverse of the average shortest path. To make an analogy, think about the game "6 degrees of Kevin Bacon". One person in our lab is 6 degrees away from Kevin, while another is only 3 degrees away (distant cousins, I guess). The our efficiency in our connection to Kevin Bacon is 1/average_degree = 1/4.5. 
+Efficiency is a measure of the average number of nodes necessary to cross to get from any node to another. Efficiency is the inverse of the average shortest path. To make an analogy, think about the game "6 degrees of Kevin Bacon". 
+
+![Kevin Bacon in his natural element](https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/kevin-bacon-index-1621021995.jpg){width=50%}
+
+
+
+If one person in our lab is 6 degrees away from Kevin, while another is only 3 degrees away (distant cousins, I guess). Then the efficiency in those two people's connection to Kevin Bacon is 1/average_degree = 1/4.5. 
 
 ```{r,  }
 plot_mean_global_effic(sundowning,
-                       color_palettes = c("reds", "greens"),
+                       channels = "cfos",
+                       color_palettes = "reds",
                        labels = c("female_AD" = "Female AD",
                             "female_control" = "Female CTRL"),
                        title = "Mean global efficiency",
-                       ylim = c(0, 0.4),
+                       ylim = c(0, 0.3),
+                       height = 10, 
+                       width = 10,
                        rev_x_scale = TRUE)
 ```
+
+
+![](C:\Users\Jinmich\Documents\SMARTR\tutorial\networks_mean_global_efficiency_cfos.png){width=60%}
 
 ### Mean betweenness centrality
 
@@ -1067,14 +1130,19 @@ A related concept is betweenness centrality. This measures how many shortest pat
 
 ```{r,  }
 plot_mean_between_centrality(sundowning,
-                             color_palettes = c("reds", "greens"),
-                             channels = c("cfos", "eyfp"),
+                             color_palettes = "reds",
+                             channels = "cfos",
                              title = "Mean betweenness centrality",
                              labels = c("female_AD" = "Female AD",
                                         "female_control" = "Female CTRL"),
-                             ylim = c(0, 100),
+                             ylim = c(0, 1),
+                             height = 10, 
+                             width = 10,
                              rev_x_scale = TRUE)
 ```
+
+
+![](C:\Users\Jinmich\Documents\SMARTR\tutorial\networks_mean_betweenness_centrality_cfos.png){width=60%}
 
 ### Region degree
 
@@ -1085,25 +1153,32 @@ The example below plots the "female_AD" network region degrees.
 ```{r,  }
 plot_degree_regions(sundowning,
                     network = "female_AD", 
-                    channels = c("cfos", "eyfp"),
+                    channels = "cfos",
                     colors = c("#be0000", "#00782e"),
-                    ylim = c(0, 10),
-                    title = "Region degree"
+                    ylim = c(0, 5),
+                    title = ""
                     )
 ```
+
+
+![](C:\Users\Jinmich\Documents\SMARTR\tutorial\networks_degree_per_region_cfos.png){width=100%}
+
 ### Region betweenness
 
 Similarly to degree, we can plot the the betweenness centrality for individual regions in descending order.
 
 ```{r,  }
 plot_betweenness_regions(sundowning,
-                         channels = c("cfos", "eyfp"),
-                         colors = c("#be0000", "#00782e"),
-                         title = "Betweenness")
+                         network = "female_AD",
+                         channels = "cfos",
+                         colors = "#be0000",
+                         title = "Betweenness",
+                         ylim = c(0, 8))
                          
 ```
 
 
+![](C:\Users\Jinmich\Documents\SMARTR\tutorial\networks_betweenness_per_region_cfos.png){width=100%}
 
 
 # 13 Scripting
@@ -1121,7 +1196,6 @@ data prior to creating the objects.
 # Reads the parameters from a csv file
 # Auto creates the mouse and slice objects
 # Automatically saves the mouse objects in designated mouse output folder
-
 
 # Dependencies:
 library(SMARTR)
@@ -1320,133 +1394,19 @@ eval((parse(text=paste0("save_mouse(", mouse_name, ", timestamp = TRUE)"))))
 
 
 ## 13.3 Looping through segmentation and filtering
-
-
-
-
-
-
-
-## 13.4 Looping through cleaning up cell counts
+TODO
 
 ## 13.4 Looping through forward warping
+TODO
 
+## 13.5 Looping through cleaning up cell counts
+TODO
 
-
-## 13.5 
-
+## 13.6 Looping through adding mice
+TODO
 
 </div>
 </font> 
-
-
-
-
-# SCRATCH SCRATCH SCRATCH
-
-
-```{r}
-sundowning <- experiment(experiment_name = "sundowning",
-                         experimenters = c("HH", "AW", "MJ"),
-                         output_path = "V:\\Michelle Jin\\Sundowning\\PipelineDemo\\Experiment_example")
- 
-
-```
-
-```{r}
-
-for (k in 1:10){
-
-
-# k <- 3
-
-  load(paste0("V:/Michelle Jin/Sundowning/PipelineDemo/325/false_control_mouse_", k, ".RDATA"))
-  print(m$normalized_counts$cfos[m$normalized_counts$cfos$acronym== "AAA",])
-
-  sundowning <- add_mouse(sundowning, m, replace = TRUE)
-}
-
-
-
-
-
-```
-
-
-```{r}
-
-attr(sundowning, "info")$output_path <- "V:\\Michelle Jin\\Sundowning\\PipelineDemo\\Experiment_example"
-
-save_experiment(e, timestamp = TRUE)
-```
-
-
-
-```{r}
-e <- sundowning
-
-e <- combine_norm_cell_counts(e)
-
-e_info <- attr(e, "info")
-```
-
-
-Choose a random number of regions to delete from each test mouse's normalized cells count
-```{r}
-for (channel in e_info$channels){
-# 
-#   e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]][e$combined_normalized_counts[[channel]]$mouse_ID != "325",]
-  nrows <- e$combined_normalized_counts[[channel]]$mouse_ID %>% length() 
-  e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]] %>% sample_frac(size = .9, replace = FALSE)
-
-}
-```
-
-
-
-```{r}
-e <- enough_mice_per_group(e, by = c("group", "sex"), min_n = 4)
-```
-
-```{r}
-
-save_experiment(e, timestamp = TRUE)
-
-```
-
-
-## Create a fake experiment
-
-```{r}
-
-# Create experiment
-sundowning <- experiment(experiment_name = "sundowning",
-                         experimenters = c("HH", "AW", "RC", "MJ"),
-                         output_path = "V:\\Michelle Jin\\Sundowning\\PipelineDemo\\Experiment_example")
-
-# List the files
-fake_mouse_folder <- "V:\\Michelle Jin\\Sundowning\\PipelineDemo\\Mouse_example\\fake_mice"
-files <- list.files(fake_mouse_folder)
-  
-
-# Loop through files
-for (n in 1:length(files)){
-  
-  # Load the files
-  load(file.path(fake_mouse_folder, files[[n]]))
-  
-  # Fix the mouse name
-  attr(m,"info")$mouse_ID <- paste0("false_mouse_", n)
-  
-  # Add the mouse to the Sundowning experiment
-  sundowning <- add_mouse(sundowning, m)
-  
-}  
-  
-
-```
-
-
 
 
 

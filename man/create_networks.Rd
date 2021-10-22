@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{create_networks}
 \alias{create_networks}
-\title{Create network graph objects for plotting different analysis subgroups.}
+\title{Create \%>\% graph objects for plotting different analysis subgroups.}
 \usage{
 create_networks(
   e,
@@ -28,7 +28,7 @@ used to generate the network. This \code{network_name} is fed as a parameter int
 \code{\link[=plot_network]{plot_network()}} function.
 }
 \description{
-Create network graph objects for plotting different analysis subgroups.
+Create \%>\% graph objects for plotting different analysis subgroups.
 }
 \examples{
 e sundowning <- create_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
