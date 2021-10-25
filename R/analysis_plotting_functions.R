@@ -4,7 +4,7 @@ NULL
 #' @importFrom tidyselect all_of
 NULL
 
-#' @importFrom dplyr n mutate summarize summarise across
+#' @importFrom dplyr n mutate summarize summarise across arrange
 NULL
 
 #' @importFrom tidygraph activate

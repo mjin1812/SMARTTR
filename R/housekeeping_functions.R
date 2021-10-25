@@ -229,7 +229,45 @@ add_mouse <- function(e, m, replace = FALSE){
 
 
 
+#' Reset the root path for the folder containing the registration and segmentation data.
+#'
+#' @description This function takes a mouse object and also a `input_path` as the root folder for that mouse.
+#' It then adjusts all the paths for the registration and segmentation data read to be relative to the root folder.
+#' This function is especially useful if you have changed the computers you are analyzing and drive mappings may be different.
+#'
+#' @param m mouse object
+#' @param input_path (default = NULL) Reset the root directory of the mouse object.
+#' @param print (bool, default = TRUE) Print the changes in the console.
+#' @return m a mouse object
+#' @export
+#'
+#' @examples
+reset_mouse_root <- function(m, input_path = NULL, print = TRUE){
 
+  if (is.null(input_path)){
+    stop("Please provide a new root folder path using the 'root' parameter...")
+  }
+
+  # Search all of the files listed that match the pattern MAX
+  root_files <- list.files(path = input_path, pattern = "MAX", recursive = TRUE)
+
+  if (length(root_files) < 1){
+    stop("There were no registration files found in the directory set as the input path. Please recheck where your folder is.")
+  }
+
+  for (k in 1:length(m$slices)){
+    s <- m$slices[[k]]
+    s_reg_path <- attr(s, "info")$registration_path
+    matched_root_file <- root_files[stringdist::amatch(s_reg_path, root_files, maxDist = Inf)]
+    attr(m$slices[[k]], "info")$registration_path <- file.path(input_path, matched_root_file)
+
+    if (print){
+      message("Changed ", s_reg_path, " to ", attr(m$slices[[k]], "info")$registration_path)
+    }
+  }
+
+  return(m)
+}
 
 
 

@@ -275,7 +275,7 @@ slice_1_1 <- slice(slice_ID = "1_1",
                    z_width = 20,               # z-stack thickness in microns
                    hemisphere = NULL,          # "left", "right" or NULL (both sides)
                    channels =c('cfos', 'eyfp', 'colabel'),  # Channels to process
-                   registration_path = 'V:/Holly Hunsberger/Sundowning_images/Cohort4_2month/325/325_1_1/MAX_325_1_1.tif'
+                   registration_path = 'V:/Holly Hunsberger/Sundowning_images/Cohort4_2month/325/325_1_1/MAX_325_1_1.tif' 
                    )  
 
 # Let's check the data stored correctly with print()
@@ -348,6 +348,17 @@ length(mouse_325$slices)
 mouse_325$slices$`1_1`
 
 ```
+
+
+> Note that if you've changed computers and you find the location of your mouse folder has changed in some way, e.g. different drive mapping letters on Windows or different OS, you can adjust for this using the `reset_mouse_root()` function.
+
+
+```{r}
+# Change to the correct drive letter
+mouse_325 <- reset_mouse_root(mouse_325, input_path = "X:\Holly Hunsberger\Sundowning_images\Cohort4_2month\325")
+
+```
+
 
 # 5 Interactive registration
 
@@ -591,7 +602,7 @@ Getting cell counts per region normalized by volume or area in mm^3^ or mm^2^ re
 
 ## 8.1 Get slice volumes
 
-In order to get cell counts per region in each mouse normalized by volume, the exact volume of each region in each slice needs to be calculated. This is accomplished with the function  `get_registered_volumes()`. The function will automatically calculate region volumes per hemisphere foreach slice.
+In order to get cell counts per region in each mouse normalized by volume, the exact volume of each region in each slice needs to be calculated. This is accomplished with the function  `get_registered_volumes()`. The function will automatically calculate region volumes per hemisphere for each slice.
 
 
 ```{r}
@@ -633,7 +644,7 @@ You can access the cell table for each channel with the `$` operator (e.g. `mous
 
 ```{r}
 # Plot an interactive 3D plot of the cfos channel
-SMART::glassbrain2(mouse_325$cell_table$cfos, jitter = FALSE)
+SMART::glassbrain2(mouse_325$cell_table$cfos, jitter = TRUE)
 ```
 
 This is a useful function to show an interactive representation of all the cells cells mapped in a single animal. 
@@ -870,7 +881,7 @@ sundowning$permutation_p_matrix$
 
 ## 11.4 Create region networks with summary stats
 
-Now we can move on to the process of automatically creating networks in R using the `create_networks()` function. This function is also contingent on running `get_correlations()` first because these networks are constructed on the correlation coefficents. There a some customizable features such as setting the edge color (taken as a hexadecimal string) if you have pre-chosen colors for your analysis groups. In the example below, we will just take the default edge color.
+Now we can move on to the process of automatically creating networks in R using the `create_networks()` function. This function is also contingent on running `get_correlations()` first because these networks are constructed on the correlation coefficents. 
 
 The `alpha` parameters specifies at which threshold a node is included in the networks based on p-values of pairwise-region correlation coefficients. 
 
@@ -1002,7 +1013,8 @@ parallel_coordinate_plot(sundowning,
 
 ## 12.4 Plot network graphs
 
-The `plot_networks()` functions will automatically plot the output of `create_networks()`. You must specify the name of the network you want to plot and you can also change the edge colors for regions that are positively correlated. The default color is "firebrick". Below we will plot the network for the cfos channel in only female AD mice. 
+The `plot_networks()` functions will automatically plot the output of `create_networks()`. You must specify the name of the network you want to plot. There a some customizable features such as setting the edge color (taken as a hexadecimal string) for positively correlated connections. The default color is "firebrick". Below we will plot the network for the cfos channel in only female AD mice. 
+
 
 ```{r}
 plot_networks(sundowning,

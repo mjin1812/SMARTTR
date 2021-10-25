@@ -66,7 +66,7 @@ validate_mouse <- function(m){
 #' @param group (str, default = NULL) e.g. 'control' or 'AD'
 #' @param drug (str, default = NULL) e.g. 'vehicle' or 'ketamine'
 #' @param cohort (str, default = NULL)
-#' @param input_path (str, default = 'set input path') Path to the mouse data TODO: currently not used. Will include search function to parse out files and individual slice information for a mouse.
+#' @param input_path (str, default = 'set input path') Root to path containing the mouse data and slice image subfolders. This is useful if you've have changed computers and the drive mapped to the data has slightly changed.                 TODO: currently not used. Will include search function to parse out files and individual slice information for a mouse.
 #' @param output_path (str, default = 'set output path') Set the path to the folder you want to save the mouse RDATA file to.
 #' @param ... additional custom keyword pair attributes you'd like to store
 #'

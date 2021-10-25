@@ -248,7 +248,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Denny Lab Wholebrain Pipeline Demo</h1>
 <h4 class="author">by Michelle Jin</h4>
-<h4 class="date">21 October, 2021</h4>
+<h4 class="date">22 October, 2021</h4>
 
 </div>
 
@@ -638,7 +638,7 @@ print(attr(mouse_325$slices$`1_1`, &quot;info&quot;)$left_regions_excluded)</cod
 <p>Getting cell counts per region normalized by volume or area in mm<sup>3</sup> or mm<sup>2</sup> respectively.</p>
 <div id="get-slice-volumes" class="section level2">
 <h2>8.1 Get slice volumes</h2>
-<p>In order to get cell counts per region in each mouse normalized by volume, the exact volume of each region in each slice needs to be calculated. This is accomplished with the function <code>get_registered_volumes()</code>. The function will automatically calculate region volumes per hemisphere foreach slice.</p>
+<p>In order to get cell counts per region in each mouse normalized by volume, the exact volume of each region in each slice needs to be calculated. This is accomplished with the function <code>get_registered_volumes()</code>. The function will automatically calculate region volumes per hemisphere for each slice.</p>
 <pre class="r"><code># Calculate region volumes for the full slice
 mouse_325 &lt;- get_registered_volumes(mouse_325,
                                   slice_ID = &quot;1_1&quot;,

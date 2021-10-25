@@ -27,7 +27,7 @@ mouse_example <- mouse() # initializes a mouse object
 
 \item{cohort}{(str, default = NULL)}
 
-\item{input_path}{(str, default = 'set input path') Path to the mouse data TODO: currently not used. Will include search function to parse out files and individual slice information for a mouse.}
+\item{input_path}{(str, default = 'set input path') Root to path containing the mouse data and slice image subfolders. This is useful if you've have changed computers and the drive mapped to the data has slightly changed.                 TODO: currently not used. Will include search function to parse out files and individual slice information for a mouse.}
 
 \item{output_path}{(str, default = 'set output path') Set the path to the folder you want to save the mouse RDATA file to.}
 
