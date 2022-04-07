@@ -248,7 +248,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Denny Lab Wholebrain Pipeline Demo</h1>
 <h4 class="author">by Michelle Jin</h4>
-<h4 class="date">22 October, 2021</h4>
+<h4 class="date">29 October, 2021</h4>
 
 </div>
 
@@ -446,7 +446,7 @@ print(mouse_325)</code></pre>
                    z_width = 20,               # z-stack thickness in microns
                    hemisphere = NULL,          # &quot;left&quot;, &quot;right&quot; or NULL (both sides)
                    channels =c(&#39;cfos&#39;, &#39;eyfp&#39;, &#39;colabel&#39;),  # Channels to process
-                   registration_path = &#39;V:/Holly Hunsberger/Sundowning_images/Cohort4_2month/325/325_1_1/MAX_325_1_1.tif&#39;
+                   registration_path = &#39;V:/Holly Hunsberger/Sundowning_images/Cohort4_2month/325/325_1_1/MAX_325_1_1.tif&#39; 
                    )  
 
 # Let&#39;s check the data stored correctly with print()
@@ -492,6 +492,11 @@ length(mouse_325$slices)
 
 # Access the new slice information with the code below
 mouse_325$slices$`1_1`</code></pre>
+<blockquote>
+<p>Note that if you’ve changed computers and you find the location of your mouse folder has changed in some way, e.g. different drive mapping letters on Windows or different OS, you can adjust for this using the <code>reset_mouse_root()</code> function. You may also want to reset the output folder for that mouse just by modifying the mouse <code>output_path</code> attribute.</p>
+</blockquote>
+<pre class="r"><code># Change to the correct drive letter
+mouse_325 &lt;- reset_mouse_root(mouse_325, input_path = &quot;X:\Holly Hunsberger\Sundowning_images\Cohort4_2month\325&quot;)</code></pre>
 </div>
 </div>
 <div id="interactive-registration" class="section level1">
@@ -658,7 +663,7 @@ load(&quot;V:/Michelle Jin/Sundowning/PipelineDemo/Mouse_example/mouse_325_pre-r
 <pre class="r"><code>mouse_325 &lt;- get_cell_table(mouse_325, channels = c(&quot;cfos&quot;, &quot;eyfp&quot;, &quot;colabel&quot;))</code></pre>
 <p>You can access the cell table for each channel with the <code>$</code> operator (e.g. <code>mouse_325$cell_table$cfos</code>). We can use this aggregated dataset if we want to plot an interactive “glass brain” plot of all slices in the mouse.</p>
 <pre class="r"><code># Plot an interactive 3D plot of the cfos channel
-SMART::glassbrain2(mouse_325$cell_table$cfos, jitter = FALSE)</code></pre>
+SMART::glassbrain2(mouse_325$cell_table$cfos, jitter = TRUE)</code></pre>
 <p>This is a useful function to show an interactive representation of all the cells cells mapped in a single animal.</p>
 </div>
 <div id="get-normalized-cell-counts" class="section level2">
@@ -834,7 +839,7 @@ sundowning &lt;- get_correlations(sundowning,
 </div>
 <div id="create-region-networks-with-summary-stats" class="section level2">
 <h2>11.4 Create region networks with summary stats</h2>
-<p>Now we can move on to the process of automatically creating networks in R using the <code>create_networks()</code> function. This function is also contingent on running <code>get_correlations()</code> first because these networks are constructed on the correlation coefficents. There a some customizable features such as setting the edge color (taken as a hexadecimal string) if you have pre-chosen colors for your analysis groups. In the example below, we will just take the default edge color.</p>
+<p>Now we can move on to the process of automatically creating networks in R using the <code>create_networks()</code> function. This function is also contingent on running <code>get_correlations()</code> first because these networks are constructed on the correlation coefficents.</p>
 <p>The <code>alpha</code> parameters specifies at which threshold a node is included in the networks based on p-values of pairwise-region correlation coefficients.</p>
 <pre class="r"><code># Create a network for the female AD group
 sundowning &lt;- create_networks(sundowning, 
@@ -929,7 +934,7 @@ sundowning &lt;- create_networks(sundowning,
 </div>
 <div id="plot-network-graphs" class="section level2">
 <h2>12.4 Plot network graphs</h2>
-<p>The <code>plot_networks()</code> functions will automatically plot the output of <code>create_networks()</code>. You must specify the name of the network you want to plot and you can also change the edge colors for regions that are positively correlated. The default color is “firebrick”. Below we will plot the network for the cfos channel in only female AD mice.</p>
+<p>The <code>plot_networks()</code> functions will automatically plot the output of <code>create_networks()</code>. You must specify the name of the network you want to plot. There a some customizable features such as setting the edge color (taken as a hexadecimal string) for positively correlated connections. The default color is “firebrick”. Below we will plot the network for the cfos channel in only female AD mice.</p>
 <pre class="r"><code>plot_networks(sundowning,
               network_name = &quot;female_AD&quot;,
               channels = &quot;cfos&quot;,

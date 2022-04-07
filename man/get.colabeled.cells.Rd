@@ -2,7 +2,10 @@
 % Please edit documentation in R/mapping_functions.R
 \name{get.colabeled.cells}
 \alias{get.colabeled.cells}
-\title{Get colabelled cells data table}
+\title{Get colabelled cells data table. This is a special function used to create a dataframe of colabelled cells
+specifically between the \code{eyfp} and \code{cfos} channels. The designated \code{colabel} channel name in this pipeline refers
+to the overlap between these two specific channels. To name another channel for colabelled cells between two other channels,
+please use a different naming convention, e.g. "colabel_PV_cfos".}
 \usage{
 get.colabeled.cells(
   coloc.table,
@@ -12,12 +15,12 @@ get.colabeled.cells(
   overlap = 0.5
 )
 }
-\arguments{
-\item{overlap}{}
-}
 \value{
 returns a dataframe of colabelled cell counts
 }
 \description{
-Get colabelled cells data table
+Get colabelled cells data table. This is a special function used to create a dataframe of colabelled cells
+specifically between the \code{eyfp} and \code{cfos} channels. The designated \code{colabel} channel name in this pipeline refers
+to the overlap between these two specific channels. To name another channel for colabelled cells between two other channels,
+please use a different naming convention, e.g. "colabel_PV_cfos".
 }

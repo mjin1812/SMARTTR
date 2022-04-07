@@ -350,8 +350,7 @@ mouse_325$slices$`1_1`
 ```
 
 
-> Note that if you've changed computers and you find the location of your mouse folder has changed in some way, e.g. different drive mapping letters on Windows or different OS, you can adjust for this using the `reset_mouse_root()` function.
-
+> Note that if you've changed computers and you find the location of your mouse folder has changed in some way, e.g. different drive mapping letters on Windows or different OS, you can adjust for this using the `reset_mouse_root()` function. You may also want to reset the output folder for that mouse just by modifying the mouse `output_path` attribute.
 
 ```{r}
 # Change to the correct drive letter
@@ -443,12 +442,12 @@ load("V:/Michelle Jin/Sundowning/PipelineDemo/Mouse_example/mouse_325_pre-regist
 
 ## 6.1 Import raw ImageJ data
 
-The segmentation data from ImageJ is stored into .txt files. We can use the `import_segmentation()` generic function to import the raw data. 
+The segmentation data from ImageJ is stored into .txt files. We can use the `import_segmentation_ij()` generic function to import the raw data from ImageJ. 
 
 Note that currently, this method is dependent on the naming conventions of the ImageJ macro used to create and save the txt file. In the future, if there are multiple different ImageJ segmentation macros with different naming conventions being used in the lab, we just need to standardize the macro to fit adhere to the current naming conventions. Alternatively, you could write multiple custom import functions. 
 
 ```{r}
-mouse_325 <- import_segmentation(mouse_325,
+mouse_325 <- import_segmentation_ij(mouse_325,
                                  slice_ID = '1_1',
                                  hemisphere = NULL,
                                  channels = c('eyfp', 'cfos', 'colabel'))

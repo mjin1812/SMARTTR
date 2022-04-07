@@ -10,7 +10,7 @@ exclude_anatomy(x, ...)
 
 \method{exclude_anatomy}{slice}(
   s,
-  channels = c("cfos", "eyfp", "colabel"),
+  channels = NULL,
   clean = TRUE,
   exclude_right_regions = NULL,
   exclude_left_regions = NULL,
@@ -23,7 +23,7 @@ exclude_anatomy(x, ...)
   m,
   slice_ID = NA,
   hemisphere = NULL,
-  channels = c("cfos", "eyfp", "colabel"),
+  channels = NULL,
   clean = TRUE,
   exclude_right_regions = NULL,
   exclude_left_regions = NULL,
@@ -37,7 +37,7 @@ exclude_anatomy(x, ...)
 
 \item{s}{slice object}
 
-\item{channels}{(vec) Channels to process.}
+\item{channels}{(str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.}
 
 \item{clean}{(bool, default = TRUE ). Remove cells that don't map to any regions.}
 

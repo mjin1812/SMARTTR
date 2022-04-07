@@ -2,7 +2,7 @@
 % Please edit documentation in R/mapping_functions.R
 \name{normalize_cell_counts}
 \alias{normalize_cell_counts}
-\title{Normalize cell counts per mm^2^ or by mm^3^ (if multiplying by the stack size)}
+\title{Normalize cell counts per mm^2^ or by mm^3^ (if multiplying by the stack size).}
 \usage{
 normalize_cell_counts(
   m,
@@ -25,7 +25,8 @@ normalize_cell_counts(
 }
 \description{
 Run this function after all the slices that you want to process are finished being added
-and you have run the function get_cell_table() for your mouse.
+and you have combined your cell counts with \code{\link[=get_cell_table]{get_cell_table()}}. This functions process all channels
+where a cell table was made using the latter function.
 }
 \examples{
 m <- normalize_cell_counts(m, combine_hemispheres = TRUE, simplify_regions = TRUE)

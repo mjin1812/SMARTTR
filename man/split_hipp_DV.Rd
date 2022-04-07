@@ -4,7 +4,7 @@
 \alias{split_hipp_DV}
 \title{Split the hippocampal dataset to dorsal and ventral regions. If \code{\link[=normalize_cell_counts]{normalize_cell_counts()}} has already been run,
 the existing hippocampus data will be deleted and either replaced with new dorsal/ventral hippocampus data when merge = TRUE (recommended) or
-it will be stored in a separate dataframe if the user wants analyze the hippocampus separately for specialized analysis.}
+it will be stored in a separate dataframe if the user wants analyze the hippocampus separately for analysis and the \code{normalized_counts} dataframe will be unchanged.}
 \usage{
 split_hipp_DV(
   m,
@@ -31,7 +31,7 @@ Merging will replace the hippocampal counts currently in the normalized counts t
 
 \item{simplify_keywords}{(str, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure}
 
-\item{rois}{(str) List of the region acronyms to include in the hippocampus}
+\item{rois}{(str, default = c("DG", "CA1", "CA2", "CA3")) List of the region acronyms to include in the hippocampus}
 }
 \value{
 m mouse object with DV cell counts from the hippocampus included
@@ -39,5 +39,5 @@ m mouse object with DV cell counts from the hippocampus included
 \description{
 Split the hippocampal dataset to dorsal and ventral regions. If \code{\link[=normalize_cell_counts]{normalize_cell_counts()}} has already been run,
 the existing hippocampus data will be deleted and either replaced with new dorsal/ventral hippocampus data when merge = TRUE (recommended) or
-it will be stored in a separate dataframe if the user wants analyze the hippocampus separately for specialized analysis.
+it will be stored in a separate dataframe if the user wants analyze the hippocampus separately for analysis and the \code{normalized_counts} dataframe will be unchanged.
 }

@@ -53,4 +53,6 @@ Imports:
     magrittr (>= 2.0.1), 
     tidyselect (>= 1.1.1)
 Suggests:
-    ggpattern(>= 0.2.0)
+    testthat (>= 3.0.0),
+    ggpattern (>= 0.2.0)
+Config/testthat/edition: 3

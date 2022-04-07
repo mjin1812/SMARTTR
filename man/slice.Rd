@@ -23,9 +23,12 @@ slice_example <- slice() # initializes a slice object
 
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel")) The channels to process.}
 
-\item{registration_path}{(str, default = 'set registration image path') TODO: deprecate this in favor of slice_directory}
+\item{registration_path}{(str, default = 'set registration image path') May deprecate this in favor of slice_directory in future versions.}
 
-\item{slice_directory}{(str, default = NULL) The directory where slice information is stored. TODO: Change the import and registration functions to only rely on this path.}
+\item{segmentation_path}{(str, default = 'set segmentation image path') Path to image used for segmentation function using base \code{\link[wholebrain:segment]{wholebrain::segment()}} function.}
+
+\item{slice_directory}{(str, default = NULL) The root directory where slice information such as the registration or segmentation images or txt files are stored for a given slice.
+TODO: May change the import and registration functions to only rely on this path.}
 
 \item{left_regions_excluded}{(str, default = ("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
 "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS")) The list of acronyms corresponding to regions to exclude for this slice's left hemisphere.}

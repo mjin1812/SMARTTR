@@ -10,7 +10,7 @@ make_segmentation_filter(x, ...)
 
 \method{make_segmentation_filter}{slice}(
   s,
-  channels = c("eyfp"),
+  channels = "eyfp",
   params = list(c("Vol..unit.", "Moment1", "Moment2", "Moment3", "Moment4", "Sigma")),
   ranges = list(list(c(200, 12000), c(3, 50), c(0, 600), c(0, 2000), c(0, 5), c(20,
     Inf)))
@@ -30,7 +30,7 @@ make_segmentation_filter(x, ...)
 \arguments{
 \item{...}{}
 
-\item{channels}{(str vector) Channels to process , "eyfp" and "cfos" are legal.}
+\item{channels}{(str vector, default = "eyfp") Channels to process. If NULL, defaults to the channels stored in the slice object attributes (not recommended).}
 
 \item{params}{(list) Has same length as channels. Each element contains a vector of parameters names used for filtering that channel}
 

@@ -9,7 +9,7 @@ get_cell_table(m, channels = c("cfos", "eyfp", "colabel"))
 \arguments{
 \item{m}{mouse object}
 
-\item{channels}{(vec) Channels to process.}
+\item{channels}{(vec, default = c("cfos", "eyfp", "colabel")) Channels to process.}
 }
 \value{
 m mouse object

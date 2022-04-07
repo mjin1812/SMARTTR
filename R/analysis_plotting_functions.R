@@ -649,8 +649,9 @@ plot_percent_colabel <- function(e,
 
     # Check if ggpattern is installed
     if (!requireNamespace("ggpattern", quietly = TRUE)) {
-      stop("Package \"ggpattern\" (>= 0.2.0) is needed for the pattern mapping to work. Please install it now.",
+      message("Package \"ggpattern\" (>= 0.2.0) is needed for the pattern mapping to work. Installing it now.",
            call. = FALSE)
+      install.packages('ggpattern')
     }
 
     pattern_var <- sym(pattern_mapping)

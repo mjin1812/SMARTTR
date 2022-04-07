@@ -11,7 +11,7 @@ make_segmentation_object(x, ...)
 \method{make_segmentation_object}{slice}(
   s,
   mouse_ID = NA,
-  channels = c("cfos", "eyfp", "colabel"),
+  channels = NULL,
   use_filter = FALSE,
   ...
 )
@@ -20,7 +20,7 @@ make_segmentation_object(x, ...)
   m,
   slice_ID = NA,
   hemisphere = NULL,
-  channels = c("cfos", "eyfp", "colabel"),
+  channels = NULL,
   replace = FALSE,
   use_filter = FALSE,
   ...
@@ -33,7 +33,7 @@ make_segmentation_object(x, ...)
 
 \item{mouse_ID}{(str) ID of mouse}
 
-\item{channels}{(vec) Channels to process.}
+\item{channels}{(str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.}
 
 \item{use_filter}{(bool, default = FALSE). Use a filter to create more curated segmentation object from the raw segmentation data.}
 
@@ -41,7 +41,7 @@ make_segmentation_object(x, ...)
 
 \item{slice_ID}{(str) ID of slice}
 
-\item{hemisphere}{(str) 'left', 'right' or NULL (both)}
+\item{hemisphere}{(str, default = NULL) 'left', 'right' or NULL (both)}
 
 \item{replace}{(bool, default = FALSE) replace existing raw segmentation data}
 }
@@ -60,5 +60,5 @@ If you are processing the colabel channel, you must always have the raw eyfp seg
 }
 \examples{
 s <- make_segmentation_object(s, mouse_ID = "255", channels = c("cfos", "eyfp"), use_filter = FALSE)
-m <-  make_segmentation_object(m, slice_ID = '1_9', hemisphere = 'left', channels = c('eyfp', 'cfos'), use_filter = FALSE)
+m <-  make_segmentation_object(m, slice_ID = '1_9', hemisphere = 'left', channels = c('eyfp', 'cfos', 'colabel'), use_filter = FALSE)
 }

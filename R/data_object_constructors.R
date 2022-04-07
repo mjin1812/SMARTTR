@@ -131,7 +131,7 @@ mouse <- function(mouse_ID = 'set ID',
 
 
 new_slice <- function(data = list(registration_obj = NULL,           #list per section
-                                  raw_segmentation_data = NULL,    #list of length 3(per channel)
+                                  # raw_segmentation_data = NULL,    #list of length 3(per channel), deprecated
                                   segmentation_filters = NULL,     #Each element containing sublist the length of registration_obj
                                   segmentation_obj = NULL,
                                   raw_forward_warped_data = NULL,
@@ -140,13 +140,13 @@ new_slice <- function(data = list(registration_obj = NULL,           #list per s
                       info = list(slice_ID = NA,
                                   coordinate = -1,
                                   atlas_plate = NA,
-                                  conversion_factor = 1.0833,   # From pixels to microns
+                                  conversion_factor = 1.0833,   #Pixel to micron conversion factor
                                   bin = 1,
                                   z_width = 24,            #Measured in um
                                   hemisphere = NULL,
                                   channels = c('eyfp', 'cfos', 'colabel'),
                                   registration_path = 'set registration image path',
-                                  # segmentation_path = 'set segmentation image path',    # Segmentation path may not be used
+                                  segmentation_path = 'set segmentation image path',    # Segmentation path may not be used
                                   slice_directory = NULL,
                                   left_regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
                                                             "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
@@ -178,6 +178,7 @@ validate_slice <- function(s){
                         "hemisphere",
                         "channels",
                         "registration_path",
+                        "segmentation_path",
                         "slice_directory",
                         "left_regions_excluded",
                         "right_regions_excluded")
@@ -205,8 +206,10 @@ validate_slice <- function(s){
 #' @param z_width (num, default = 24) The z-stack width in um.
 #' @param hemisphere (str, default = NULL) Hemisphere to process. "left", "right" or NULL is legal.
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
-#' @param registration_path (str, default = 'set registration image path') TODO: deprecate this in favor of slice_directory
-#' @param slice_directory (str, default = NULL) The directory where slice information is stored. TODO: Change the import and registration functions to only rely on this path.
+#' @param registration_path (str, default = 'set registration image path') May deprecate this in favor of slice_directory in future versions.
+#' @param segmentation_path (str, default = 'set segmentation image path') Path to image used for segmentation function using base [wholebrain::segment()] function.
+#' @param slice_directory (str, default = NULL) The root directory where slice information such as the registration or segmentation images or txt files are stored for a given slice.
+#' TODO: May change the import and registration functions to only rely on this path.
 #' @param left_regions_excluded (str, default = ("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
 #' "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS")) The list of acronyms corresponding to regions to exclude for this slice's left hemisphere.
 #' @param ... additional custom keyword pair attributes you'd like to store
@@ -237,8 +240,8 @@ slice <- function(slice_ID = NA,
                   z_width = 24,            #Measured in um
                   hemisphere = NULL,
                   channels = c('eyfp', 'cfos', 'colabel'),
-                  registration_path = 'set registration image path',
-                  # segmentation_path = 'set segmentation image path',    # Segmentation path may not be used
+                  registration_path = 'set registration image path',   # Path to registration images
+                  segmentation_path = 'set segmentation data path',    # Segmentation path may not be used
                   slice_directory = NULL,
                   left_regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
                                        "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
@@ -255,8 +258,8 @@ slice <- function(slice_ID = NA,
                z_width = z_width,            #Measured in um
                hemisphere = hemisphere,
                channels = channels,
-               registration_path = registration_path,
-               # segmentation_path = segmentation_path,    # Segmentation path may not be used
+               registration_path = registration_path,    # Path to registration images
+               segmentation_path = segmentation_path,    # Segmentation path may not be used
                slice_directory = slice_directory,
                left_regions_excluded = left_regions_excluded,
                right_regions_excluded = right_regions_excluded,
@@ -290,7 +293,7 @@ new_experiment <- function(data = list(mice = list()),
   stopifnot(is.list(data))
   stopifnot(is.list(info))
   structure(data,
-            class = 'wb_experiment',
+            class = 'wholebrain_experiment',
             info = info)
 }
 
