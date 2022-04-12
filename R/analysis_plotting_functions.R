@@ -21,6 +21,9 @@ NULL
 #' @param e experiment object
 #' @param by (str) Attribute names to group by, e.g. by = c("group", "sex"). These will generate analysis subgroups that are
 #' averaged together to assess across all rois.
+#' @param colabel_channel (str, default = "colabel") The channel used as the numerator in fraction counts. The string 'colabel' in the pipeline
+#' refers to colocalized 'eyfp' and 'cfos' channels. For other colocalized channels, import the channel using [SMARTR::import_segmentation_custom()]
+#' or your own customized import channel.
 #' @param channel (str, default = "eyfp") The channel used as denominator in fraction counts.
 #' @param save_table (bool, default = TRUE) Whether to save the output table as a csv in the experiment object output folder.
 #' @param rois (str, default = NULL) Whether to generate colabelled percentages for only specific regions of interest, e.g. rois = c("HY", "DG").
@@ -30,38 +33,20 @@ NULL
 #' @return e experiment object with colabelled percentage table stored in it.
 #' @export
 #' @examples e <- get_percent_colabel(e, c("group", "sex", channel = "eyfp"))
-get_percent_colabel <-function(e, by, channel = "eyfp", save_table = TRUE, rois = NULL, individual = TRUE){
+
+get_percent_colabel <-function(e, by, colabel_channel = "colabel",
+                               channel = "eyfp", save_table = TRUE, rois = NULL, individual = TRUE){
 
   # correct mismatched attributes typed by users
   e_info <- attr(e, "info")
 
   # Get common regions that are present across both channels
-  common_reg <- e$combined_normalized_counts[["colabel"]]$acronym %>% unique() %>%
+  common_reg <- e$combined_normalized_counts[[colabel_channel]]$acronym %>% unique() %>%
     intersect( e$combined_normalized_counts[[channel]]$acronym )
 
   # Check if user only wants a specific roi in common regions
   if (!is.null(rois)){
-
-      # Get rois of all the child regions
-      child_r <- SMARTR::get.acronym.child(rois)
-      while (length(child_r) > 0){
-        rois <- c(rois, child_r)
-        child_r <- SMARTR::get.acronym.child(child_r) %>% na.omit()
-      }
-
-      message("Checking also for child regions of specified roi(s). Only rois and child rois that overlap with common
-              regions of both channels will be used.")
-
-    if (all(!rois %in% common_reg)){
-      message(paste0("None of the roi(s) specified or their child regions is a common region found in both channels. ",
-                     "Common regions include:\n"))
-      for (reg in common_reg){
-        message(reg)
-      }
-      stop("Set the rois argument to a subset of these acronyms.")
-    } else{
-      common_reg <- intersect(rois, common_reg)
-    }
+    common_reg <- rois_intersect_region_list(common_reg, rois)
   }
 
   if (is.null(by)){
@@ -75,13 +60,12 @@ get_percent_colabel <-function(e, by, channel = "eyfp", save_table = TRUE, rois 
   }
 
   # Get the colabel counts
-  colabel_counts <-  e$combined_normalized_counts$colabel %>% dplyr::filter(acronym %in% common_reg) %>%
+  colabel_counts <-  e$combined_normalized_counts[[colabel_channel]] %>% dplyr::filter(acronym %in% common_reg) %>%
     dplyr::select(all_of(by))
 
   # Get the channel counts
   channel_counts <-  e$combined_normalized_counts[[channel]] %>% dplyr::filter(acronym %in% common_reg) %>%
     dplyr::select(all_of(by))
-
 
   # Create master counts table of percentage colabels
   # Inner join deletes any mice with na values for counts
@@ -91,7 +75,6 @@ get_percent_colabel <-function(e, by, channel = "eyfp", save_table = TRUE, rois 
     dplyr::inner_join(channel_counts, suffix = c(".colabel", paste0(".", channel)),
                       by = setdiff(by, "count")) %>%
     dplyr::mutate(colabel_percentage = count.colabel/{{ var }} * 100)
-
 
   # Get the grouping names
   attr_group <- names(master_counts)[1: (which(names(master_counts) == "acronym")-1)]
@@ -121,9 +104,9 @@ get_percent_colabel <-function(e, by, channel = "eyfp", save_table = TRUE, rois 
   }
 
   if (save_table){
-      out_path <- file.path(e_info$output_path, paste0("colabel_percentage_", channel, "_", indiv_or_avg, ".csv"))
+      out_path <- file.path(e_info$output_path, paste0(make.names(colabel_channel),"_percentage_", channel, "_", indiv_or_avg, ".csv"))
       write.csv(master_counts, file = out_path)
-      message(paste0("Saved colabel count percentages at location: ", out_path))
+      message(paste0("Saved ", colabel_channel, " count percentages at location: ", out_path))
   }
 
   e$colabel_percent[[channel]][[indiv_or_avg]] <- master_counts
@@ -132,6 +115,7 @@ get_percent_colabel <-function(e, by, channel = "eyfp", save_table = TRUE, rois 
 
 
 #' Get regional cross correlations and their p-values in a correlation list object.
+#' @description This analysis will get regional cross correlations based on cell counts normalized by region volume.
 #' @param e experiment object
 #' @param by (str) Attribute names to group by, e.g. c("sex", "group")
 #' @param values (str) The respective values of the attributes entered for the `by` parameter to generate a specific analysis group,
@@ -140,7 +124,7 @@ get_percent_colabel <-function(e, by, channel = "eyfp", save_table = TRUE, rois 
 #' @param p_adjust_method (bool or str, default = "BH") Benjamini-Hochberg method is recommended.
 #'  Apply the named method to control for the inflated false discovery rate or family wise error rate (FWER). Set to FALSE or "none"
 #'  to keep "raw" p values. See also [stats::p.adjust()] for the correction options.
-#' @param alpha (num, default = 0.05) The alpha level for significance applied after p-adjustment.
+#' @param alpha (num, default = 0.05) The alpha level for significance applied AFTER p-adjustment.
 #' @return e experiment object. The experiment object now has a named `correlation_list` object stored in it.
 #' The name of the correlation object is the concatenation of the variable values separated by a "_".
 #' This name allows for unambiguous identification of different analysis subgroups in the future.
@@ -178,7 +162,6 @@ get_correlations <- function(e, by, values,
     cols <- colnames(df_corr$P)
 
     # Remove (set to NA) the comparisons that are duplicates
-
     suppressWarnings(
     for (r in 1:length(rows)){
       na_col <- which(is.na(df_corr$P[r,]))
@@ -205,8 +188,10 @@ get_correlations <- function(e, by, values,
   return(e)
 }
 
-#' This function performs a permutation analysis to compare the region pairwise correlation coefficients between two different analysis groups
-#' specified by `correlation_list_name_1` and `correlation_list_name_2.` Note that both of these analysis groups must have the same
+#' This function performs a permutation analysis to compare the region pairwise correlation coefficients between two different analysis groups.
+#'
+#' @description The data from two different analysis groups are compared by specifying the
+#' `correlation_list_name_1` and `correlation_list_name_2` parameters. Note that both of these analysis groups must have the same
 #' number of channels to compare. The functions `get_correlations()` needs to have been run for each of these analysis groups prior to
 #' running this function.
 #' @param e experiment object
@@ -541,10 +526,11 @@ summarise_networks <- function(e,
 #' @param pattern_mapping
 #' @param patterns
 #' @param error_bar (str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.
-#' @return
+#' @return p Plot handle to the figure
 #' @export
 #' @examples plot_percentage_colabel
 plot_percent_colabel <- function(e,
+                                 colabel_channel = "colabel",
                                  channel = "eyfp",
                                  rois = c("AAA", "dDG", "HY"),
                                  color_mapping = "sex",
@@ -572,14 +558,9 @@ plot_percent_colabel <- function(e,
     by <- match_m_attr(c(color_mapping, pattern_mapping))
   }
 
-  # If rois aren't supplied, set as the rois in the saved colabel dataset
-  # if (is.null(rois)){
-  #   rois <- unique(e$colabel_percent[[channel]]$average$acronym)
-  # }
-
   # Get the average and individual percentages
-  e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = FALSE)
-  e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = TRUE)
+  e <- get_percent_colabel(e, by = by, colabel_channel = colabel_channel, channel = channel, save_table = FALSE, rois = rois, individual = FALSE)
+  e <- get_percent_colabel(e, by = by, colabel_channel = colabel_channel, channel = channel, save_table = FALSE, rois = rois, individual = TRUE)
 
   # Get rois of all the child regions
   child_r <- SMARTR::get.acronym.child(rois)
@@ -747,30 +728,33 @@ plot_percent_colabel <- function(e,
                             paste0("Colabeled_over_", channel, "_plot_by_", paste0(by, collapse = "_"), image_ext))
     ggsave(filename = image_file,  width = width, height = height, units = "in")
   }
-
-
+  return(p)
 }
 
 #' Plot correlation heatmaps
 #'
 #' @param e experiment object. Must contain a named correlation_list object generated by [SMARTR::get_correlations()]
 #' @param correlation_list_name (str) The name of the correlation object generated by [SMARTR::get_correlations()]
-#' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal code for the colors corresponding to the channels attribute of the correlation_list. Color values can also be
+#' @param channels (str, default = c("cfos", "eyfp", "colabel")) Must exist in the channels attribute of the correlation_list.
+#' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal code for the colors corresponding channels parameter. Color values can also be
 #' input compatible with ggplot2 plotting functions.
 #' @param print_plot (bool, default = TRUE) Print the plot as graphics windows.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #' the experiment object output folder.
 #' @param image_ext (default = ".png") image extension to the plot as.
-#' @param title (str, default = NULL) If NULL, the `correlation_list_name` will used as the title with underscores removed.
+#' @param plot_title (str, default = NULL) If NULL, the `correlation_list_name` will used as the title with underscores removed.
 #' @param height (int) Height of the plot in inches.
 #' @param width (int) Width of the plot in inches.
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples plot_correlation_heatmaps(e, correlation_list_name = "female_AD") # No return value
 #' @seealso [SMARTR::get_correlations()]
 
-plot_correlation_heatmaps <- function(e, correlation_list_name , colors = c("#be0000", "#00782e", "#f09b08"),
+plot_correlation_heatmaps <- function(e, correlation_list_name ,
+                                      channels = c('cfos', 'eyfp', 'colabel'),
+                                      colors = c("#be0000", "#00782e", "#f09b08"),
                                       print_plot = TRUE, save_plot = TRUE, image_ext = ".png",
-                                      title = NULL, height = 10, width = 10){
+                                      plot_title = NULL, height = 10, width = 10){
 
   # Detect the OS and set quartz (as graphing function)
   if(get_os() != "osx"){
@@ -784,12 +768,12 @@ plot_correlation_heatmaps <- function(e, correlation_list_name , colors = c("#be
   }
 
   cl_attr <- attributes(e$correlation_list[[correlation_list_name]])
-  channels <- cl_attr$names
+  # channels <- cl_attr$names
   names(colors) <- channels
 
-  if (is.null(title)){
-    cl_attr$value[1] <- stringr::str_to_title(cl_attr$value[1])
-    title <- paste(cl_attr$value, collapse = " ")
+  if (is.null(plot_title)){
+    cl_attr$values <- stringr::str_to_title(cl_attr$values)
+    plot_title <- paste(cl_attr$value, collapse = " ")
   }
 
   # Create plotting theme for the heatmap
@@ -801,8 +785,12 @@ plot_correlation_heatmaps <- function(e, correlation_list_name , colors = c("#be
                     legend.key.height = unit(100, "points"),
                     legend.title = element_text(size = 22))
 
+  # List to store the returned plot handles
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
+
   for (channel in channels){
-   # Turn into tibble
+   # Turn into tibblee$
    corr_df <-  e$correlation_list[[correlation_list_name]][[channel]] %>% purrr::map(tibble::as_tibble)
    val_names <- names(corr_df)
 
@@ -825,7 +813,7 @@ plot_correlation_heatmaps <- function(e, correlation_list_name , colors = c("#be
         geom_text(aes(label = sig_text), size=8, color = "yellow") +
         scale_fill_gradient2(low = "#4f4f4f",mid = "#ffffff", high = colors[[channel]],
                          aesthetics = c("color","fill"), na.value = "grey50")+
-        labs(title = title, x = "Brain Region", y = "Brain Region") +
+        labs(title = plot_title, x = "Brain Region", y = "Brain Region") +
     theme.hm
 
   if (print_plot){
@@ -843,14 +831,28 @@ plot_correlation_heatmaps <- function(e, correlation_list_name , colors = c("#be
     if(!dir.exists(output_dir)){
       dir.create(output_dir)
     }
-    image_file <- file.path(output_dir, paste0("heatmap_", str_replace(title, " ", "_"), "_", channel, image_ext))
+    image_file <- file.path(output_dir, paste0("heatmap_", str_replace(plot_title, " ", "_"), "_", channel, image_ext))
     ggsave(filename = image_file,  width = width, height = height, units = "in")
-    }
+  }
+    # Store the plot handle
+    p_list[[channel]] <- p
   }
 }
 
+
+###########################################################################################
+#  Breakpoint 4.7.2022
+###########################################################################################
+
+#' Plot the results of the permutation histogram used to determine the p-value of the pairwise region comparison
+#'
+#'
 # plot_permutation_histogram <- function(e, roi = "dDG"){
 # }
+
+
+
+
 
 #' Create a Volcano plot.
 #'
@@ -869,11 +871,11 @@ plot_correlation_heatmaps <- function(e, correlation_list_name , colors = c("#be
 #' @param title Title of the plot.
 #' @param height height of the plot in inches.
 #' @param width width of the plot in inches.
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples volcano_plot(e, permutation_comparison = "female_AD_vs_male_AD", channels = c("cfos", "eyfp", "colabel"),
 #' colors =  c("#be0000", "#00782e", "#f09b08"), save_plot = TRUE, title = NULL, ylim = c(0, 3), height = 8,
 #' width = 10, print_plot = TRUE, image_ext = ".png")
-#'
 
 
 volcano_plot <- function(e,
@@ -887,6 +889,7 @@ volcano_plot <- function(e,
                          width = 10,
                          print_plot = TRUE,
                          image_ext = ".png"){
+
   # Detect the OS and set quartz( as graphing function)
   if(get_os() != "osx"){
     quartz <- X11
@@ -900,6 +903,12 @@ volcano_plot <- function(e,
   if (is.null(title)){
     title <-  permutation_comparison
   }
+
+
+  # List to store the returned plot handles
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
+
 
   for (k in 1:length(channels)){
     # Get alpha levels
@@ -956,6 +965,9 @@ volcano_plot <- function(e,
                               paste0("volcano_plot_", str_replace(title, " ", "_"), "_", channels[k], image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
+
+    # Store the plot handle
+    p_list[[channels[k]]] <- p
   }
 }
 
@@ -975,6 +987,7 @@ volcano_plot <- function(e,
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
 #' @param image_ext (default = ".png") image extension to save the plot as.
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @example
 parallel_coordinate_plot <- function(e,
@@ -1008,6 +1021,10 @@ parallel_coordinate_plot <- function(e,
   } else {
     group_2 <- x_label_group_2
   }
+
+  # List to store the returned plot handles
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
 
   for (k in 1:length(channels)){
 
@@ -1097,8 +1114,10 @@ parallel_coordinate_plot <- function(e,
                                                  channels[k], "_", image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
-  }
 
+    # Store the plot handle
+    p_list[[channels[k]]] <- p
+  }
 }
 
 #' Plot the networks stored in an experiment object
@@ -1115,6 +1134,7 @@ parallel_coordinate_plot <- function(e,
 #'  the experiment object output folder.
 #' @param edge_color (str, default = "firebrick") Color of the network edges.
 #' Can also be a hexadecimal color code written as a string.
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples
 plot_networks <- function(e,
@@ -1133,6 +1153,10 @@ plot_networks <- function(e,
     quartz <- X11
   }
 
+  # List to store the returned plot handles
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
+
   for (channel in channels){
 
     network <- e$networks[[network_name]][[channel]]
@@ -1141,9 +1165,6 @@ plot_networks <- function(e,
     theme.network <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5,size = 28),
                                            legend.text = element_text(size = 15),
                                            legend.title = element_text(size = 15))
-
-
-
 
     p <- ggraph::ggraph(network, layout = "linear", circular = TRUE) +
       ggraph::geom_edge_diagonal(aes(color = sign, width = abs(weight)),
@@ -1195,6 +1216,9 @@ plot_networks <- function(e,
       image_file <- file.path(output_dir, paste0("network_", network_name, "_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
+
+    # Store the plot handle
+    p_list[[channel]] <- p
   }
 }
 
@@ -1203,7 +1227,7 @@ plot_networks <- function(e,
 #' @description
 #' Plot a stacked bar plot of the degree distributions.
 #' @param e experiment object
-#' @param channels (str, default = c("cfos", "eyfp", "colabel")) Channels to plot.
+#' @param channels (str, default = c("cfos", "eyfp")) Channels to plot.
 #' @param color_palettes (str, default = c("reds", "greens")) Color palettes from [grDevices::hcl.colors] that are used to for plotting networks for each channel, respectively.
 #' @param colors_manual (str, default = NULL ) Manually choose the hexadecimal color codes to create a custom color palette, e.g. colors_manual = c("#660000", "#FF0000", "#FF6666").
 #' Warning: this color will be applied to all channels. It's recommended to set the channels parameter to a single channel if this parameter is used.
@@ -1219,7 +1243,7 @@ plot_networks <- function(e,
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
 #' @param image_ext (default = ".png") image extension to the plot as.
-#' @return
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples
 
@@ -1248,6 +1272,11 @@ plot_degree_distributions <- function(e,
           line = element_line(size = 1),
           plot.title = element_text(hjust = 0.5, size = 36),
           axis.ticks.length = unit(5.5,"points"))
+
+
+  # List to store the returned plot handles
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
 
   for (k in 1:length(channels)){
 
@@ -1299,6 +1328,9 @@ plot_degree_distributions <- function(e,
       image_file <- file.path(output_dir, paste0("networks_degree_distributions_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
+
+    # Store the plot handle
+    p_list[[channels[k]]] <- p
   }
 }
 
@@ -1323,7 +1355,7 @@ plot_degree_distributions <- function(e,
 #' @param width (int, default = 10) Width of the plot in inches.
 #' @param ylim (vec, default = c(0,10)) Axes limits of y-axis
 #' @param image_ext (default = ".png") image extension to the plot as.
-#' @return
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples
 
@@ -1351,6 +1383,10 @@ plot_mean_degree <- function(e,
           line = element_line(size = 1),
           plot.title = element_text(hjust = 0.5, size = 36),
           axis.ticks.length = unit(5.5,"points"))
+
+  # List to store the returned plot handles
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
 
   for (k in 1:length(channels)){
 
@@ -1410,6 +1446,9 @@ plot_mean_degree <- function(e,
       image_file <- file.path(output_dir, paste0("networks_mean_degree_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
+
+    # Store the plot handle
+    p_list[[channels[k]]] <- p
   }
 }
 
@@ -1435,7 +1474,7 @@ plot_mean_degree <- function(e,
 #' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
 #' @param rev_x_scale (bool, default = FALSE) Reveres the scale of the categorical variables
 #'  the experiment object output folder.
-#' @return
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples
 
@@ -1463,6 +1502,10 @@ plot_mean_clust_coeff <- function(e,
           line = element_line(size = 1),
           plot.title = element_text(hjust = 0.5, size = 36),
           axis.ticks.length = unit(5.5,"points"))
+
+  # List to store the returned plot handles
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
 
   for (k in 1:length(channels)){
 
@@ -1523,6 +1566,9 @@ plot_mean_clust_coeff <- function(e,
       image_file <- file.path(output_dir, paste0("networks_mean_clust_coeff_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
+
+    # Store the plot handle
+    p_list[[channels[k]]] <- p
   }
 }
 
@@ -1547,7 +1593,7 @@ plot_mean_clust_coeff <- function(e,
 #' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
 #' @param rev_x_scale (bool, default = FALSE) Reveres the scale of the categorical variables
 #'  the experiment object output folder.
-#' @return
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples
 
@@ -1575,6 +1621,10 @@ plot_mean_global_effic <- function(e,
           line = element_line(size = 1),
           plot.title = element_text(hjust = 0.5, size = 36),
           axis.ticks.length = unit(5.5,"points"))
+
+  # List to store the returned plot handles
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
 
   for (k in 1:length(channels)){
 
@@ -1633,6 +1683,9 @@ plot_mean_global_effic <- function(e,
       image_file <- file.path(output_dir, paste0("networks_mean_global_efficiency_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
+
+    # Store the plot handle
+    p_list[[channels[k]]] <- p
   }
 }
 
@@ -1662,7 +1715,7 @@ plot_mean_global_effic <- function(e,
 #' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
 #' @param rev_x_scale (bool, default = FALSE) Reveres the scale of the categorical variables
 #'  the experiment object output folder.
-#' @return
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples
 
@@ -1690,6 +1743,10 @@ plot_mean_between_centrality <- function(e,
           line = element_line(size = 1),
           plot.title = element_text(hjust = 0.5, size = 36),
           axis.ticks.length = unit(5.5,"points"))
+
+  # List to store the returned plot handles
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
 
   for (k in 1:length(channels)){
 
@@ -1747,6 +1804,9 @@ plot_mean_between_centrality <- function(e,
       image_file <- file.path(output_dir, paste0("networks_mean_betweenness_centrality_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
+
+    # Store the plot handle
+    p_list[[channels[k]]] <- p
   }
 }
 
@@ -1771,7 +1831,7 @@ plot_mean_between_centrality <- function(e,
 #' @param network (str, default = "AD") Which network to plot the degree distribution across regions
 #' @param title
 #'  the experiment object output folder.
-#' @return
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples
 
@@ -1800,6 +1860,9 @@ plot_degree_regions <- function(e,
           legend.text = element_text(size = 20),
           legend.title = element_text(size = 24))
 
+  # List to store the returned plot handles
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
 
   for (k in 1:length(channels)){
 
@@ -1841,6 +1904,9 @@ plot_degree_regions <- function(e,
       image_file <- file.path(output_dir, paste0("networks_degree_per_region_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
+
+    # Store the plot handle
+    p_list[[channels[k]]] <- p
   }
 }
 
@@ -1863,7 +1929,7 @@ plot_degree_regions <- function(e,
 #' @param colors (str, default = ) String vector of hexadecimal color codes corresponding to to each channel plotted.
 #' @param title (str, default = "my_title")
 #'  the experiment object output folder.
-#' @return
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples
 
@@ -1892,12 +1958,15 @@ plot_betweenness_regions <- function(e,
           legend.text = element_text(size = 20),
           legend.title = element_text(size = 24))
 
+  # List to store the returned plot handles
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
+
   for (k in 1:length(channels)){
 
     channel <- channels[[k]]
     n_groups <-  e$networks_summaries[[channel]]$networks_degree_distrib$group %>%
       unique() %>% length()
-
 
     p <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(group == network) %>%
       dplyr::arrange(dplyr::desc(btw)) %>%
@@ -1912,7 +1981,6 @@ plot_betweenness_regions <- function(e,
       title <- paste(title)
       p <-  p + ggplot2::ggtitle(title)
     }
-
 
     if (print_plot){
       quartz(width = width, height = height)
@@ -1932,11 +2000,11 @@ plot_betweenness_regions <- function(e,
       image_file <- file.path(output_dir, paste0("networks_betweenness_per_region_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
+
+    # Store the plot handle
+    p_list[[channels[k]]] <- p
   }
 }
-
-
-
 
 
 
@@ -2029,5 +2097,40 @@ permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_l
 
 
 
+
+
+#' Title
+#'
+#' @param common_reg A comprehensive list of all regions (and all existing subregions) that the brain area in the `rois` list will be compared against.
+#' @param rois A list of rois whose regions and subregions will be compared the the `common_reg` list
+#'
+#' @return common_reg A list of the rois (or any of its subregions) that intersected with the common_reg list.
+
+#'
+#' @examples
+rois_intersect_region_list <- function(common_reg, rois){
+  # Get rois of all the child regions
+  child_r <- SMARTR::get.acronym.child(rois)
+  while (length(child_r) > 0){
+    rois <- c(rois, child_r)
+    child_r <- SMARTR::get.acronym.child(child_r) %>% na.omit()
+  }
+
+  message("Checking also for child regions of specified roi(s). Only rois and child rois that overlap with common
+            regions of both channels will be used.")
+
+  if (all(!rois %in% common_reg)){
+    message(paste0("None of the roi(s) specified or their child regions is a common region found in both channels. ",
+                   "Common regions include:\n"))
+    for (reg in common_reg){
+      message(reg)
+    }
+    stop("Set the rois argument to a subset of these acronyms.")
+  } else{
+    common_reg <- intersect(rois, common_reg)
+  }
+
+  return(common_reg)
+}
 
 

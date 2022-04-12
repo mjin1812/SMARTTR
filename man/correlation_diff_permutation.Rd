@@ -2,10 +2,7 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{correlation_diff_permutation}
 \alias{correlation_diff_permutation}
-\title{This function performs a permutation analysis to compare the region pairwise correlation coefficients between two different analysis groups
-specified by \code{correlation_list_name_1} and \code{correlation_list_name_2.} Note that both of these analysis groups must have the same
-number of channels to compare. The functions \code{get_correlations()} needs to have been run for each of these analysis groups prior to
-running this function.}
+\title{This function performs a permutation analysis to compare the region pairwise correlation coefficients between two different analysis groups.}
 \usage{
 correlation_diff_permutation(
   e,
@@ -43,8 +40,8 @@ e experiment object. The experiment object now has a list called \code{permutati
 the outputs of different permutation comparison analyses. These elements are named by the groups that were compared.
 }
 \description{
-This function performs a permutation analysis to compare the region pairwise correlation coefficients between two different analysis groups
-specified by \code{correlation_list_name_1} and \code{correlation_list_name_2.} Note that both of these analysis groups must have the same
+The data from two different analysis groups are compared by specifying the
+\code{correlation_list_name_1} and \code{correlation_list_name_2} parameters. Note that both of these analysis groups must have the same
 number of channels to compare. The functions \code{get_correlations()} needs to have been run for each of these analysis groups prior to
 running this function.
 }

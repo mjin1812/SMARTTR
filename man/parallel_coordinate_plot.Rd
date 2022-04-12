@@ -42,6 +42,9 @@ the experiment object output folder.}
 
 \item{image_ext}{(default = ".png") image extension to save the plot as.}
 }
+\value{
+p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
+}
 \description{
 Plot the correlation difference between two comparison groups into a parallel coordinate plot. The function
 \code{\link[=correlation_diff_permutation]{correlation_diff_permutation()}} must be run first in order to generate results to plot.

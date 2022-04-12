@@ -7,6 +7,7 @@
 get_percent_colabel(
   e,
   by,
+  colabel_channel = "colabel",
   channel = "eyfp",
   save_table = TRUE,
   rois = NULL,
@@ -18,6 +19,10 @@ get_percent_colabel(
 
 \item{by}{(str) Attribute names to group by, e.g. by = c("group", "sex"). These will generate analysis subgroups that are
 averaged together to assess across all rois.}
+
+\item{colabel_channel}{(str, default = "colabel") The channel used as the numerator in fraction counts. The string 'colabel' in the pipeline
+refers to colocalized 'eyfp' and 'cfos' channels. For other colocalized channels, import the channel using \code{\link[=import_segmentation_custom]{import_segmentation_custom()}}
+or your own customized import channel.}
 
 \item{channel}{(str, default = "eyfp") The channel used as denominator in fraction counts.}
 

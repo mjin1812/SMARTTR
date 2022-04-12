@@ -27,7 +27,7 @@ e.g.values = c("female", "AD").}
 Apply the named method to control for the inflated false discovery rate or family wise error rate (FWER). Set to FALSE or "none"
 to keep "raw" p values. See also \code{\link[stats:p.adjust]{stats::p.adjust()}} for the correction options.}
 
-\item{alpha}{(num, default = 0.05) The alpha level for significance applied after p-adjustment.}
+\item{alpha}{(num, default = 0.05) The alpha level for significance applied AFTER p-adjustment.}
 }
 \value{
 e experiment object. The experiment object now has a named \code{correlation_list} object stored in it.
@@ -35,7 +35,7 @@ The name of the correlation object is the concatenation of the variable values s
 This name allows for unambiguous identification of different analysis subgroups in the future.
 }
 \description{
-Get regional cross correlations and their p-values in a correlation list object.
+This analysis will get regional cross correlations based on cell counts normalized by region volume.
 }
 \examples{
 e <- get_correlations(e, by = c("sex", "group"), values = c("female", "AD"),

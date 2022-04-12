@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{volcano_plot}
 \alias{volcano_plot}
-\title{Create a Volcano plot.}
+\title{Plot the results of the permutation histogram used to determine the p-value of the pairwise region comparison}
 \usage{
 volcano_plot(
   e,
@@ -41,7 +41,13 @@ the experiment object output folder.}
 
 \item{image_ext}{(default = ".png") image extension to save the plot as.}
 }
+\value{
+p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
+}
 \description{
+Create a Volcano plot.
+}
+\details{
 Plot the correlation difference between two comparison groups into a volcano plot. The function
 \code{\link[=correlation_diff_permutation]{correlation_diff_permutation()}} must be run first in order to generate results to plot.
 }
@@ -49,5 +55,4 @@ Plot the correlation difference between two comparison groups into a volcano plo
 volcano_plot(e, permutation_comparison = "female_AD_vs_male_AD", channels = c("cfos", "eyfp", "colabel"),
 colors =  c("#be0000", "#00782e", "#f09b08"), save_plot = TRUE, title = NULL, ylim = c(0, 3), height = 8,
 width = 10, print_plot = TRUE, image_ext = ".png")
-
 }

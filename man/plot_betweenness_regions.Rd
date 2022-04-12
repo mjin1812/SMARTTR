@@ -44,7 +44,7 @@ the experiment object output folder.}
 the experiment object output folder.}
 }
 \value{
-
+p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 }
 \description{
 Bar plot of betweenness per region in descending magnitude

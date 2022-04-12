@@ -51,7 +51,7 @@ the experiment object output folder.}
 the experiment object output folder.}
 }
 \value{
-
+p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 }
 \description{
 Plot the mean betweenness centrality of the networks in a barplot. Error bars are plotted as SEM.

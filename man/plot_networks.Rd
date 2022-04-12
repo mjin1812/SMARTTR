@@ -41,6 +41,9 @@ the experiment object output folder.}
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}
 }
+\value{
+p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
+}
 \description{
 Plot the networks stored in an experiment object
 }

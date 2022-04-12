@@ -23,7 +23,7 @@ plot_degree_distributions(
 \arguments{
 \item{e}{experiment object}
 
-\item{channels}{(str, default = c("cfos", "eyfp", "colabel")) Channels to plot.}
+\item{channels}{(str, default = c("cfos", "eyfp")) Channels to plot.}
 
 \item{color_palettes}{(str, default = c("reds", "greens")) Color palettes from \link[grDevices:palettes]{grDevices::hcl.colors} that are used to for plotting networks for each channel, respectively.}
 
@@ -52,7 +52,7 @@ the experiment object output folder.}
 the experiment object output folder.}
 }
 \value{
-
+p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 }
 \description{
 Plot a stacked bar plot of the degree distributions.

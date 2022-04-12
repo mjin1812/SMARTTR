@@ -10,6 +10,7 @@ set it to the \code{color_mapping} parameter and set the \code{pattern_mapping} 
 \usage{
 plot_percent_colabel(
   e,
+  colabel_channel = "colabel",
   channel = "eyfp",
   rois = c("AAA", "dDG", "HY"),
   color_mapping = "sex",
@@ -34,7 +35,7 @@ plot_percent_colabel(
 \item{error_bar}{(str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.}
 }
 \value{
-
+p Plot handle to the figure
 }
 \description{
 This function allows for plotting of colabelled cells over either the "cfos" or "eyfp" channels. And allows for specification
