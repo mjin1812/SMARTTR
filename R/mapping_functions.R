@@ -382,8 +382,8 @@ import_segmentation_ij.slice <- function(s,
       print(quant_path)
       meas <- read.csv( file.path(path_stem, meas_path), stringsAsFactors = FALSE )
       quant <- read.csv(file.path(path_stem, quant_path), stringsAsFactors = FALSE)
-      meas$X2_Pix <- meas$CX..pix./(info$info$bin) #create position column to account for binning
-      meas$Y2_Pix <- meas$CY..pix./(info$info$bin) #same as above
+      meas$X2_Pix <- meas$CX..pix./(info$bin) #create position column to account for binning
+      meas$Y2_Pix <- meas$CY..pix./(info$bin) #same as above
       counts <- cbind(meas, quant) #create combined table
       counts <- counts[,unique(names(counts))]
       s$raw_segmentation_data[[k]] <- counts
