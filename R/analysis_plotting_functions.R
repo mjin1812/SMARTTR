@@ -151,7 +151,7 @@ get_correlations <- function(e, by, values,
     anatomical.order <- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
     common.regions <-  df_channel %>% dplyr::select(-all_of(c('mouse_ID', by))) %>% names()
     common.regions.ordered <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure) %>%
-      purrr::map(intersect,y=common.regions) %>% unlist()
+      purrr::map(intersect, y=common.regions) %>% unlist()
 
 
     # Select the order of the columns, perform the correlations, ignore the mouse_ID and group columns
@@ -161,12 +161,16 @@ get_correlations <- function(e, by, values,
     rows <- rownames(df_corr$P)
     cols <- colnames(df_corr$P)
 
-    # Remove (set to NA) the comparisons that are duplicates
-    suppressWarnings(
-    for (r in 1:length(rows)){
-      na_col <- which(is.na(df_corr$P[r,]))
-      df_corr$P[r, na_col:length(cols)] <- NA
-    })
+    # # Remove (set to NA) the comparisons that are duplicates
+    # suppressWarnings(
+    # for (r in 1:length(rows)){
+    #   na_col <- which(is.na(df_corr$P[r,]))
+    #   df_corr$P[r, na_col:length(cols)] <- NA
+    # })
+
+    lowertri <- df_corr$P %>%  lower.tri(diag = FALSE)
+    df_corr$P[!lowertri] <- NA
+
 
     # adjust the p-value for false discovery rate or FWER
     if (!isFALSE(p_adjust_method)){
@@ -394,7 +398,8 @@ create_networks <- function(e,
 
     # _____________ Create the network ________________
     network <- tidygraph::tbl_graph(nodes = nodes,
-                                    edges = edges, directed = FALSE)
+                                    edges = edges,
+                                    directed = FALSE)
 
     # filter by alpha
     network <- network %>% activate(edges) %>% dplyr::filter(p.value < alpha)
