@@ -331,7 +331,7 @@ import_segmentation_ij.slice <- function(s,
 
 
       coloc_path <- paste0( mouse_ID,'_',section,"_Fast_R_cfos_SpotSegmentation_ColocOnly.txt")
-      eyfp_16bit_path <- paste0("M_", mouse_ID, '_', section,"_Fast_G_eYFP_16bit.txt")
+      eyfp_16bit_path <- paste0("M_", mouse_ID, '_', section,"_Fast_G_eYFP_LabelImage_eyfp_16bit.txt")
 
       # match to exact name in directory
       coloc_path <- txt_files[stringdist::amatch(coloc_path, txt_files, maxDist=Inf)]
