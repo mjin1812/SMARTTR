@@ -1811,26 +1811,25 @@ get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2",
   aggregate_volumes_ventral <- tidyr::drop_na(aggregate_volumes_ventral)
 
   # Store total volumes
-  total_volumes_hipp <- vector(mode = "list", length = 2)
-  names(total_volumes_hipp) <- DV
+  total_volumes_hipp <- list("dorsal" = aggregate_volumes_dorsal,
+                              "ventral" = aggregate_volumes_ventral)
+
 
   # iterator
-  k <- 1
-  for (volumes in list(aggregate_volumes_dorsal, aggregate_volumes_ventral)){
-    if (length(volumes) > 0){
-      total_volumes_hipp[[k]] <- volumes %>% dplyr::group_by(area, volume, acronym, right.hemisphere, name) %>%
+
+  # for (volumes in list(aggregate_volumes_dorsal, aggregate_volumes_ventral)){
+  for (dv in names(total_volumes_hipp)){
+    if (length(total_volumes_hipp[[dv]]) > 0){
+      total_volumes_hipp[[dv]] <- total_volumes_hipp[[dv]] %>% dplyr::group_by(area, volume, acronym, right.hemisphere, name) %>%
         dplyr::summarise(area.mm2 = sum(area)*1e-6, volume.mm3 = volume*1e-9)
 
       # Store only regions in the hippocampus
-      total_volumes_hipp[[k]] <- total_volumes_hipp[[k]][total_volumes_hipp[[k]]$acronym %in% regions,]
+      total_volumes_hipp[[dv]] <- total_volumes_hipp[[dv]][total_volumes_hipp[[dv]]$acronym %in% regions,]
 
     } else {
-      message("There was no volume data found for the ", DV[k], " hippocampus!")
-      total_volumes_hipp[[DV[k]]] <- NULL
+      message("There was no volume data found for the ", dv, " hippocampus!")
     }
-    k <- k + 1
   }
-
   return(total_volumes_hipp)
 }
 
@@ -1865,6 +1864,7 @@ get.registered.areas <- function(cell.data.list, registration, conversion.factor
   region.info <- list()
 
   for (k in 1:nrow(regions)) {
+
     region.data <- wholebrain::get.region(regions$acronym[k],registration)
     region.data[,1:4] <- region.data[,1:4]*conversion.factor
     region.info <- c(region.info, list(region.data[region.data$right.hemisphere==regions$right.hemisphere[k],]))
@@ -1970,7 +1970,7 @@ simplify.regions <- function(normalized_counts, keywords = c("layer","part","str
     }
 
     # Check if the data has been collapsed by hemisphere
-    if (is.null(simplified_counts_chan$right.hemisphere)){
+    if (!"right.hemisphere" %in% names(simplified_counts_chan)){
 
       # step to collapse by name/acronym
       # simplified_counts_chan <- plyr::ddply(simplified_counts_chan, c("acronym", "name"), plyr::numcolwise(sum))
