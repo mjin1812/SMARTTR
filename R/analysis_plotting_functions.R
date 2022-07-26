@@ -154,27 +154,49 @@ get_correlations <- function(e, by, values,
       purrr::map(intersect, y=common.regions) %>% unlist()
 
 
-    # Select the order of the columns, perform the correlations, ignore the mouse_ID and group columns
-    df_corr <- df_channel %>% dplyr::select(all_of(c(common.regions.ordered))) %>%
-      as.matrix() %>% Hmisc::rcorr()
+    df_channel <- df_channel %>% dplyr::select(all_of(c(common.regions.ordered))) %>%
+      as.matrix()
 
-    rows <- rownames(df_corr$P)
-    cols <- colnames(df_corr$P)
+    # Get minimum number of mice that we have data for across all regions
+    n <- colSums(!is.na(df_channel)) %>% min()
 
-    # # Remove (set to NA) the comparisons that are duplicates
-    # suppressWarnings(
-    # for (r in 1:length(rows)){
-    #   na_col <- which(is.na(df_corr$P[r,]))
-    #   df_corr$P[r, na_col:length(cols)] <- NA
-    # })
+    if (n > 4){
+      # Select the order of the columns, perform the correlations, ignore the mouse_ID and group columns
+      df_corr <- df_channel %>% Hmisc::rcorr()
+    } else {
+      message(c("One or more of your brain regions has a n below 5. \nCalculating pearsons, but we ",
+              "recommend increasing the sample size or excluding that region due to insufficient data"))
+      df_channel %>% dim() -> shape
+      df_corr <- vector(mode = "list")
+      df_corr$r <- matrix(nrow = shape[2], ncol = shape[2])
+      rownames(df_corr$r) <- colnames(df_channel)
+      colnames(df_corr$r) <- colnames(df_channel)
+      df_corr$n <-  df_corr$r
+      df_corr$P <- df_corr$r
 
+      for(r1 in 1:shape[2]){
+        for(r2 in 1:r1){
+          df_corr$n[r1,r2] <- sum(df_channel[,r1] & df_channel[,r2], na.rm = TRUE)
+          ct <- cor.test(df_channel[,r1], df_channel[,r2])
+          df_corr$P[r1,r2] <- ct$p.value
+          df_corr$r[r1,r2] <- ct$estimate
+        }
+      }
+    }
+
+    # Adjust the correlation matrix (don't include p-values for correlation against self)
     lowertri <- df_corr$P %>%  lower.tri(diag = FALSE)
     df_corr$P[!lowertri] <- NA
 
+    lowertri <- df_corr$P %>%  lower.tri(diag = TRUE)
+    df_corr$n[!lowertri] <- NA
+    df_corr$r[!lowertri] <- NA
 
     # adjust the p-value for false discovery rate or FWER
     if (!isFALSE(p_adjust_method)){
       # Calculate without removing NAs
+      rows <- rownames(df_corr$P)
+      cols <- colnames(df_corr$P)
       df_corr$P <- df_corr$P %>% p.adjust(method = p_adjust_method) %>%
         matrix(nrow = length(rows), ncol= length(cols), dim = list(rows, cols))
     }
