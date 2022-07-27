@@ -178,7 +178,7 @@ add_mouse <- function(e, m, replace = FALSE){
     match <- FALSE
 
     for (stored_mouse in stored_mice){
-      if (identical(stored_mouse, mouse_ID)){
+      if (identical(stored_mouse, toString(mouse_ID))){
 
         match <- stored_mouse
         message(paste0('There was existing data found for mouse ', mouse_ID, '\n'))
