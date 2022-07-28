@@ -1153,9 +1153,6 @@ exclude_anatomy.slice <- function(s,
 
   }
 
-
-
-
   ## Filtering per channel
   for (channel in channels){
     dataset <- s$forward_warped_data[[channel]]
@@ -1223,6 +1220,10 @@ exclude_anatomy.slice <- function(s,
 #' @param exclude_left_regions (str vector, default = NULL); acronyms of regions you want to exclude from left hemi, in addition to regions that will by default be excluded in the slice attribute 'left_regions_excluded'
 #' @param exclude_hemisphere (bool, default = TRUE); excludes the contralateral hemisphere from one indicated in slice attribute
 #' @param exclude_layer_1 (bool, default = TRUE); excludes all counts from layer 1 (TEMPORARY, may not be hardcoded in later)
+#' @param include_right_regions (str vector, default = NULL) Acronyms of regions to include from the right hemi;
+#' if not NULL, takes precedence over `exclude_right_regions` & all other regions will be excluded. Typically, this is used for slices with poor quality/lots of tears.
+#' @param include_left_regions (str vector, default = NULL) Acronyms of regions to include from the light hemi;
+#' if not NULL, takes precedence over `exclude_left_regions` & all other regions will be excluded.  Typically, this is used for slices with poor quality/lots of tears.
 #' @param plot_filtered (bool, default = TRUE) pop up window to check the excluded anatomy.
 #' @return m mouse object
 #' @examples m <- exclude_anatomy(m, slice_ID = "1_10", hemisphere = NULL, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE,
@@ -1241,6 +1242,8 @@ exclude_anatomy.slice <- function(s,
                                   exclude_left_regions = NULL,
                                   exclude_hemisphere = FALSE,
                                   exclude_layer_1 = TRUE,
+                                  include_right_regions = NULL,
+                                  include_left_regions = NULL,
                                   plot_filtered = TRUE){
 
   # Omit hemisphere name if there is no hemisphere value in the attributes
@@ -1275,6 +1278,8 @@ exclude_anatomy.slice <- function(s,
                                              exclude_left_regions = exclude_left_regions,
                                              exclude_hemisphere = exclude_hemisphere,
                                              exclude_layer_1 = exclude_layer_1,
+                                             include_right_regions = include_right_regions,
+                                             include_left_regions = include_left_regions,
                                              plot_filtered = plot_filtered)
       } else {
         stop(paste0("There no forward mapped data to clean up! Run map_cells_to_atlas() to generate a dataset first."))
