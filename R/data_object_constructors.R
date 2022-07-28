@@ -151,7 +151,9 @@ new_slice <- function(data = list(registration_obj = NULL,           #list per s
                                   left_regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
                                                             "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
                                   right_regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
-                                                             "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS")
+                                                             "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
+                                  left_regions_included = NULL,
+                                  right_regions_included = NULL
 
 )
 ){
@@ -165,8 +167,8 @@ new_slice <- function(data = list(registration_obj = NULL,           #list per s
 validate_slice <- function(s){
 
   data <- unclass(s)
-  info <- attributes(s)
-  info_names <- names(info$info)
+  info <- attr(s, "info")
+  info_names <- names(info)
 
   # Check if the user specified any special arguments into their info path
   valid_attributes <- c("slice_ID",
@@ -181,7 +183,9 @@ validate_slice <- function(s){
                         "segmentation_path",
                         "slice_directory",
                         "left_regions_excluded",
-                        "right_regions_excluded")
+                        "right_regions_excluded",
+                        "left_regions_included",
+                        "right_regions_included")
 
   if (!all(info_names %in% valid_attributes)){
 
@@ -212,9 +216,10 @@ validate_slice <- function(s){
 #' TODO: May change the import and registration functions to only rely on this path.
 #' @param left_regions_excluded (str, default = ("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
 #' "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS")) The list of acronyms corresponding to regions to exclude for this slice's left hemisphere.
-#' @param ... additional custom keyword pair attributes you'd like to store
 #' @param right_regions_excluded (str, default = ("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
 #' "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS")) The list of acronyms corresponding to regions to exclude for this slice's right hemisphere.
+#' @param left_regions_included (str, default = NULL) List of acronyms of regions to include from left hemisphere. All other regions will be exsluded. If not NULL, takes precedence over `left_regions_excluded`.
+#' @param right_regions_included (str, default = NULL) List of acronyms of regions to include from right hemisphere. All other regions will be exsluded. If not NULL, takes precedence over `right_regions_excluded`.
 #' @param ... additional custom keyword pair attributes you'd like to store
 #'
 #' @description slice() constructs an S3 object of class 'slice'. A slice object
@@ -247,6 +252,8 @@ slice <- function(slice_ID = NA,
                                        "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
                   right_regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
                                        "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
+                  left_regions_included = NULL,
+                  right_regions_included = NULL,
                   ...){
 
 
@@ -263,6 +270,8 @@ slice <- function(slice_ID = NA,
                slice_directory = slice_directory,
                left_regions_excluded = left_regions_excluded,
                right_regions_excluded = right_regions_excluded,
+               left_regions_included = left_regions_included,
+               right_regions_included = right_regions_included,
                ...)
 
 

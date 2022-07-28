@@ -141,7 +141,7 @@ get_correlations <- function(e, by, values,
 
     # filter by parameters
     df_channel <-  e$combined_normalized_counts[[channel]] %>%
-      filter_df_by_char_params(by, values)
+      filter_df_by_char_params(by, values) %>% dplyr::distinct()
 
     # Pivot wider
     df_channel <- df_channel %>%  dplyr::select(mouse_ID:acronym, normalized.count.by.volume) %>%

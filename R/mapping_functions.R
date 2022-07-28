@@ -1087,6 +1087,7 @@ map_cells_to_atlas.mouse <- function(m,
 #' IN ADDITION to the regions added to the 'exclude_regions' parameter.
 #' Regions added to the 'exclude_regions' parameter will then be updated in the slice attribute to keep track of what was excluded.
 #' @rdname exclude_anatomy
+#'
 #' @param s slice object
 #' @param channels (str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.
 #' @param clean (bool, default = TRUE ). Remove cells that don't map to any regions. This option is recommended.
@@ -1094,18 +1095,22 @@ map_cells_to_atlas.mouse <- function(m,
 #' @param exclude_left_regions (str vector, default = NULL); acronyms of regions you want to exclude from left hemi, in addition to regions that will by default be excluded in the slice attribute 'left_regions_excluded'
 #' @param exclude_hemisphere (bool, default = TRUE); excludes the contralateral hemisphere from one indicated in slice attribute
 #' @param exclude_layer_1 (bool, default = TRUE) excludes all counts from layer 1
+#' @param include_right_regions (str vector, default = NULL) Acronyms of regions to include from the right hemi; if not NULL, takes precedence over `exclude_right_regions` & all other regions will be excluded. Typically, this is used for slices with poor quality/lots of tears.
+#' @param include_left_regions (str vector, default = NULL) Acronyms of regions to include from the light hemi; if not NULL, takes precedence over `exclude_left_regions` & all other regions will be excluded.  Typically, this is used for slices with poor quality/lots of tears.
 #' @param plot_filtered (bool, default = TRUE) pop up window to check the excluded anatomy.
+#'
 #' @examples s <-  exclude_anatomy(s, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE, exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE, plot_filtered = TRUE)
 #' @export
 
 exclude_anatomy.slice <- function(s,
                                   channels = NULL,
                                   clean = TRUE,
-                                  # exclude_regions = NULL,
                                   exclude_right_regions = NULL,
                                   exclude_left_regions = NULL,
                                   exclude_hemisphere = TRUE,
                                   exclude_layer_1 = TRUE,
+                                  include_right_regions = NULL,
+                                  include_left_regions = NULL,
                                   plot_filtered = TRUE){
 
 
@@ -1117,25 +1122,58 @@ exclude_anatomy.slice <- function(s,
     stop("You must specify the channels parameter.")
   }
 
-  # Reassign so that all regions excluded on the right side are tracked
-  exclude_right_regions <- unique(c(exclude_right_regions, info$right_regions_excluded))
-  attr(s, 'info')$right_regions_excluded <- exclude_right_regions
+  include_right_regions <- unique(c(include_right_regions, info$right_regions_included))
+  include_left_regions <- unique(c(include_left_regions, info$left_regions_included))
 
-  # Reassign so that all regions excluded on the left side are tracked
-  exclude_left_regions <- unique(c(exclude_left_regions, info$left_regions_excluded))
-  attr(s, 'info')$left_regions_excluded <- exclude_left_regions
 
-  # Create vector finding all subregions to exclude too
-  all_excluded_right_regions <-  find_excluded_subregions(exclude_right_regions)
-  all_excluded_left_regions <-  find_excluded_subregions(exclude_left_regions)
+  if (!is.null(include_right_regions)){
+    # The regions to include parameter is being used. Exclude all other regions
+    # Concatenate list of all regions
+    include_right_regions <-  find_all_subregions(include_right_regions)
+    attr(s, 'info')$right_regions_included <- include_right_regions
+  } else{
+    # Reassign so that all regions excluded on the right side are tracked
+    exclude_right_regions <- unique(c(exclude_right_regions, info$right_regions_excluded))
+    attr(s, 'info')$right_regions_excluded <- exclude_right_regions
+    all_excluded_right_regions <-  find_all_subregions(exclude_right_regions)
+
+  }
+
+
+  if (!is.null(include_left_regions)){
+    # The regions to include parameter is being used. Exclude all other regions
+    # Concatenate list of all regions
+    include_left_regions <-  find_all_subregions(include_left_regions)
+    attr(s, 'info')$left_regions_included <- include_left_regions
+  } else{
+    # Reassign so that all regions excluded on the left side are tracked
+    exclude_left_regions <- unique(c(exclude_left_regions, info$left_regions_excluded))
+    attr(s, 'info')$left_regions_excluded <- exclude_left_regions
+    all_excluded_left_regions <-  find_all_subregions(exclude_left_regions)
+
+  }
+
+
+
 
   ## Filtering per channel
   for (channel in channels){
     dataset <- s$forward_warped_data[[channel]]
 
     # 1) Filter out right and left regions
-     dataset <- dataset[!(dataset$right.hemisphere & (dataset$acronym %in% all_excluded_right_regions)),]
-     dataset <- dataset[!(!dataset$right.hemisphere & (dataset$acronym %in% all_excluded_left_regions)),]
+    if (!is.null(include_right_regions)){
+      dataset <-  dataset[!dataset$right.hemisphere | (dataset$right.hemisphere & (dataset$acronym %in% include_right_regions)),]
+    } else {
+      dataset <- dataset[!(dataset$right.hemisphere & (dataset$acronym %in% all_excluded_right_regions)),]
+    }
+
+    # 1) Filter out left and left regions
+    if (!is.null(include_left_regions)){
+      dataset <-  dataset[dataset$right.hemisphere | (!dataset$right.hemisphere & (dataset$acronym %in% include_left_regions)),]
+    } else {
+      dataset <- dataset[!(!dataset$right.hemisphere & (dataset$acronym %in% all_excluded_left_regions)),]
+    }
+
 
     # 2) Filter out hemisphere
     if (exclude_hemisphere){
@@ -1737,9 +1775,7 @@ combine_norm_cell_counts <- function(e, by){
       }
 
       # Always add the mouse ID
-      add_col <- tibble::tibble(m_info[["mouse_ID"]])
-      names(add_col)  <- "mouse_ID"
-      df <- df %>% tibble::add_column(add_col, .before = TRUE)
+      df <- df %>% tibble::add_column(mouse_ID = m_info[["mouse_ID"]], .before = TRUE)
 
       if (m == 1){
         combined_norm_counts <- df
@@ -1750,13 +1786,9 @@ combine_norm_cell_counts <- function(e, by){
     }
     combined_norm_counts_list[[channel]] <- combined_norm_counts
   }
-
   e$combined_normalized_counts <- combined_norm_counts_list
   return(e)
 }
-
-
-
 
 
 
@@ -2135,27 +2167,28 @@ find_segmentation_files <- function(slice_directory, channel){
 }
 
 
-#' find_excluded_subregions
-#' @param excluded_regions A string vector of the Allen Mouse Brain Atlas abbreviated
+#' find_all_subregions
+#'
+#' @param regions A string vector of the Allen Mouse Brain Atlas abbreviated
 #' regions of regions to exclude
-#' @return all_excluded_regions. A string vector of all the input & subregions within them to exclude
+#' @return all_regions. A string vector of all the input & subregions within them to exclude
 #'
 #' @examples
-find_excluded_subregions <- function(exclude_regions){
+find_all_subregions <- function(regions){
 
   # is.null check for exclude regions
-  if (!is.null(exclude_regions)){
+  if (!is.null(regions)){
     # Containing all subregions to exclude too
-    all_excluded_regions <- c()
-    for (region in exclude_regions) {
-      all_excluded_regions <- c(all_excluded_regions, region,
+    all_regions <- c()
+    for (region in regions) {
+      all_regions <- c(all_regions, region,
                                      SMARTR::get.sub.structure(region))
     }
-    all_excluded_regions <- unique(all_excluded_regions)
+    all_regions <- unique(all_regions)
   } else {
-    all_excluded_regions <- NULL
+    all_regions <- NULL
   }
-  return(all_excluded_regions)
+  return(all_regions)
 }
 
 
