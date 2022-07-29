@@ -16,6 +16,8 @@ exclude_anatomy(x, ...)
   exclude_left_regions = NULL,
   exclude_hemisphere = TRUE,
   exclude_layer_1 = TRUE,
+  include_right_regions = NULL,
+  include_left_regions = NULL,
   plot_filtered = TRUE
 )
 
@@ -29,6 +31,8 @@ exclude_anatomy(x, ...)
   exclude_left_regions = NULL,
   exclude_hemisphere = FALSE,
   exclude_layer_1 = TRUE,
+  include_right_regions = NULL,
+  include_left_regions = NULL,
   plot_filtered = TRUE
 )
 }
@@ -48,6 +52,12 @@ exclude_anatomy(x, ...)
 \item{exclude_hemisphere}{(bool, default = TRUE); excludes the contralateral hemisphere from one indicated in slice attribute}
 
 \item{exclude_layer_1}{(bool, default = TRUE); excludes all counts from layer 1 (TEMPORARY, may not be hardcoded in later)}
+
+\item{include_right_regions}{(str vector, default = NULL) Acronyms of regions to include from the right hemi;
+if not NULL, takes precedence over \code{exclude_right_regions} & all other regions will be excluded. Typically, this is used for slices with poor quality/lots of tears.}
+
+\item{include_left_regions}{(str vector, default = NULL) Acronyms of regions to include from the light hemi;
+if not NULL, takes precedence over \code{exclude_left_regions} & all other regions will be excluded.  Typically, this is used for slices with poor quality/lots of tears.}
 
 \item{plot_filtered}{(bool, default = TRUE) pop up window to check the excluded anatomy.}
 

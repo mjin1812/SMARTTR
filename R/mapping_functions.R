@@ -1129,8 +1129,8 @@ exclude_anatomy.slice <- function(s,
   if (!is.null(include_right_regions)){
     # The regions to include parameter is being used. Exclude all other regions
     # Concatenate list of all regions
-    include_right_regions <-  find_all_subregions(include_right_regions)
     attr(s, 'info')$right_regions_included <- include_right_regions
+    include_right_regions <-  find_all_subregions(include_right_regions)
   } else{
     # Reassign so that all regions excluded on the right side are tracked
     exclude_right_regions <- unique(c(exclude_right_regions, info$right_regions_excluded))
@@ -1143,8 +1143,8 @@ exclude_anatomy.slice <- function(s,
   if (!is.null(include_left_regions)){
     # The regions to include parameter is being used. Exclude all other regions
     # Concatenate list of all regions
-    include_left_regions <-  find_all_subregions(include_left_regions)
     attr(s, 'info')$left_regions_included <- include_left_regions
+    include_left_regions <-  find_all_subregions(include_left_regions)
   } else{
     # Reassign so that all regions excluded on the left side are tracked
     exclude_left_regions <- unique(c(exclude_left_regions, info$left_regions_excluded))
@@ -1155,7 +1155,7 @@ exclude_anatomy.slice <- function(s,
 
   ## Filtering per channel
   for (channel in channels){
-    dataset <- s$forward_warped_data[[channel]]
+    dataset <- s$forward_warped_data[[channel]] %>% tidyr::drop_na()
 
     # 1) Filter out right and left regions
     if (!is.null(include_right_regions)){
@@ -1173,7 +1173,7 @@ exclude_anatomy.slice <- function(s,
 
 
     # 2) Filter out hemisphere
-    if (exclude_hemisphere){
+    if (exclude_hemisphere & !is.null(info$hemisphere)){
       if (info$hemisphere == "right"){
         dataset <- dataset[dataset$right.hemisphere,]
       } else if (info$hemisphere == "left"){
@@ -1183,7 +1183,10 @@ exclude_anatomy.slice <- function(s,
 
     # 3) Filter out layer 1 of the Cortex
     if (exclude_layer_1){
-      dataset <- dataset[-grep("layer 1",dataset$name, ignore.case = TRUE, value = FALSE),]
+      remove <- grep("layer 1",dataset$name, ignore.case = TRUE, value = FALSE)
+      if (length(remove) > 0){
+        dataset <- dataset[-remove,]
+      }
     }
 
     # Filter out cell counts that are out of bounds
