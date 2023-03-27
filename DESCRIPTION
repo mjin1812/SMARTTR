@@ -31,8 +31,7 @@ Description: The base of this pipeline is an R package in development with the w
         + Removing cells from a contralateral hemisphere per slice if the registrations are divided by right and left hemispheres. 
     8.  Obtaining cell counts normalized by region volume (per mm^2^) and region areas (per mm^2^). 
     9. Aggregating counts into an experiment object.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
@@ -51,7 +50,8 @@ Imports:
     tidygraph (>= 1.2.0),
     dplyr (>= 1.0.7), 
     magrittr (>= 2.0.1), 
-    tidyselect (>= 1.1.1)
+    tidyselect (>= 1.1.1),
+    tidyr (>= 1.1.3)
 Suggests:
     testthat (>= 3.0.0),
     ggpattern (>= 0.2.0)

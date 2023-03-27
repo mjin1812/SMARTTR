@@ -37,7 +37,6 @@ save_mouse <- function(..., timestamp = FALSE){
   }
 }
 
-
 #' Print attributes of experiment object
 #' @param e experiment object
 #' @export

@@ -323,7 +323,9 @@ correlation_diff_permutation <- function(e,
     for (i in 1:l_reg){
       for (j in 1:l_reg){
         null_distrib <- test_statistic_distributions[i,j] %>% unlist()
+
         p_matrix[i,j] <-  (sum(abs(null_distrib) >= abs(test_statistic[i,j])) + 1) / (n_shuffle + 1)
+
         if(j>=i){
           p_matrix[i,j:l_reg] <- NA
         }

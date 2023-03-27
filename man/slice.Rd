@@ -36,6 +36,10 @@ TODO: May change the import and registration functions to only rely on this path
 \item{right_regions_excluded}{(str, default = ("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
 "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS")) The list of acronyms corresponding to regions to exclude for this slice's right hemisphere.}
 
+\item{left_regions_included}{(str, default = NULL) List of acronyms of regions to include from left hemisphere. All other regions will be exsluded. If not NULL, takes precedence over \code{left_regions_excluded}.}
+
+\item{right_regions_included}{(str, default = NULL) List of acronyms of regions to include from right hemisphere. All other regions will be exsluded. If not NULL, takes precedence over \code{right_regions_excluded}.}
+
 \item{...}{additional custom keyword pair attributes you'd like to store}
 }
 \value{

@@ -35,7 +35,6 @@ import_segmentation_ij <- function(x, ...){
 }
 
 
-
 ## Creating generic function for custom segmentation importation
 #' import_segmentation (generic function)
 #'
@@ -278,7 +277,8 @@ register.mouse <- function(m,
 #' @description Method for importing segmentation data for a slice object
 #' @param s slice object
 #' @param mouse_ID (str) ID of mouse
-#' @param channels (str vector, default = NULL) channels to import. If NULL, defaults to the channels stored in the slice object attributes.
+#' @param channels (str vector, default = NULL) All the channels the user wants to import.
+#' If NULL, defaults to the channels stored in the slice object attributes.
 #' @return s slice object
 #' @examples
 #' s <-  import_segmentation(s, mouse_ID = "255") # Defaults to channels stored in slice attributes
@@ -376,8 +376,20 @@ import_segmentation_ij.slice <- function(s,
         # match to exact name in directory
         meas_path <- txt_files[stringdist::amatch(meas_path, txt_files, maxDist=Inf)]
         quant_path <- txt_files[stringdist::amatch(quant_path, txt_files, maxDist=Inf)]
+
+      } else {
+        channel <- tolower(channels[k])
+
+        # Create import data paths for custom named channel
+        meas_path <- paste0("M_C_", channel, "_", mouse_ID,'_',section,".txt")
+        quant_path <- paste0("Q_C_", channel, "_", mouse_ID,'_',section,"_", channel,".txt" )
+
+        # match to exact name in directory
+        meas_path <- txt_files[stringdist::amatch(meas_path, txt_files, maxDist=Inf)]
+        quant_path <- txt_files[stringdist::amatch(quant_path, txt_files, maxDist=Inf)]
       }
 
+      message("Imported the following files: \n")
       print(meas_path)
       print(quant_path)
       meas <- read.csv( file.path(path_stem, meas_path), stringsAsFactors = FALSE )
@@ -464,6 +476,7 @@ import_segmentation_ij.mouse <- function(m,
   }
   return(m)
 }
+
 
 
 ##____ Creating CUSTOM method for importing segmentation data for a slice object____
@@ -598,7 +611,6 @@ import_segmentation_custom.mouse <- function(m,
                                              y_col = NULL,
                                              meas_path = NULL,
                                              quant_path = NULL){
-
   # Get mouse ID
   mouse_ID <- attr(m, 'info')$mouse_ID
 
