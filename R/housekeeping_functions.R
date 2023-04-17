@@ -254,7 +254,14 @@ reset_mouse_root <- function(m, input_path = NULL, print = TRUE){
     stop("There were no registration files found in the directory set as the input path. Please recheck where your folder is.")
   }
 
-  for (k in 1:length(m$slices)){
+
+  message("OLD mouse output path: ", attr(m, "info")$output_path, "\n",
+          "New mouse output path: ", input_path)
+
+  attr(m, "info")$output_path <- input_path
+
+
+    for (k in 1:length(m$slices)){
     s <- m$slices[[k]]
     s_reg_path <- attr(s, "info")$registration_path
     matched_root_file <- root_files[stringdist::amatch(s_reg_path, root_files, maxDist = Inf)]
