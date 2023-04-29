@@ -1139,7 +1139,7 @@ exclude_anatomy.slice <- function(s,
 
 
   # if (!is.null(include_right_regions)  ){
-  if (length(include_right_regions) < 1){
+  if (!(length(include_right_regions) < 1)){
     # The regions to include parameter is being used. Exclude all other regions
     # Concatenate list of all regions
     include_right_regions <-  find_all_subregions(include_right_regions)
@@ -1155,7 +1155,7 @@ exclude_anatomy.slice <- function(s,
 
 
   # if (!is.null(include_left_regions)){
-  if (length(include_left_regions) < 1){
+  if (!(length(include_left_regions) < 1)){
     # The regions to include parameter is being used. Exclude all other regions
     # Concatenate list of all regions
     include_left_regions <-  find_all_subregions(include_left_regions)
@@ -1177,7 +1177,7 @@ exclude_anatomy.slice <- function(s,
     # 1) Filter out right and left regions
 
     # if (!is.null(include_right_regions)){
-    if (length(include_right_regions)<1){
+    if (!(length(include_right_regions)<1)){
       dataset <-  dataset[!dataset$right.hemisphere | (dataset$right.hemisphere & (dataset$acronym %in% include_right_regions)),]
     } else {
       dataset <- dataset[!(dataset$right.hemisphere & (dataset$acronym %in% all_excluded_right_regions)),]
@@ -1185,7 +1185,7 @@ exclude_anatomy.slice <- function(s,
 
     # 1) Filter out left and left regions
     # if (!is.null(include_left_regions)){
-    if (length(include_left_regions)<1){
+    if (!(length(include_left_regions)<1)){
       dataset <-  dataset[dataset$right.hemisphere | (!dataset$right.hemisphere & (dataset$acronym %in% include_left_regions)),]
     } else {
       dataset <- dataset[!(!dataset$right.hemisphere & (dataset$acronym %in% all_excluded_left_regions)),]
