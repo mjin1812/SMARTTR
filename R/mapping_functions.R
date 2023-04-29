@@ -1138,7 +1138,8 @@ exclude_anatomy.slice <- function(s,
   include_left_regions <- unique(c(include_left_regions, info$left_regions_included))
 
 
-  if (!is.null(include_right_regions)){
+  # if (!is.null(include_right_regions)  ){
+  if (length(include_right_regions) < 1){
     # The regions to include parameter is being used. Exclude all other regions
     # Concatenate list of all regions
     include_right_regions <-  find_all_subregions(include_right_regions)
@@ -1152,7 +1153,9 @@ exclude_anatomy.slice <- function(s,
   }
 
 
-  if (!is.null(include_left_regions)){
+
+  # if (!is.null(include_left_regions)){
+  if (length(include_left_regions) < 1){
     # The regions to include parameter is being used. Exclude all other regions
     # Concatenate list of all regions
     include_left_regions <-  find_all_subregions(include_left_regions)
@@ -1162,7 +1165,6 @@ exclude_anatomy.slice <- function(s,
     exclude_left_regions <- unique(c(exclude_left_regions, info$left_regions_excluded))
     attr(s, 'info')$left_regions_excluded <- exclude_left_regions
     all_excluded_left_regions <-  find_all_subregions(exclude_left_regions)
-
   }
 
 
