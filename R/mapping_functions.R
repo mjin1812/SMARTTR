@@ -795,6 +795,7 @@ make_segmentation_filter.mouse <- function(m,
 #' @param mouse_ID (str) ID of mouse
 #' @param channels (str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.
 #' @param use_filter (bool, default = FALSE). Use a filter to create more curated segmentation object from the raw segmentation data.
+#' @param colabel_base_channel (str, default = "eyfp"). The base channel from which to get x,y, area, and intensity values from for the colabel channel.
 #' @param ... additional volume and overlap parameters for get.colabeled.cells().
 #'
 #' @return s slice object
@@ -806,6 +807,7 @@ make_segmentation_object.slice <- function(s,
                                            mouse_ID = NA,
                                            channels = NULL,
                                            use_filter = FALSE,
+                                           colabel_base_channel ="eyfp",
                                            ... ){
 
   # Get slice information
@@ -831,27 +833,32 @@ make_segmentation_object.slice <- function(s,
     if (channel == 'colabel'){
       # filter check
       if (use_filter) {
-        if (is.null(s$segmentation_filter[['eyfp']])) {
-          warning(paste0("No filter is available for eyfp, even though `use_filter` parameter is TRUE.\nThe eyfp channel is used to process the colabel channel,",
+        if (is.null(s$segmentation_filter[[colabel_base_channel]])) {
+          warning(paste0("No filter is available for ", colabel_base_channel, ", even though `use_filter` parameter is TRUE.\nThe eyfp channel is used to process the colabel channel,",
                          "\n so the colabel channel will be processed without usage of an eyfp filter."))
-          eyfp_counts <- s$raw_segmentation_data[['eyfp']]
+          base_channel_counts <- s$raw_segmentation_data[[colabel_base_channel]]
         } else {
-          eyfp_counts <- s$raw_segmentation_data[['eyfp']][-s$segmentation_filters[['eyfp']], ]
+          base_channel_counts <- s$raw_segmentation_data[[colabel_base_channel]][-s$segmentation_filters[[colabel_base_channel]], ]
         }
       } else {
-        eyfp_counts <- s$raw_segmentation_data[['eyfp']]
+        base_channel_counts <- s$raw_segmentation_data[[colabel_base_channel]]
       }
 
       # obtain df of colocalized cell counts
-      coloc.counts <- get.colabeled.cells(s$raw_segmentation_data$colabel$coloc_table,
-                                          eyfp_counts,
-                                          s$raw_segmentation_data$colabel$eyfp_counts_16bit,
+
+
+
+      coloc.counts.ind <- get.colabeled.cells(s$raw_segmentation_data$colabel$coloc_table,
+                                          base_channel_counts,
                                         ...)
+
+
       seg.coloc <- SMARTR::segmentation.object
-      seg.coloc$soma$x <- coloc.counts$X2_Pix
-      seg.coloc$soma$y <- coloc.counts$Y2_Pix
-      seg.coloc$soma$area <- coloc.counts$Vol..pix.
-      seg.coloc$soma$intensity <- coloc.counts$Mean
+      seg.coloc$soma$x  <-   base_channel_counts$CX..pix.[coloc.counts.ind]
+      seg.coloc$soma$y  <-   base_channel_counts$CY..pix.[coloc.counts.ind]
+      seg.coloc$soma$area   <-   base_channel_counts$Vol..pix.[coloc.counts.ind]
+      seg.coloc$soma$intensity  <-   base_channel_counts$Mean[coloc.counts.ind]
+
 
       # store into segmentation list
       segmentation_list[[channel]] <- seg.coloc
@@ -2076,6 +2083,7 @@ make.filter <- function(data,
 
 
 
+
 # Modified version of Marcos identify.colabelled.cells.filter() functions
 #' Get colabelled cells data table. This is a special function used to create a dataframe of colabelled cells
 #' specifically between the `eyfp` and `cfos` channels. The designated `colabel` channel name in this pipeline refers
@@ -2084,27 +2092,17 @@ make.filter <- function(data,
 #'
 #' @param coloc.table
 #' @param eyfp.counts
-#' @param eyfp.counts.16bit
 #' @param volume
 #' @param overlap
 #' @export
-#' @return returns a dataframe of colabelled cell counts
+#' @return returns object labels of colabelled cell counts from the eyfp channel
 #'
 #' @examples
-get.colabeled.cells <- function(coloc.table, eyfp.counts, eyfp.counts.16bit, volume = 25, overlap = 0.5) {
-  # p is position
-  # mi is max index
-  # mp is max proportion
-  # mv is max volume
-  # mo is max object number for eyfp
+get.colabeled.cells <- function(coloc.table, eyfp.counts,  volume = 25, overlap = 0.5) {
 
 
-  # Get position index of the volume parameteres in the coloc.table
-  p <- seq(4,ncol(coloc.table),3)
-  names(p) <- names(coloc.table)[p]  # Helper line to keep track
 
-  # Get column indices of the volumn column with the largest objects overlap
-  mi <- max.col(coloc.table[,p])
+
 
   # calculate number of columns
   end_col <- (length(names(coloc.table)) - 2)/3
@@ -2114,6 +2112,9 @@ get.colabeled.cells <- function(coloc.table, eyfp.counts, eyfp.counts.16bit, vol
   mv_names <- paste0("V", 1:end_col)
   mo_names <- paste0("O", 1:end_col)
 
+  # Get column indices of the volumn column with the largest objects overlap
+  mi <- max.col(coloc.table[mv_names])
+
   # Get selection indices
   select <- cbind(1:length(coloc.table$X),mi)
 
@@ -2122,41 +2123,116 @@ get.colabeled.cells <- function(coloc.table, eyfp.counts, eyfp.counts.16bit, vol
   mv <- coloc.table[,mv_names][select]
   mo <- coloc.table[,mo_names][select]
 
+  #############
+
+  # Get position index of the volume parameteres in the coloc.table
+  # p <- seq(4,ncol(coloc.table),3)
+  # names(p) <- names(coloc.table)[p]  # Helper line to keep track
+
+  # Get column indices of the volumn column with the largest objects overlap
+
+
+  ######################
 
   # Filter out objects that are smaller than the volume threshold and the less than
   # The proportion overlap threshold
   mo <- mo[mv>=volume & mp>=overlap]
+  mo <- unique(mo)
 
 
+  labels <- eyfp.counts$Label
+  match_eyfp_ind <-  labels[which(labels %in% mo)]
+  return(match_eyfp_ind)
+  # print(labels[match_eyfp_ind])
 
-  # Split by object name and value, split by character position
-  obj.val.16 <- strsplit(eyfp.counts.16bit$Name,"-") %>% lapply(substr, start = 4, stop = 10) %>% unlist()
-  val.16 <-  obj.val.16[seq(2, length(obj.val.16), by = 2)] # Object value
-  obj.16 <-  obj.val.16[seq(1, length(obj.val.16), by = 2)] # Object number
-
-  obj_index <- match(mo, val.16) %>% na.omit()
-  mot <- obj.16[obj_index] %>% as.integer()
-
-  # mot is matched object number from 16bit measure df that is in mo
-  obj.val <- strsplit(eyfp.counts$Name,"-") %>% lapply(substr, start = 4, stop = 10) %>% unlist()
-  obj <-  obj.val[seq(1, length(obj.val), by = 2)] # Object number
-
-
-  # index of the eyfp rows corresponding to matched object name
-  index <- match(mot, obj) %>% na.omit()
-  coloc.data <- eyfp.counts[index, unique(names(eyfp.counts))] %>% dplyr::distinct()
-
-  return(coloc.data)
-
-  ## EXTRAS
-  # ## get the matched object number
-  # matched_obj <- mot[match(obj , mot)]
-
-  ## compare the X&Y coordinates of the 16bit and normal based on matched object number
-  # val <-  obj.val[seq(2, length(obj.val), by = 2)] # Object value
-  # df.16 <- eyfp.counts.16bit[obj_index,] %>% dplyr::distinct()
+  # s$segmentation_obj$colabel$soma$x  <-   s$raw_segmentation_data$eyfp$CX..pix.[mo]
+  # s$segmentation_obj$colabel$soma$y  <-   s$raw_segmentation_data$eyfp$CY..pix.[mo]
+  # s$segmentation_obj$colabel$soma$area  <-   s$raw_segmentation_data$eyfp$Vol..pix.[mo]
+  # s$segmentation_obj$colabel$soma$intensity  <-   s$raw_segmentation_data$eyfp$Mean[mo]
+  #
+  #
 
 }
+
+
+
+
+
+
+
+
+
+#'
+#' get.colabeled.cells <- function(coloc.table, eyfp.counts, eyfp.counts.16bit, volume = 25, overlap = 0.5) {
+#'   # p is position
+#'   # mi is max index
+#'   # mp is max proportion
+#'   # mv is max volume
+#'   # mo is max object number for eyfp
+#'
+#'
+#'   # calculate number of columns
+#'   end_col <- (length(names(coloc.table)) - 2)/3
+#'
+#'   # extracting column for objects, volumes, and proportions based on names
+#'   mp_names <- paste0("P", 1:end_col)
+#'   mv_names <- paste0("V", 1:end_col)
+#'   mo_names <- paste0("O", 1:end_col)
+#'
+#'   # Get column indices of the volumn column with the largest objects overlap
+#'   mi <- max.col(coloc.table[mv_names])
+#'
+#'   # Get selection indices
+#'   select <- cbind(1:length(coloc.table$X),mi)
+#'
+#'   # Extracting max proportion
+#'   mp <- coloc.table[,mp_names][select]
+#'   mv <- coloc.table[,mv_names][select]
+#'   mo <- coloc.table[,mo_names][select]
+#'
+#'   #############
+#'   # Get position index of the volume parameteres in the coloc.table
+#'   # p <- seq(4,ncol(coloc.table),3)
+#'   # names(p) <- names(coloc.table)[p]  # Helper line to keep track
+#'   # Get column indices of the volumn column with the largest objects overlap
+#'   ######################
+#'
+#'   # Filter out objects that are smaller than the volume threshold and the less than
+#'   # The proportion overlap threshold
+#'   mo <- mo[mv>=volume & mp>=overlap]
+#'
+#'
+#'   # Split by object name and value, split by character position
+#'   obj.val.16 <- strsplit(eyfp.counts.16bit$Name,"-") %>% lapply(substr, start = 4, stop = 10) %>% unlist()
+#'
+#'   obj.val.16 <-  obj.val.16 %>% as.integer()
+#'   val.16 <-  obj.val.16[seq(2, length(obj.val.16), by = 2)] # Object value
+#'   obj.16 <-  obj.val.16[seq(1, length(obj.val.16), by = 2)] # Object number
+#'
+#'   obj_index <- match(mo, val.16) %>% na.omit()
+#'   mot <- obj.16[obj_index] %>% as.integer()
+#'
+#'   # mot is matched object number from 16bit measure df that is in mo
+#'   obj.val <- strsplit(eyfp.counts$Name,"-") %>% lapply(substr, start = 4, stop = 10) %>% unlist()
+#'   obj.val <- obj.val %>% as.integer()
+#'   obj <-  obj.val[seq(1, length(obj.val), by = 2)] # Object number
+#'
+#'
+#'   # index of the eyfp rows corresponding to matched object name
+#'   index <- match(mot, obj) %>% na.omit()
+#'   coloc.data <- eyfp.counts[index, unique(names(eyfp.counts))] %>% dplyr::distinct()
+#'
+#'   return(coloc.data)
+#'
+#'   ## EXTRAS
+#'   # ## get the matched object number
+#'   # matched_obj <- mot[match(obj , mot)]
+#'
+#'   ## compare the X&Y coordinates of the 16bit and normal based on matched object number
+#'   # val <-  obj.val[seq(2, length(obj.val), by = 2)] # Object value
+#'   # df.16 <- eyfp.counts.16bit[obj_index,] %>% dplyr::distinct()
+#'
+#' }
 
 
 
