@@ -4,7 +4,7 @@ NULL
 #' @importFrom tidyselect all_of
 NULL
 
-#' @importFrom dplyr n mutate summarize summarise across arrange
+#' @importFrom dplyr n mutate summarize summarise across arrange group_by
 NULL
 
 #' @importFrom tidygraph activate
@@ -1003,10 +1003,9 @@ volcano_plot <- function(e,
 
 
 #' Plot normalized cell counts
-#' @description Plot the raw cell counts for a given channel
+#' @description Plot the cell counts normalized by volume for a given channel
 #' @param e experiment object
-#' @param channel The name of the channels to plot.
-#' @param channel (str, default = c("cfos", "eyfp", "colabel"))
+#' @param channels (str, default = c("cfos", "eyfp", "colabel"))
 #' @param colors (str, default = c()) Hexadecimal codes corresponding to the channels (respectively) to plot.
 #' @param height height of the plot in inches.
 #' @param width width of the plot in inches.
@@ -1017,7 +1016,7 @@ volcano_plot <- function(e,
 #' @export
 #' @example
 plot_normalized_counts <- function(e,
-                                   channel = "cfos",
+                                   channels = c("cfos", "eyfp", "colabel"),
                                    title = NULL,
                                    colors = c("#FFFFFF", "lightblue"),
                                    height = 7,
@@ -1031,6 +1030,11 @@ plot_normalized_counts <- function(e,
     quartz <- X11
   }
 
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
+
+  for (channel in channels) {
+
   # select normalized counts for the given channel and generate mean and sem stats by region
     channel_counts <- lh$combined_normalized_counts[[channel]] %>%
       select(group, mouse_ID, name, acronym, normalized.count.by.volume) %>%
@@ -1041,7 +1045,7 @@ plot_normalized_counts <- function(e,
 
     # generate cell counts plot for the given channel (with standard error bars, slanted region names and clean theme)
 
-    cell_counts_plot <- channel_counts %>%
+    p <- channel_counts %>%
       ggplot(aes(y = mean_normalized_counts, x = name,
                  fill = group), color = "black") +
       geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
@@ -1066,12 +1070,34 @@ plot_normalized_counts <- function(e,
       theme(legend.position = "none") +
       theme(axis.text.x = element_text(angle = 50, hjust = 1))
 
+    p <-  p + ggplot2::ggtitle(title)
+
     # print plot if indicated
 
     if (print_plot) {
       quartz()
-      print(cell_counts_plot)
+      print(p)
     }
+
+    if(save_plot){
+      # Plot
+      quartz(width = width, height = height)
+      print(p)
+
+      # Create figure directory if it doesn't already exists
+      output_dir <-  file.path(attr(e, "info")$output_path, "figures")
+      if(!dir.exists(output_dir)){
+        dir.create(output_dir)
+      }
+      image_file <- file.path(output_dir, paste0(permutation_comparison, "_parallel_coordinate_plot_",
+                                                 channels[k], "_", image_ext))
+      ggsave(filename = image_file,  width = width, height = height, units = "in")
+    }
+
+    # Save the plot handle
+    p_list[[channels[channel]]] <- p
+
+  }
 
 }
 
@@ -1085,8 +1111,8 @@ plot_normalized_counts <- function(e,
 #' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal codes corresponding to the channels (respectively) to plot.
 #' @param x_label_group_1 (str, NULL) The label for the first group in the permutation analysis.
 #' @param x_label_group_2 (str, NULL) The label for the second group in the permutaiton analysis.
-#' @param  height height of the plot in inches.
-#' @param  width width of the plot in inches.
+#' @param height height of the plot in inches.
+#' @param width width of the plot in inches.
 #' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
