@@ -1001,6 +1001,81 @@ volcano_plot <- function(e,
 }
 
 
+
+#' Plot normalized cell counts
+#' @description Plot the raw cell counts for a given channel
+#' @param e experiment object
+#' @param channel The name of the channels to plot.
+#' @param channel (str, default = c("cfos", "eyfp", "colabel"))
+#' @param colors (str, default = c()) Hexadecimal codes corresponding to the channels (respectively) to plot.
+#' @param height height of the plot in inches.
+#' @param width width of the plot in inches.
+#' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
+#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
+#'  the experiment object output folder.
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
+#' @export
+#' @example
+plot_normalized_counts <- function(e,
+                                   channel = "cfos",
+                                   title = NULL,
+                                   colors = c("#FFFFFF", "lightblue"),
+                                   height = 7,
+                                   width = 20,
+                                   print_plot = TRUE,
+                                   save_plot = TRUE) {
+
+
+  # Detect the OS and set quartz( as graphing function)
+  if(get_os() != "osx"){
+    quartz <- X11
+  }
+
+  # select normalized counts for the given channel and generate mean and sem stats by region
+    channel_counts <- lh$combined_normalized_counts[[channel]] %>%
+      select(group, mouse_ID, name, acronym, normalized.count.by.volume) %>%
+      group_by(group, acronym, name) %>%
+      summarise(n = n(),
+                mean_normalized_counts = mean(normalized.count.by.volume),
+                sem = sd(normalized.count.by.volume)/sqrt(n))
+
+    # generate cell counts plot for the given channel (with standard error bars, slanted region names and clean theme)
+
+    cell_counts_plot <- channel_counts %>%
+      ggplot(aes(y = mean_normalized_counts, x = name,
+                 fill = group), color = "black") +
+      geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
+      geom_errorbar(aes(ymin = mean_normalized_counts - sem,
+                        ymax = mean_normalized_counts + sem, x = name),
+                    position = position_dodge(0.8),
+                    width = 0.5,
+                    color = "black") +
+      labs(title = title,
+           y = bquote('Normalized cell counts '('cells/mm'^3)),
+           x = "",
+           fill = "Group") +
+      scale_y_continuous(expand = c(0,0)) +
+      scale_fill_manual(values=colors) +
+      theme_bw() +
+      theme(
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank()) +
+      theme(axis.line = element_line(color = 'black')) +
+      theme(legend.position = "none") +
+      theme(axis.text.x = element_text(angle = 50, hjust = 1))
+
+    # print plot if indicated
+
+    if (print_plot) {
+      quartz()
+      print(cell_counts_plot)
+    }
+
+}
+
+
 #' Create a parallel coordinate plot
 #' @description Plot the correlation difference between two comparison groups into a parallel coordinate plot. The function
 #' [SMARTR::correlation_diff_permutation()] must be run first in order to generate results to plot.
