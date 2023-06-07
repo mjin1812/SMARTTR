@@ -4,9 +4,9 @@
 
 ## Welcome to the SMARTR package!
 
-SMARTR is a package designed for the high-throughput mapping and analysis of dual-labelled ensemble datasets. Genetic tagging strategies such as the ArcCreERT<sup>2</sup> mouse line allow for investigation of neural ensembles underlying behavior across multiple time points.
+SMARTR is a package designed for the high-throughput mapping and analysis of dual-labelled ensemble datasets. Genetic tagging strategies such as the ArcCreERT^2^ mouse line allow for investigation of neural ensembles underlying behavior across multiple time points.
 
-![*Tagging two ensembles using the ArcCreERT^2^ mouse line *](man/figures/1.Pipeline_tagging_schematic.jpg)
+![*Tagging two ensembles using the ArcCreERT^2^ mouse line*](man/figures/1.Pipeline_tagging_schematic.jpg)
 
 
 However, few tools exist to map dual-labelled ensembles, as well as their overlap across the brain to a standardized atlas space. The SMARTR package facilitates this by bridging an optimized [approach](https://osf.io/ynqp7/) for cell-segmentation and colocalization that was developed in FIJI/ImageJ with registration and mapping capabilities from the [wholebrain](https://github.com/tractatus/wholebrain) and [SMART](https://github.com/mjin1812/SMART) packages. 
