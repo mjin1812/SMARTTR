@@ -1010,7 +1010,7 @@ volcano_plot <- function(e,
 #' @param height height of the plot in inches.
 #' @param width width of the plot in inches.
 #' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
-#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
+#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of
 #'  the experiment object output folder.
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
@@ -1022,7 +1022,8 @@ plot_normalized_counts <- function(e,
                                    height = 7,
                                    width = 20,
                                    print_plot = TRUE,
-                                   save_plot = TRUE) {
+                                   save_plot = TRUE,
+                                   image_ext = ".png") {
 
 
   # Detect the OS and set quartz( as graphing function)
@@ -1089,8 +1090,8 @@ plot_normalized_counts <- function(e,
       if(!dir.exists(output_dir)){
         dir.create(output_dir)
       }
-      image_file <- file.path(output_dir, paste0(permutation_comparison, "_parallel_coordinate_plot_",
-                                                 channels[k], "_", image_ext))
+      image_file <- file.path(output_dir, paste0(channel, "_normalized_region_barplot",
+                                                 image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
 
