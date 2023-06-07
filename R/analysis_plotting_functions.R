@@ -4,7 +4,7 @@ NULL
 #' @importFrom tidyselect all_of
 NULL
 
-#' @importFrom dplyr n mutate summarize summarise across arrange
+#' @importFrom dplyr n mutate summarize summarise across arrange group_by
 NULL
 
 #' @importFrom tidygraph activate
@@ -1001,6 +1001,108 @@ volcano_plot <- function(e,
 }
 
 
+
+#' Plot normalized cell counts
+#' @description Plot the cell counts normalized by volume for a given channel
+#' @param e experiment object
+#' @param channels (str, default = c("cfos", "eyfp", "colabel"))
+#' @param colors (str, default = c()) Hexadecimal codes corresponding to the channels (respectively) to plot.
+#' @param height height of the plot in inches.
+#' @param width width of the plot in inches.
+#' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
+#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of
+#'  the experiment object output folder.
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
+#' @export
+#' @example
+plot_normalized_counts <- function(e,
+                                   channels = c("cfos", "eyfp", "colabel"),
+                                   title = NULL,
+                                   colors = c("#FFFFFF", "lightblue"),
+                                   height = 7,
+                                   width = 20,
+                                   print_plot = TRUE,
+                                   save_plot = TRUE,
+                                   image_ext = ".png") {
+
+
+  # Detect the OS and set quartz( as graphing function)
+  if(get_os() != "osx"){
+    quartz <- X11
+  }
+
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
+
+  for (channel in channels) {
+
+  # select normalized counts for the given channel and generate mean and sem stats by region
+    channel_counts <- lh$combined_normalized_counts[[channel]] %>%
+      select(group, mouse_ID, name, acronym, normalized.count.by.volume) %>%
+      group_by(group, acronym, name) %>%
+      summarise(n = n(),
+                mean_normalized_counts = mean(normalized.count.by.volume),
+                sem = sd(normalized.count.by.volume)/sqrt(n))
+
+    # generate cell counts plot for the given channel (with standard error bars, slanted region names and clean theme)
+
+    p <- channel_counts %>%
+      ggplot(aes(y = mean_normalized_counts, x = name,
+                 fill = group), color = "black") +
+      geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
+      geom_errorbar(aes(ymin = mean_normalized_counts - sem,
+                        ymax = mean_normalized_counts + sem, x = name),
+                    position = position_dodge(0.8),
+                    width = 0.5,
+                    color = "black") +
+      labs(title = title,
+           y = bquote('Normalized cell counts '('cells/mm'^3)),
+           x = "",
+           fill = "Group") +
+      scale_y_continuous(expand = c(0,0)) +
+      scale_fill_manual(values=colors) +
+      theme_bw() +
+      theme(
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank()) +
+      theme(axis.line = element_line(color = 'black')) +
+      theme(legend.position = "none") +
+      theme(axis.text.x = element_text(angle = 50, hjust = 1))
+
+    p <-  p + ggplot2::ggtitle(title)
+
+    # print plot if indicated
+
+    if (print_plot) {
+      quartz()
+      print(p)
+    }
+
+    if(save_plot){
+      # Plot
+      quartz(width = width, height = height)
+      print(p)
+
+      # Create figure directory if it doesn't already exists
+      output_dir <-  file.path(attr(e, "info")$output_path, "figures")
+      if(!dir.exists(output_dir)){
+        dir.create(output_dir)
+      }
+      image_file <- file.path(output_dir, paste0(channel, "_normalized_region_barplot",
+                                                 image_ext))
+      ggsave(filename = image_file,  width = width, height = height, units = "in")
+    }
+
+    # Save the plot handle
+    p_list[[channels[channel]]] <- p
+
+  }
+
+}
+
+
 #' Create a parallel coordinate plot
 #' @description Plot the correlation difference between two comparison groups into a parallel coordinate plot. The function
 #' [SMARTR::correlation_diff_permutation()] must be run first in order to generate results to plot.
@@ -1010,8 +1112,8 @@ volcano_plot <- function(e,
 #' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal codes corresponding to the channels (respectively) to plot.
 #' @param x_label_group_1 (str, NULL) The label for the first group in the permutation analysis.
 #' @param x_label_group_2 (str, NULL) The label for the second group in the permutaiton analysis.
-#' @param  height height of the plot in inches.
-#' @param  width width of the plot in inches.
+#' @param height height of the plot in inches.
+#' @param width width of the plot in inches.
 #' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
