@@ -4,7 +4,7 @@
 \alias{save_mouse}
 \title{Save mouse data}
 \usage{
-save_mouse(m)
+save_mouse(..., timestamp = FALSE)
 }
 \arguments{
 \item{...}{parameter to pass mouse object}
@@ -13,4 +13,5 @@ save_mouse(m)
 }
 \description{
 Saves mouse object into it's attribute output path as an RDATA file
+save_mouse(m)
 }

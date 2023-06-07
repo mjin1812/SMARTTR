@@ -4,7 +4,7 @@
 \alias{save_experiment}
 \title{Save experiment data}
 \usage{
-save_experiment(e)
+save_experiment(..., timestamp = FALSE)
 }
 \arguments{
 \item{...}{parameter to pass experiment object}
@@ -13,4 +13,5 @@ save_experiment(e)
 }
 \description{
 Saves experiment object into it's attribute output path as an RDATA file
+save_experiment(e)
 }

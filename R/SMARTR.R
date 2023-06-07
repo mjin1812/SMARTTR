@@ -1,7 +1,7 @@
-#' SMARTR: Wholebrain analysis package in development for the Denny Lab
+#' SMARTR: A mapping, analysis, and visualization package for wholebrain dual-ensemble coronal datasets.
 #'
 #' @description
-#' The base of this pipeline is an R package in development with the working title, `SMARTR`, a self-referential play on
+#' The base of this pipeline is an R package in with the title, `SMARTR`, a self-referential play on
 #' a previous package developed as an extension to `wholebrain` called [`SMART`].  This package allows for the
 #' user-friendly pre-processing of segmentation data generated from ImageJ to a be compatible with the `wholebrain` package to generate
 #' region-based cell counts that are normalized by volume. It will also provides tools for data analysis based on experimental groupings.
@@ -18,7 +18,13 @@
 #' A [mouse] object is an object that will store multiple slice objects (and therefore all the information in it),
 #' and will eventually store the combined cell data and the region cell counts normalized by volume.
 #' Like a slice, it will also contain “metadata” about your mouse stored as attributes.
-#'
+
+
+
+
+
+#' An [experiment]An experiment object consists of a list of processed mouse objects with raw data from slices omitted, and experimental attributes stored as a list.
+#' It will also contain “metadata” about your experimental personnel and analysis groups stored as attributes.
 #'
 #' @section The package currently allows for easy implementation of the following steps:
 #'

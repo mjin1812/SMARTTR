@@ -4,7 +4,21 @@
 \alias{experiment}
 \title{Create an experiment object}
 \usage{
-my_experiment <- experiment() # construct an experiment object
+experiment(
+  experiment_name = NULL,
+  experimenters = NULL,
+  channels = NULL,
+  experiment_groups = NULL,
+  drug_groups = NULL,
+  sex_groups = NULL,
+  cohorts = NULL,
+  strains = NULL,
+  genotypes = NULL,
+  reporters = NULL,
+  ages = NULL,
+  output_path = "set output path for your experiment",
+  ...
+)
 }
 \arguments{
 \item{experiment_name}{(str, default = NULL)}
@@ -45,6 +59,9 @@ consists of a list of processed mouse objects with raw data from slices omitted,
 The experimental attributes can be assigned as arguments to the experiment constructor function. See the parameters listed for the default values for these attributes
 Note that you are able to add custom attributes as keyword pairs, if you would like to keep track of an additional piece of information. However, this will only serve a descriptive purpose
 and will not be used for analysis. You may not need to use all experimental attributes but fill out as many are applicable to your experiment.
+}
+\examples{
+my_experiment <- experiment() # constructs an experiment object
 }
 \seealso{
 See also \code{\link[=mouse]{mouse()}} for the description of a mouse object and it's attributes.

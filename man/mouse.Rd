@@ -4,7 +4,21 @@
 \alias{mouse}
 \title{Create a mouse object}
 \usage{
-mouse_example <- mouse() # initializes a mouse object
+mouse(
+  mouse_ID = "set ID",
+  sex = "female",
+  age = NULL,
+  cre_genotype = NULL,
+  reporter = NULL,
+  strain = NULL,
+  experiment = NULL,
+  group = NULL,
+  drug = NULL,
+  cohort = NULL,
+  input_path = "set input path",
+  output_path = "set output path",
+  ...
+)
 }
 \arguments{
 \item{mouse_ID}{(str, default = 'set ID') e.g. '1_1'}
@@ -52,6 +66,9 @@ then the slice is named with the convention: "slice_ID"
 The mouse attributes can be assigned as arguments to the mouse constructor function. See the parameters listed for the default values for these attributes
 Note that you are able to add custom attributes as keyword pairs, if you would like to keep track of an additional piece of information. However, this will only serve a descriptive purpose
 and will not be used for analysis. You may not need to use all mouse attributes but fill out as many are applicable to your experiment.
+}
+\examples{
+mouse_example <- mouse() # initializes a mouse object
 }
 \seealso{
 See also \code{\link[=slice]{slice()}} for the description of a slice object and it's attributes.

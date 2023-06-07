@@ -2,7 +2,7 @@
 
 #' @title Save experiment data
 #' @description Saves experiment object into it's attribute output path as an RDATA file
-#' @usage save_experiment(e)
+#'  save_experiment(e)
 #' @param ... parameter to pass experiment object
 #' @param timestamp (bool) save the object with a date tag
 #' @export
@@ -21,7 +21,7 @@ save_experiment <- function(..., timestamp = FALSE){
 
 #' @title Save mouse data
 #' @description Saves mouse object into it's attribute output path as an RDATA file
-#' @usage save_mouse(m)
+#'  save_mouse(m)
 #' @param ... parameter to pass mouse object
 #' @param timestamp (bool) save the object with a date tag
 #' @export
@@ -74,7 +74,7 @@ print.correlation_list <- function(cl){
 
 
 #' @title Add slice to a mouse object
-#' @usage m <- add_slice(m, s, replace = FALSE)
+#'  m <- add_slice(m, s, replace = FALSE)
 #' @param m mouse object
 #' @param s slice object
 #' @param replace (bool, default = FALSE) Replace a slice already contained in a mouse object.
@@ -239,8 +239,7 @@ add_mouse <- function(e, m, replace = FALSE){
 #' @param print (bool, default = TRUE) Print the changes in the console.
 #' @return m a mouse object
 #' @export
-#'
-#' @examples
+#' @examples m <- reset_mouse_root(m, input_path = "C:/Users/Documents/Mice/mouse_1/", print = TRUE)
 reset_mouse_root <- function(m, input_path = NULL, print = TRUE){
 
   if (is.null(input_path)){
@@ -277,13 +276,9 @@ reset_mouse_root <- function(m, input_path = NULL, print = TRUE){
 
 
 
-
-
-
-
 #__________________ Internal Functions __________________________
 
-
+#' @noRd
 m2e_attr <- function(attribs){
   attr2match <- SMARTR::attr2match
   matched <- c()
@@ -293,6 +288,7 @@ m2e_attr <- function(attribs){
   return(matched)
 }
 
+#' @noRd
 e2m_attr <- function(attribs){
   attr2match <- SMARTR::attr2match
   matched <- c()
@@ -302,6 +298,7 @@ e2m_attr <- function(attribs){
   return(matched)
 }
 
+#' @noRd
 match_e_attr <- function(attribs){
   attr2match <- SMARTR::attr2match
   matched <- c()
@@ -311,6 +308,7 @@ match_e_attr <- function(attribs){
   return(matched)
 }
 
+#' @noRd
 match_m_attr <- function(attribs){
   attr2match <- SMARTR::attr2match
   matched <- c()
@@ -322,9 +320,10 @@ match_m_attr <- function(attribs){
 
 
 
-
-
-# Copies of Wholebrain's ontology search functions applied to the SMARTR custom ontology for the hippocampus
+#' Get region ontology name from acronym
+#' @description Get whole regional names from acronyms based on a lookup table including SMARTR's custom ontology for the
+#' dorsal ventral split of the hippocampus
+#' @param x (str) Regional acronym
 #' @export
 name.from.acronym <- function (x)
 {
@@ -338,6 +337,10 @@ name.from.acronym <- function (x)
   }))
 }
 
+#' Get region ontology name from ID
+#' @description Similar to wholebrain package's search functions to get whole regional names from a numerical ID lookup table
+#' including SMARTR's custom ontology for the  dorsal ventral split of the hippocampus
+#' @param x (int) integer ID
 #' @export
 name.from.id <- function (x)
 {
@@ -352,6 +355,9 @@ name.from.id <- function (x)
 }
 
 
+#' Get subregion acronyms
+#' @description Search function to get substructure acronyms from parent acronym.
+#' @param x (str vector) Regional acronyms in a vector
 #' @export
 get.sub.structure <- function (x)
 {
@@ -369,6 +375,10 @@ get.sub.structure <- function (x)
 
 
 
+#' Get parent region acronyms
+#' @description Function to get the acronym of parent regions in the ontology
+#' @param x (str) Regional acronym
+#' @param matching.string (str vector, default = c("CTX", "CNU", "IB", "MB", "HB", "grey", "root", "VS", "fiber tracts")) Vector of the basest parent levels to stop at.
 #' @export
 get.sup.structure <- function (x, matching.string = c("CTX", "CNU", "IB",
                                  "MB", "HB", "grey", "root", "VS",
@@ -395,6 +405,9 @@ get.sup.structure <- function (x, matching.string = c("CTX", "CNU", "IB",
 }
 
 
+#' Get acronyms of child structures
+#' @description Function to get the acronym of parent regions in the ontology
+#' @param x (str) Regional acronym
 #' @export
 get.acronym.child <-  function (x)
   {
@@ -416,6 +429,10 @@ get.acronym.child <-  function (x)
     return(acronym.from.id(ids))
   }
 
+#' Get parent region acronyms
+#' @description Function to get the acronym of parent regions
+#' @param x (str) Regional acronym
+#'
 #' @export
 get.acronym.parent <- function (x)
 {

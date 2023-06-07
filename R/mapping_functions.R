@@ -2237,13 +2237,10 @@ get.colabeled.cells <- function(coloc.table, eyfp.counts,  volume = 25, overlap 
 
 
 #' Find segmentation files following the naming conventions of the denny lab given a channel name and a root slice directory
-#'
 #' @param slice_directory
 #' @param channel
-#'
 #' @return returns a vector of two paths. The first element is the path to the measurement data. The second path is the path to the
 #' quantification data.
-#'
 #' @examples
 find_segmentation_files <- function(slice_directory, channel){
 
@@ -2255,7 +2252,6 @@ find_segmentation_files <- function(slice_directory, channel){
   if (length(meas_path) < 1 || length(quant_path) < 1){
     stop("Could not find the file within the slice directory. Please check your file naming conventions.")
   }
-
   return(c(meas_path, quant_path))
 }
 
@@ -2265,7 +2261,6 @@ find_segmentation_files <- function(slice_directory, channel){
 #' @param regions A string vector of the Allen Mouse Brain Atlas abbreviated
 #' regions of regions to exclude
 #' @return all_regions. A string vector of all the input & subregions within them to exclude
-#'
 #' @examples
 find_all_subregions <- function(regions){
 
@@ -2274,8 +2269,9 @@ find_all_subregions <- function(regions){
     # Containing all subregions to exclude too
     all_regions <- c()
     for (region in regions) {
-      all_regions <- c(all_regions, region,
-                                     SMARTR::get.sub.structure(region))
+      all_regions <- c(all_regions,
+                       region,
+                       SMARTR::get.sub.structure(region))
     }
     all_regions <- unique(all_regions)
   } else {

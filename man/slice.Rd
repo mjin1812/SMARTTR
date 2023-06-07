@@ -4,7 +4,28 @@
 \alias{slice}
 \title{Create a slice object}
 \usage{
-slice_example <- slice() # initializes a slice object
+slice(
+  slice_ID = NA,
+  coordinate = -1,
+  atlas_plate = NA,
+  conversion_factor = 1.0833,
+  bin = 1,
+  z_width = 24,
+  hemisphere = NULL,
+  channels = c("eyfp", "cfos", "colabel"),
+  registration_path = "set registration image path",
+  segmentation_path = "set segmentation data path",
+  slice_directory = NULL,
+  left_regions_excluded = c("layer 1", "PIR1", "TR1", "PAA1", "NLOT1", "OT1", "MOBgl",
+    "OV", "VLPO", "SO", "BA", "TU", "MEAav", "ME", "TMv", "PVp", "SUMl", "SCzo",
+    "fiber tracts", "VS"),
+  right_regions_excluded = c("layer 1", "PIR1", "TR1", "PAA1", "NLOT1", "OT1", "MOBgl",
+    "OV", "VLPO", "SO", "BA", "TU", "MEAav", "ME", "TMv", "PVp", "SUMl", "SCzo",
+    "fiber tracts", "VS"),
+  left_regions_included = NULL,
+  right_regions_included = NULL,
+  ...
+)
 }
 \arguments{
 \item{slice_ID}{(str, default = NA) Slice name}
@@ -55,4 +76,7 @@ The object attributes are also stored as a list.
 The slice attributes can be assigned as arguments to the slice constructor function. See the parameters listed for the default values for these attributes
 Note that you are able to add custom attributes as keyword pairs, if you would like to keep track of an additional piece of information. However, this will only serve a descriptive purpose
 and will not be used for analysis. You may not need to use all slice attributes but fill out as many are applicable to your experiment.
+}
+\examples{
+slice_example <- slice() # initializes a slice object
 }

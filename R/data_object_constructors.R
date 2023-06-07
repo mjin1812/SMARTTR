@@ -85,7 +85,7 @@ validate_mouse <- function(m){
 #' Note that you are able to add custom attributes as keyword pairs, if you would like to keep track of an additional piece of information. However, this will only serve a descriptive purpose
 #' and will not be used for analysis. You may not need to use all mouse attributes but fill out as many are applicable to your experiment.
 #'
-#' @usage mouse_example <- mouse() # initializes a mouse object
+#' @examples mouse_example <- mouse() # initializes a mouse object
 #' @returns A mouse, a colloquial term for an object of class 'mouse'. A 'mouse' object
 #' is also a list, with class list.
 #' @seealso
@@ -231,7 +231,7 @@ validate_slice <- function(s){
 #' Note that you are able to add custom attributes as keyword pairs, if you would like to keep track of an additional piece of information. However, this will only serve a descriptive purpose
 #' and will not be used for analysis. You may not need to use all slice attributes but fill out as many are applicable to your experiment.
 #'
-#' @usage slice_example <- slice() # initializes a slice object
+#' @examples slice_example <- slice() # initializes a slice object
 #' @returns A slice, a colloquial term for an object of class 'slice'. A 'slice' object
 #' is also a list, with class list.
 #' @export
@@ -359,7 +359,7 @@ validate_experiment <- function(e){
 #' Note that you are able to add custom attributes as keyword pairs, if you would like to keep track of an additional piece of information. However, this will only serve a descriptive purpose
 #' and will not be used for analysis. You may not need to use all experimental attributes but fill out as many are applicable to your experiment.
 #'
-#' @usage my_experiment <- experiment() # construct an experiment object
+#' @examples my_experiment <- experiment() # constructs an experiment object
 #' @returns An experiment, a colloquial term for an object of class 'wb_experiment'. An 'experiment' object
 #' is also a list, with class list.
 #' @seealso

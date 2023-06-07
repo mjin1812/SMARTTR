@@ -7,16 +7,10 @@ specifically between the \code{eyfp} and \code{cfos} channels. The designated \c
 to the overlap between these two specific channels. To name another channel for colabelled cells between two other channels,
 please use a different naming convention, e.g. "colabel_PV_cfos".}
 \usage{
-get.colabeled.cells(
-  coloc.table,
-  eyfp.counts,
-  eyfp.counts.16bit,
-  volume = 25,
-  overlap = 0.5
-)
+get.colabeled.cells(coloc.table, eyfp.counts, volume = 25, overlap = 0.5)
 }
 \value{
-returns a dataframe of colabelled cell counts
+returns object labels of colabelled cell counts from the eyfp channel
 }
 \description{
 Get colabelled cells data table. This is a special function used to create a dataframe of colabelled cells

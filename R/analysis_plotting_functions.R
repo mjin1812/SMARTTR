@@ -1601,7 +1601,6 @@ plot_mean_clust_coeff <- function(e,
   }
 }
 
-
 #' Plot mean global efficiency
 #' @description
 #' Plot the mean global efficiency of the networks in a barplot. Error bars are plotted as SEM.
@@ -1718,16 +1717,9 @@ plot_mean_global_effic <- function(e,
   }
 }
 
-
-
-
-
-
-
 #' Plot mean betweenness centrality
 #' @description
 #' Plot the mean betweenness centrality of the networks in a barplot. Error bars are plotted as SEM.
-#'
 #' @param e experiment object
 #' @param labels The labels to correspond with your network names.
 #' @param title (str, default = "my_title) plot title
@@ -1781,8 +1773,6 @@ plot_mean_between_centrality <- function(e,
 
     channel <- channels[[k]]
     n_groups <-  e$networks_summaries[[channel]]$networks_stats$group %>% length()
-
-
     if (!is.null(colors_manual)){
       colors <- colors_manual
     } else {
@@ -2123,20 +2113,12 @@ permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_l
 
 }
 
-
-
-
-
-
-#' Title
-#'
+#' Get  a list of intersecting regions to a list of common regions
 #' @param common_reg A comprehensive list of all regions (and all existing subregions) that the brain area in the `rois` list will be compared against.
 #' @param rois A list of rois whose regions and subregions will be compared the the `common_reg` list
-#'
 #' @return common_reg A list of the rois (or any of its subregions) that intersected with the common_reg list.
-
-#'
 #' @examples
+#'
 rois_intersect_region_list <- function(common_reg, rois){
   # Get rois of all the child regions
   child_r <- SMARTR::get.acronym.child(rois)

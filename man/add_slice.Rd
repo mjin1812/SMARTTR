@@ -2,9 +2,10 @@
 % Please edit documentation in R/housekeeping_functions.R
 \name{add_slice}
 \alias{add_slice}
-\title{Add slice to a mouse object}
+\title{Add slice to a mouse object
+m <- add_slice(m, s, replace = FALSE)}
 \usage{
-m <- add_slice(m, s, replace = FALSE)
+add_slice(m, s, replace = FALSE)
 }
 \arguments{
 \item{m}{mouse object}
@@ -15,4 +16,5 @@ m <- add_slice(m, s, replace = FALSE)
 }
 \description{
 Add slice to a mouse object
+m <- add_slice(m, s, replace = FALSE)
 }

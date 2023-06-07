@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{rois_intersect_region_list}
 \alias{rois_intersect_region_list}
-\title{Title}
+\title{Get  a list of intersecting regions to a list of common regions}
 \usage{
 rois_intersect_region_list(common_reg, rois)
 }
@@ -15,5 +15,8 @@ rois_intersect_region_list(common_reg, rois)
 common_reg A list of the rois (or any of its subregions) that intersected with the common_reg list.
 }
 \description{
-Title
+Get  a list of intersecting regions to a list of common regions
+}
+\examples{
+
 }

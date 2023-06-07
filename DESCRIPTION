@@ -1,21 +1,23 @@
 Package: SMARTR
-Title: Wholebrain analysis package in development for the Denny Lab
+Title: SMARTR: A mapping, analysis, and visualization package for wholebrain dual-ensemble coronal datasets.
 Version: 0.0.0.9000
-Authors@R: 
+Authors@R: c(
     person(given = "Michelle",
            family = "Jin",
            role = c("aut", "cre"),
            email = "mj2947@cumc.columbia.edu",
-           comment = c(ORCID = "0000-0002-8696-1958"))
+           comment = c(ORCID = "0000-0002-8696-1958")),
+    person(given = "Simon", 
+       family = "Ogundare", 
+       email ="simonogundare2020@gmail.com", 
+       role = c("ctb"),
+       comment = c(ORCID = "0000-0002-6243-2779")),
     person(given = "Marcos", 
-           family = "Lanio", 
-           email ="ml3696@cumc.columbia.edu", 
-           role = c("aut", "ctb"),
-           comment = c(ORCID = "0000-0003-3000-1592"))
-Author: Michelle Jin [aut, cre],
-  Marcos Lanio [aut, ctb],
-Maintainer: Michelle Jin <mj2947@cumc.columbia.edu>
-Description: The base of this pipeline is an R package in development with the working title, `SMARTR`, a self-referential play on the previous package I developed as an extension to `wholebrain` called `SMART`. 
+       family = "Lanio", 
+       email ="ml3696@cumc.columbia.edu", 
+       role = c("ctb"),
+       comment = c(ORCID = "0000-0003-3000-1592")))
+Description: The base of this pipeline is an R package with the title, `SMARTR`, a self-referential play on a previous package developed as an extension to `wholebrain` called `SMART`. 
     This package allows for the user-friendly accomplishing of the analysis steps below:
     1. Setting up the pipeline by specifying experiment parameters, and save directories.
     2. The interactive registration process.
@@ -31,6 +33,7 @@ Description: The base of this pipeline is an R package in development with the w
         + Removing cells from a contralateral hemisphere per slice if the registrations are divided by right and left hemispheres. 
     8.  Obtaining cell counts normalized by region volume (per mm^2^) and region areas (per mm^2^). 
     9. Aggregating counts into an experiment object.
+    10. Performing a suite of analysis and visualization capabilities on experiment objects and automatically saving them to a standardized figure folder.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -54,5 +57,8 @@ Imports:
     tidyr (>= 1.1.3)
 Suggests:
     testthat (>= 3.0.0),
-    ggpattern (>= 0.2.0)
+    ggpattern (>= 0.2.0),
+    knitr,
+    rmarkdown
 Config/testthat/edition: 3
+VignetteBuilder: knitr
