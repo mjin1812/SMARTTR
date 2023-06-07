@@ -21,5 +21,5 @@ Check out the [Get Started](./articles/SMARTR.html) page to see a more thorough 
 
 
 ## Contact
-Answers to common questions and issues may be found in the FAQ page. If questions are not otherwise answered through the FAQ or through the tutorial, feel free to contact me at 
+Answers to common questions may be found in the FAQ page. Please look there first to troubleshoot any issues. If questions are not otherwise answered through the FAQ or through the tutorial, feel free to contact me at [mj2947@cumc.columbia.edu](mailto:mj2947@cumc.columbia.edu) for any further clarification.
 
