@@ -148,10 +148,12 @@ new_slice <- function(data = list(registration_obj = NULL,           #list per s
                                   registration_path = 'set registration image path',
                                   segmentation_path = 'set segmentation image path',    # Segmentation path may not be used
                                   slice_directory = NULL,
-                                  left_regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
-                                                            "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
-                                  right_regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
-                                                             "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
+                                  # left_regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
+                                  #                           "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
+                                  # right_regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
+                                  #                            "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
+                                  left_regions_excluded = c("layer 1","fiber tracts","VS"),
+                                  right_regions_excluded = c("layer 1","fiber tracts","VS"),
                                   left_regions_included = NULL,
                                   right_regions_included = NULL
 
@@ -248,10 +250,12 @@ slice <- function(slice_ID = NA,
                   registration_path = 'set registration image path',   # Path to registration images
                   segmentation_path = 'set segmentation data path',    # Segmentation path may not be used
                   slice_directory = NULL,
-                  left_regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
-                                       "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
-                  right_regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
-                                       "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
+                  # left_regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
+                  #                           "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
+                  # right_regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
+                  #                            "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
+                  left_regions_excluded = c("layer 1","fiber tracts","VS"),
+                  right_regions_excluded = c("layer 1","fiber tracts","VS"),
                   left_regions_included = NULL,
                   right_regions_included = NULL,
                   ...){
