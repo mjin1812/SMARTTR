@@ -1,0 +1,118 @@
+---
+title: "SMARTR"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{SMARTR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+options(width = 300, rmarkdown.html_vignette.check_title = FALSE)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE, 
+  eval = FALSE
+)
+```
+
+# 0 Prior steps to get started
+
+`SMARTR` is a self-referential name on a previous package developed as an extension to `wholebrain` called `SMART`. SMARTR encapsulates the process of registration and performs downstream analysis. Prior to this, the imaging data must be pre-processed and cells are separately segmented in ImageJ/FIJI. We have a separate, in-depth article on our imaging and pre-processing approach, parameters, and segmentation process. We provide links to an example image to run though the pre-processing and segmentation. There is also a separate in-depth tutorial article for SMARTR using this example image.
+This page provides installation instrutions and a broad explanation of the central package organization around data objects
+
+<figure>
+  <img src="../man/figures/3.acquisition_segmentation_preprocess_schematic.jpg" alt="Image" style="width: 650px; height: 400px;">
+  <figcaption><em>Imaging, segmentation, and pre-processing pipeline</em> </figcaption>
+</figure>
+
+# 1 Installation
+
+## 1.1 Install `wholebrain`
+
+Installing `wholebrain` can be finicky. The most updated instructions on installing `wholebrain` for Windows is found [here](https://matiasandina.github.io/wholebrain_install/). For Macs, the instructions can be found [here](https://osf.io/k963s). We strongly recommend using a Windows setup, as this package has been used mostly in Windows. 
+
+## 1.2 Install `SMARTR`
+
+TODO: modify the personal access token once the package is public.
+
+Currently the pipeline package is on my github, but it is a private repository. Therefore to download it from github using the `devtools` package, we need to feed the `install_github()` function a personal access token to access the github API. There are also some dependencies on the tidyverse packages so we will install that too. Install the package with the code below:
+
+```{r, eval = FALSE}
+# Install from CRAN
+install.packages("tidyverse")`
+
+# Install ggpattern package (useful package for plotting) 
+devtools::install_github("coolbutuseless/ggpattern")
+
+# personal access token
+auth_token <- "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"
+
+# Set the devtools install options for just 64-bit architecture
+options(devtools.install.args = "--no-multiarch")   
+
+# Install package
+devtools::install_github("mjin1812/SMARTR@main", auth_token = auth_token)
+
+
+```
+
+We can now load the package!
+
+```{r, message=FALSE}
+# Load SMARTR
+library(SMARTR)
+```
+
+You can pull up the package description with the code below:
+
+```{r, eval=TRUE}
+?SMARTR
+
+```
+
+> Tip: From now on, get in the habit of using the `?` operator to pull up the help page about a package, object, function, or piece of data
+
+<br>  
+
+# 2 Introduction to SMARTR 
+
+## 2.1 OOP in R
+
+It's helpful to get a sense of a how the structure of data is handled and bundled together in this pipeline. Data is stored in S3 data type objects called `slice`, `mouse`, and `experiment`. The data in these objects will be manipulated by a special type of function called a generic function (this is analogous to an object method in python). Generic functions allow you to pass objects of different classes to the same function, and it can recognize and perform different operations on objects depending on their class. If this is all confusing to you, don't worry at all! This is much more information than you actually need to know to use this pipeline. It's just helpful to better understand the architecture of the package.  
+
+To get an excellent brief overview of what object oriented programming (OOP) is and it's advantages over procedural programming, check out this excellent 
+[YouTube video!](https://www.youtube.com/watch?v=pTB0EiLXUC8&t=379s&ab_channel=ProgrammingwithMosh) 
+
+## 2.2 Slice objects
+
+A `slice` object will contain all the data related to registration, segmentation for each channel, and cell counts for a particular image.
+
+It will also contain metadata about your images, such as what the `slice no.` is, which brain atlas AP coordinate matches best with the given image, and what the path to the image used for registration is. These metadata are stored as the object's attributes.
+
+Run the code below to used the `?` operator to pull up the documentation for a `slice` object. This will pull up a help page description of all the `slice` object attributes. 
+
+```{r}
+?SMARTR::slice
+```
+
+> Tip: Usage of the `::` or double colons here means that R specifically looks for a function, object, or help page in `SMARTR` package. This isn't necessary if you load the package, but it can sometimes help avoid ambiguity if there are identical names for things in other loaded packages.
+
+## 2.3 Mouse objects
+
+A `mouse` object is an object that will store multiple `slice` objects (and therefore all the information in it), and will eventually store the combined cell data and the  region cell counts normalized by volume. Like a `slice`, it will also contain "metadata" about your mouse stored as string attributes. Now, try pulling up the help page yourself for the `mouse` object to see all attributes you can store!
+
+## 2.4 Experiment object
+
+An experiment object will primarily store the processed information from multiple `mouse` objects. Some experimental attributes will autopopulate based on mouse attributes. For example, if multiple mice are added to an experiment with the `drug` attribute values `ketamine` or `saline`, the experiment attribute `drug_groups` will be a vector with the values `ketamine` and `saline`. 
+
+<figure>
+  <img src="../man/figures/object_schematic.jpg" alt="Image" style="width: 600px;">
+  <figcaption><em>Hierarchical object organization in the package</em> </figcaption>
+</figure>
+
+
+

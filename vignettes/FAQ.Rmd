@@ -1,0 +1,44 @@
+---
+title: "FAQ"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{FAQ}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+# FAQ
+
+Below is an FAQ 
+
+
+
+
+## Hardware recommendations
+
++ Windows 10
++ RAM Requirements: we recommend a minimum of 32 GB of RAM because the image processing scripts can be intensive
++ Processor 
++ GPU - unnecessary but may be helpful
+
+
+## What are some common errors I might encounter?
+
+
+### How long should segmentation take?
+
+It depends on the specs of your computer and the size and specs of your images. Since our images are somewhat high resolution, and our image [segmentation macro](https://osf.io/bek56) segments in 3D not 2D, it can be relatively computationally intensive. However, it is easy to process an equivalent dataset of ~150 images over a weekend using a computer with the recommended hardware specs.
+
+### Not choosing the right brain.threshold
+
+### out of bounds error
+
+
+The `MAX_name.tif` file highlighted in blue is used as the reference image during interactive registrations. This is the a flattened version of the .`tif` file from step B. The `wholebrain` package can only do registrations on 2D tiff images so this `MAX_name.tif` is used to calculate the approximate transformation that should happen to all the cells segmented in 3D. Importantly, the brain contours in this `MAX_name.tif` cannot touch any of the 4 borders of an image. These images should either be manually edited in ImageJ to omit brain contours intersecting the image border, or the original `.tif` image (B) should be padded with a small border of black pixels. 
