@@ -284,16 +284,9 @@ register.mouse <- function(m,
 #' s <-  import_segmentation(s, mouse_ID = "255") # Defaults to channels stored in slice attributes
 #' s <-  import_segmentation(s, mouse_ID = "255", channels = c("cfos", "eyfp", "colabel")) # Specify channels
 #' @export
-#' @note The designated `colabel` channel name in this pipeline refers to the overlap between `cfos` and `eyfp` channels.
-#' To name another channel for colocalized cells between two other channels, please use a different naming convention,
-#' e.g. "colabel_PV_cfos" and import using a customized import function such as [SMARTR::import_segmentation_custom()].
-#' Note that in order to import the raw data for `eyfp` and `cfos` co-labeled cells, you need both the
-#' txt files that end in "ColocOnly.txt" and "eYFP_16bit.txt". The ImageJ colabelling algorithm calculates overlap
-#' between two segmented 3D objects from different channel.
-#' One channel serves as the "reference" to later generate X & Y coordinates of colabelled cells in the make_segmentation_object() function.
-#' By convention, we use the eYFP channel rather than cfos..
-#'
-# TODO: modify paths to search for correct files regardless of upper or lower case. Use grep and stringi to match multiple patterns
+#' @note The designated `colabel` channel name in this pipeline will auto import the output of the batch_3D_MultiColocalization.ijm macro provided in the pre-processing pipeline.
+#' If you have a separate method used for detecting colabelled cells, please use a different naming convention for this channel,
+#' e.g. "colabel_PV_cfos", and import using a customized import function such as [SMARTR::import_segmentation_custom()].
 
 import_segmentation_ij.slice <- function(s,
                                       mouse_ID = NA,
@@ -328,78 +321,52 @@ import_segmentation_ij.slice <- function(s,
   for (k in 1:length(channels)){
 
     if (tolower(channels[k]) == 'colabel') {
+      # Find the files necessary for colocalization analysis
+      coloc_path <- paste0( mouse_ID,'_',section,"_ColocOnlyTable.txt")
+      M_image_A_path <- paste0("M_", mouse_ID, '_', section,"_Coloc_A_C2.txt")
+      M_image_B_path <- paste0("M_", mouse_ID, '_', section,"_Coloc_B_C1.txt")
 
 
-      coloc_path <- paste0( mouse_ID,'_',section,"_Fast_R_cfos_SpotSegmentation_ColocOnly.txt")
-      eyfp_16bit_path <- paste0("M_", mouse_ID, '_', section,"_Fast_G_eYFP_LabelImage_eyfp_16bit.txt")
-
-      # match to exact name in directory
+      # Best match helper in case of user name edit errors
       coloc_path <- txt_files[stringdist::amatch(coloc_path, txt_files, maxDist=Inf)]
-      eyfp_16bit_path <- txt_files[stringdist::amatch(eyfp_16bit_path, txt_files, maxDist=Inf)]
+      M_image_A_path <- txt_files[stringdist::amatch(M_image_A_path, txt_files, maxDist=Inf)]
+      M_image_B_path <- txt_files[stringdist::amatch(M_image_B_path, txt_files, maxDist=Inf)]
 
-    # ### CLEAN THIS UP AFTER NAMING CONVENTIONS ARE STANDARDIZED
-    #   if (!file.exists(eyfp_16bit_path)){
-    #     eyfp_16bit_path <- file.path(path_stem, paste0("M_", mouse_ID, '_', section, "_Fast_G_eYFP_LabelImage_16bit"))
-    #   }
-
+      message("Imported the following files: \n")
       print(coloc_path)
-      print(eyfp_16bit_path)
+      print(M_image_A_path)
+      print(M_image_B_path)
 
       # Read
       coloc.table <- read.delim(file.path(path_stem, coloc_path), stringsAsFactors = FALSE)
-      eyfp.meas.16bit <- read.csv(file.path(path_stem, eyfp_16bit_path), stringsAsFactors = FALSE)
+      image_A_objects <- read.csv(file.path(path_stem,  M_image_A_path), stringsAsFactors = FALSE)
+      image_B_objects <- read.csv(file.path(path_stem,  M_image_B_path), stringsAsFactors = FALSE)
 
       # store the coloc table and the eyfp 16 bit measurements as a combined list
       s$raw_segmentation_data[[k]] <- list(coloc_table = coloc.table,
-                                           eyfp_counts_16bit = eyfp.meas.16bit)
-
+                                           image_A_objects = image_A_objects,
+                                           image_B_objects = image_B_objects)
     }
-
-    else{
-      if (tolower(channels[k]) == 'cfos'){
-
-        # Create import data paths for cfos
-        meas_path <- paste0("M_R_cfos_", mouse_ID,'_',section,".txt" )
-        quant_path <- paste0("Q_R_cfos_",mouse_ID,'_',section,"_",'cfos',".txt" )
-
-        # match to exact name in directory
-        meas_path <- txt_files[stringdist::amatch(meas_path, txt_files, maxDist=Inf)]
-        quant_path <- txt_files[stringdist::amatch(quant_path, txt_files, maxDist=Inf)]
-
-      } else if (tolower(channels[k]) == 'eyfp'){
-
-
-        # Create import data paths for eyfp
-        meas_path <- paste0("M_G_eyfp_", mouse_ID,'_',section,".txt" )
-        quant_path <- paste0("Q_G_eyfp_",mouse_ID,'_',section,"_eYFP",".txt" )
-
-        # match to exact name in directory
-        meas_path <- txt_files[stringdist::amatch(meas_path, txt_files, maxDist=Inf)]
-        quant_path <- txt_files[stringdist::amatch(quant_path, txt_files, maxDist=Inf)]
-
-      } else {
-        channel <- tolower(channels[k])
-
+      else{
         # Create import data paths for custom named channel
+        channel <- tolower(channels[k])
         meas_path <- paste0("M_C_", channel, "_", mouse_ID,'_',section,".txt")
         quant_path <- paste0("Q_C_", channel, "_", mouse_ID,'_',section,"_", channel,".txt" )
 
         # match to exact name in directory
         meas_path <- txt_files[stringdist::amatch(meas_path, txt_files, maxDist=Inf)]
         quant_path <- txt_files[stringdist::amatch(quant_path, txt_files, maxDist=Inf)]
-      }
+        message("Imported the following files: \n")
+        print(meas_path)
+        print(quant_path)
 
-      message("Imported the following files: \n")
-      print(meas_path)
-      print(quant_path)
-      meas <- read.csv( file.path(path_stem, meas_path), stringsAsFactors = FALSE )
-      quant <- read.csv(file.path(path_stem, quant_path), stringsAsFactors = FALSE)
-      meas$X2_Pix <- meas$CX..pix./(info$bin) #create position column to account for binning
-      meas$Y2_Pix <- meas$CY..pix./(info$bin) #same as above
-      counts <- cbind(meas, quant) #create combined table
-      counts <- counts[,unique(names(counts))]
-      s$raw_segmentation_data[[k]] <- counts
-    }
+        # Read cell counts
+        meas <- read.csv( file.path(path_stem, meas_path), stringsAsFactors = FALSE )
+        quant <- read.csv(file.path(path_stem, quant_path), stringsAsFactors = FALSE)
+        counts <- cbind(meas, quant) #create combined table
+        counts <- counts[,unique(names(counts))]
+        s$raw_segmentation_data[[k]] <- counts
+      }
   }
 
   # Name the elements of the raw data
@@ -515,9 +482,7 @@ import_segmentation_ij.mouse <- function(m,
 #' @return s slice object
 #' @examples s <-  import_segmentation_custom(s, mouse_ID = "255", channel = "cfos")
 #' @export
-#' @note
-#'
-# TODO: modify paths to search for correct files regardless of upper or lower case. Use grep and stringi to match multiple patterns
+
 
 import_segmentation_custom.slice <- function(s,
                                              channel,
@@ -581,7 +546,6 @@ import_segmentation_custom.slice <- function(s,
     s$raw_segmentation_data[[1]] <- counts
     names(s$raw_segmentation_data) <- channel
   }
-
   return(s)
 }
 
@@ -649,8 +613,6 @@ import_segmentation_custom.mouse <- function(m,
   }
   return(m)
 }
-
-
 
 ##____Optional Method for making an eyfp filter____
 
@@ -762,10 +724,8 @@ make_segmentation_filter.mouse <- function(m,
                                                         channels = channels,
                                                         params = params,
                                                         ranges = ranges)
-
         } else{
           stop(paste0("A segmentation filter already exists for this slice. Set replace = TRUE to overwrite the current filter(s). "))
-
         }
       } else  {
         # Import segmentation with matched slices with no segmentation data yet
@@ -796,12 +756,12 @@ make_segmentation_filter.mouse <- function(m,
 #' @param channels (str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.
 #' @param use_filter (bool, default = FALSE). Use a filter to create more curated segmentation object from the raw segmentation data.
 #' @param colabel_base_channel (str, default = "eyfp"). The base channel from which to get x,y, area, and intensity values from for the colabel channel.
-#' @param ... additional volume and overlap parameters for get.colabeled.cells().
+#' @param ... (optional) additional volume and overlap parameters for get.colabeled.cells().
 #'
 #' @return s slice object
 #' @examples s <- make_segmentation_object(s, mouse_ID = "255", channels = c("cfos", "eyfp"), use_filter = FALSE)
 #' @export
-#' @note If you are processing the colabel channel, you must always have the raw eyfp segmentation data imported.
+#' @note If you are processing the colabel channel, the X and Y positions of colabelled cells are the average of the x,y centroid coordinates of the colabelled objects
 
 make_segmentation_object.slice <- function(s,
                                            mouse_ID = NA,
@@ -824,43 +784,21 @@ make_segmentation_object.slice <- function(s,
     channels <- c(channels[!channels %in% 'colabel'], channels[channels %in% 'colabel'])
   }
 
-  # Create a segmentation list to store the channel segmentatoin objects
+  # Create a segmentation list to store the channel segmentation objects
   segmentation_list  <- vector(mode = 'list', length = length(channels))
   names(segmentation_list) <- names(channels)
 
 
   for (channel in channels){
     if (channel == 'colabel'){
-      # filter check
-      if (use_filter) {
-        if (is.null(s$segmentation_filter[[colabel_base_channel]])) {
-          warning(paste0("No filter is available for ", colabel_base_channel, ", even though `use_filter` parameter is TRUE.\nThe eyfp channel is used to process the colabel channel,",
-                         "\n so the colabel channel will be processed without usage of an eyfp filter."))
-          base_channel_counts <- s$raw_segmentation_data[[colabel_base_channel]]
-        } else {
-          base_channel_counts <- s$raw_segmentation_data[[colabel_base_channel]][-s$segmentation_filters[[colabel_base_channel]], ]
-        }
-      } else {
-        base_channel_counts <- s$raw_segmentation_data[[colabel_base_channel]]
-      }
-
-      # obtain df of colocalized cell counts
 
 
-
-      coloc.counts.ind <- get.colabeled.cells(s$raw_segmentation_data$colabel$coloc_table,
-                                          base_channel_counts,
-                                        ...)
-
-
-      seg.coloc <- SMARTR::segmentation.object
-      seg.coloc$soma$x  <-   base_channel_counts$CX..pix.[coloc.counts.ind]
-      seg.coloc$soma$y  <-   base_channel_counts$CY..pix.[coloc.counts.ind]
-      seg.coloc$soma$area   <-   base_channel_counts$Vol..pix.[coloc.counts.ind]
-      seg.coloc$soma$intensity  <-   base_channel_counts$Mean[coloc.counts.ind]
-
-
-      # store into segmentation list
+      seg.coloc <- get.colabeled.cells(s$raw_segmentation_data$colabel$coloc_table,
+                                              s$raw_segmentation_data$colabel$image_A_objects,
+                                              s$raw_segmentation_data$colabel$image_B_objects,
+                                              ...)
+      seg.coloc$soma$x <- seg.coloc$soma$x/(info$bin)
+      seg.coloc$soma$y <- seg.coloc$soma$y/(info$bin)
       segmentation_list[[channel]] <- seg.coloc
 
     } else {
@@ -875,9 +813,10 @@ make_segmentation_object.slice <- function(s,
       } else {
         counts <- s$raw_segmentation_data[[channel]]
       }
+
       seg <- SMARTR::segmentation.object
-      seg$soma$x <- counts$X2_Pix
-      seg$soma$y <- counts$Y2_Pix
+      seg$soma$x <- counts$CX..pix./(info$bin) #create position column to account for binning
+      seg$soma$y <- counts$CY..pix./(info$bin) #same as above
       seg$soma$area <- counts$Vol..pix.
       seg$soma$intensity <- counts$Mean
 
@@ -901,7 +840,7 @@ make_segmentation_object.slice <- function(s,
 #' @param channels (str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.
 #' @param replace (bool, default = FALSE) replace existing raw segmentation data
 #' @param use_filter (bool, default = FALSE). Use a filter to create more curated segmentation object from the raw segmentation data.
-#' @param ... additional volume and overlap parameters for get.colabeled.cells().
+#' @param ... (optional) additional volume and overlap parameters for get.colabeled.cells().
 #' @examples m <-  make_segmentation_object(m, slice_ID = '1_9', hemisphere = 'left', channels = c('eyfp', 'cfos', 'colabel'), use_filter = FALSE)
 #' @export
 #'
@@ -1400,16 +1339,22 @@ return(m)
 #' since the wholebrain GUI tends to be a bit buggy. This function then returns a filter with the adjusted brain threshold.
 #'
 #' @param s slice object
+#' @param filter (list, default = NULL) If the user passes their own filter list, it will use that instead of the presaved filter list from SMARTR.
 #'
 #' @return filter (list) wholebrain compatible filter
 #' @export
 #'
 #' @examples filter <- adjust_brain_outline(s); s <- register(s, filter = filter) Adjust the brain threshold, then run register on the slice object
-adjust_brain_outline <- function(s){
+adjust_brain_outline <- function(s, filter = NULL){
 
   regi_path <- attr(s, "info")$registration_path
-  filter <- SMARTR::filter
-  filter$brain.threshold <- 10
+
+  if (is.null(filter)){
+    filter <- SMARTR::filter
+    filter$brain.threshold <- 10
+  } else if (!is.list(filter)){
+    stop("You did not supply a valid list for the filter parameter.")
+  }
 
   cat(paste0("Trying default brain threshold of ", filter$brain.threshold, "\n" ))
   filter <- wholebrain::segment(regi_path, filter = filter)
@@ -2083,75 +2028,73 @@ make.filter <- function(data,
 
 
 
-
-# Modified version of Marcos identify.colabelled.cells.filter() functions
-#' Get colabelled cells data table. This is a special function used to create a dataframe of colabelled cells
-#' specifically between the `eyfp` and `cfos` channels. The designated `colabel` channel name in this pipeline refers
-#' to the overlap between these two specific channels. To name another channel for colabelled cells between two other channels,
-#' please use a different naming convention, e.g. "colabel_PV_cfos".
-#'
-#' @param coloc.table
-#' @param eyfp.counts
-#' @param volume
-#' @param overlap
+#' Get colabelled cells data table. This is designed specifically to create a segmentation object from the imported raw files that are outputs from the batch_3D_MultiColocalization.ijm macro.
+#' @param coloc_table
+#' @param image_A_objects
+#' @param image_B_objects
+#' @param overlap (default = 0.5) Minimum fraction of object volume overlap from image A (Ch2) with object from image B (Ch1). Fraction is of image A objects.
+#' @param volume (default = 25) Minimum threshold for colocalized volume in voxels.
+#' @param euc_centroid_dist (default = 30) Euclidean threshold in pixels between the centroid coordinates of two flagged overlapping objects. If this distance is exceeded, there will be an error message.
 #' @export
-#' @return returns object labels of colabelled cell counts from the eyfp channel
+#' @return returns segmentation object with x Y coordinates as an average of the centroid coordinates. The area will be replaced with the volume of the image A object.
+#' Intensity is also just replaced with the volume of the image A object.
 #'
 #' @examples
-get.colabeled.cells <- function(coloc.table, eyfp.counts,  volume = 25, overlap = 0.5) {
-
-
+get.colabeled.cells <- function(coloc_table,
+                                image_A_objects,
+                                image_B_objects,
+                                volume = 25,
+                                euc_centroid_dist = 30,
+                                overlap = 0.5){
 
 
 
   # calculate number of columns
-  end_col <- (length(names(coloc.table)) - 2)/3
+  end_col <- (length(names(coloc_table)) - 2)/3
 
   # extracting column for objects, volumes, and proportions based on names
   mp_names <- paste0("P", 1:end_col)
   mv_names <- paste0("V", 1:end_col)
   mo_names <- paste0("O", 1:end_col)
 
-  # Get column indices of the volumn column with the largest objects overlap
-  mi <- max.col(coloc.table[mv_names])
+  # Get column indices of the column with the largest objects percentage overlap
+  mi <- max.col(coloc_table[mp_names], "first")
 
   # Get selection indices
-  select <- cbind(1:length(coloc.table$X),mi)
+  select <- cbind(1:length(coloc_table$X),mi)
 
   # Extracting max proportion
-  mp <- coloc.table[,mp_names][select]
-  mv <- coloc.table[,mv_names][select]
-  mo <- coloc.table[,mo_names][select]
-
-  #############
-
-  # Get position index of the volume parameteres in the coloc.table
-  # p <- seq(4,ncol(coloc.table),3)
-  # names(p) <- names(coloc.table)[p]  # Helper line to keep track
-
-  # Get column indices of the volumn column with the largest objects overlap
-
-
-  ######################
+  mp <- coloc_table[,mp_names][select]
+  mv <- coloc_table[,mv_names][select]
+  mo <- coloc_table[,mo_names][select]
 
   # Filter out objects that are smaller than the volume threshold and the less than
   # The proportion overlap threshold
-  mo <- mo[mv>=volume & mp>=overlap]
-  mo <- unique(mo)
+  colabel_ind <- which(mv>=volume & mp>=overlap)
+  mo <- mo[colabel_ind]
+  ma <- coloc_table$X[colabel_ind]
 
+  x_a <- image_A_objects$CX..pix.[ma]
+  y_a <- image_A_objects$CY..pix.[ma]
+  x_b <- image_B_objects$CX..pix.[mo]
+  y_b <- image_B_objects$CY..pix.[mo]
 
-  labels <- eyfp.counts$Label
-  match_eyfp_ind <-  labels[which(labels %in% mo)]
-  return(match_eyfp_ind)
-  # print(labels[match_eyfp_ind])
+  # Quality check
+  if (max(sqrt((x_a-x_b)^2+(y_a-y_b)^2)) > euc_centroid_dist){
+    stop("The euclidian distance between the centroid coordinates of the
+            overlapping objects seems too high! Please double check the output of the raw colocalization files!")
+  }
 
-  # s$segmentation_obj$colabel$soma$x  <-   s$raw_segmentation_data$eyfp$CX..pix.[mo]
-  # s$segmentation_obj$colabel$soma$y  <-   s$raw_segmentation_data$eyfp$CY..pix.[mo]
-  # s$segmentation_obj$colabel$soma$area  <-   s$raw_segmentation_data$eyfp$Vol..pix.[mo]
-  # s$segmentation_obj$colabel$soma$intensity  <-   s$raw_segmentation_data$eyfp$Mean[mo]
-  #
-  #
+  x <-  rowMeans(cbind(x_a, x_b))
+  y <-  rowMeans(cbind(y_a, y_b))
 
+  # Create a segmentation object
+  seg.coloc <- SMARTR::segmentation.object
+  seg.coloc$soma$x  <-   x
+  seg.coloc$soma$y  <-   y
+  seg.coloc$soma$area   <-   image_B_objects$Vol..pix.[mo]
+  seg.coloc$soma$intensity  <-   image_B_objects$Vol..pix.[mo] # Dummy
+  return(seg.coloc)
 }
 
 
