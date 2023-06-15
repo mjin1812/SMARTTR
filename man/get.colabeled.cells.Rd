@@ -2,19 +2,28 @@
 % Please edit documentation in R/mapping_functions.R
 \name{get.colabeled.cells}
 \alias{get.colabeled.cells}
-\title{Get colabelled cells data table. This is a special function used to create a dataframe of colabelled cells
-specifically between the \code{eyfp} and \code{cfos} channels. The designated \code{colabel} channel name in this pipeline refers
-to the overlap between these two specific channels. To name another channel for colabelled cells between two other channels,
-please use a different naming convention, e.g. "colabel_PV_cfos".}
+\title{Get colabelled cells data table. This is designed specifically to create a segmentation object from the imported raw files that are outputs from the batch_3D_MultiColocalization.ijm macro.}
 \usage{
-get.colabeled.cells(coloc.table, eyfp.counts, volume = 25, overlap = 0.5)
+get.colabeled.cells(
+  coloc_table,
+  image_A_objects,
+  image_B_objects,
+  volume = 25,
+  euc_centroid_dist = 30,
+  overlap = 0.5
+)
+}
+\arguments{
+\item{volume}{(default = 25) Minimum threshold for colocalized volume in voxels.}
+
+\item{euc_centroid_dist}{(default = 30) Euclidean threshold in pixels between the centroid coordinates of two flagged overlapping objects. If this distance is exceeded, there will be an error message.}
+
+\item{overlap}{(default = 0.5) Minimum fraction of object volume overlap from image A (Ch2) with object from image B (Ch1). Fraction is of image A objects.}
 }
 \value{
-returns object labels of colabelled cell counts from the eyfp channel
+returns segmentation object with x Y coordinates as an average of the centroid coordinates. The area will be replaced with the volume of the image A object.
+Intensity is also just replaced with the volume of the image A object.
 }
 \description{
-Get colabelled cells data table. This is a special function used to create a dataframe of colabelled cells
-specifically between the \code{eyfp} and \code{cfos} channels. The designated \code{colabel} channel name in this pipeline refers
-to the overlap between these two specific channels. To name another channel for colabelled cells between two other channels,
-please use a different naming convention, e.g. "colabel_PV_cfos".
+Get colabelled cells data table. This is designed specifically to create a segmentation object from the imported raw files that are outputs from the batch_3D_MultiColocalization.ijm macro.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/mapping_functions.R
 \name{find_segmentation_files}
 \alias{find_segmentation_files}
-\title{get.colabeled.cells <- function(coloc.table, eyfp.counts, eyfp.counts.16bit, volume = 25, overlap = 0.5) {p is positionmi is max indexmp is max proportionmv is max volumemo is max object number for eyfp}
+\title{Find segmentation files following the naming conventions of the denny lab given a channel name and a root slice directory}
 \usage{
 find_segmentation_files(slice_directory, channel)
 }
@@ -11,96 +11,5 @@ returns a vector of two paths. The first element is the path to the measurement 
 quantification data.
 }
 \description{
-get.colabeled.cells <- function(coloc.table, eyfp.counts, eyfp.counts.16bit, volume = 25, overlap = 0.5) {p is positionmi is max indexmp is max proportionmv is max volumemo is max object number for eyfp
+Find segmentation files following the naming conventions of the denny lab given a channel name and a root slice directory
 }
-\section{calculate number of columns}{
-end_col <- (length(names(coloc.table)) - 2)/3
-}
-
-\section{extracting column for objects, volumes, and proportions based on names}{
-mp_names <- paste0("P", 1:end_col)
-mv_names <- paste0("V", 1:end_col)
-mo_names <- paste0("O", 1:end_col)
-}
-
-\section{Get column indices of the volumn column with the largest objects overlap}{
-mi <- max.col(coloc.table\link{mv_names})
-
-######################
-}
-
-\section{Get selection indices}{
-select <- cbind(1:length(coloc.table$X),mi)
-}
-
-\section{Extracting max proportion}{
-mp <- coloc.table\link[=select]{,mp_names}
-mv <- coloc.table\link[=select]{,mv_names}
-mo <- coloc.table\link[=select]{,mo_names}
-
-#############
-}
-
-\section{Get position index of the volume parameteres in the coloc.table}{
-
-}
-
-\section{p <- seq(4,ncol(coloc.table),3)}{
-
-}
-
-\section{names(p) <- names(coloc.table)\link{p}  # Helper line to keep track}{
-
-}
-
-\section{Filter out objects that are smaller than the volume threshold and the less than}{
-
-}
-
-\section{The proportion overlap threshold}{
-mo <- mo\link{mv>=volume & mp>=overlap}
-}
-
-\section{Split by object name and value, split by character position}{
-obj.val.16 <- strsplit(eyfp.counts.16bit$Name,"-") \%>\% lapply(substr, start = 4, stop = 10) \%>\% unlist()
-
-obj.val.16 <-  obj.val.16 \%>\% as.integer()
-val.16 <-  obj.val.16\link{seq(2, length(obj.val.16), by = 2)} # Object value
-obj.16 <-  obj.val.16\link{seq(1, length(obj.val.16), by = 2)} # Object number
-
-obj_index <- match(mo, val.16) \%>\% na.omit()
-mot <- obj.16\link{obj_index} \%>\% as.integer()
-}
-
-\section{mot is matched object number from 16bit measure df that is in mo}{
-obj.val <- strsplit(eyfp.counts$Name,"-") \%>\% lapply(substr, start = 4, stop = 10) \%>\% unlist()
-obj.val <- obj.val \%>\% as.integer()
-obj <-  obj.val\link{seq(1, length(obj.val), by = 2)} # Object number
-}
-
-\section{index of the eyfp rows corresponding to matched object name}{
-index <- match(mot, obj) \%>\% na.omit()
-coloc.data <- eyfp.counts\link{index, unique(names(eyfp.counts))} \%>\% dplyr::distinct()
-
-return(coloc.data)
-\subsection{EXTRAS}{
-}
-}
-
-\section{## get the matched object number}{
-
-}
-
-\section{matched_obj <- mot\link{match(obj , mot)}}{
-\subsection{compare the X&Y coordinates of the 16bit and normal based on matched object number}{
-}
-}
-
-\section{val <-  obj.val\link{seq(2, length(obj.val), by = 2)} # Object value}{
-
-}
-
-\section{df.16 <- eyfp.counts.16bit\link{obj_index,} \%>\% dplyr::distinct()}{
-
-}
-

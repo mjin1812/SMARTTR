@@ -743,7 +743,6 @@ make_segmentation_filter.mouse <- function(m,
 }
 
 
-
 ##____Method for creating segmentation object for each slice____
 
 
@@ -2100,82 +2099,6 @@ get.colabeled.cells <- function(coloc_table,
 
 
 
-
-
-
-
-
-#'
-#' get.colabeled.cells <- function(coloc.table, eyfp.counts, eyfp.counts.16bit, volume = 25, overlap = 0.5) {
-#'   # p is position
-#'   # mi is max index
-#'   # mp is max proportion
-#'   # mv is max volume
-#'   # mo is max object number for eyfp
-#'
-#'
-#'   # calculate number of columns
-#'   end_col <- (length(names(coloc.table)) - 2)/3
-#'
-#'   # extracting column for objects, volumes, and proportions based on names
-#'   mp_names <- paste0("P", 1:end_col)
-#'   mv_names <- paste0("V", 1:end_col)
-#'   mo_names <- paste0("O", 1:end_col)
-#'
-#'   # Get column indices of the volumn column with the largest objects overlap
-#'   mi <- max.col(coloc.table[mv_names])
-#'
-#'   # Get selection indices
-#'   select <- cbind(1:length(coloc.table$X),mi)
-#'
-#'   # Extracting max proportion
-#'   mp <- coloc.table[,mp_names][select]
-#'   mv <- coloc.table[,mv_names][select]
-#'   mo <- coloc.table[,mo_names][select]
-#'
-#'   #############
-#'   # Get position index of the volume parameteres in the coloc.table
-#'   # p <- seq(4,ncol(coloc.table),3)
-#'   # names(p) <- names(coloc.table)[p]  # Helper line to keep track
-#'   # Get column indices of the volumn column with the largest objects overlap
-#'   ######################
-#'
-#'   # Filter out objects that are smaller than the volume threshold and the less than
-#'   # The proportion overlap threshold
-#'   mo <- mo[mv>=volume & mp>=overlap]
-#'
-#'
-#'   # Split by object name and value, split by character position
-#'   obj.val.16 <- strsplit(eyfp.counts.16bit$Name,"-") %>% lapply(substr, start = 4, stop = 10) %>% unlist()
-#'
-#'   obj.val.16 <-  obj.val.16 %>% as.integer()
-#'   val.16 <-  obj.val.16[seq(2, length(obj.val.16), by = 2)] # Object value
-#'   obj.16 <-  obj.val.16[seq(1, length(obj.val.16), by = 2)] # Object number
-#'
-#'   obj_index <- match(mo, val.16) %>% na.omit()
-#'   mot <- obj.16[obj_index] %>% as.integer()
-#'
-#'   # mot is matched object number from 16bit measure df that is in mo
-#'   obj.val <- strsplit(eyfp.counts$Name,"-") %>% lapply(substr, start = 4, stop = 10) %>% unlist()
-#'   obj.val <- obj.val %>% as.integer()
-#'   obj <-  obj.val[seq(1, length(obj.val), by = 2)] # Object number
-#'
-#'
-#'   # index of the eyfp rows corresponding to matched object name
-#'   index <- match(mot, obj) %>% na.omit()
-#'   coloc.data <- eyfp.counts[index, unique(names(eyfp.counts))] %>% dplyr::distinct()
-#'
-#'   return(coloc.data)
-#'
-#'   ## EXTRAS
-#'   # ## get the matched object number
-#'   # matched_obj <- mot[match(obj , mot)]
-#'
-#'   ## compare the X&Y coordinates of the 16bit and normal based on matched object number
-#'   # val <-  obj.val[seq(2, length(obj.val), by = 2)] # Object value
-#'   # df.16 <- eyfp.counts.16bit[obj_index,] %>% dplyr::distinct()
-#'
-#' }
 
 
 
