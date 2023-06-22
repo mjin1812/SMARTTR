@@ -184,24 +184,21 @@ get_correlations <- function(e, by, values,
       }
     }
 
-    # Adjust the correlation matrix (don't include p-values for correlation against self)
-    lowertri <- df_corr$P %>%  lower.tri(diag = FALSE)
-    df_corr$P[!lowertri] <- NA
 
-    lowertri <- df_corr$P %>%  lower.tri(diag = TRUE)
-    df_corr$n[!lowertri] <- NA
-    df_corr$r[!lowertri] <- NA
-
-    # adjust the p-value for false discovery rate or FWER
     if (!isFALSE(p_adjust_method)){
-      # Calculate without removing NAs
-      rows <- rownames(df_corr$P)
-      cols <- colnames(df_corr$P)
-      df_corr$P <- df_corr$P %>% p.adjust(method = p_adjust_method) %>%
-        matrix(nrow = length(rows), ncol= length(cols), dim = list(rows, cols))
+      lowertri <- df_corr$P %>%  lower.tri(diag = FALSE)
+      lower_p <- df_corr$P[lowertri]
+      uppertri <- df_corr$P %>%  upper.tri(diag = FALSE)
+      upper_p <- df_corr$P[uppertri]
+
+      lower_p <- lower_p %>% p.adjust(method = p_adjust_method)
+      df_corr$P[lowertri] <- lower_p
+      upper_p <- upper_p %>% p.adjust(method = p_adjust_method)
+      df_corr$P[uppertri] <- upper_p
     }
 
     df_corr$sig <- df_corr$P <= alpha
+    diag(df_corr$sig) <- FALSE
     corr_list[[channel]] <- df_corr
   }
 
@@ -371,6 +368,8 @@ correlation_diff_permutation <- function(e,
 #' @export
 #' @examples e sundowning <- create_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
 #' @seealso [SMARTR::plot_networks()]
+#'
+#' TODO: verify that this function is converting graphs to a simple graph convert(to_simple) which collapse parallel edges
 create_networks <- function(e,
                             correlation_list_name,
                             channels = c("cfos", "eyfp", "colabel"),
@@ -398,8 +397,8 @@ create_networks <- function(e,
       tidyr::drop_na()
 
     # Edges dataframe
-    edges <- df %>% dplyr::mutate(weight = abs(r),
-                           sign = ifelse(r >= 0, "pos", "neg")) %>%
+    edges <- df %>% dplyr::mutate(sign = ifelse(r >= 0, "pos", "neg"),
+                                  weight = abs(r)) %>%
        dplyr::rename(from = row_acronym,
              to = col_acronym,
              p.value = P)
@@ -773,7 +772,9 @@ plot_percent_colabel <- function(e,
 #' @param image_ext (default = ".png") image extension to the plot as.
 #' @param plot_title (str, default = NULL) If NULL, the `correlation_list_name` will used as the title with underscores removed.
 #' @param height (int) Height of the plot in inches.
+#' @param sig_color (str, default = "yellow") Color of the significance symbol in R
 #' @param width (int) Width of the plot in inches.
+#' @param sig_nudge_y (default = -0.7) Relative amount to nudge the significance symbols in the y direction to center over each square.
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples plot_correlation_heatmaps(e, correlation_list_name = "female_AD") # No return value
@@ -782,6 +783,8 @@ plot_percent_colabel <- function(e,
 plot_correlation_heatmaps <- function(e, correlation_list_name ,
                                       channels = c('cfos', 'eyfp', 'colabel'),
                                       colors = c("#be0000", "#00782e", "#f09b08"),
+                                      sig_color = "yellow",
+                                      sig_nudge_y = -0.7,
                                       print_plot = TRUE, save_plot = TRUE, image_ext = ".png",
                                       plot_title = NULL, height = 10, width = 10){
 
@@ -839,7 +842,8 @@ plot_correlation_heatmaps <- function(e, correlation_list_name ,
   # Generate a correlation heatmap in anatomical order
   p <-  ggplot(df, aes(row_acronym, col_acronym, fill = r)) +
         geom_tile() +
-        geom_text(aes(label = sig_text), size=8, color = "yellow") +
+        # geom_raster()+
+        geom_text(aes(label = sig_text), size=8, position = position_nudge(y = sig_nudge_y), color = sig_color) +
         scale_fill_gradient2(low = "#4f4f4f",mid = "#ffffff", high = colors[[channel]],
                          aesthetics = c("color","fill"), na.value = "grey50")+
         labs(title = plot_title, x = "Brain Region", y = "Brain Region") +
