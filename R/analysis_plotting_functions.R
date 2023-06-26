@@ -158,14 +158,21 @@ get_correlations <- function(e, by, values,
       as.matrix()
 
     # Get minimum number of mice that we have data for across all regions
-    n <- colSums(!is.na(df_channel)) %>% min()
+    # n <- colSums(!is.na(df_channel)) %>% min()
 
-    if (n > 4){
-      # Select the order of the columns, perform the correlations, ignore the mouse_ID and group columns
-      df_corr <- df_channel %>% Hmisc::rcorr()
-    } else {
-      message(c("One or more of your brain regions has a n below 5. \nCalculating pearsons, but we ",
-              "recommend increasing the sample size or excluding that region due to insufficient data"))
+    # Try-catch statement
+    tryCatch({
+      # Code that may throw an error
+      # df_corr <- df_channel %>% Hmisc::rcorr()
+      df_corr <- df_channel %>% interaction.plot()
+    },
+    error = function(err) {
+      message(c("One or more of your brain regions has a n below the recommended value."))
+      message("\nHere's the original error message:")
+      message(err)
+      message(c("\nCalculating pearsons, using alternative method but we ",
+                "recommend increasing the sample size or excluding that region due to insufficient data"))
+
       df_channel %>% dim() -> shape
       df_corr <- vector(mode = "list")
       df_corr$r <- matrix(nrow = shape[2], ncol = shape[2])
@@ -182,8 +189,8 @@ get_correlations <- function(e, by, values,
           df_corr$r[r1,r2] <- ct$estimate
         }
       }
-    }
-
+      return(df_corr)
+    })
 
     if (!isFALSE(p_adjust_method)){
       lowertri <- df_corr$P %>%  lower.tri(diag = FALSE)
@@ -1021,7 +1028,8 @@ volcano_plot <- function(e,
 #' @example
 plot_normalized_counts <- function(e,
                                    channels = c("cfos", "eyfp", "colabel"),
-                                   title = NULL,
+                                   group_names = c("Context", "Shock"),
+                                   title = "",
                                    colors = c("#FFFFFF", "lightblue"),
                                    height = 7,
                                    width = 20,
@@ -1040,8 +1048,9 @@ plot_normalized_counts <- function(e,
 
   for (channel in channels) {
 
-  # select normalized counts for the given channel and generate mean and sem stats by region
+    # select normalized counts for the given channel and generate mean and sem stats by region
     channel_counts <- lh$combined_normalized_counts[[channel]] %>%
+      filter(group %in% group_names)
       select(group, mouse_ID, name, acronym, normalized.count.by.volume) %>%
       group_by(group, acronym, name) %>%
       summarise(n = n(),
@@ -1049,7 +1058,6 @@ plot_normalized_counts <- function(e,
                 sem = sd(normalized.count.by.volume)/sqrt(n))
 
     # generate cell counts plot for the given channel (with standard error bars, slanted region names and clean theme)
-
     p <- channel_counts %>%
       ggplot(aes(y = mean_normalized_counts, x = name,
                  fill = group), color = "black") +
@@ -1103,7 +1111,6 @@ plot_normalized_counts <- function(e,
     p_list[[channels[channel]]] <- p
 
   }
-
 }
 
 
