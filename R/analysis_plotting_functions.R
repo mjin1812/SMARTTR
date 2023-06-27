@@ -163,8 +163,7 @@ get_correlations <- function(e, by, values,
     # Try-catch statement
     tryCatch({
       # Code that may throw an error
-      # df_corr <- df_channel %>% Hmisc::rcorr()
-      df_corr <- df_channel %>% interaction.plot()
+      df_corr <- df_channel %>% Hmisc::rcorr()
     },
     error = function(err) {
       message(c("One or more of your brain regions has a n below the recommended value."))
@@ -1117,18 +1116,21 @@ plot_normalized_counts <- function(e,
 #' Create a parallel coordinate plot
 #' @description Plot the correlation difference between two comparison groups into a parallel coordinate plot. The function
 #' [SMARTR::correlation_diff_permutation()] must be run first in order to generate results to plot.
+#'
 #' @param e experiment object
 #' @param permutation_comparison The name of the correlation group comparisons to plot.
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) channels to plot
 #' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal codes corresponding to the channels (respectively) to plot.
-#' @param x_label_group_1 (str, NULL) The label for the first group in the permutation analysis.
-#' @param x_label_group_2 (str, NULL) The label for the second group in the permutaiton analysis.
+#' @param x_label_group_1 (str, NULL) The label for the first group in the permutation analysis. Note: this is to customize the graph labels. It does not reverse the group order.
+#' @param x_label_group_2 (str, NULL) The label for the second group in the permutaiton analysis. Note: this is to customize the graph labels. It does not reverse the group order.
 #' @param height height of the plot in inches.
 #' @param width width of the plot in inches.
 #' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
+#' @param reverse_group_order (bool, default = TRUE) Reverse the order of the groups on the x-axis.
 #' @param image_ext (default = ".png") image extension to save the plot as.
+#'
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @example
@@ -1142,6 +1144,7 @@ parallel_coordinate_plot <- function(e,
                                      width = 10,
                                      print_plot = TRUE,
                                      save_plot = TRUE,
+                                     reverse_group_order= FALSE,
                                      image_ext = ".png"){
 
 
@@ -1208,12 +1211,16 @@ parallel_coordinate_plot <- function(e,
 
 
     df <- df %>% dplyr::filter(sig, abs(corr_diff) >= 1) %>%
-      dplyr::mutate(group = factor(group, levels = c(group_2, group_1)),
-             nudge = ifelse(group == group_1, 0.1, -0.1)) %>%
+      dplyr::mutate(group = factor(group, levels = c(group_1, group_2)),
+             nudge = ifelse(group == group_1, -0.1, 0.1)) %>%
       dplyr::arrange(group, corr_diff) %>%
       mutate(text = paste(rowreg, colreg, sep = "."),
              group_plot = paste(rowreg, colreg, sep = "."))
 
+    if (isTRUE(reverse_group_order)){
+      df <- df %>% dplyr::mutate(group = fct_rev(group),
+                                 nudge = ifelse(group == group_2, -0.1, 0.1))
+    }
 
     df[seq(2, nrow(df)/2, by = 2),]$text <- ""
     df[seq(nrow(df)/2+1, nrow(df), by = 2),]$text <- ""
