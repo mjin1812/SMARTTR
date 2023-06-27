@@ -7,7 +7,7 @@ NULL
 #' @importFrom dplyr n mutate summarize summarise across arrange group_by
 NULL
 
-#' @importFrom tidygraph activate
+#' @importFrom tidygraph activate convert
 NULL
 
 #' @importFrom tidyr pivot_longer pivot_wider
@@ -374,8 +374,7 @@ correlation_diff_permutation <- function(e,
 #' @export
 #' @examples e sundowning <- create_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
 #' @seealso [SMARTR::plot_networks()]
-#'
-#' TODO: verify that this function is converting graphs to a simple graph convert(to_simple) which collapse parallel edges
+
 create_networks <- function(e,
                             correlation_list_name,
                             channels = c("cfos", "eyfp", "colabel"),
@@ -429,6 +428,18 @@ create_networks <- function(e,
     network <- tidygraph::tbl_graph(nodes = nodes,
                                     edges = edges,
                                     directed = FALSE)
+
+    # Remove self-loops and parallel edges
+    network <- network %>%
+      tidygraph::convert(tidygraph::to_simple) %>%
+      activate(edges) %>%
+      mutate(r = purrr::map_dbl(.orig_data, ~ .x[1,]$r),
+             n = purrr::map_int(.orig_data, ~ .x[1,]$n),
+             p.value = purrr::map_dbl(.orig_data, ~ .x[1,]$p.value),
+             sig = purrr::map_lgl(.orig_data, ~ .x[1,]$sig),
+             sign = purrr::map_chr(.orig_data, ~ .x[1,]$sign),
+             weight = purrr::map_dbl(.orig_data, ~ .x[1,]$weight)) %>%
+      tidygraph::select(-.tidygraph_edge_index, -.orig_data)
 
     # filter by alpha
     network <- network %>% activate(edges) %>% dplyr::filter(p.value < alpha)
@@ -979,7 +990,9 @@ volcano_plot <- function(e,
       geom_point(data = subset(df, sig > 0 & corr_diff <= -1 | sig > 0 & corr_diff >= 1), color = colors[k]) +
       geom_vline(xintercept = c(-1, 1), color = colors[k], size = 1) +
       geom_hline(yintercept = -log10(alpha), color = colors[k], size = 1) +
-      xlim(c(-2, 2)) +
+      ggplot2::coord_cartesian(xlim = c(-2.1, 2.1)) +
+      # xlim(c(-2.2, 2.2)) +
+      scale_x_reverse() +
       ylim(ylim) +
       labs(title = title, x = "Correlation Difference", y = "-log(p-value)") +
       plot_theme
@@ -1010,107 +1023,107 @@ volcano_plot <- function(e,
   }
 }
 
-
-
-#' Plot normalized cell counts
-#' @description Plot the cell counts normalized by volume for a given channel
-#' @param e experiment object
-#' @param channels (str, default = c("cfos", "eyfp", "colabel"))
-#' @param colors (str, default = c()) Hexadecimal codes corresponding to the channels (respectively) to plot.
-#' @param height height of the plot in inches.
-#' @param width width of the plot in inches.
-#' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
-#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of
-#'  the experiment object output folder.
-#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
-#' @export
-#' @example
-plot_normalized_counts <- function(e,
-                                   channels = c("cfos", "eyfp", "colabel"),
-                                   group_names = c("Context", "Shock"),
-                                   title = "",
-                                   colors = c("#FFFFFF", "lightblue"),
-                                   height = 7,
-                                   width = 20,
-                                   print_plot = TRUE,
-                                   save_plot = TRUE,
-                                   image_ext = ".png") {
-
-
-  # Detect the OS and set quartz( as graphing function)
-  if(get_os() != "osx"){
-    quartz <- X11
-  }
-
-  p_list <- vector(mode='list', length = length(channels))
-  names(p_list) <- channels
-
-  for (channel in channels) {
-
-    # select normalized counts for the given channel and generate mean and sem stats by region
-    channel_counts <- lh$combined_normalized_counts[[channel]] %>%
-      filter(group %in% group_names)
-      select(group, mouse_ID, name, acronym, normalized.count.by.volume) %>%
-      group_by(group, acronym, name) %>%
-      summarise(n = n(),
-                mean_normalized_counts = mean(normalized.count.by.volume),
-                sem = sd(normalized.count.by.volume)/sqrt(n))
-
-    # generate cell counts plot for the given channel (with standard error bars, slanted region names and clean theme)
-    p <- channel_counts %>%
-      ggplot(aes(y = mean_normalized_counts, x = name,
-                 fill = group), color = "black") +
-      geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
-      geom_errorbar(aes(ymin = mean_normalized_counts - sem,
-                        ymax = mean_normalized_counts + sem, x = name),
-                    position = position_dodge(0.8),
-                    width = 0.5,
-                    color = "black") +
-      labs(title = title,
-           y = bquote('Normalized cell counts '('cells/mm'^3)),
-           x = "",
-           fill = "Group") +
-      scale_y_continuous(expand = c(0,0)) +
-      scale_fill_manual(values=colors) +
-      theme_bw() +
-      theme(
-        plot.background = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank()) +
-      theme(axis.line = element_line(color = 'black')) +
-      theme(legend.position = "none") +
-      theme(axis.text.x = element_text(angle = 50, hjust = 1))
-
-    p <-  p + ggplot2::ggtitle(title)
-
-    # print plot if indicated
-
-    if (print_plot) {
-      quartz()
-      print(p)
-    }
-
-    if(save_plot){
-      # Plot
-      quartz(width = width, height = height)
-      print(p)
-
-      # Create figure directory if it doesn't already exists
-      output_dir <-  file.path(attr(e, "info")$output_path, "figures")
-      if(!dir.exists(output_dir)){
-        dir.create(output_dir)
-      }
-      image_file <- file.path(output_dir, paste0(channel, "_normalized_region_barplot",
-                                                 image_ext))
-      ggsave(filename = image_file,  width = width, height = height, units = "in")
-    }
-
-    # Save the plot handle
-    p_list[[channels[channel]]] <- p
-
-  }
-}
+#'
+#'
+#' #' Plot normalized cell counts
+#' #' @description Plot the cell counts normalized by volume for a given channel
+#' #' @param e experiment object
+#' #' @param channels (str, default = c("cfos", "eyfp", "colabel"))
+#' #' @param colors (str, default = c()) Hexadecimal codes corresponding to the channels (respectively) to plot.
+#' #' @param height height of the plot in inches.
+#' #' @param width width of the plot in inches.
+#' #' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
+#' #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of
+#' #'  the experiment object output folder.
+#' #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
+#' #' @export
+#' #' @example
+#' plot_normalized_counts <- function(e,
+#'                                    channels = c("cfos", "eyfp", "colabel"),
+#'                                    group_names = c("Context", "Shock"),
+#'                                    title = "",
+#'                                    colors = c("#FFFFFF", "lightblue"),
+#'                                    height = 7,
+#'                                    width = 20,
+#'                                    print_plot = TRUE,
+#'                                    save_plot = TRUE,
+#'                                    image_ext = ".png") {
+#'
+#'
+#'   # Detect the OS and set quartz( as graphing function)
+#'   if(get_os() != "osx"){
+#'     quartz <- X11
+#'   }
+#'
+#'   p_list <- vector(mode='list', length = length(channels))
+#'   names(p_list) <- channels
+#'
+#'   for (channel in channels) {
+#'
+#'     # select normalized counts for the given channel and generate mean and sem stats by region
+#'     channel_counts <- lh$combined_normalized_counts[[channel]] %>%
+#'       filter(group %in% group_names)
+#'       select(group, mouse_ID, name, acronym, normalized.count.by.volume) %>%
+#'       group_by(group, acronym, name) %>%
+#'       summarise(n = n(),
+#'                 mean_normalized_counts = mean(normalized.count.by.volume),
+#'                 sem = sd(normalized.count.by.volume)/sqrt(n))
+#'
+#'     # generate cell counts plot for the given channel (with standard error bars, slanted region names and clean theme)
+#'     p <- channel_counts %>%
+#'       ggplot(aes(y = mean_normalized_counts, x = name,
+#'                  fill = group), color = "black") +
+#'       geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
+#'       geom_errorbar(aes(ymin = mean_normalized_counts - sem,
+#'                         ymax = mean_normalized_counts + sem, x = name),
+#'                     position = position_dodge(0.8),
+#'                     width = 0.5,
+#'                     color = "black") +
+#'       labs(title = title,
+#'            y = bquote('Normalized cell counts '('cells/mm'^3)),
+#'            x = "",
+#'            fill = "Group") +
+#'       scale_y_continuous(expand = c(0,0)) +
+#'       scale_fill_manual(values=colors) +
+#'       theme_bw() +
+#'       theme(
+#'         plot.background = element_blank(),
+#'         panel.grid.major = element_blank(),
+#'         panel.grid.minor = element_blank(),
+#'         panel.border = element_blank()) +
+#'       theme(axis.line = element_line(color = 'black')) +
+#'       theme(legend.position = "none") +
+#'       theme(axis.text.x = element_text(angle = 50, hjust = 1))
+#'
+#'     p <-  p + ggplot2::ggtitle(title)
+#'
+#'     # print plot if indicated
+#'
+#'     if (print_plot) {
+#'       quartz()
+#'       print(p)
+#'     }
+#'
+#'     if(save_plot){
+#'       # Plot
+#'       quartz(width = width, height = height)
+#'       print(p)
+#'
+#'       # Create figure directory if it doesn't already exists
+#'       output_dir <-  file.path(attr(e, "info")$output_path, "figures")
+#'       if(!dir.exists(output_dir)){
+#'         dir.create(output_dir)
+#'       }
+#'       image_file <- file.path(output_dir, paste0(channel, "_normalized_region_barplot",
+#'                                                  image_ext))
+#'       ggsave(filename = image_file,  width = width, height = height, units = "in")
+#'     }
+#'
+#'     # Save the plot handle
+#'     p_list[[channels[channel]]] <- p
+#'
+#'   }
+#' }
 
 
 #' Create a parallel coordinate plot
@@ -1270,6 +1283,7 @@ parallel_coordinate_plot <- function(e,
 }
 
 #' Plot the networks stored in an experiment object
+#'
 #' @param e experiment object
 #' @param network_name (str, default = "AD")
 #' @param title (str, default = NULL) Title of network plot
@@ -1282,6 +1296,7 @@ parallel_coordinate_plot <- function(e,
 #' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.
 #'  the experiment object output folder.
 #' @param edge_color (str, default = "firebrick") Color of the network edges.
+#' @param degree_scale_limit (vec, default = c(1,10)) Scale limit for degree size
 #' Can also be a hexadecimal color code written as a string.
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
@@ -1293,6 +1308,7 @@ plot_networks <- function(e,
                           edge_color = "firebrick",
                           height = 15,
                           width = 15,
+                          degree_scale_limit = c(1,10),
                           image_ext = ".png",
                           print_plot = TRUE,
                           save_plot = TRUE){
@@ -1338,7 +1354,7 @@ plot_networks <- function(e,
                           guide = guide_legend(override.aes = list(size=5), order=4)) +
       ggraph::scale_edge_width(limits=c(0.8,1),range = c(1,3),name = "Correlation Strength",
                        guide = guide_legend(order = 3)) +
-      ggplot2::scale_size(limits = c(1,6),name="Degree",range=c(4,10),
+      ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=c(4,10),
                  guide = guide_legend(order = 2)) +
       ggplot2::coord_equal() + theme.network
 
