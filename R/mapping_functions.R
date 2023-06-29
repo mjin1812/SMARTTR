@@ -750,11 +750,11 @@ make_segmentation_filter.mouse <- function(m,
 #'
 #' @rdname make_segmentation_object
 #' @description Make a wholebrain compatible segmentation object for a slice in a slice object
+#'
 #' @param s slice object
 #' @param mouse_ID (str) ID of mouse
 #' @param channels (str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.
 #' @param use_filter (bool, default = FALSE). Use a filter to create more curated segmentation object from the raw segmentation data.
-#' @param colabel_base_channel (str, default = "eyfp"). The base channel from which to get x,y, area, and intensity values from for the colabel channel.
 #' @param ... (optional) additional volume and overlap parameters for get.colabeled.cells().
 #'
 #' @return s slice object
@@ -766,7 +766,6 @@ make_segmentation_object.slice <- function(s,
                                            mouse_ID = NA,
                                            channels = NULL,
                                            use_filter = FALSE,
-                                           colabel_base_channel ="eyfp",
                                            ... ){
 
   # Get slice information
@@ -787,11 +786,8 @@ make_segmentation_object.slice <- function(s,
   segmentation_list  <- vector(mode = 'list', length = length(channels))
   names(segmentation_list) <- names(channels)
 
-
   for (channel in channels){
     if (channel == 'colabel'){
-
-
       seg.coloc <- get.colabeled.cells(s$raw_segmentation_data$colabel$coloc_table,
                                               s$raw_segmentation_data$colabel$image_A_objects,
                                               s$raw_segmentation_data$colabel$image_B_objects,
@@ -799,7 +795,6 @@ make_segmentation_object.slice <- function(s,
       seg.coloc$soma$x <- seg.coloc$soma$x/(info$bin)
       seg.coloc$soma$y <- seg.coloc$soma$y/(info$bin)
       segmentation_list[[channel]] <- seg.coloc
-
     } else {
       #Other channels
       if (use_filter){
@@ -812,18 +807,15 @@ make_segmentation_object.slice <- function(s,
       } else {
         counts <- s$raw_segmentation_data[[channel]]
       }
-
       seg <- SMARTR::segmentation.object
       seg$soma$x <- counts$CX..pix./(info$bin) #create position column to account for binning
       seg$soma$y <- counts$CY..pix./(info$bin) #same as above
       seg$soma$area <- counts$Vol..pix.
       seg$soma$intensity <- counts$Mean
-
       # Store into segmentation list
       segmentation_list[[channel]] <- seg
     }
   }
-
  s$segmentation_obj <- segmentation_list
   return(s)
 }
@@ -1575,7 +1567,7 @@ split_hipp_DV <- function(m,
   # Loop through all rois and get all subregions
   regions <- c(rois)
   for (roi in rois) {
-    regions <- c(regions, wholebrain::get.sub.structure(roi))
+    regions <- c(regions, SMARTR::get.sub.structure(roi))
   }
 
   ## Isolating counts from the hippocampus & sorting them by coordinate
@@ -1589,8 +1581,7 @@ split_hipp_DV <- function(m,
   for (channel in channels){
 
     # Get cell table of just the hippocampus
-    rois_ind <- which(m$cell_table[[channel]]$acronym %in% regions)
-    hipp_df <- m$cell_table[[channel]][rois_ind,]
+    hipp_df <- m$cell_table[[channel]] %>% dplyr::filter(acronym %in% regions)
 
     # Store dorsal counts if there are any, else erase
     if (sum(hipp_df$AP > AP_coord) > 0){
@@ -1814,14 +1805,13 @@ get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2",
   total_volumes_hipp <- list("dorsal" = aggregate_volumes_dorsal,
                               "ventral" = aggregate_volumes_ventral)
 
-
-  # iterator
-
-  # for (volumes in list(aggregate_volumes_dorsal, aggregate_volumes_ventral)){
   for (dv in names(total_volumes_hipp)){
     if (length(total_volumes_hipp[[dv]]) > 0){
-      total_volumes_hipp[[dv]] <- total_volumes_hipp[[dv]] %>% dplyr::group_by(area, volume, acronym, right.hemisphere, name) %>%
-        dplyr::summarise(area.mm2 = sum(area)*1e-6, volume.mm3 = volume*1e-9)
+
+
+      # This line is where your error is !!!!!!!!!!!!!!
+      total_volumes_hipp[[dv]] <- total_volumes_hipp[[dv]] %>% dplyr::group_by(acronym, right.hemisphere, name) %>%
+        dplyr::summarise(area.mm2 = sum(area)*1e-6, volume.mm3 = sum(volume)*1e-9)
 
       # Store only regions in the hippocampus
       total_volumes_hipp[[dv]] <- total_volumes_hipp[[dv]][total_volumes_hipp[[dv]]$acronym %in% regions,]
