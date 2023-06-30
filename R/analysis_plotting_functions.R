@@ -1128,7 +1128,8 @@ plot_normalized_counts <- function(e,
       theme(strip.text.x = element_text(angle = 0),
             strip.placement = "outside",
             strip.background = element_rect(color = "black",
-                                            fill = "lightblue"))
+                                            fill = "lightblue")) +
+      theme(plot.margin = margin(1,1.5,0,1.5, "cm"))
 
     if (print_plot) {
       quartz()
