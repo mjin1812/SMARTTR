@@ -1057,7 +1057,7 @@ plot_normalized_counts <- function(e,
     quartz <- X11
   }
 
-  # create plot list containig number of plots equal to the number of channels
+  # create plot list containing number of plots equal to the number of channels
 
   p_list <- vector(mode = 'list', length = length(channels))
   names(p_list) <- channels
