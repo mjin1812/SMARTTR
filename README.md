@@ -17,9 +17,7 @@ Moreover, SMARTR provides a streamlined API for storing metadata related to imag
 
 Finally, SMARTR provides a set of built-in analysis and visualization functions to conduct network analysis for each ensemble dataset for immediate downstream analysis. SMARTR is designed to facilitate dual-ensemble brain mapping projects by lowering the technical barrier for registration, segmentation, and statistical analysis.
 
-Check out the [Get Started](./articles/SMARTR.html) page to see a more thorough breakdown of the pipeline and get started using an example dataset! 
-
+Check out the [Get Started](./articles/SMARTR.html) page for installation instructions! 
 
 ## Contact
 Answers to common questions may be found in the FAQ page. Please look there first to troubleshoot any issues. If questions are not otherwise answered through the FAQ or through the tutorial, feel free to contact me at [mj2947@cumc.columbia.edu](mailto:mj2947@cumc.columbia.edu) for any further clarification.
-
