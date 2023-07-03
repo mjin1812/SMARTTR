@@ -15,6 +15,7 @@ parallel_coordinate_plot(
   width = 10,
   print_plot = TRUE,
   save_plot = TRUE,
+  reverse_group_order = FALSE,
   image_ext = ".png"
 )
 }
@@ -27,9 +28,9 @@ parallel_coordinate_plot(
 
 \item{colors}{(str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal codes corresponding to the channels (respectively) to plot.}
 
-\item{x_label_group_1}{(str, NULL) The label for the first group in the permutation analysis.}
+\item{x_label_group_1}{(str, NULL) The label for the first group in the permutation analysis. Note: this is to customize the graph labels. It does not reverse the group order.}
 
-\item{x_label_group_2}{(str, NULL) The label for the second group in the permutaiton analysis.}
+\item{x_label_group_2}{(str, NULL) The label for the second group in the permutaiton analysis. Note: this is to customize the graph labels. It does not reverse the group order.}
 
 \item{height}{height of the plot in inches.}
 
@@ -39,6 +40,8 @@ parallel_coordinate_plot(
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}
+
+\item{reverse_group_order}{(bool, default = TRUE) Reverse the order of the groups on the x-axis.}
 
 \item{image_ext}{(default = ".png") image extension to save the plot as.}
 }

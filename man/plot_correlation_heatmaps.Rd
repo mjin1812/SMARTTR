@@ -9,6 +9,8 @@ plot_correlation_heatmaps(
   correlation_list_name,
   channels = c("cfos", "eyfp", "colabel"),
   colors = c("#be0000", "#00782e", "#f09b08"),
+  sig_color = "yellow",
+  sig_nudge_y = -0.7,
   print_plot = TRUE,
   save_plot = TRUE,
   image_ext = ".png",
@@ -26,6 +28,10 @@ plot_correlation_heatmaps(
 
 \item{colors}{(str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal code for the colors corresponding channels parameter. Color values can also be
 input compatible with ggplot2 plotting functions.}
+
+\item{sig_color}{(str, default = "yellow") Color of the significance symbol in R}
+
+\item{sig_nudge_y}{(default = -0.7) Relative amount to nudge the significance symbols in the y direction to center over each square.}
 
 \item{print_plot}{(bool, default = TRUE) Print the plot as graphics windows.}
 

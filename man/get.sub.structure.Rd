@@ -10,5 +10,5 @@ get.sub.structure(x)
 \item{x}{(str vector) Regional acronyms in a vector}
 }
 \description{
-Search function to get substructure acronyms from parent acronym.
+Search function to get ALL substructure acronyms from parent acronym.
 }

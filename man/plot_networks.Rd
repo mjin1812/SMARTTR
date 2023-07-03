@@ -12,7 +12,9 @@ plot_networks(
   edge_color = "firebrick",
   height = 15,
   width = 15,
+  degree_scale_limit = c(1, 10),
   image_ext = ".png",
+  network_radius = 300,
   print_plot = TRUE,
   save_plot = TRUE
 )
@@ -26,12 +28,14 @@ plot_networks(
 
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel"))}
 
-\item{edge_color}{(str, default = "firebrick") Color of the network edges.
-Can also be a hexadecimal color code written as a string.}
+\item{edge_color}{(str, default = "firebrick") Color of the network edges.}
 
 \item{height}{Height of the plot in inches.}
 
 \item{width}{width of the plot in inches.}
+
+\item{degree_scale_limit}{(vec, default = c(1,10)) Scale limit for degree size
+Can also be a hexadecimal color code written as a string.}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 

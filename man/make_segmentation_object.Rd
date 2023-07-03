@@ -13,7 +13,6 @@ make_segmentation_object(x, ...)
   mouse_ID = NA,
   channels = NULL,
   use_filter = FALSE,
-  colabel_base_channel = "eyfp",
   ...
 )
 
@@ -37,8 +36,6 @@ make_segmentation_object(x, ...)
 \item{channels}{(str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.}
 
 \item{use_filter}{(bool, default = FALSE). Use a filter to create more curated segmentation object from the raw segmentation data.}
-
-\item{colabel_base_channel}{(str, default = "eyfp"). The base channel from which to get x,y, area, and intensity values from for the colabel channel.}
 
 \item{m}{mouse object}
 
