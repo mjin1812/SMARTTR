@@ -356,7 +356,7 @@ name.from.id <- function (x)
 
 
 #' Get subregion acronyms
-#' @description Search function to get substructure acronyms from parent acronym.
+#' @description Search function to get ALL substructure acronyms from parent acronym.
 #' @param x (str vector) Regional acronyms in a vector
 #' @export
 get.sub.structure <- function (x)

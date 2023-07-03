@@ -439,7 +439,9 @@ create_networks <- function(e,
              sig = purrr::map_lgl(.orig_data, ~ .x[1,]$sig),
              sign = purrr::map_chr(.orig_data, ~ .x[1,]$sign),
              weight = purrr::map_dbl(.orig_data, ~ .x[1,]$weight)) %>%
-      tidygraph::select(-.tidygraph_edge_index, -.orig_data)
+      tidygraph::select(-.tidygraph_edge_index,  -.orig_data) %>%
+      activate(nodes) %>%
+      tidygraph::select(-.tidygraph_node_index)
 
     # filter by alpha
     network <- network %>% activate(edges) %>% dplyr::filter(p.value < alpha)
@@ -511,7 +513,6 @@ summarise_networks <- function(e,
 
       nodes_df_list[[network]] <-  e$networks[[network]][[channel]] %>% tidygraph::activate(nodes) %>%
         tibble::as_tibble() %>% dplyr::mutate(group = network)
-
       edges_df_list[[network]] <-  e$networks[[network]][[channel]] %>% tidygraph::activate(edges) %>%
         tibble::as_tibble() %>% dplyr::mutate(group = network)
     }
@@ -519,7 +520,7 @@ summarise_networks <- function(e,
     edges_df <- dplyr::bind_rows(edges_df_list) %>% dplyr::mutate(group=factor(group, levels = network_names))
 
     network_stats_df <- nodes_df %>% dplyr::group_by(group) %>%
-      dplyr::summarise_if(is.numeric,list(~mean(.),~sd(.))) %>%
+      dplyr::summarise_if(is.numeric,list(~mean(.),~sd(.), ~sem(.))) %>%
       dplyr::left_join(nodes_df %>% dplyr::group_by(group) %>% dplyr::summarise(n.nodes = n())) %>%
       dplyr::left_join(edges_df %>% dplyr::group_by(group) %>% dplyr::summarise(n.edges = n())) %>%
       dplyr::mutate(edge.density = n.edges/(2*n.nodes*(n.nodes-1))) %>%
@@ -1023,107 +1024,6 @@ volcano_plot <- function(e,
   }
 }
 
-#'
-#'
-#' #' Plot normalized cell counts
-#' #' @description Plot the cell counts normalized by volume for a given channel
-#' #' @param e experiment object
-#' #' @param channels (str, default = c("cfos", "eyfp", "colabel"))
-#' #' @param colors (str, default = c()) Hexadecimal codes corresponding to the channels (respectively) to plot.
-#' #' @param height height of the plot in inches.
-#' #' @param width width of the plot in inches.
-#' #' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
-#' #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of
-#' #'  the experiment object output folder.
-#' #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
-#' #' @export
-#' #' @example
-#' plot_normalized_counts <- function(e,
-#'                                    channels = c("cfos", "eyfp", "colabel"),
-#'                                    group_names = c("Context", "Shock"),
-#'                                    title = "",
-#'                                    colors = c("#FFFFFF", "lightblue"),
-#'                                    height = 7,
-#'                                    width = 20,
-#'                                    print_plot = TRUE,
-#'                                    save_plot = TRUE,
-#'                                    image_ext = ".png") {
-#'
-#'
-#'   # Detect the OS and set quartz( as graphing function)
-#'   if(get_os() != "osx"){
-#'     quartz <- X11
-#'   }
-#'
-#'   p_list <- vector(mode='list', length = length(channels))
-#'   names(p_list) <- channels
-#'
-#'   for (channel in channels) {
-#'
-#'     # select normalized counts for the given channel and generate mean and sem stats by region
-#'     channel_counts <- lh$combined_normalized_counts[[channel]] %>%
-#'       filter(group %in% group_names)
-#'       select(group, mouse_ID, name, acronym, normalized.count.by.volume) %>%
-#'       group_by(group, acronym, name) %>%
-#'       summarise(n = n(),
-#'                 mean_normalized_counts = mean(normalized.count.by.volume),
-#'                 sem = sd(normalized.count.by.volume)/sqrt(n))
-#'
-#'     # generate cell counts plot for the given channel (with standard error bars, slanted region names and clean theme)
-#'     p <- channel_counts %>%
-#'       ggplot(aes(y = mean_normalized_counts, x = name,
-#'                  fill = group), color = "black") +
-#'       geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
-#'       geom_errorbar(aes(ymin = mean_normalized_counts - sem,
-#'                         ymax = mean_normalized_counts + sem, x = name),
-#'                     position = position_dodge(0.8),
-#'                     width = 0.5,
-#'                     color = "black") +
-#'       labs(title = title,
-#'            y = bquote('Normalized cell counts '('cells/mm'^3)),
-#'            x = "",
-#'            fill = "Group") +
-#'       scale_y_continuous(expand = c(0,0)) +
-#'       scale_fill_manual(values=colors) +
-#'       theme_bw() +
-#'       theme(
-#'         plot.background = element_blank(),
-#'         panel.grid.major = element_blank(),
-#'         panel.grid.minor = element_blank(),
-#'         panel.border = element_blank()) +
-#'       theme(axis.line = element_line(color = 'black')) +
-#'       theme(legend.position = "none") +
-#'       theme(axis.text.x = element_text(angle = 50, hjust = 1))
-#'
-#'     p <-  p + ggplot2::ggtitle(title)
-#'
-#'     # print plot if indicated
-#'
-#'     if (print_plot) {
-#'       quartz()
-#'       print(p)
-#'     }
-#'
-#'     if(save_plot){
-#'       # Plot
-#'       quartz(width = width, height = height)
-#'       print(p)
-#'
-#'       # Create figure directory if it doesn't already exists
-#'       output_dir <-  file.path(attr(e, "info")$output_path, "figures")
-#'       if(!dir.exists(output_dir)){
-#'         dir.create(output_dir)
-#'       }
-#'       image_file <- file.path(output_dir, paste0(channel, "_normalized_region_barplot",
-#'                                                  image_ext))
-#'       ggsave(filename = image_file,  width = width, height = height, units = "in")
-#'     }
-#'
-#'     # Save the plot handle
-#'     p_list[[channels[channel]]] <- p
-#'
-#'   }
-#' }
 
 
 #' Create a parallel coordinate plot
@@ -1310,6 +1210,7 @@ plot_networks <- function(e,
                           width = 15,
                           degree_scale_limit = c(1,10),
                           image_ext = ".png",
+                          network_radius = 300,
                           print_plot = TRUE,
                           save_plot = TRUE){
 
@@ -1328,8 +1229,8 @@ plot_networks <- function(e,
 
     # _______________ Plot the network ________________________________
     theme.network <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5,size = 28),
-                                           legend.text = element_text(size = 15),
-                                           legend.title = element_text(size = 15))
+                                                   legend.text = element_text(size = 15),
+                                                   legend.title = element_text(size = 15))
 
     p <- ggraph::ggraph(network, layout = "linear", circular = TRUE) +
       ggraph::geom_edge_diagonal(aes(color = sign, width = abs(weight)),
@@ -1347,7 +1248,7 @@ plot_networks <- function(e,
                               labels = c(pos = "Positive", neg = "Negative"),
                               name = "Correlation",
                               guide = guide_legend(order = 1,
-                                                   override.aes = list(size = 4))) +
+                                                   override.aes = list(size = 8))) +
       ggraph::scale_color_viridis(name = "Anatomical Region",
                           discrete = TRUE,
                           option = "D",
@@ -2262,7 +2163,6 @@ rois_intersect_region_list <- function(common_reg, rois){
     rois <- c(rois, child_r)
     child_r <- SMARTR::get.acronym.child(child_r) %>% na.omit()
   }
-
   message("Checking also for child regions of specified roi(s). Only rois and child rois that overlap with common
             regions of both channels will be used.")
 
@@ -2276,8 +2176,14 @@ rois_intersect_region_list <- function(common_reg, rois){
   } else{
     common_reg <- intersect(rois, common_reg)
   }
-
   return(common_reg)
 }
 
-
+#' Standard error function
+#' @param x (vec)
+#' @return
+#' @export
+#' @examples
+sem <- function(x){
+  sd(x) / sqrt(length(x))
+}

@@ -1808,8 +1808,6 @@ get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2",
   for (dv in names(total_volumes_hipp)){
     if (length(total_volumes_hipp[[dv]]) > 0){
 
-
-      # This line is where your error is !!!!!!!!!!!!!!
       total_volumes_hipp[[dv]] <- total_volumes_hipp[[dv]] %>% dplyr::group_by(acronym, right.hemisphere, name) %>%
         dplyr::summarise(area.mm2 = sum(area)*1e-6, volume.mm3 = sum(volume)*1e-9)
 
@@ -1822,7 +1820,6 @@ get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2",
   }
   return(total_volumes_hipp)
 }
-
 
 
 ## Modification of Marcos' function
