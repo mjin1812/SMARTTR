@@ -777,6 +777,115 @@ plot_percent_colabel <- function(e,
   return(p)
 }
 
+
+#' Plot normalized cell counts
+#' @description Plot the cell counts normalized by volume for a given channel
+#' @param e experiment object
+#' @param channels (str, default = c("cfos", "eyfp", "colabel"))
+#' @param groups (str, default = c("Context", "Shock")) The groups to be plotted. The order of this vector will dictate the ordering of grouped bars in the resulting plot.
+#' @param colors (str, default = c("white", "lightblue")) Hexadecimal codes corresponding to the groups (respectively) to plot.
+#' @param regions_to_remove (str, default = c("CTX", "grey", "MB", "TH", "HY")) A vector of strings corresponding to regions to remove from the plot. The default regions are parent regions from which their subregions have already been plotted.
+#' @param title (str, default = NULL) An optional title for the plot
+#' @param height height of the plot in inches.
+#' @param width width of the plot in inches.
+#' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
+#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of
+#'  the experiment object output folder.
+#' @param image_ext (default = ".png") image extension to the plot as.
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
+#' @export
+#' @example
+plot_normalized_counts <- function(e,
+                                   channels = c("cfos", "eyfp", "colabel"),
+                                   groups = c("Context", "Shock"),
+                                   colors = c("white", "lightblue"),
+                                   regions_to_remove = c("CTX", "grey", "MB", "TH", "HY"),
+                                   title = NULL,
+                                   height = 7,
+                                   width = 20,
+                                   print_plot = TRUE,
+                                   save_plot = TRUE,
+                                   image_ext = ".pdf") {
+  # check os and set graphics window
+  if (get_os() != "osx") {
+    quartz <- X11
+  }
+  # create plot list containing number of plots equal to the number of channels
+  p_list <- vector(mode = 'list', length = length(channels))
+  names(p_list) <- channels
+  for (k in 1:length(channels)) {
+    # group channel counts by region and group
+    channel_counts <- e$combined_normalized_counts[[channels[k]]] %>%
+      filter(group %in% groups) %>%
+      select(group, mouse_ID, name, acronym, normalized.count.by.volume) %>%
+      group_by(group, acronym, name) %>%
+      summarise(mean_normalized_counts = mean(normalized.count.by.volume),
+                sem = sd(normalized.count.by.volume)/sqrt(n()))
+    # remove parent regions (if any are specified) containing residual counts which are better represented in subregions
+    channel_counts <- channel_counts[-c(which(channel_counts$acronym %in% regions_to_remove)),]
+    # gather parent regions and assign these regions to subregions containing counts
+    anatomical.order <- c("Isocortex", "OLF", "HPF", "CTXsp", "CNU",
+                          "TH", "HY", "MB", "HB", "CB")
+    regions.ordered <- anatomical.order %>%
+      purrr::map(SMARTR::get.sub.structure) %>%
+      unlist()
+    common.regions.ordered <- channel_counts$name[unique(match(regions.ordered, channel_counts$acronym))]
+    channel_counts$name <- factor(channel_counts$name, levels = common.regions.ordered)
+    channel_counts <- channel_counts %>%
+      mutate(parent = get.sup.structure(acronym, matching.string = anatomical.order)) %>%
+      na.omit()
+    channel_counts$parent <- factor(channel_counts$parent, levels = anatomical.order)
+    channel_counts$group <- factor(channel_counts$group, levels = groups)
+    # plot normalized cell counts, grouped by specified groups and ordered by parent region
+    cell_counts_plot <- channel_counts %>%
+      ggplot(aes(y = mean_normalized_counts, x = name,
+                 fill = group), color = "black") +
+      geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
+      geom_errorbar(aes(ymin = mean_normalized_counts - sem,
+                        ymax = mean_normalized_counts + sem, x = name),
+                    position = position_dodge(0.8),
+                    width = 0.5,
+                    color = "black") +
+      labs(title = title,
+           y = bquote('Cell counts '('cells/mm'^3)),
+           x = "",
+           fill = "Group") +
+      scale_y_continuous(expand = c(0,0)) +
+      scale_fill_manual(values=c(colors)) +
+      facet_grid(~parent, scales = "free_x", space = "free_x", switch = "x") +
+      theme_bw() +
+      theme(
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank()) +
+      theme(axis.line = element_line(color = 'black')) +
+      theme(legend.position = "none") +
+      theme(axis.text.x = element_text(angle = 50, hjust = 1)) +
+      theme(strip.text.x = element_text(angle = 0),
+            strip.placement = "outside",
+            strip.background = element_rect(color = "black",
+                                            fill = "lightblue")) +
+  theme(plot.margin = margin(1,1.5,0,1.5, "cm"))
+
+if (print_plot) {
+  quartz()
+  print(cell_counts_plot)
+}
+if (save_plot) {
+  # create figures directory if not already created
+  output_dir <-  file.path(attr(e, "info")$output_path, "figures")
+  if(!dir.exists(output_dir)){
+    dir.create(output_dir)
+  }
+  # save in figures
+  ggsave(cell_counts_plot, filename = paste0(channels[k], "_normalized_counts", image_ext),
+         path = file.path(attr(lh, 'info')$output_path, "figures"), width = width, height = height)
+}
+p_list[[channels[k]]] <- cell_counts_plot
+  }
+}
+
 #' Plot correlation heatmaps
 #'
 #' @param e experiment object. Must contain a named correlation_list object generated by [SMARTR::get_correlations()]
