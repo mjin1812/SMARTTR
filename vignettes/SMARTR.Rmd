@@ -31,11 +31,18 @@ This page provides installation instrutions and a broad explanation of the centr
 
 # 1 Installation
 
-## 1.1 Install `wholebrain`
+
+## 1.1 Install RStudio and R 
+
+We recommend installing R version 3.6.
+
+
+
+## 1.2 Install `wholebrain`
 
 Installing `wholebrain` can be finicky. The most updated instructions on installing `wholebrain` for Windows is found [here](https://matiasandina.github.io/wholebrain_install/). For Macs, the instructions can be found [here](https://osf.io/k963s). We strongly recommend using a Windows setup, as this package has been used mostly in Windows. 
 
-## 1.2 Install `SMARTR`
+## 1.3 Install `SMARTR`
 
 TODO: modify the personal access token once the package is public.
 

@@ -1,0 +1,48 @@
+---
+title: "4. FAQ"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{FAQ}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+# FAQ
+
+Below is an FAQ 
+
+
+## Hardware recommendations
+Below are the specs of the computers we use for processing our datasets.
+
++ RAM: 64GB
++ CPU: Intel(R) Core(TM) i9-10900 
+
+We recommend a minimum of 32 GB of RAM because the image processing scripts can be intensive. 
+
+## OS & Software versions
++ OS: Windows 10
++ Fiji/ImageJ: 2.9.0 (64-bit)
++ 3D ImageJ Suite: 4.1.5
+
+## How long should segmentation take?
+
+It depends on the specs of your computer and the size and specs of your images. Since our images are somewhat high resolution, and our image [segmentation macro](https://osf.io/bek56) segments in 3D not 2D, it can be relatively computationally intensive. However, it is easy to process an equivalent dataset of ~150 images over a weekend using a computer with the recommended hardware specs.
+
+## What are some common errors I might encounter either using SMARTR or in wholebrain?
+### R out of bounds error
+#### Not choosing the right brain.threshold
+#### Not choosing the right resize parameter
+### I can't get a good first contour around my brains
+### I have regions torn and I only want to process one hemisphere?
+Check out the hemisphere parameter
+
+
+The `MAX_name.tif` file highlighted in blue is used as the reference image during interactive registrations. This is the a flattened version of the .`tif` file from step B. The `wholebrain` package can only do registrations on 2D tiff images so this `MAX_name.tif` is used to calculate the approximate transformation that should happen to all the cells segmented in 3D. Importantly, the brain contours in this `MAX_name.tif` cannot touch any of the 4 borders of an image. These images should either be manually edited in ImageJ to omit brain contours intersecting the image border, or the original `.tif` image (B) should be padded with a small border of black pixels. 
