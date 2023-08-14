@@ -306,7 +306,7 @@ new_experiment <- function(data = list(mice = list()),
   stopifnot(is.list(data))
   stopifnot(is.list(info))
   structure(data,
-            class = 'wholebrain_experiment',
+            class = 'experiment',
             info = info)
 }
 

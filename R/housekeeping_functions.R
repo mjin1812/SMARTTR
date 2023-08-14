@@ -41,7 +41,7 @@ save_mouse <- function(..., timestamp = FALSE){
 #' @param e experiment object
 #' @export
 
-print.wb_experiment <- function(e){
+print.experiment <- function(e){
   print(attr(e, 'info'))
 }
 
