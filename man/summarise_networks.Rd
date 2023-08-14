@@ -11,7 +11,8 @@ summarise_networks(
   channels = c("cfos", "eyfp", "colabel"),
   save_stats = TRUE,
   save_degree_distribution = TRUE,
-  save_betweenness_distribution = TRUE
+  save_betweenness_distribution = TRUE,
+  save_efficiency_distribution = TRUE
 )
 }
 \arguments{
@@ -25,7 +26,9 @@ summarise_networks(
 
 \item{save_degree_distribution}{(bool, default = TRUE) Save the network degree distributions (frequencies of each degree) across each comparison group as a csv file.}
 
-\item{save_betweenness_distribution}{(bool, default = TRUE) Save the betweenness distribution.}
+\item{save_betweenness_distribution}{(bool, default = TRUE) Save the betweenness distribution and summary as a csv.}
+
+\item{save_efficiency_distribution}{(bool, default = TRUE) Save the efficiency distribution and summary as a csv.}
 }
 \value{
 e experiment object

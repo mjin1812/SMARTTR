@@ -102,7 +102,7 @@ The default parameters should be fine, but you can change the contrast saturatio
 
 ## c-Fos segmentation using a generalized 3D segmentation macro
 
-We have developed a generalized ImageJ [macro](https://osf.io/bek56) that works well for segmenting cells from images with staining patterns characteristic of c-Fos immunolabelling. c-Fos staining is typically punctate and nuclear, with each cell resembling a filled sphere. We recommend using this macro twice if you are staining two channels with similar immunolabelling patterns as c-Fos. 
+We have developed a generalized ImageJ [macro](https://osf.io/bek56) that works well for segmenting cells from images with staining patterns characteristic of c-Fos immunolabelling. c-Fos staining is typically punctate and localizes to the cell body, with each cell resembling a filled sphere. We recommend using this macro twice if you are staining two channels with similar immunolabelling patterns as c-Fos. 
 
 The macro segments c-Fos cells using the following steps.
 

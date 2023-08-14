@@ -476,7 +476,8 @@ create_networks <- function(e,
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
 #' @param save_stats (bool, default = TRUE) Save the summary stats as a csv file in the output folder
 #' @param save_degree_distribution (bool, default = TRUE) Save the network degree distributions (frequencies of each degree) across each comparison group as a csv file.
-#' @param save_betweenness_distribution (bool, default = TRUE) Save the betweenness distribution.
+#' @param save_betweenness_distribution (bool, default = TRUE) Save the betweenness distribution and summary as a csv.
+#' @param save_efficiency_distribution (bool, default = TRUE) Save the efficiency distribution and summary as a csv.
 #' @return e experiment object
 #' @export
 #' @examples e <- get_network_statistics(e,  network_names = c("female_AD", "female_control"),
@@ -486,7 +487,8 @@ summarise_networks <- function(e,
                                channels = c("cfos", "eyfp", "colabel"),
                                save_stats = TRUE,
                                save_degree_distribution = TRUE,
-                               save_betweenness_distribution = TRUE){
+                               save_betweenness_distribution = TRUE,
+                               save_efficiency_distribution = TRUE){
 
   # Check all the networks named are made
   if(!all(network_names %in% names(e$networks))){
@@ -529,21 +531,48 @@ summarise_networks <- function(e,
     #make table of degree frequency (useful for plotting degree histogram outside of R)
     degree_distribution_df <- nodes_df %>% dplyr::group_by(group, degree) %>% dplyr::count(degree)
 
+
+    # Make a dataframe of degree (useful)
+    degree_distribution <- nodes_df %>% dplyr::select(name, group, degree) %>%
+      dplyr::group_by(group) %>% dplyr::arrange(group, dplyr::desc(degree)) %>%
+      dplyr::mutate(name = factor(name, levels=name))
+
+    #make table of betweenness frequency (useful for plotting degree histogram outside of R)
+    betweenness_distribution_df <- nodes_df %>% dplyr::group_by(group, btw) %>% dplyr::count(btw)
+
+
     # Make a dataframe of betweenness (useful)
     betweenness_distribution <- nodes_df %>% dplyr::select(name, group, btw) %>%
       dplyr::group_by(group) %>% dplyr::arrange(group, dplyr::desc(btw)) %>%
       dplyr::mutate(name = factor(name, levels=name))
+
+    #make table of efficiency frequency (useful for plotting degree histogram outside of R)
+    efficiency_distribution_df <- nodes_df %>% dplyr::group_by(group, efficiency) %>% dplyr::count(efficiency)
+
+
+    # Make a dataframe of efficiency (useful)
+    efficiency_distribution <- nodes_df %>% dplyr::select(name, group, efficiency) %>%
+      dplyr::group_by(group) %>% dplyr::arrange(group, dplyr::desc(efficiency)) %>%
+      dplyr::mutate(name = factor(name, levels=name))
+
 
     if(save_stats){
       write.csv(network_stats_df,  file.path(outpath, paste0("summary_networks_stats_", channel, ".csv")))
     }
 
     if(save_degree_distribution){
-      write.csv(degree_distribution_df,  file.path(outpath, paste0("networks_degree_distributions_", channel, ".csv")))
+      write.csv(degree_distribution,  file.path(outpath, paste0("networks_degree_distributions_", channel, ".csv")))
+      write.csv(degree_distribution_df,  file.path(outpath, paste0("networks_degree_distributions_summary_", channel, ".csv")))
     }
 
     if(save_betweenness_distribution){
-      write.csv( betweenness_distribution,  file.path(outpath, paste0("networks_betweenness_distributions_", channel, ".csv")))
+      write.csv(betweenness_distribution,  file.path(outpath, paste0("networks_betweenness_distributions_", channel, ".csv")))
+      write.csv( betweenness_distribution_df,  file.path(outpath, paste0("networks_betweenness_distributions_summary_", channel, ".csv")))
+    }
+
+    if(save_efficiency_distribution){
+      write.csv(efficiency_distribution,  file.path(outpath, paste0("networks_efficiency_distributions_", channel, ".csv")))
+      write.csv(efficiency_distribution_df,  file.path(outpath, paste0("networks_efficiency_distributions_summary_", channel, ".csv")))
     }
 
     # Store the network summary data into channels
@@ -972,7 +1001,8 @@ plot_correlation_heatmaps <- function(e, correlation_list_name ,
         # geom_raster()+
         geom_text(aes(label = sig_text), size=8, position = position_nudge(y = sig_nudge_y), color = sig_color) +
         scale_fill_gradient2(low = "#4f4f4f",mid = "#ffffff", high = colors[[channel]],
-                         aesthetics = c("color","fill"), na.value = "grey50")+
+                         aesthetics = c("color","fill"), na.value = "grey50",
+                         limits=c(-1, 1))+
         labs(title = plot_title, x = "Brain Region", y = "Brain Region") +
     theme.hm
 
@@ -1152,6 +1182,7 @@ volcano_plot <- function(e,
 #'  the experiment object output folder.
 #' @param reverse_group_order (bool, default = TRUE) Reverse the order of the groups on the x-axis.
 #' @param image_ext (default = ".png") image extension to save the plot as.
+#' @param force (default =1) Force of the text repel between text labels.
 #'
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
@@ -1167,6 +1198,7 @@ parallel_coordinate_plot <- function(e,
                                      print_plot = TRUE,
                                      save_plot = TRUE,
                                      reverse_group_order= FALSE,
+                                     force = 1,
                                      image_ext = ".png"){
 
 
@@ -1257,10 +1289,11 @@ parallel_coordinate_plot <- function(e,
       ggplot2::geom_line(alpha = 0.5, color = colors[k], size = 3) +
       ggplot2::geom_point(size = 4, alpha = 0.5, color = colors[k]) +
       ggrepel::geom_text_repel(aes(label = text),
-                      color = colors[k], direction = "y", force = 1,
+                      color = colors[k], direction = "y",
+                      force = force,
                       ylim = c(-1, 1),
                       segment.alpha = 0.3,
-                      nudge_x = dplyr::pull(df, nudge)*1:5, max.iter = 20000) +
+                      nudge_x = dplyr::pull(df, nudge)*2:5, max.iter = 20000) +
       ggplot2::geom_hline(yintercept = 0,linetype=2,size=1.2) +
       xlab("Group") + ylab("Correlation") +
       expand_limits(y=c(-1,1)) + theme.small.xh

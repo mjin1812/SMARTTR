@@ -16,6 +16,7 @@ parallel_coordinate_plot(
   print_plot = TRUE,
   save_plot = TRUE,
   reverse_group_order = FALSE,
+  force = 1,
   image_ext = ".png"
 )
 }
@@ -42,6 +43,8 @@ parallel_coordinate_plot(
 the experiment object output folder.}
 
 \item{reverse_group_order}{(bool, default = TRUE) Reverse the order of the groups on the x-axis.}
+
+\item{force}{(default =1) Force of the text repel between text labels.}
 
 \item{image_ext}{(default = ".png") image extension to save the plot as.}
 }
