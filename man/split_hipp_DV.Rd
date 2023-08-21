@@ -2,9 +2,7 @@
 % Please edit documentation in R/mapping_functions.R
 \name{split_hipp_DV}
 \alias{split_hipp_DV}
-\title{Split the hippocampal dataset to dorsal and ventral regions. If \code{\link[=normalize_cell_counts]{normalize_cell_counts()}} has already been run,
-the existing hippocampus data will be deleted and either replaced with new dorsal/ventral hippocampus data when merge = TRUE (recommended) or
-it will be stored in a separate dataframe if the user wants analyze the hippocampus separately for analysis and the \code{normalized_counts} dataframe will be unchanged.}
+\title{Split the hippocampal dataset to dorsal and ventral regions.}
 \usage{
 split_hipp_DV(
   m,
@@ -37,7 +35,7 @@ Merging will replace the hippocampal counts currently in the normalized counts t
 m mouse object with DV cell counts from the hippocampus included
 }
 \description{
-Split the hippocampal dataset to dorsal and ventral regions. If \code{\link[=normalize_cell_counts]{normalize_cell_counts()}} has already been run,
+If \code{\link[=normalize_cell_counts]{normalize_cell_counts()}} has already been run,
 the existing hippocampus data will be deleted and either replaced with new dorsal/ventral hippocampus data when merge = TRUE (recommended) or
 it will be stored in a separate dataframe if the user wants analyze the hippocampus separately for analysis and the \code{normalized_counts} dataframe will be unchanged.
 }

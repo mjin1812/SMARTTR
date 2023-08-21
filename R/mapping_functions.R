@@ -1535,7 +1535,8 @@ normalize_cell_counts <- function(m,
 
 ## Auto split the HPF dataset into Dorsal and Ventral
 
-#' Split the hippocampal dataset to dorsal and ventral regions. If [normalize_cell_counts()] has already been run,
+#' @title Split the hippocampal dataset to dorsal and ventral regions.
+#' @description If [normalize_cell_counts()] has already been run,
 #' the existing hippocampus data will be deleted and either replaced with new dorsal/ventral hippocampus data when merge = TRUE (recommended) or
 #' it will be stored in a separate dataframe if the user wants analyze the hippocampus separately for analysis and the `normalized_counts` dataframe will be unchanged.
 #' @param m mouse object
@@ -1697,8 +1698,8 @@ split_hipp_DV <- function(m,
  #__________________ Experiment object specific functions __________________________
 
 
-#' This function combine cell counts across all mice in an experiment into a single dataframe.
-#' It also stores the mouse attribute names (not experiment attributes) as columns that will be used as categorical variables to make analysis subgroups.
+#' @title Combine cell counts across all mice in an experiment into a single dataframe.
+#' @description This function also stores the mouse attribute names (not experiment attributes) as columns that will be used as categorical variables to make analysis subgroups.
 #' The values of these attributes (`group`, `drug`, `age`) will automatically be converted to a string values for consistency.
 #' @param e experiment object
 #' @param by (str) names of the experiment attributes (categorical variables) that will be used to create analysis subgroups.
@@ -1748,6 +1749,44 @@ combine_norm_cell_counts <- function(e, by){
   e$combined_normalized_counts <- combined_norm_counts_list
   return(e)
 }
+
+
+
+#' @title Normalize colabel counts over a designated denominator channel.
+#' @description This function can only be run after running [SMARTR::combine_norm_cell_counts()]. It divides the colabelled cell counts by
+#' a designated normalization channel to provide a normalized ratio. Please note that the areas and volumes cancel out in this operation.
+#' This is not designed to work on multiple hemispheres. Please combine cell counts across multiple hemispheres when you run [SMARTR::normalize_cell_counts()].
+#'
+#' @param e experiment object
+#' @param denominator_channel (str, default = "eyfp") The exact name of the channel used for normalization
+#'
+#' @return e An experiment object with a new dataframe with the normalized ratios of colabelled counts over the designated denominator counts.
+#' Because the volumes and region areas cancel out, the values of count, normalized.count.by.area, and normalized.count.by.volume are all the same.
+#' This is to provide a consistent input dataframe into the analysis functions.
+#' @export
+#' @seealso [SMARTR::combine_norm_cell_counts()] &  [SMARTR::normalize_cell_counts()]
+#' @examples e <- normalize_colabel_counts(e, denominator_channel = "eyfp")
+normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
+
+
+  colabel_normalized <- dplyr::inner_join(e$combined_normalized_counts$colabel,
+                                          e$combined_normalized_counts[[denominator_channel]],
+                                          by= c("mouse_ID",
+                                                "group",
+                                                "acronym",
+                                                "name"),
+                                          unmatched = "drop",
+                                          suffix = c(".colabel", ".denom")) %>% dplyr::mutate(count = count.colabel/count.denom,
+                                                                                       area.mm2 = area.mm2.denom,
+                                                                                       volume.mm3 = volume.mm3.denom,
+                                                                                       normalized.count.by.area = count.colabel/count.denom,
+                                                                                       normalized.count.by.volume = count.colabel/count.denom)
+  colabel_normalized <- colabel_normalized %>% dplyr::select(mouse_ID, group, acronym, name, count, area.mm2, volume.mm3, normalized.count.by.area, normalized.count.by.volume)
+  # Returns normalized channel
+  e$combined_normalized_counts[[paste0("colabel_over_", denominator_channel)]] <- colabel_normalized
+  return(e)
+}
+
 
 
 

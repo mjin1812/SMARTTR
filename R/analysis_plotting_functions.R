@@ -1060,7 +1060,11 @@ plot_correlation_heatmaps <- function(e, correlation_list_name ,
 #' @param image_ext (default = ".png") image extension to save the plot as.
 #' @param title Title of the plot.
 #' @param height height of the plot in inches.
+#' @param ylim
+#' @param plt_theme (default = NULL) Add a [ggplot2::theme()] to the plot. If NULL, the default is taken..
+#' @param point_size (default = 1) Size of the plotted points.
 #' @param width width of the plot in inches.
+#'
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples volcano_plot(e, permutation_comparison = "female_AD_vs_male_AD", channels = c("cfos", "eyfp", "colabel"),
@@ -1078,6 +1082,8 @@ volcano_plot <- function(e,
                          height = 8,
                          width = 10,
                          print_plot = TRUE,
+                         plt_theme = NULL,
+                         point_size = 1,
                          image_ext = ".png"){
 
   # Detect the OS and set quartz( as graphing function)
@@ -1086,19 +1092,22 @@ volcano_plot <- function(e,
   }
 
   ## plotting theme
-  plot_theme <- ggplot2::theme_classic() + theme(text = element_text(size = 22),
-                                            line = element_line(size = 1),
-                                            plot.title = element_text(hjust = 0.5, size = 36),
-                                            axis.ticks.length = unit(5.5,"points"))
+  if (is.null(plt_theme)){
+    plt_theme <- ggplot2::theme_classic() + theme(text = element_text(size = 22),
+                                                   line = element_line(size = 1),
+                                                   plot.title = element_text(hjust = 0.5, size = 36),
+                                                   axis.ticks.length = unit(5.5,"points"),
+                                                   axis.text.x = element_text(colour = "black"),
+                                                   axis.text.y = element_text(colour = "black"))
+  }
+
   if (is.null(title)){
     title <-  permutation_comparison
   }
 
-
   # List to store the returned plot handles
   p_list <- vector(mode='list', length = length(channels))
   names(p_list) <- channels
-
 
   for (k in 1:length(channels)){
     # Get alpha levels
@@ -1126,7 +1135,7 @@ volcano_plot <- function(e,
 
 
     p <- ggplot(df, aes(x = corr_diff, y = -log10(p_val))) +
-      geom_point() +
+      geom_point(size = point_size) +
       geom_point(data = subset(df, sig > 0 & corr_diff <= -1 | sig > 0 & corr_diff >= 1), color = colors[k]) +
       geom_vline(xintercept = c(-1, 1), color = colors[k], size = 1) +
       geom_hline(yintercept = -log10(alpha), color = colors[k], size = 1) +
@@ -1135,7 +1144,7 @@ volcano_plot <- function(e,
       scale_x_reverse() +
       ylim(ylim) +
       labs(title = title, x = "Correlation Difference", y = "-log(p-value)") +
-      plot_theme
+      plt_theme
 
     if (print_plot){
       quartz()
@@ -1182,8 +1191,9 @@ volcano_plot <- function(e,
 #'  the experiment object output folder.
 #' @param reverse_group_order (bool, default = TRUE) Reverse the order of the groups on the x-axis.
 #' @param image_ext (default = ".png") image extension to save the plot as.
+#' @param plt_theme (default = NULL) Add a [ggplot2::theme()] to the plot. If NULL, the default is taken.
 #' @param force (default =1) Force of the text repel between text labels.
-#'
+#' @param label_size (default = 30) Default font size for region labels.
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @example
@@ -1199,7 +1209,10 @@ parallel_coordinate_plot <- function(e,
                                      save_plot = TRUE,
                                      reverse_group_order= FALSE,
                                      force = 1,
-                                     image_ext = ".png"){
+                                     plt_theme = NULL,
+                                     label_size = 30,
+                                     image_ext = ".png"
+                                     ){
 
 
   # Detect the OS and set quartz( as graphing function)
@@ -1280,15 +1293,23 @@ parallel_coordinate_plot <- function(e,
     df[seq(nrow(df)/2+1, nrow(df), by = 2),]$text <- ""
 
     # Plotting theme
-    theme.small.xh <- ggplot2::theme_classic() +
-      theme(text = element_text(size = 22), line = element_line(size = 1),
-            plot.title = element_text(hjust = 0.5, size = 36), axis.ticks.length = unit(5.5, "points"))
+    if (is.null(plt_theme)){
+      plt_theme <- ggplot2::theme_classic() +
+        theme(text = element_text(size = 22),
+              line = element_line(size = 1),
+              plot.title = element_text(hjust = 0.5, size = 36),
+              axis.ticks.length = unit(5.5, "points"),
+              axis.text.x = element_text(colour = "black"),
+              axis.text.y = element_text(colour = "black")
+        )
+    }
 
     # Create parallel coordinate plot
     p <- ggplot(df, aes(x = group, y = corr, group = group_plot)) +
       ggplot2::geom_line(alpha = 0.5, color = colors[k], size = 3) +
       ggplot2::geom_point(size = 4, alpha = 0.5, color = colors[k]) +
       ggrepel::geom_text_repel(aes(label = text),
+                      size = label_size,
                       color = colors[k], direction = "y",
                       force = force,
                       ylim = c(-1, 1),
@@ -1296,7 +1317,7 @@ parallel_coordinate_plot <- function(e,
                       nudge_x = dplyr::pull(df, nudge)*2:5, max.iter = 20000) +
       ggplot2::geom_hline(yintercept = 0,linetype=2,size=1.2) +
       xlab("Group") + ylab("Correlation") +
-      expand_limits(y=c(-1,1)) + theme.small.xh
+      expand_limits(y=c(-1,1)) + plt_theme
 
 
     if (print_plot){
@@ -1339,6 +1360,10 @@ parallel_coordinate_plot <- function(e,
 #'  the experiment object output folder.
 #' @param edge_color (str, default = "firebrick") Color of the network edges.
 #' @param degree_scale_limit (vec, default = c(1,10)) Scale limit for degree size
+#' @param network_radius
+#' @param graph_theme (default = NULL) Add a [ggraph::theme()] to the network graph. If NULL, the default is taken.
+#' @param label_size (default = 5) Default font size for network region labels.
+#' @param label_offset (default = 0.15) Distance of label from nodes.
 #' Can also be a hexadecimal color code written as a string.
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
@@ -1354,6 +1379,9 @@ plot_networks <- function(e,
                           image_ext = ".png",
                           network_radius = 300,
                           print_plot = TRUE,
+                          graph_theme = NULL,
+                          label_size = 5,
+                          label_offset = 0.15,
                           save_plot = TRUE){
 
   # Detect the OS and set quartz( as graphing function)
@@ -1370,21 +1398,24 @@ plot_networks <- function(e,
     network <- e$networks[[network_name]][[channel]]
 
     # _______________ Plot the network ________________________________
-    theme.network <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5,size = 28),
-                                                   legend.text = element_text(size = 15),
-                                                   legend.title = element_text(size = 15))
+    if (is.null(graph_theme)){
+      graph_theme <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5,size = 28),
+                                                     legend.text = element_text(size = 15),
+                                                     legend.title = element_text(size = 15))
+    }
+
 
     p <- ggraph::ggraph(network, layout = "linear", circular = TRUE) +
       ggraph::geom_edge_diagonal(aes(color = sign, width = abs(weight)),
                                  edge_alpha = 0.6, n = 1000) +
       ggraph::geom_node_point(aes(size = degree,
                                   color = super.region)) +
-      ggraph::geom_node_text(aes(x = (sqrt(x^2+y^2)+0.1)*cos(atan(y/x))*sign(x),
-                         y = abs((sqrt(x^2+y^2)+0.1)*sin(atan(y/x)))*sign(y),
+      ggraph::geom_node_text(aes(x = (sqrt(x^2+y^2)+label_offset)*cos(atan(y/x))*sign(x),
+                         y = abs((sqrt(x^2+y^2)+label_offset)*sin(atan(y/x)))*sign(y),
                          angle = atan(y/x)*180/pi,
                          label = name),
                      repel = FALSE, color = "grey25",
-                     size = 5) +
+                     size = label_size) +
       ggraph::scale_edge_color_manual(values = c(pos = edge_color,
                                          neg = "grey20"),
                               labels = c(pos = "Positive", neg = "Negative"),
@@ -1399,7 +1430,7 @@ plot_networks <- function(e,
                        guide = guide_legend(order = 3)) +
       ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=c(4,10),
                  guide = guide_legend(order = 2)) +
-      ggplot2::coord_equal() + theme.network
+      ggplot2::coord_equal() + graph_theme
 
     if (is.null(title)){
       title <- paste(network_name, channel)
@@ -1424,7 +1455,6 @@ plot_networks <- function(e,
       image_file <- file.path(output_dir, paste0("network_", network_name, "_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
-
     # Store the plot handle
     p_list[[channel]] <- p
   }

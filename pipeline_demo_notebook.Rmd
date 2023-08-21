@@ -539,7 +539,7 @@ Now we have two slice objects in our mouse, one with both hemispheres of data an
 
 For all slices you analyze, there may be an automatic list of regions you'd like to exclude for each hemisphere. This is automatically set as a slice attribute when you create it and you can edit it like any other slice attribute as demonstrated earlier. In the slice attributes, a list of these regions can be accessed with `$left_regions_excluded` and `$right_regions_excluded`.
 
-When you run the `exclude_anatomy` function, it will automatically omit the regions for each hemisphere in these lists. The commands below print the default excluded regions for the left and right hemispheres.
+When you run the `exclude_anatomy` function, it will automatically omit the regions for each hemisphere contained  in these lists. The commands below print the default excluded regions for the left and right hemispheres.
 
 ```{r}
 # Print the default regions excluded list for the right hemisphere

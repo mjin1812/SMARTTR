@@ -15,6 +15,8 @@ volcano_plot(
   height = 8,
   width = 10,
   print_plot = TRUE,
+  plt_theme = NULL,
+  point_size = 1,
   image_ext = ".png"
 )
 }
@@ -38,6 +40,10 @@ the experiment object output folder.}
 \item{width}{width of the plot in inches.}
 
 \item{print_plot}{(bool, default = TRUE) Print the plot as graphics windows.}
+
+\item{plt_theme}{(default = NULL) Add a \code{\link[ggplot2:theme]{ggplot2::theme()}} to the plot. If NULL, the default is taken..}
+
+\item{point_size}{(default = 1) Size of the plotted points.}
 
 \item{image_ext}{(default = ".png") image extension to save the plot as.}
 }

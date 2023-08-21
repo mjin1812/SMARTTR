@@ -16,6 +16,9 @@ plot_networks(
   image_ext = ".png",
   network_radius = 300,
   print_plot = TRUE,
+  graph_theme = NULL,
+  label_size = 5,
+  label_offset = 0.15,
   save_plot = TRUE
 )
 }
@@ -34,13 +37,19 @@ plot_networks(
 
 \item{width}{width of the plot in inches.}
 
-\item{degree_scale_limit}{(vec, default = c(1,10)) Scale limit for degree size
-Can also be a hexadecimal color code written as a string.}
+\item{degree_scale_limit}{(vec, default = c(1,10)) Scale limit for degree size}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 
 \item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.
 the experiment object output folder.}
+
+\item{graph_theme}{(default = NULL) Add a \code{\link[ggraph:theme]{ggraph::theme()}} to the network graph. If NULL, the default is taken.}
+
+\item{label_size}{(default = 5) Default font size for network region labels.}
+
+\item{label_offset}{(default = 0.15) Distance of label from nodes.
+Can also be a hexadecimal color code written as a string.}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}

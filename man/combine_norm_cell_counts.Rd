@@ -2,9 +2,7 @@
 % Please edit documentation in R/mapping_functions.R
 \name{combine_norm_cell_counts}
 \alias{combine_norm_cell_counts}
-\title{This function combine cell counts across all mice in an experiment into a single dataframe.
-It also stores the mouse attribute names (not experiment attributes) as columns that will be used as categorical variables to make analysis subgroups.
-The values of these attributes (\code{group}, \code{drug}, \code{age}) will automatically be converted to a string values for consistency.}
+\title{Combine cell counts across all mice in an experiment into a single dataframe.}
 \usage{
 combine_norm_cell_counts(e, by)
 }
@@ -17,8 +15,7 @@ combine_norm_cell_counts(e, by)
 
 }
 \description{
-This function combine cell counts across all mice in an experiment into a single dataframe.
-It also stores the mouse attribute names (not experiment attributes) as columns that will be used as categorical variables to make analysis subgroups.
+This function also stores the mouse attribute names (not experiment attributes) as columns that will be used as categorical variables to make analysis subgroups.
 The values of these attributes (\code{group}, \code{drug}, \code{age}) will automatically be converted to a string values for consistency.
 }
 \examples{

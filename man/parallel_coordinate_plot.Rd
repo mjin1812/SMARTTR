@@ -17,6 +17,8 @@ parallel_coordinate_plot(
   save_plot = TRUE,
   reverse_group_order = FALSE,
   force = 1,
+  plt_theme = NULL,
+  label_size = 30,
   image_ext = ".png"
 )
 }
@@ -45,6 +47,10 @@ the experiment object output folder.}
 \item{reverse_group_order}{(bool, default = TRUE) Reverse the order of the groups on the x-axis.}
 
 \item{force}{(default =1) Force of the text repel between text labels.}
+
+\item{plt_theme}{(default = NULL) Add a \code{\link[ggplot2:theme]{ggplot2::theme()}} to the plot. If NULL, the default is taken.}
+
+\item{label_size}{(default = 30) Default font size for region labels.}
 
 \item{image_ext}{(default = ".png") image extension to save the plot as.}
 }
