@@ -806,7 +806,6 @@ plot_percent_colabel <- function(e,
   return(p)
 }
 
-
 #' Plot normalized cell counts
 #' @description Plot the cell counts normalized by volume for a given channel
 #' @param e experiment object
@@ -820,6 +819,7 @@ plot_percent_colabel <- function(e,
 #' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of
 #'  the experiment object output folder.
+#' @param flip_axis plot cell counts on x axis rather than y.
 #' @param image_ext (default = ".png") image extension to the plot as.
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
@@ -834,6 +834,7 @@ plot_normalized_counts <- function(e,
                                    width = 20,
                                    print_plot = TRUE,
                                    save_plot = TRUE,
+                                   flip_axis = FALSE,
                                    image_ext = ".pdf") {
   # check os and set graphics window
   if (get_os() != "osx") {
@@ -865,53 +866,92 @@ plot_normalized_counts <- function(e,
       na.omit()
     channel_counts$parent <- factor(channel_counts$parent, levels = anatomical.order)
     channel_counts$group <- factor(channel_counts$group, levels = groups)
-    # plot normalized cell counts, grouped by specified groups and ordered by parent region
-    cell_counts_plot <- channel_counts %>%
-      ggplot(aes(y = mean_normalized_counts, x = name,
-                 fill = group), color = "black") +
-      geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
-      geom_errorbar(aes(ymin = mean_normalized_counts - sem,
-                        ymax = mean_normalized_counts + sem, x = name),
-                    position = position_dodge(0.8),
-                    width = 0.5,
-                    color = "black") +
-      labs(title = title,
-           y = bquote('Cell counts '('cells/mm'^3)),
-           x = "",
-           fill = "Group") +
-      scale_y_continuous(expand = c(0,0)) +
-      scale_fill_manual(values=c(colors)) +
-      facet_grid(~parent, scales = "free_x", space = "free_x", switch = "x") +
-      theme_bw() +
-      theme(
-        plot.background = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank()) +
-      theme(axis.line = element_line(color = 'black')) +
-      theme(legend.position = "none") +
-      theme(axis.text.x = element_text(angle = 50, hjust = 1)) +
-      theme(strip.text.x = element_text(angle = 0),
-            strip.placement = "outside",
-            strip.background = element_rect(color = "black",
-                                            fill = "lightblue")) +
-  theme(plot.margin = margin(1,1.5,0,1.5, "cm"))
 
-if (print_plot) {
-  quartz()
-  print(cell_counts_plot)
-}
-if (save_plot) {
-  # create figures directory if not already created
-  output_dir <-  file.path(attr(e, "info")$output_path, "figures")
-  if(!dir.exists(output_dir)){
-    dir.create(output_dir)
-  }
-  # save in figures
-  ggsave(cell_counts_plot, filename = paste0(channels[k], "_normalized_counts", image_ext),
-         path = file.path(attr(lh, 'info')$output_path, "figures"), width = width, height = height)
-}
-p_list[[channels[k]]] <- cell_counts_plot
+    # plot normalized cell counts, grouped by specified groups and ordered by parent region
+
+    if (flip_axis) {
+
+      cell_counts_plot <- channel_counts %>%
+        ggplot(aes(y = mean_normalized_counts, x = name,
+                   fill = group), color = "black") +
+        geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
+        geom_errorbar(aes(xmin = mean_normalized_counts - sem,
+                          xmax = mean_normalized_counts + sem, y = name),
+                      position = position_dodge(0.8),
+                      width = 0.5,
+                      color = "black") +
+        labs(title = title,
+             x = bquote('Cell counts '('cells/mm'^3)),
+             y = "",
+             fill = "Group") +
+        scale_x_continuous(expand = c(0,0)) +
+        scale_fill_manual(values=c(colors)) +
+        facet_grid(~parent, scales = "free_y", space = "free_y", switch = "y") +
+        theme_bw() +
+        theme(
+          plot.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.border = element_blank()) +
+        theme(axis.line = element_line(color = 'black')) +
+        theme(legend.position = "none") +
+        theme(axis.text.y = element_text(angle = 50, hjust = 1)) +
+        theme(strip.text.y = element_text(angle = 0),
+              strip.placement = "outside",
+              strip.background = element_rect(color = "black",
+                                              fill = "lightblue")) +
+        theme(plot.margin = margin(1,1.5,0,1.5, "cm"))
+
+    } else if (flip_axis == FALSE) {
+
+      cell_counts_plot <- channel_counts %>%
+        ggplot(aes(y = mean_normalized_counts, x = name,
+                   fill = group), color = "black") +
+        geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
+        geom_errorbar(aes(ymin = mean_normalized_counts - sem,
+                          ymax = mean_normalized_counts + sem, x = name),
+                      position = position_dodge(0.8),
+                      width = 0.5,
+                      color = "black") +
+        labs(title = title,
+             y = bquote('Cell counts '('cells/mm'^3)),
+             x = "",
+             fill = "Group") +
+        scale_y_continuous(expand = c(0,0)) +
+        scale_fill_manual(values=c(colors)) +
+        facet_grid(~parent, scales = "free_x", space = "free_x", switch = "x") +
+        theme_bw() +
+        theme(
+          plot.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.border = element_blank()) +
+        theme(axis.line = element_line(color = 'black')) +
+        theme(legend.position = "none") +
+        theme(axis.text.x = element_text(angle = 50, hjust = 1)) +
+        theme(strip.text.x = element_text(angle = 0),
+              strip.placement = "outside",
+              strip.background = element_rect(color = "black",
+                                              fill = "lightblue")) +
+        theme(plot.margin = margin(1,1.5,0,1.5, "cm"))
+
+    }
+
+    if (print_plot) {
+      quartz()
+      print(cell_counts_plot)
+    }
+    if (save_plot) {
+      # create figures directory if not already created
+      output_dir <-  file.path(attr(e, "info")$output_path, "figures")
+      if(!dir.exists(output_dir)){
+        dir.create(output_dir)
+      }
+      # save in figures
+      ggsave(cell_counts_plot, filename = paste0(channels[k], "_normalized_counts", image_ext),
+             path = file.path(attr(lh, 'info')$output_path, "figures"), width = width, height = height)
+    }
+    p_list[[channels[k]]] <- cell_counts_plot
   }
 }
 
