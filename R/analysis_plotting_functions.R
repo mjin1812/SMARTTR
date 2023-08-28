@@ -1193,7 +1193,9 @@ volcano_plot <- function(e,
 #' @param image_ext (default = ".png") image extension to save the plot as.
 #' @param plt_theme (default = NULL) Add a [ggplot2::theme()] to the plot. If NULL, the default is taken.
 #' @param force (default =1) Force of the text repel between text labels.
+#' @param nudge_x (vec, default = 2:5) a vector determining the jitter between labels.
 #' @param label_size (default = 30) Default font size for region labels.
+#'
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @example
@@ -1211,7 +1213,8 @@ parallel_coordinate_plot <- function(e,
                                      force = 1,
                                      plt_theme = NULL,
                                      label_size = 30,
-                                     image_ext = ".png"
+                                     image_ext = ".png",
+                                     nudge_x = 2:5
                                      ){
 
 
@@ -1289,8 +1292,14 @@ parallel_coordinate_plot <- function(e,
                                  nudge = ifelse(group == group_2, -0.1, 0.1))
     }
 
-    df[seq(2, nrow(df)/2, by = 2),]$text <- ""
-    df[seq(nrow(df)/2+1, nrow(df), by = 2),]$text <- ""
+    # Error handling
+    tryCatch({
+      df[seq(2, nrow(df)/2, by = 2),]$text <- ""
+      df[seq(nrow(df)/2+1, nrow(df), by = 2),]$text <- ""
+
+    }, error = function(e) {
+      message("could not divide by 2. Skipping")
+    })
 
     # Plotting theme
     if (is.null(plt_theme)){
@@ -1314,7 +1323,7 @@ parallel_coordinate_plot <- function(e,
                       force = force,
                       ylim = c(-1, 1),
                       segment.alpha = 0.3,
-                      nudge_x = dplyr::pull(df, nudge)*2:5, max.iter = 20000) +
+                      nudge_x = dplyr::pull(df, nudge)*nudge_x, max.iter = 20000) +
       ggplot2::geom_hline(yintercept = 0,linetype=2,size=1.2) +
       xlab("Group") + ylab("Correlation") +
       expand_limits(y=c(-1,1)) + plt_theme

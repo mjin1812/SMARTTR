@@ -1783,7 +1783,13 @@ normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
                                                                                        normalized.count.by.volume = count.colabel/count.denom)
   colabel_normalized <- colabel_normalized %>% dplyr::select(mouse_ID, group, acronym, name, count, area.mm2, volume.mm3, normalized.count.by.area, normalized.count.by.volume)
   # Returns normalized channel
-  e$combined_normalized_counts[[paste0("colabel_over_", denominator_channel)]] <- colabel_normalized
+  norm_chan <- paste0("colabel_over_", denominator_channel)
+  e$combined_normalized_counts[[norm_chan]] <- colabel_normalized
+
+
+  # Update the channel information
+  attr(e, "info")$channels <- c( attr(e, "info")$channels, norm_chan)
+
   return(e)
 }
 
