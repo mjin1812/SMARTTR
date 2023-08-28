@@ -808,6 +808,7 @@ plot_percent_colabel <- function(e,
 
 #' Plot normalized cell counts
 #' @description Plot the cell counts normalized by volume for a given channel
+#'
 #' @param e experiment object
 #' @param channels (str, default = c("cfos", "eyfp", "colabel"))
 #' @param groups (str, default = c("Context", "Shock")) The groups to be plotted. The order of this vector will dictate the ordering of grouped bars in the resulting plot.
@@ -820,7 +821,11 @@ plot_percent_colabel <- function(e,
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of
 #'  the experiment object output folder.
 #' @param flip_axis plot cell counts on x-axis rather than y-axis.
+#' @param unit_label (str, default = bquote('Cell counts '('cells/mm'^3))) Default unit label for the graphs
+#' @param region_label_angle (int, default = 50) Angle of the region label.
+#' @param label_text_size  (int, default = 8) Size of the text element for the region labels.
 #' @param image_ext (default = ".png") image extension to the plot as.
+#'
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @example
@@ -830,8 +835,11 @@ plot_normalized_counts <- function(e,
                                    colors = c("white", "lightblue"),
                                    regions_to_remove = c("CTX", "grey", "MB", "TH", "HY"),
                                    title = NULL,
+                                   unit_label = bquote('Cell counts '('cells/mm'^3)),
                                    height = 7,
                                    width = 20,
+                                   region_label_angle = 50,
+                                   label_text_size = 8,
                                    print_plot = TRUE,
                                    save_plot = TRUE,
                                    flip_axis = FALSE,
@@ -865,13 +873,14 @@ plot_normalized_counts <- function(e,
       mutate(parent = get.sup.structure(acronym, matching.string = anatomical.order)) %>%
       na.omit()
     channel_counts$parent <- factor(channel_counts$parent, levels = anatomical.order)
-    channel_counts$group <- factor(channel_counts$group, levels = groups)
-    
+
+
     # plot normalized cell counts, grouped by specified groups and ordered by parent region
-    
+
     if (flip_axis) {
-      
-      cell_counts_plot <- channel_counts %>%
+      channel_counts$group <- factor(channel_counts$group, levels = rev(groups))
+
+      p <- channel_counts %>%
         ggplot(aes(x = mean_normalized_counts, y = name,
                    fill = group), color = "black") +
         geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
@@ -881,7 +890,7 @@ plot_normalized_counts <- function(e,
                       width = 0.5,
                       color = "black") +
         labs(title = title,
-             x = bquote('Cell counts '('cells/mm'^3)),
+             x = unit_label,
              y = "",
              fill = "Group") +
         scale_x_continuous(expand = c(0,0)) +
@@ -895,16 +904,18 @@ plot_normalized_counts <- function(e,
           panel.border = element_blank()) +
         theme(axis.line = element_line(color = 'black')) +
         theme(legend.position = "none") +
-        theme(axis.text.y = element_text(angle = 0, hjust = 1)) +
+        theme(axis.text.y = element_text(angle = region_label_angle, hjust = 1, size = label_text_size)) +
         theme(strip.text.y = element_text(angle = 0),
               strip.placement = "outside",
               strip.background = element_rect(color = "black",
-                                              fill = "lightblue")) +
+                                              fill = "lightblue"),
+              strip.switch.pad.grid = unit(0.1, "in")) +
         theme(plot.margin = margin(1,1.5,0,1.5, "cm"))
-      
-    } else if (flip_axis == FALSE) {
-      
-      cell_counts_plot <- channel_counts %>%
+
+    } else if (isFALSE(flip_axis)) {
+      channel_counts$group <- factor(channel_counts$group, levels = groups)
+
+      p <- channel_counts %>%
         ggplot(aes(y = mean_normalized_counts, x = name,
                    fill = group), color = "black") +
         geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
@@ -914,7 +925,7 @@ plot_normalized_counts <- function(e,
                       width = 0.5,
                       color = "black") +
         labs(title = title,
-             y = bquote('Cell counts '('cells/mm'^3)),
+             y = unit_label,
              x = "",
              fill = "Group") +
         scale_y_continuous(expand = c(0,0)) +
@@ -928,38 +939,34 @@ plot_normalized_counts <- function(e,
           panel.border = element_blank()) +
         theme(axis.line = element_line(color = 'black')) +
         theme(legend.position = "none") +
-        theme(axis.text.x = element_text(angle = 50, hjust = 1)) +
+        theme(axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size)) +
         theme(strip.text.x = element_text(angle = 0),
               strip.placement = "outside",
               strip.background = element_rect(color = "black",
                                               fill = "lightblue")) +
         theme(plot.margin = margin(1,1.5,0,1.5, "cm"))
-      
+
     }
-    
+
     if (print_plot) {
       quartz()
-      print(cell_counts_plot)
+      print(p)
     }
+
     if (save_plot) {
       # create figures directory if not already created
       output_dir <-  file.path(attr(e, "info")$output_path, "figures")
       if(!dir.exists(output_dir)){
         dir.create(output_dir)
       }
+
       # save in figures
-      
-      if (flip_axis) {
-        ggsave(cell_counts_plot, filename = paste0(channels[k], "_normalized_counts_flipped", image_ext),
-               path = file.path(attr(lh, 'info')$output_path, "figures"), width = width, height = height)
-      } else {
-        ggsave(cell_counts_plot, filename = paste0(channels[k], "_normalized_counts", image_ext),
-               path = file.path(attr(lh, 'info')$output_path, "figures"), width = width, height = height)
-      }
-      
-      
+      ggsave(p, filename = paste0(channels[k], "_normalized_counts", image_ext),
+             path = file.path(attr(lh, 'info')$output_path, "figures"), width = width, height = height)
+
+
     }
-    p_list[[channels[k]]] <- cell_counts_plot
+    p_list[[channels[k]]] <- p
   }
 }
 
