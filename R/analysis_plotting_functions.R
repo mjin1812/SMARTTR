@@ -825,7 +825,7 @@ plot_percent_colabel <- function(e,
 #' @param region_label_angle (int, default = 50) Angle of the region label.
 #' @param label_text_size  (int, default = 8) Size of the text element for the region labels.
 #' @param image_ext (default = ".png") image extension to the plot as.
-#'
+#' @param facet_background_color (default = NULL) Set to a hexadecimal string, e.g."#FFFFFF", when you want to shade the background of the graph. Defaults to no background when NULL.
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @example
@@ -843,6 +843,7 @@ plot_normalized_counts <- function(e,
                                    print_plot = TRUE,
                                    save_plot = TRUE,
                                    flip_axis = FALSE,
+                                   facet_background_color =  NULL,
                                    image_ext = ".pdf") {
   # check os and set graphics window
   if (get_os() != "osx") {
@@ -946,6 +947,11 @@ plot_normalized_counts <- function(e,
                                               fill = "lightblue")) +
         theme(plot.margin = margin(1,1.5,0,1.5, "cm"))
 
+    }
+
+    if(!is.null(facet_background_color)){
+      p <- p +
+      theme(panel.background = element_rect(fill = facet_background_color, color = "black"))
     }
 
     if (print_plot) {
