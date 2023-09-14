@@ -968,7 +968,7 @@ plot_normalized_counts <- function(e,
 
       # save in figures
       ggsave(p, filename = paste0(channels[k], "_normalized_counts", image_ext),
-             path = file.path(attr(lh, 'info')$output_path, "figures"), width = width, height = height)
+             path = file.path(attr(e, 'info')$output_path, "figures"), width = width, height = height)
 
 
     }
