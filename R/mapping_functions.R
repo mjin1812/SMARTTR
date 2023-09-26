@@ -2111,9 +2111,17 @@ get.colabeled.cells <- function(coloc_table,
   y_b <- image_B_objects$CY..pix.[mo]
 
   # Quality check
-  if (max(sqrt((x_a-x_b)^2+(y_a-y_b)^2)) > euc_centroid_dist){
-    stop("The euclidian distance between the centroid coordinates of the
-            overlapping objects seems too high! Please double check the output of the raw colocalization files!")
+  distances <- sqrt((x_a-x_b)^2+(y_a-y_b)^2)
+  max_distance <- max(distances)
+  if (max_distance > euc_centroid_dist){
+    warning(paste0("The maximum euclidian distance between the centroid coordinates of the
+            overlapping objects is: ", distance, "! It seems too high! Please double check the output of the raw colocalization files!",
+                   "Automatically skipping colocalized points above the euclidean threshold of ", euc_centroid_dist, "pixels."))
+    coloc_ind <- which(distances < euc_centroid_dist)
+    x_a <-  x_a[coloc_ind]
+    y_a <-  y_a[coloc_ind]
+    x_b <-  x_b[coloc_ind]
+    y_b <-  y_b[coloc_ind]
   }
 
   x <-  rowMeans(cbind(x_a, x_b))

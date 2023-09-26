@@ -79,7 +79,7 @@ find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FA
         write.csv(log_df, file = out_path)
         message(paste0("Saved regions outliers dataframe at:\n", out_path))
       } else {
-        message("No regions outliers were found within each group.")
+        message("No regions outliers were found within each group for channel ", channel)
       }
     }
 
