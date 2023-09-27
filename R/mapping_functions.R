@@ -2105,23 +2105,26 @@ get.colabeled.cells <- function(coloc_table,
   mo <- mo[colabel_ind]
   ma <- coloc_table$X[colabel_ind]
 
-  x_a <- image_A_objects$CX..pix.[ma]
-  y_a <- image_A_objects$CY..pix.[ma]
-  x_b <- image_B_objects$CX..pix.[mo]
-  y_b <- image_B_objects$CY..pix.[mo]
+  # Match the label values
+  x_a <- image_A_objects$CX..pix.[match(ma, image_A_objects$Label)]
+  y_a <- image_A_objects$CY..pix.[match(ma, image_A_objects$Label)]
+  x_b <- image_B_objects$CX..pix.[match(mo, image_B_objects$Label)]
+  y_b <- image_B_objects$CY..pix.[match(mo, image_B_objects$Label)]
+  areas <- image_B_objects$Vol..pix.[match(mo, image_B_objects$Label)]
 
   # Quality check
   distances <- sqrt((x_a-x_b)^2+(y_a-y_b)^2)
-  max_distance <- max(distances)
+  max_distance <- max(distances, na.rm = TRUE)
   if (max_distance > euc_centroid_dist){
     warning(paste0("The maximum euclidian distance between the centroid coordinates of the
-            overlapping objects is: ", distance, "! It seems too high! Please double check the output of the raw colocalization files!",
+            overlapping objects is: ", max_distance, "! It seems too high! Please double check the output of the raw colocalization files!",
                    "Automatically skipping colocalized points above the euclidean threshold of ", euc_centroid_dist, "pixels."))
     coloc_ind <- which(distances < euc_centroid_dist)
     x_a <-  x_a[coloc_ind]
     y_a <-  y_a[coloc_ind]
     x_b <-  x_b[coloc_ind]
     y_b <-  y_b[coloc_ind]
+    areas <- areas[coloc_ind]
   }
 
   x <-  rowMeans(cbind(x_a, x_b))
@@ -2131,8 +2134,8 @@ get.colabeled.cells <- function(coloc_table,
   seg.coloc <- SMARTR::segmentation.object
   seg.coloc$soma$x  <-   x
   seg.coloc$soma$y  <-   y
-  seg.coloc$soma$area   <-   image_B_objects$Vol..pix.[mo]
-  seg.coloc$soma$intensity  <-   image_B_objects$Vol..pix.[mo] # Dummy
+  seg.coloc$soma$area   <- areas
+  seg.coloc$soma$intensity  <- areas # Dummy
   return(seg.coloc)
 }
 
