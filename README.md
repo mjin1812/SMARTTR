@@ -1,8 +1,9 @@
 
-# SMARTR: a mapping, analysis, and visualization package for dual-ensemble datasets across the mouse brain
+# SMARTR: **s**imple **m**ulti-ensemble **a**tlas **r**egistration and statistical **t**esting in **R**
 
 
 ## Welcome to the SMARTR package!
+
 
 SMARTR is a package designed for the high-throughput mapping and analysis of dual-labelled ensemble datasets. Genetic tagging strategies such as the ArcCreERT^2^ mouse line allow for investigation of neural ensembles underlying behavior across multiple time points.
 

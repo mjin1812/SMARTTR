@@ -17,7 +17,7 @@ Authors@R: c(
        email ="ml3696@cumc.columbia.edu", 
        role = c("ctb"),
        comment = c(ORCID = "0000-0003-3000-1592")))
-Description: The base of this pipeline is an R package with the title, `SMARTR`, a self-referential play on a previous package developed as an extension to `wholebrain` called `SMART`. 
+Description:`SMARTR` (Simple multi-ensemble atlas registration and statistical testing in R)
     This package allows for the user-friendly accomplishing of the analysis steps below:
     1. Setting up the pipeline by specifying experiment parameters, and save directories.
     2. The interactive registration process.
@@ -41,7 +41,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Depends: 
     R (>= 2.10),
-    SMART (>= 0.1.0),
     stringdist (>= 0.9.7),
     stringr (>= 1.4.0),
     Hmisc (>= 4.5.0),
@@ -56,7 +55,8 @@ Imports:
     tidyselect (>= 1.1.1),
     tidyr (>= 1.1.3)
 Suggests:
-    testthat (>= 3.0.0),
+    SMART (>= 0.1.0),
+    wholebrain (>= 0.1.1),
     ggpattern (>= 0.2.0),
     knitr,
     rmarkdown

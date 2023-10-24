@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 # 0 Prior steps to get started
 
-`SMARTR` stands for **S**imple **m**ulti-ensemble **a**tlas **r**egistration and statistical **t**esting in **R**. It is also a self-referential play  on a previous package developed as an extension to `wholebrain` called `SMART`.`SMARTR` interfaces with some functions from both of these packages underneath the hood.
+`SMARTR` stands for **s**imple **m**ulti-ensemble **a**tlas **r**egistration and statistical **t**esting in **R**. It is also a self-referential play  on a previous package developed as an extension to `wholebrain` called `SMART`.`SMARTR` interfaces with some functions from both of these packages underneath the hood.
 
 
 `SMARTR` encapsulates the process of registration and performs downstream analysis. Prior to this, the imaging data must be pre-processed and cells are separately segmented in ImageJ/FIJI. We have a separate, in-depth article on our imaging and pre-processing approach, parameters, and segmentation process. We provide links to an example image to run though the pre-processing and segmentation. There is also a separate in-depth tutorial article for SMARTR using this example image.
@@ -45,9 +45,9 @@ We recommend installing R version 3.6.
 
 Installing `wholebrain` can be finicky. The most updated instructions on installing `wholebrain` for Windows is found [here](https://matiasandina.github.io/wholebrain_install/). For Macs, the instructions can be found [here](https://osf.io/k963s). We strongly recommend using a Windows setup, as this package has been used mostly in Windows. 
 
-## 1.3 Install `SMARTR`
+If wholebrain is not installed, only the analysis and visualization functions may work.
 
-TODO: modify the personal access token once the package is public.
+## 1.3 Install `SMARTR`
 
 Currently the pipeline package is on my github, but it is a private repository. Therefore to download it from github using the `devtools` package, we need to feed the `install_github()` function a personal access token to access the github API. There are also some dependencies on the tidyverse packages so we will install that too. Install the package with the code below:
 
@@ -55,17 +55,14 @@ Currently the pipeline package is on my github, but it is a private repository. 
 # Install from CRAN
 install.packages("tidyverse")`
 
-# Install ggpattern package (useful package for plotting) 
+# Install ggpattern package (optional but useful package for plotting) 
 devtools::install_github("coolbutuseless/ggpattern")
 
-# personal access token
-auth_token <- "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"
-
-# Set the devtools install options for just 64-bit architecture
+# Set the devtools install options for just 64-bit architecture. This is important.
 options(devtools.install.args = "--no-multiarch")   
 
 # Install package
-devtools::install_github("mjin1812/SMARTR@main", auth_token = auth_token)
+devtools::install_github("mjin1812/SMARTR@main")
 
 
 ```
