@@ -202,7 +202,5 @@ Instructions for using the notebook are included
 
 
 
-
-
 ## Batch segmentation importation and mapping
 

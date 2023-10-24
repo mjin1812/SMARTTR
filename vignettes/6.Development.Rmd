@@ -1,0 +1,32 @@
+---
+title: "6. Development environment"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Development}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
+```
+
+# Development environment
+
+## Last update to this webpage:
+
+```{r}
+Sys.Date()
+```
+
+## Development R session information and package versions:
+ 
+```{r}
+library(SMARTR)
+sessionInfo()
+```
+ 
+ 

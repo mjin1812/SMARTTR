@@ -19,7 +19,8 @@ parallel_coordinate_plot(
   force = 1,
   plt_theme = NULL,
   label_size = 30,
-  image_ext = ".png"
+  image_ext = ".png",
+  nudge_x = 2:5
 )
 }
 \arguments{
@@ -53,6 +54,8 @@ the experiment object output folder.}
 \item{label_size}{(default = 30) Default font size for region labels.}
 
 \item{image_ext}{(default = ".png") image extension to save the plot as.}
+
+\item{nudge_x}{(vec, default = 2:5) a vector determining the jitter between labels.}
 }
 \value{
 p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.

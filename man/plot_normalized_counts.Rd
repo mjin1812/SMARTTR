@@ -11,10 +11,15 @@ plot_normalized_counts(
   colors = c("white", "lightblue"),
   regions_to_remove = c("CTX", "grey", "MB", "TH", "HY"),
   title = NULL,
+  unit_label = bquote(`Cell counts `("cells/mm"^3)),
   height = 7,
   width = 20,
+  region_label_angle = 50,
+  label_text_size = 8,
   print_plot = TRUE,
   save_plot = TRUE,
+  flip_axis = FALSE,
+  facet_background_color = NULL,
   image_ext = ".pdf"
 )
 }
@@ -31,14 +36,24 @@ plot_normalized_counts(
 
 \item{title}{(str, default = NULL) An optional title for the plot}
 
+\item{unit_label}{(str, default = bquote('Cell counts '('cells/mm'^3))) Default unit label for the graphs}
+
 \item{height}{height of the plot in inches.}
 
 \item{width}{width of the plot in inches.}
+
+\item{region_label_angle}{(int, default = 50) Angle of the region label.}
+
+\item{label_text_size}{(int, default = 8) Size of the text element for the region labels.}
 
 \item{print_plot}{(bool, default = TRUE) Whether to display the plot (in addition to saving the plot)}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of
 the experiment object output folder.}
+
+\item{flip_axis}{plot cell counts on x-axis rather than y-axis.}
+
+\item{facet_background_color}{(default = NULL) Set to a hexadecimal string, e.g."#FFFFFF", when you want to shade the background of the graph. Defaults to no background when NULL.}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 }

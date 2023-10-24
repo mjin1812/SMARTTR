@@ -21,7 +21,10 @@ knitr::opts_chunk$set(
 
 # 0 Prior steps to get started
 
-`SMARTR` is a self-referential name on a previous package developed as an extension to `wholebrain` called `SMART`. SMARTR encapsulates the process of registration and performs downstream analysis. Prior to this, the imaging data must be pre-processed and cells are separately segmented in ImageJ/FIJI. We have a separate, in-depth article on our imaging and pre-processing approach, parameters, and segmentation process. We provide links to an example image to run though the pre-processing and segmentation. There is also a separate in-depth tutorial article for SMARTR using this example image.
+`SMARTR` stands for **S**imple **m**ulti-ensemble **a**tlas **r**egistration and statistical **t**esting in **R**. It is also a self-referential play  on a previous package developed as an extension to `wholebrain` called `SMART`.`SMARTR` interfaces with some functions from both of these packages underneath the hood.
+
+
+`SMARTR` encapsulates the process of registration and performs downstream analysis. Prior to this, the imaging data must be pre-processed and cells are separately segmented in ImageJ/FIJI. We have a separate, in-depth article on our imaging and pre-processing approach, parameters, and segmentation process. We provide links to an example image to run though the pre-processing and segmentation. There is also a separate in-depth tutorial article for SMARTR using this example image.
 This page provides installation instrutions and a broad explanation of the central package organization around data objects
 
 <figure>
