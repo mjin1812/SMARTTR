@@ -121,25 +121,70 @@ using a computer with the recommended hardware specs.</p>
 in wholebrain?<a class="anchor" aria-label="anchor" href="#what-are-some-common-errors-i-might-encounter-either-using-smartr-or-in-wholebrain"></a>
 </h3>
 <div class="section level4">
-<h4 id="r-out-of-bounds-error">R out of bounds error<a class="anchor" aria-label="anchor" href="#r-out-of-bounds-error"></a>
+<h4 id="r-out-of-bounds-error-during-registration-or-mapping">R out of bounds error during registration or mapping<a class="anchor" aria-label="anchor" href="#r-out-of-bounds-error-during-registration-or-mapping"></a>
 </h4>
-<div class="section level5">
-<h5 id="not-choosing-the-right-brain-threshold">Not choosing the right brain.threshold<a class="anchor" aria-label="anchor" href="#not-choosing-the-right-brain-threshold"></a>
+<p>The most common error encountered during registration or mapping is
+an “out of bounds error” where the transformation index is out of
+bound.</p>
+<p>This is largely due when the detected boundary (blue) around the
+border of the tissue is poor a poor fit. Wholebrain fits 32
+correspondance points around the detected border to generate a first
+pass registration, and if the boundary touches the borders of the
+images, or goes outside the borders of the image, it throws this
+error.</p>
+<figure><img src="../reference/figures/4.733_4_reg_threshold.jpg" alt="Image" style="width: 400px;"><figcaption><em>Good brain contour detection in blue.</em>
+</figcaption></figure><div class="section level5">
+<h5 id="not-choosing-the-optimal-brain-threshold">Not choosing the optimal brain.threshold<a class="anchor" aria-label="anchor" href="#not-choosing-the-optimal-brain-threshold"></a>
 </h5>
+<p>Since the detection of the tissue border depends on various factors,
+such as image brightness, it is possible that the poor border detection
+is due to an poor brain.threshold value. Please check out section 3.1
+Detecting brain contours of the Tutorial page to see how to modify the
+brain threshold.</p>
+</div>
+<div class="section level5">
+<h5 id="i-cant-get-a-good-first-contour-around-my-brains">I can’t get a good first contour around my brains<a class="anchor" aria-label="anchor" href="#i-cant-get-a-good-first-contour-around-my-brains"></a>
+</h5>
+<p>Unfortunately, the contour detection can be buggy and inconsistent.
+Please check out section 3.1 Detecting brain contours of the tutorial
+page to see how to quickly and interactively adjust the brain.threshold
+to try out a wide range of values. If no optimal threshold is found, we
+recommend increasing the brain.threshold value until the contours
+detected are smaller than the actual tissue boundaries. Then proceed
+with registration. The first pass registration will be inaccurate. You
+can quickly manually correct the correspondance points using the
+interactive console interface.</p>
 </div>
 <div class="section level5">
 <h5 id="not-choosing-the-right-resize-parameter">Not choosing the right resize parameter<a class="anchor" aria-label="anchor" href="#not-choosing-the-right-resize-parameter"></a>
 </h5>
+<p>The other scenario that may result in this error is when the size of
+the atlas overlay during registration is larger than the tissue
+boundary. I’m not sure why this error occurs, but this is corrected by
+changing the size of the atlas overlay.</p>
+<figure><img src="../reference/figures/5.733_4_registration_uncorrected.jpg" alt="Image" style="width: 500px;"><figcaption><em>First pass registration. The yellow atlas outline (left) needs to
+fit within the borders of the tissue boundary.</em>
+</figcaption></figure><p>Following boundary detection, change the size of the atlas overlay by
+modifying the <code>resize</code> parameter of the filter. The optimal
+range will depend on your imaging resolution</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Optimal value range for our imaging resolution is 0.8-0.12</span></span>
+<span><span class="co"># Larger resize values result in smaller overlays</span></span>
+<span></span>
+<span><span class="va">filter</span><span class="op">$</span><span class="va">resize</span> <span class="op">&lt;-</span> <span class="fl">0.1</span> </span></code></pre></div>
 </div>
+<div class="section level5">
+<h5 id="none-of-the-above-fixed-my-issue-">None of the above fixed my issue.<a class="anchor" aria-label="anchor" href="#none-of-the-above-fixed-my-issue-"></a>
+</h5>
+<p>As SMARTR is a wrapper around registration and mapping functions in
+wholebrain, we also recommend checking out the <a href="https://github.com/tractatus/wholebrain" class="external-link">wholebrain github</a> for
+more detailed questions.</p>
 </div>
-<div class="section level4">
-<h4 id="i-cant-get-a-good-first-contour-around-my-brains">I can’t get a good first contour around my brains<a class="anchor" aria-label="anchor" href="#i-cant-get-a-good-first-contour-around-my-brains"></a>
-</h4>
 </div>
 <div class="section level4">
 <h4 id="i-have-regions-torn-and-i-only-want-to-process-one-hemisphere">I have regions torn and I only want to process one hemisphere?<a class="anchor" aria-label="anchor" href="#i-have-regions-torn-and-i-only-want-to-process-one-hemisphere"></a>
 </h4>
-<p>Check out the hemisphere parameter</p>
+<p>Check out the hemisphere parameter.</p>
 <p>The <code>MAX_name.tif</code> file highlighted in blue is used as the
 reference image during interactive registrations. This is the a
 flattened version of the .<code>tif</code> file from step B. The
