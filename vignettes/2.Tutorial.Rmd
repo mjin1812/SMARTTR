@@ -1,5 +1,5 @@
 ---
-title: "2. Tutorial"
+title: "2. Mapping Tutorial"
 output: 
   rmarkdown::html_vignette:
     toc: true
@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 # 0 Pre-processing 
 
-SMARTR encapsulates the process of registration, importation of segmentation data, and performs downstream analysis. Prior to this, the imaging data must be pre-processed and cells are separately segmented in ImageJ/FIJI. We have a separate, in-depth [article](./articles/Segmentation.html) on our imaging approach, parameters, and segmentation process. We suggest starting there if you would like to walk through the pipeline from raw example image. The remainder of this page will focus on steps relevant to registration, segmentation and downstream data analysis using SMARTR. We recommend completing the pre-processing and segmentation tutorial with the example image so you can walk through the SMARTR tutorial with this data.
+SMARTR encapsulates the process of registration, importation of segmentation data, and performs downstream analysis. Prior to this, the imaging data must be pre-processed and cells are separately segmented in ImageJ/FIJI. We have a separate, in-depth [article](./articles/Segmentation.html) on our imaging approach, parameters, and segmentation process. We suggest starting there if you would like to walk through the pipeline from raw example image. The remainder of this page will focus on steps relevant to registration, segmentation data import, and downstream data analysis using SMARTR. We recommend completing the pre-processing and segmentation tutorial with the example image so you can walk through the SMARTR tutorial with this data.
 
 <figure>
   <img src="../man/figures/SMARTR_package_schematic.jpg" alt="Image" style="width: 800px; height: 400px;">
@@ -37,7 +37,7 @@ Each image file is stored in a hierarchical folder structure in a slice folder t
 
 The image files, which we also refer to as slices, are assumed to follow the naming convention `mouseNo_slice.ext`. 
 
-The `slice` is a unique tag or index used to identify the particular section when it was imaged on a slice. For example, we use 
+The `slice` is a unique tag or index used to identify the particular section when it was imaged. For example, we use 
 an indexing system where the first number identifies the slide number and a second number identifies position on that slide. These numbers are separated by an underscore. Therefore the slice `1_1` represents section one of slide one for this animal. Of course, other indexing approaches can be used. We create a slice name by concatenating the slice with the mouse ID separate by an underscore to name images unambiguously. 
 
 For example, here is one of our image directory paths: 
@@ -82,11 +82,19 @@ These steps will be achieved through functions that operate on objects in SMARTR
 # 2 Pipeline setup
 
 Okay, let's walkthrough the pipeline with an example mouse and image to process! 
-You can download our example fully pre-processed image folder [here](https://osf.io/bpk7n). 
+
+```{r, eval=TRUE}
+# Load SMARTR
+library(SMARTR)
+```
+
+
+You can download our example fully pre-processed image folder [here](https://osf.io/4qfsc). 
 This image came from mouse 733, so create a empty folder named `733` in a location of your choice and upzip the image folder into this folder.
 
 
 ## 2.1 Initializing a mouse object 
+
 
 Let's create an instance of a mouse object. This mouse object will store data from mouse No. 733, so
 we will name it `mouse_733`. We also want to store the important experiment metadata related to this mouse.
@@ -99,9 +107,11 @@ mouse_733 <- mouse(mouse_ID = "733",
                    sex = "female",
                    strain ="129s",
                    experiment = "learned helplessness",
-                   group = "context",
+                   group = "context",   # Flexible attribute to encapsulate different experimental conditions, e.g. genotype, behavior conditions, that doesn't fit into other categories.
                    cohort = "group_A",
                    output_path = "V:/Michelle_Jin/Wholebrain pipeline/733")   # replace the output path with the path to your specific mouse folder
+            
+
 
 print(mouse_733)
 
@@ -156,7 +166,8 @@ s <- slice(slice_ID = "1_4",
            z_width = 9,                # z-stack thickness in microns
            hemisphere = NULL,          # "left", "right" or NULL (both sides). This is necessary if you are only processing one hemisphere due to hemisphere separation, tears, etc.
            channels = c('cfos', 'eyfp', 'colabel'),  # Channels to process
-           registration_path = 'V:/Michelle_Jin/Wholebrain pipeline/733/733_1_4/MAX_733_1_4.tif'# Path to the registration image. Replace with your specific path
+           # registration_path = 'V:/Michelle_Jin/Wholebrain pipeline/733/733_1_4/MAX_733_1_4.tif'# Path to the registration image. Replace with your specific path
+           registration_path = 'V:\\Michelle_Jin\\Wholebrain pipeline\\733\\733_1_4_fully_processed/MAX_733_1_4.tif'# Path to the registration image. Replace with your specific path
           )  
 
 # Let's check the data stored correctly with print()
@@ -413,7 +424,6 @@ mouse_733 <- exclude_anatomy(mouse_733,
 You can visualize the filtered counts when you set the `plot_filtered` parameter to `TRUE`. Note however, that sometimes the graphical rendering will flip the left and right sides.
 
 
-
 # 6 Normalize cell counts by region
 
 Getting cell counts per region normalized by volume or area in mm^3^ or mm^2^ respectively.
@@ -436,15 +446,6 @@ mouse_733 <- get_registered_volumes(mouse_733,
 ## 6.2 Get a combined cell data table 
 
 The `get_cell_table()` function will aggregate all forward warped cell counts across all slices into one data frame named `cell_table`. This can be especially useful for plotting purposes.
-
-To save time, we will now pre-load mouse_325 containing multiple slice objects that have been registered, forward-warped, and cleaned, with registered volumes calculated.
-
-```{r}
-# Pre-load saved processed mouse  Modify the path to server V if necessary
-
-# Add the path to the location of your example downloaded mouse object
-load("V:/Michelle Jin/Sundowning/PipelineDemo/Mouse_example/mouse_325_pre-registered_forward_warped.RDATA")
-```
 
 
 ```{r}
@@ -472,7 +473,6 @@ This information is stored as a named element in the mouse called `normalized_co
 
 
 > Tip: The parameter `simplify_regions` will further collapse the normalized cell counts by certain keywords (e.g. "layer" or "stratum"). If a region name is detected to have one of these keywords, it will merge counts with its parent structure until there are no more keywords found. This reduces the overwhelming amount of substructures that we can compare and helps simplify our analysis.
-
 
 
 ```{r}
@@ -507,7 +507,7 @@ mouse_733 <- split_hipp_DV(mouse_733, AP_coord = -2.7, combine_hemispheres = TRU
 ## 7.1 Initializing an experiment object
 
 
-Once you've registered enough mice, you can begin adding them into an experiment object. Creating an experiment object is very similar to the way we created mouse and slice objects with one exception: there are certain experimental attributes that are meant to be autopopulated when we add a mouse object to it and should be left alone during object construction. 
+Once you've registered enough mice, you can begin adding them into an experiment object. Creating an experiment object is very similar to the way we created mouse and slice objects with one exception--there are certain experimental attributes that are meant to be autopopulated when we add a mouse object to it and should be left alone during object construction. 
 
 
 For example, if multiple mice are added to an experiment object from three different `drug` conditions, the experiment object's attribute `drug_groups` will consist of the names of the three drugs given. Check the help page to see which experiment attributes are autogenerated. You'll see that the `experiment_name`, `experimenters`, and `output_path` parameters are the only ones we need to be set manually. 
@@ -532,7 +532,7 @@ my_experiment <- add_mouse(my_experiment, mouse_733)
 Just like a mouse object, you can save an experiment object, with or without a timestamp.
 
 ```{r}
-save_experiment(sundowning, timestamp = TRUE)
+save_experiment(my_experiment, timestamp = TRUE)
 ```
 
 
@@ -540,33 +540,50 @@ save_experiment(sundowning, timestamp = TRUE)
 
 Once you've added enough mice to perform an analysis, we want to aggregate all the data for each mouse together into one dataframe to perform analysis on. 
 
-For now we will load a saved example experiment object named `learned_helplessness` that already contains many mouse objects. 
+For now we will load a saved example experiment object named `lh` that already contains all the mapped mouse object data from our learned helplessness mapping experiment.
 
-```{r}
-# Load the presaved data ## TODO EDIT THIS
-load("V:\\Michelle Jin\\Sundowning\\PipelineDemo\\Experiment_example\\experiment_demo_saved.Rdata")
+```{r, eval = TRUE}
+# Load the presaved data
+load("V:\\Michelle_Jin\\Wholebrain pipeline\\LH_analysis\\learned_helplessness_experiment.RDATA")
 
-# Print the names of the mice stores in the sundowning object
-print(names(sundowning$mice))
+# Print the names of the mice stores in the learned helplessness experiment object
+print(names(lh$mice))
 
 ```
 
 Aggregating the normalized cell counts across mice into one dataframe is done with the `combine_norm_cell_counts()` function.  
 
-```{r}
-sundowning <- combine_norm_cell_counts(sundowning, by = c('group', 'sex', 'age'))
+```{r, eval = TRUE}
+lh <- combine_norm_cell_counts(lh, by = c('groups'))
 ```
 
-`by` is a special parameter that will allow up to take advantage of the many mouse attributes that we have recorded during creation of a mouse object. It is a vector of the mouse attributes we will use to split our dataset into subgroups for comparison. In the example above, we use the `group`, `sex`, and `age` mouse attributes to compare `AD` and `control` groups and the `male` and `female` mice that are 2 months old. Sometimes, certain attributes like `drug` may not apply to your experiment, so `by` should only include the variables that you intend on using for group comparisons during analysis to avoid cluttering your combined dataframe. For consistency in the functions used to filter out subgroups, the values of the attributes will all be converted to strings.
+`by` is a special parameter that will allow up to take advantage of the many mouse attributes that we have recorded during creation of a mouse object. It is a vector of the mouse attributes we will use to split our dataset into subgroups for comparison. In the example above, we use the `group` mouse attributes to compare `Shock` and `Context` groups which received inescapable shock and context training, respectively. If there were additional groupings of interest, such as splitting males and females to look at sex differences,  you can include the `sex` attribute into the vector, e.g. `c('group', 'sex')`. Sometimes, certain attributes like `drug` may not apply to your experiment, so `by` should only include the variables that you intend on using for group comparisons during analysis to avoid cluttering your combined dataframe. For consistency in the functions used to filter out subgroups, the values of the attributes will all be converted to strings.
+
 
 # 8 Quality checking your data
 
-The quality of the segmentation data may depend on many factors including immunolabelling quality, the sectioning and mounting technique, and performance of the segmentation algorithm. We also want to check for "statistical quality" and ensure that there are enough mice per group within a single brain region to compare. There are a few of functions we can use to check the data which can optionally clean our experimental dataset.
+The quality of the segmentation data may depend on many factors including immunolabelling quality, the sectioning and mounting technique, and performance of the segmentation algorithm. We also want to check for "statistical quality" and ensure that there are enough mice per group within a single brain region to compare. There are a few of functions we can use to check the data which can optionally use to clean our mapped dataset. Additionally, both of them contain `log` parameter which automatically export to the experiment folder a list of regions removed as a .csv file which don't meet the quality checks. 
 
-## 10.1 Check for outlier counts 
+## 8.1 Check for outlier counts 
 
-The function `find_outlier_counts()` will first organize counts into analysis groups stratified based on the `by` parameter. Then the mean cell counts for each analysis group and their standard deviation are calculated. If any regions counts for a mouse exceed greater than `n_sd` (default = 2) for their analysis group, the region and mouse will be marked as an outlier. If `log = TRUE` then, the output is stored in a csv file with the file stem `region_count_outliers_[channel]`. This may be helpful to look back at the raw data and examine whether the segmentation algorithm is doing a good job around these regions for a given mouse. 
+The function `find_outlier_counts()` will first organize counts into sub analysis groups stratified based on the `by` parameter. Then the mean cell counts for each analysis group and their standard deviation are calculated. If any regions counts for a mouse exceed greater than `n_sd` (default = 2) for their analysis group, the region and mouse will be marked as an outlier. If `log = TRUE` then, the output is stored in a csv file with the file stem `region_count_outliers_[channel]`. This may be helpful to look back at the raw data and examine whether the segmentation algorithm is doing a good job around these regions for a given mouse. 
 
-```{r}
-sundowning <- find_outlier_counts(sundowning, by = c("group", "sex", "age"), n_sd = 2, remove = TRUE, log = TRUE)
+
+```{r, eval = TRUE}
+lh <- find_outlier_counts(lh, by = c("group"), n_sd = 2, remove = TRUE, log = TRUE)
 ```
+
+
+## 8.2 Checking for the minimum n number 
+
+If you want to check that each analysis subgroup has a minimum n represented per brain region, you can use the function `enough_mice_per_group()`. This function contains `by` parameter as well. Additionally, This function also automatically keeps only the common regions that are found across all comparison groups.
+
+```{r, eval = TRUE}
+lh <- enough_mice_per_group(lh, by = "group", min_n = 4, remove = TRUE, log = TRUE)
+```
+
+This concludes the end of the mapping tutorial! Check out section 4. Example analysis notebook to see how we apply the analysis and visualization functions in SMARTR to this dataset. 
+
+
+
+

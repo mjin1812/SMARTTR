@@ -14,47 +14,25 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 ```
 
+# Background
 
-# Load the libraries 
+
+
+
+
+
+
+
+## 1.1 Load the libraries needed
 
 ```{r}
 library(SMARTR)
 library(tidyverse)
 ```
 
-
-# Briefing
-
-Attached 
-
-
-
-# Start here if creating experiment from scratch
-
-
-
-```{r, eval = FALSE}
-lh <- experiment(experiment_name = "learned_helplessness",
-                         experimenters = c("MJ", "SO", "ML", "SS", "AW", "SLS", "CA"),
-                         output_path = "V:\\Simon_Ogundare\\Learned Helplessness\\experiment_analysis_output")
-```
-
-
-# Load all mouse objects you want included in your analysis into the experiment object
-```{r, eval = FALSE}
-lh <- add_mouse(lh, m = mouse_829)
-lh <- add_mouse(lh, m = mouse_831)
-lh <- add_mouse(lh, m = mouse_833)
-```
-
-
-Save the experiment object into your your designated output_path location
-```{r, eval = FALSE}
-# Check that you loaded all the mice you need
-print(names(lh$mice))
-
-# Save the experiment
-save_experiment(lh, timestamp = TRUE)
+```{r}
+# Load the 
+load("V:\\Michelle_Jin\\Wholebrain pipeline\\LH_analysis\\learned_helplessness_experiment.RDATA")
 ```
 
 
@@ -74,8 +52,7 @@ lh <- normalize_colabel_counts(lh, denominator_channel = "cfos")
 
 ```
 
-
-Quality checking
+Quality checking the data 
 
 ```{r}
 lh <- find_outlier_counts(lh, by = c("group"), n_sd = 2, remove = TRUE, log = TRUE)
@@ -86,12 +63,10 @@ lh <- enough_mice_per_group(lh, by = c("group"), min_n = 4, remove = TRUE, log =
 ```
 
 ## Plotting normalized long regional bar plot across all regions
-
-
 ```{r}
-# eyfp.colors <- c(Context = "#FFFFFF", Shock = "#03AC03") # shamrock green
-# eyfp.colors <- c(Context = "#FFFFFF", Shock = "#3CB043") # regular green
-eyfp.colors <- c(Context = "#FFFFFF", Shock = "#028A0F")  # emerald green
+
+# User-chosen 
+eyfp.colors <- c(Context = "#FFFFFF", Shock = "#028A0F")  
 cfos.colors <- c(Context = "#FFFFFF", Shock = "#ff2a04")
 colabel.colors <- c(Context = "#FFFFFF", Shock = "#ffc845")
 
@@ -668,449 +643,6 @@ lh <- summarise_networks(lh,
 
 
 
-
-
-Integrate behavioral data to plot correlations
-```{r}
-library(readxl)
-library(dplyr)
-library(tidyr)
-behavior_file <- "V:\\Simon_Ogundare\\Learned Helplessness\\DV_Split_cleaned_experiment\\behavior\\LH_Behavior_Summary.xlsx"
-behavior_df <- read_excel(behavior_file) %>% rename()
-behavior_df <- behavior_df %>% dplyr::rename(mouse_ID = Mouse,
-                                             group = Group,
-                                             beam_breaks = `IR-breaks`,
-                                             length = `Session Length`,
-                                             avg_latency = `Average latency`) 
-behavior_df <- behavior_df %>% dplyr::select(mouse_ID, group, beam_breaks, length, avg_latency)
-
-```
-
-
-```{r}
-# Reach into the combined normalized cell count dataframe
-# Parse and search for regions by subregion
-
-channel <- "colabel_over_eyfp"
-by <- "group"
-values <- "Shock"
-acronym <- "PG"
-
-region_acronyms <- c("ACA", "AI", "VISC", "MOs", "ACB", "dDG" ,"PAA", "BMA","BLA", "LA",  "PG", "VTA")
-p_list <- vector("list", length(region_acronyms))
-
-# filter by parameters
-df_channel <-  lh$combined_normalized_counts[[channel]] 
-
-# Pivot wider
-df_channel <- df_channel %>%  dplyr::select(mouse_ID:acronym, normalized.count.by.volume) %>%
-  tidyr::pivot_wider(names_from = acronym, values_from = normalized.count.by.volume)
-
-# Rearrange the correlations to be in "anatomical order"
-anatomical.order <- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
-common.regions <-  df_channel %>% dplyr::select(-all_of(c('mouse_ID', by))) %>% names()
-common.regions.ordered <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure) %>%
-  purrr::map(intersect, y=common.regions) %>% unlist()
-
-df_channel <- df_channel %>% dplyr::select(mouse_ID, group, all_of(common.regions.ordered))
-
-# Combine with behavioral data 
-df_channel_beh <- df_channel %>% dplyr::inner_join(behavior_df,
-                                by= c("mouse_ID",
-                                      "group"),
-                                unmatched = "drop")
-df_channel_beh$group <-  as.factor(df_channel_beh$group)
-
-## Get correlations 
-corr_list_shock <- df_channel_beh %>% 
-  filter(group == "Shock") %>% 
-  dplyr::select(-c("mouse_ID", "group")) %>% 
-  as.matrix() %>% 
-   Hmisc::rcorr()
-
-corr_list_context <- df_channel_beh %>% 
-  filter(group == "Context") %>% 
-  dplyr::select(-c("mouse_ID", "group")) %>% 
-  as.matrix() %>% 
-   Hmisc::rcorr()
-    
-for (n in 1:length(region_acronyms)){
-      
-    acronym <- region_acronyms[n]
-    
-    # Get Pearsons and associated P values
-    r_s <- corr_list_shock$r[rownames(corr_list_shock$r) %in% "avg_latency", colnames(corr_list_shock$r) %in% acronym] %>% round(digits = 2)
-    p_s <- corr_list_shock$P[rownames(corr_list_shock$P) %in% "avg_latency", colnames(corr_list_shock$P) %in% acronym] %>% round(digits = 2)
-    r_c <- corr_list_context$r[rownames(corr_list_context$r) %in% "avg_latency", colnames(corr_list_context$r) %in% acronym] %>% round(digits = 2)
-    p_c <- corr_list_context$P[rownames(corr_list_context$P) %in% "avg_latency", colnames(corr_list_context$P) %in% acronym] %>% round(digits = 2)
-    
-    test <- tibble(group = c("Context", "Shock"),
-           x = c(0, 0),
-           y = c(1 ,3),
-           r = c(r_c, r_s),
-           P= c(p_c, p_s))
-    
-    # Plot 
-    p <- ggplot(data=df_channel_beh, aes_string(x = "avg_latency", y = acronym, color = "group")) + 
-      geom_point() + geom_smooth(method = "lm", se = FALSE, aes(group = group)) + scale_colour_manual(
-      values = c("#000000","#f09b08")) + theme_classic()
-    
-    p <- p +  annotate("text", x = c(.5,.5), y = c(.32, .3), 
-              label = c(paste0("R = ", r_c), paste0("R = ", r_s)) , color=c("#000000","#f09b08"),
-              size=3 , angle=0, fontface="bold") +  
-      annotate("text", x = c(4.5,4.5), y = c(.32, .3), 
-              label = c(paste0("p = ", p_c), paste0("p = ", p_s)) , color=c("#000000","#f09b08"),
-              size=3 , angle=0, fontface="bold") 
-    p_list[[n]] <- p
-} 
-
-```
-
-
-
-```{r}
-
-# library(gridExtra)
-
-quartz()
-grid.arrange(p_list[[1]], 
-             p_list[[2]], 
-             p_list[[3]], 
-             p_list[[4]], 
-             p_list[[5]], 
-             p_list[[6]], 
-             p_list[[7]], 
-             p_list[[8]], 
-             p_list[[9]], 
-             p_list[[10]], 
-             p_list[[11]], 
-             p_list[[12]], 
-             ncol = 4,
-             nrow =3)
-
-```
-
-```{r}
-
-# Reach into the combined normalized cell count dataframe
-# Parse and search for regions by subregion
-
-channel <- "colabel_over_cfos"
-by <- "group"
-values <- "Shock"
-acronym <- "PG"
-
-region_acronyms <- c("ACA", "AI", "VISC", "MOs", "ACB", "PAA", "BMA","BLA", "LA", "ZI", "PG", "VTA")
-p_list <- vector("list", length(region_acronyms))
-
-# filter by parameters
-df_channel <-  e$combined_normalized_counts[[channel]] 
-
-# Pivot wider
-df_channel <- df_channel %>%  dplyr::select(mouse_ID:acronym, normalized.count.by.volume) %>%
-  tidyr::pivot_wider(names_from = acronym, values_from = normalized.count.by.volume)
-
-# Rearrange the correlations to be in "anatomical order"
-anatomical.order <- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
-common.regions <-  df_channel %>% dplyr::select(-all_of(c('mouse_ID', by))) %>% names()
-common.regions.ordered <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure) %>%
-  purrr::map(intersect, y=common.regions) %>% unlist()
-
-df_channel <- df_channel %>% dplyr::select(mouse_ID, group, all_of(common.regions.ordered))
-
-# Combine with behavioral data 
-df_channel_beh <- df_channel %>% dplyr::inner_join(behavior_df,
-                                by= c("mouse_ID",
-                                      "group"),
-                                unmatched = "drop")
-df_channel_beh$group <-  as.factor(df_channel_beh$group)
-
-## Get correlations 
-corr_list_shock <- df_channel_beh %>% 
-  filter(group == "Shock") %>% 
-  dplyr::select(-c("mouse_ID", "group")) %>% 
-  as.matrix() %>% 
-   Hmisc::rcorr()
-
-corr_list_context <- df_channel_beh %>% 
-  filter(group == "Context") %>% 
-  dplyr::select(-c("mouse_ID", "group")) %>% 
-  as.matrix() %>% 
-   Hmisc::rcorr()
-    
-for (n in 1:length(region_acronyms)){
-      
-    acronym <- region_acronyms[n]
-    
-    # Get Pearsons and associated P values
-    r_s <- corr_list_shock$r[rownames(corr_list_shock$r) %in% "avg_latency", colnames(corr_list_shock$r) %in% acronym] %>% round(digits = 2)
-    p_s <- corr_list_shock$P[rownames(corr_list_shock$P) %in% "avg_latency", colnames(corr_list_shock$P) %in% acronym] %>% round(digits = 2)
-    r_c <- corr_list_context$r[rownames(corr_list_context$r) %in% "avg_latency", colnames(corr_list_context$r) %in% acronym] %>% round(digits = 2)
-    p_c <- corr_list_context$P[rownames(corr_list_context$P) %in% "avg_latency", colnames(corr_list_context$P) %in% acronym] %>% round(digits = 2)
-    
-    test <- tibble(group = c("Context", "Shock"),
-           x = c(0, 0),
-           y = c(1 ,3),
-           r = c(r_c, r_s),
-           P= c(p_c, p_s))
-    
-    # Plot 
-    p <- ggplot(data=df_channel_beh, aes_string(x = "avg_latency", y = acronym, color = "group")) + 
-      geom_point() + geom_smooth(method = "lm", se = FALSE, aes(group = group)) + scale_colour_manual(
-      values = c("#000000","#f09b08")) + theme_classic()
-    
-    p <- p +  annotate("text", x = c(.5,.5), y = c(.32, .3), 
-              label = c(paste0("R = ", r_c), paste0("R = ", r_s)) , color=c("#000000","#f09b08"),
-              size=3 , angle=0, fontface="bold") +  
-      annotate("text", x = c(4.5,4.5), y = c(.32, .3), 
-              label = c(paste0("p = ", p_c), paste0("p = ", p_s)) , color=c("#000000","#f09b08"),
-              size=3 , angle=0, fontface="bold") 
-    p_list[[n]] <- p
-} 
-```
-
-```{r}
-# region_acronyms <- c("ACA", "AI", "VISC", "MOs", "ACB", "PAA", "BMA", "LA", "ZI")
-
-library(gridExtra)
-
-quartz()
-grid.arrange(p_list[[1]], 
-             p_list[[2]], 
-             p_list[[3]], 
-             p_list[[4]], 
-             p_list[[5]], 
-             p_list[[6]], 
-             p_list[[7]], 
-             p_list[[8]], 
-             p_list[[9]], 
-             p_list[[10]], 
-             p_list[[11]], 
-             p_list[[12]], 
-             ncol = 4,
-             nrow =3)
-
-```
-
-
-
-
-
-```{r}
- write.csv(df_channel_beh, file = "V:\\Simon_Ogundare\\Learned Helplessness\\DV_Experiment_2/colabel_over_cfos_norm_counts_behavior.csv")
-```
-
-
-
-
-```{r}
-
-# Reach into the combined normalized cell count dataframe
-# Parse and search for regions by subregion
-
-channel <- "eyfp"
-
-region_acronyms <- c("ACA", "AI", "MOs", "ACB", "PAA", "BMA","BLA", "LA", "PG", "PVT",  "VTA", "BST")
-p_list <- vector("list", length(region_acronyms))
-# filter by parameters
-df_channel <-  lh$combined_normalized_counts[[channel]] 
-
-# Pivot wider
-df_channel <- df_channel %>%  dplyr::select(mouse_ID:acronym, normalized.count.by.volume) %>%
-  tidyr::pivot_wider(names_from = acronym, values_from = normalized.count.by.volume)
-
-# Rearrange the correlations to be in "anatomical order"
-anatomical.order <- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
-common.regions <-  df_channel %>% dplyr::select(-all_of(c('mouse_ID', by))) %>% names()
-common.regions.ordered <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure) %>%
-  purrr::map(intersect, y=common.regions) %>% unlist()
-
-df_channel <- df_channel %>% dplyr::select(mouse_ID, group, all_of(common.regions.ordered))
-
-# Combine with behavioral data 
-df_channel_beh <- df_channel %>% dplyr::inner_join(behavior_df,
-                                by= c("mouse_ID",
-                                      "group"),
-                                unmatched = "drop")
-df_channel_beh$group <-  as.factor(df_channel_beh$group)
-
-## Get correlations 
-corr_list_shock <- df_channel_beh %>% 
-  filter(group == "Shock") %>% 
-  dplyr::select(-c("mouse_ID", "group")) %>% 
-  as.matrix() %>% 
-   Hmisc::rcorr()
-
-corr_list_context <- df_channel_beh %>% 
-  filter(group == "Context") %>% 
-  dplyr::select(-c("mouse_ID", "group")) %>% 
-  as.matrix() %>% 
-   Hmisc::rcorr()
-    
-for (n in 1:length(region_acronyms)){
-      
-    acronym <- region_acronyms[n]
-    
-    # Get Pearsons and associated P values
-    r_s <- corr_list_shock$r[rownames(corr_list_shock$r) %in% "avg_latency", colnames(corr_list_shock$r) %in% acronym] %>% round(digits = 2)
-    p_s <- corr_list_shock$P[rownames(corr_list_shock$P) %in% "avg_latency", colnames(corr_list_shock$P) %in% acronym] %>% round(digits = 2)
-    r_c <- corr_list_context$r[rownames(corr_list_context$r) %in% "avg_latency", colnames(corr_list_context$r) %in% acronym] %>% round(digits = 2)
-    p_c <- corr_list_context$P[rownames(corr_list_context$P) %in% "avg_latency", colnames(corr_list_context$P) %in% acronym] %>% round(digits = 2)
-    
-    test <- tibble(group = c("Context", "Shock"),
-           x = c(0, 0),
-           y = c(1 ,3),
-           r = c(r_c, r_s),
-           P= c(p_c, p_s))
-    
-    # Plot 
-    p <- ggplot(data=df_channel_beh, aes_string(x = "avg_latency", y = acronym, color = "group")) + 
-      geom_point() + geom_smooth(method = "lm", se = FALSE, aes(group = group)) + scale_colour_manual(
-      values = c("#000000","#f09b08")) + theme_classic()
-    
-    p <- p +  annotate("text", x = c(.5,.5), y = c(.32, .3), 
-              label = c(paste0("R = ", r_c), paste0("R = ", r_s)) , color=c("#000000","#f09b08"),
-              size=3 , angle=0, fontface="bold") +  
-      annotate("text", x = c(4.5,4.5), y = c(.32, .3), 
-              label = c(paste0("p = ", p_c), paste0("p = ", p_s)) , color=c("#000000","#f09b08"),
-              size=3 , angle=0, fontface="bold") 
-    p_list[[n]] <- p
-} 
-
-```
-
-
-```{r}
-# region_acronyms <- c("ACA", "AI", "VISC", "MOs", "ACB", "PAA", "BMA", "LA", "ZI")
-
-library(gridExtra)
-
-quartz()
-grid.arrange(p_list[[1]], 
-             p_list[[2]], 
-             p_list[[3]], 
-             p_list[[4]], 
-             p_list[[5]], 
-             p_list[[6]], 
-             p_list[[7]], 
-             p_list[[8]], 
-             p_list[[9]], 
-             p_list[[10]], 
-             p_list[[11]], 
-             p_list[[12]], 
-             ncol = 4,
-             nrow =3)
-
-```
-
-
-
-
-```{r}
-
-# Reach into the combined normalized cell count dataframe
-# Parse and search for regions by subregion
-
-channel <- "cfos"
-
-region_acronyms <- c("ACA", "AI", "MOs", "ACB", "PAA", "BMA","BLA", "LA", "PG", "PVT",  "VTA", "BST", "TR", "MG", "PVH", "RL")
-p_list <- vector("list", length(region_acronyms))
-
-# filter by parameters
-df_channel <-  e$combined_normalized_counts[[channel]] 
-
-# Pivot wider
-df_channel <- df_channel %>%  dplyr::select(mouse_ID:acronym, normalized.count.by.volume) %>%
-  tidyr::pivot_wider(names_from = acronym, values_from = normalized.count.by.volume)
-
-# Rearrange the correlations to be in "anatomical order"
-anatomical.order <- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
-common.regions <-  df_channel %>% dplyr::select(-all_of(c('mouse_ID', by))) %>% names()
-common.regions.ordered <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure) %>%
-  purrr::map(intersect, y=common.regions) %>% unlist()
-
-df_channel <- df_channel %>% dplyr::select(mouse_ID, group, all_of(common.regions.ordered))
-
-# Combine with behavioral data 
-df_channel_beh <- df_channel %>% dplyr::inner_join(behavior_df,
-                                by= c("mouse_ID",
-                                      "group"),
-                                unmatched = "drop")
-df_channel_beh$group <-  as.factor(df_channel_beh$group)
-
-## Get correlations 
-corr_list_shock <- df_channel_beh %>% 
-  filter(group == "Shock") %>% 
-  dplyr::select(-c("mouse_ID", "group")) %>% 
-  as.matrix() %>% 
-   Hmisc::rcorr()
-
-corr_list_context <- df_channel_beh %>% 
-  filter(group == "Context") %>% 
-  dplyr::select(-c("mouse_ID", "group")) %>% 
-  as.matrix() %>% 
-   Hmisc::rcorr()
-    
-for (n in 1:length(region_acronyms)){
-      
-    acronym <- region_acronyms[n]
-    
-    # Get Pearsons and associated P values
-    r_s <- corr_list_shock$r[rownames(corr_list_shock$r) %in% "avg_latency", colnames(corr_list_shock$r) %in% acronym] %>% round(digits = 2)
-    p_s <- corr_list_shock$P[rownames(corr_list_shock$P) %in% "avg_latency", colnames(corr_list_shock$P) %in% acronym] %>% round(digits = 2)
-    r_c <- corr_list_context$r[rownames(corr_list_context$r) %in% "avg_latency", colnames(corr_list_context$r) %in% acronym] %>% round(digits = 2)
-    p_c <- corr_list_context$P[rownames(corr_list_context$P) %in% "avg_latency", colnames(corr_list_context$P) %in% acronym] %>% round(digits = 2)
-    
-    test <- tibble(group = c("Context", "Shock"),
-           x = c(0, 0),
-           y = c(1 ,3),
-           r = c(r_c, r_s),
-           P= c(p_c, p_s))
-    
-    # Plot 
-    p <- ggplot(data=df_channel_beh, aes_string(x = "avg_latency", y = acronym, color = "group")) + 
-      geom_point() + geom_smooth(method = "lm", se = FALSE, aes(group = group)) + scale_colour_manual(
-      values = c("#000000","#f09b08")) + theme_classic()
-    
-    p <- p +  annotate("text", x = c(.5,.5), y = c(.32, .3), 
-              label = c(paste0("R = ", r_c), paste0("R = ", r_s)) , color=c("#000000","#f09b08"),
-              size=3 , angle=0, fontface="bold") +  
-      annotate("text", x = c(4.5,4.5), y = c(.32, .3), 
-              label = c(paste0("p = ", p_c), paste0("p = ", p_s)) , color=c("#000000","#f09b08"),
-              size=3 , angle=0, fontface="bold") 
-    p_list[[n]] <- p
-} 
-```
-
-
-```{r}
-# region_acronyms <- c("ACA", "AI", "VISC", "MOs", "ACB", "PAA", "BMA", "LA", "ZI")
-
-library(gridExtra)
-
-quartz()
-grid.arrange(p_list[[1]], 
-             p_list[[2]], 
-             p_list[[3]], 
-             p_list[[4]], 
-             p_list[[5]], 
-             p_list[[6]], 
-             p_list[[7]], 
-             p_list[[8]], 
-             p_list[[9]], 
-             p_list[[10]], 
-             p_list[[11]], 
-             p_list[[12]], 
-             p_list[[13]], 
-             p_list[[14]], 
-             p_list[[15]], 
-             p_list[[16]], 
-             ncol = 4,
-             nrow =6)
-
-```
-
-
 # Perform pairwise comparisons in expression across brain regions and add FDR correction for multiple comparisons
 
 ```{r}
@@ -1205,7 +737,6 @@ stats.colabel <- lh$combined_normalized_counts$colabel %>% group_by(acronym, nam
 ```
 
 ```{r}
-# stats.colabel_over_cfos %>% pivot_longer(cols= starts_with("group"), names_to = NULL, values_to = "group")
 
  wide_colabel_over_cfos_norm_counts <- lh$combined_normalized_counts$colabel_over_cfos %>% group_by(group, acronym, name) %>% 
       summarise(mean.normalized.count.by.volume = mean(normalized.count.by.volume),
@@ -1227,7 +758,7 @@ stats.colabel <- lh$combined_normalized_counts$colabel %>% group_by(acronym, nam
 ```
 
 ```{r}
-# stats.colabel %>% pivot_longer(cols= starts_with("group"), names_to = NULL, values_to = "group")
+
 
 wide_colabel_norm_counts <- lh$combined_normalized_counts$colabel %>% group_by(group, acronym, name) %>% 
       summarise(mean.normalized.count.by.volume = mean(normalized.count.by.volume),

@@ -42,7 +42,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
-    <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Tutorial</a>
+    <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
     <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
     <a class="dropdown-item" href="../articles/4.Example%20Analysis%20Notebook.html">4. Example analysis notebook</a>
     <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
@@ -156,6 +156,18 @@ can quickly manually correct the correspondance points using the
 interactive console interface.</p>
 </div>
 <div class="section level5">
+<h5 id="the-contours-of-my-actual-tissue-are-not-contained-in-the-borders-of-the-image">The contours of my actual tissue are not contained in the borders of
+the image<a class="anchor" aria-label="anchor" href="#the-contours-of-my-actual-tissue-are-not-contained-in-the-borders-of-the-image"></a>
+</h5>
+<p>If the brain contours in the image used for registration, i.e. the
+<code>MAX_name.tif</code> in the 1. Imaging, segmentation, and
+preprocessing section, are touching the 4 borders of the image, this may
+throw an out of bounds error. These images should either be manually
+edited in ImageJ to omit brain contours intersecting the image border,
+or the original <code>.tif</code> image should be padded with a small
+border of black pixels.</p>
+</div>
+<div class="section level5">
 <h5 id="not-choosing-the-right-resize-parameter">Not choosing the right resize parameter<a class="anchor" aria-label="anchor" href="#not-choosing-the-right-resize-parameter"></a>
 </h5>
 <p>The other scenario that may result in this error is when the size of
@@ -182,20 +194,89 @@ more detailed questions.</p>
 </div>
 </div>
 <div class="section level4">
-<h4 id="i-have-regions-torn-and-i-only-want-to-process-one-hemisphere">I have regions torn and I only want to process one hemisphere?<a class="anchor" aria-label="anchor" href="#i-have-regions-torn-and-i-only-want-to-process-one-hemisphere"></a>
+<h4 id="i-have-damage-to-my-brain-and-i-want-to-exclude-it-from-my-analysis">I have damage to my brain and I want to exclude it from my
+analysis<a class="anchor" aria-label="anchor" href="#i-have-damage-to-my-brain-and-i-want-to-exclude-it-from-my-analysis"></a>
 </h4>
-<p>Check out the hemisphere parameter.</p>
-<p>The <code>MAX_name.tif</code> file highlighted in blue is used as the
-reference image during interactive registrations. This is the a
-flattened version of the .<code>tif</code> file from step B. The
-<code>wholebrain</code> package can only do registrations on 2D tiff
-images so this <code>MAX_name.tif</code> is used to calculate the
-approximate transformation that should happen to all the cells segmented
-in 3D. Importantly, the brain contours in this <code>MAX_name.tif</code>
-cannot touch any of the 4 borders of an image. These images should
-either be manually edited in ImageJ to omit brain contours intersecting
-the image border, or the original <code>.tif</code> image (B) should be
-padded with a small border of black pixels.</p>
+<p>The ability to process only subsets of regions are built-in to the
+SMARTR package. The sections below are organized in order of increasing
+damage severity.</p>
+<div class="section level5">
+<h5 id="i-only-want-to-exclude-a-subset-of-regions">I only want to exclude a subset of regions<a class="anchor" aria-label="anchor" href="#i-only-want-to-exclude-a-subset-of-regions"></a>
+</h5>
+<p>This capability is part of the <code><a href="../reference/exclude_anatomy.html">exclude_anatomy()</a></code>
+function and is accounted for using the
+<code>exclude_right_regions</code> and <code>exclude_left_regions</code>
+parameters.</p>
+<p>You can enter an character vector of region abbreviations from the <a href="http://atlas.brain-map.org/atlas?atlas=602630314#atlas=602630314&amp;plate=576989940&amp;structure=549&amp;x=5279.800460587686&amp;y=3744.07958984375&amp;zoom=-3&amp;resolution=11.93&amp;z=3" class="external-link">Allen
+Brain Ontology</a> to either of these parameters to add additional
+regions to exclude. Note that any regions acronyms maintain the
+heirarchical nature of the ontology, so if you wanted to exclude the
+entire thalamus, instead of listing out every subregion, you can just
+enter <code>TH</code>.</p>
+<p>Additionally, by default layer 1 of cortical layer, ventricles, and
+fiber tracts are already excluded. This is because these are the default
+arguments for the <code>left_regions_excluded</code> and
+<code>right_regions_excluded</code> parameters when creating a slice
+object. You can set your own default regions to exclude, in addition to
+those further excluded using <code>exclude_anatomy</code>.</p>
+</div>
+<div class="section level5">
+<h5 id="i-have-regions-torn-and-i-only-want-to-process-one-hemisphere">I have regions torn and I only want to process one hemisphere?<a class="anchor" aria-label="anchor" href="#i-have-regions-torn-and-i-only-want-to-process-one-hemisphere"></a>
+</h5>
+<p>If one hemisphere is totally ripped or beyond salvage, you can simply
+set the <code>hemisphere</code> parameter when you create a slice object
+to either <code>left</code> or <code>right</code> to mark this slice for
+analysis of only the left or right hemisphere. The default value of
+<code>NULL</code> means both hemispheres will be processed. Later when
+<code><a href="../reference/exclude_anatomy.html">exclude_anatomy()</a></code> is run, simply omit the unwanted
+contralateral hemisphere by setting <code>exclude_hemisphere</code> to
+<code>TRUE</code>.</p>
+<p>You can take advantage of this feature if as well if there is
+laterality in the sectioning, and the left hemisphere needs to be
+treated as a separate hemisphere and slice object from the right. Thus,
+separate atlas coordinates can be assigned to either hemisphere.</p>
+</div>
+<div class="section level5">
+<h5 id="i-really-only-want-to-process-one-or-two-regions-per-slice">I really only want to process one or two regions per slice<a class="anchor" aria-label="anchor" href="#i-really-only-want-to-process-one-or-two-regions-per-slice"></a>
+</h5>
+<p>This is an unusual case, but typically happens when a section is
+almost completely ripped but there are one or two regions that remain
+intact and can still be processed. To solely keep analyzing these
+regions per hemisphere (and omit all other regions), enter the regions
+to keep as the <code>include_left_regions</code> and
+<code>include_right_regions</code> during the
+<code><a href="../reference/exclude_anatomy.html">exclude_anatomy()</a></code> step. We do, however, recommend against
+processing these sections if they can be avoided to ensure only high
+quality sections in the dataset.</p>
+<p>Alternatively, this can be used if you are intentionally analyzing
+one or two regions using the pipeline, but still taking advantage of the
+atlas overlay capabilities. You can optimize registration for these few
+regions without regard for registering the whole plate, and use
+<code>include_right_regions</code> and <code>include_left_regions</code>
+to only process the regions being analyzed. To set these regions
+beforehand, you can also enter these as parameters when making a
+<code>slice</code> object.</p>
+</div>
+</div>
+<div class="section level4">
+<h4 id="i-get-a-graphics-issue">I get a graphics issue<a class="anchor" aria-label="anchor" href="#i-get-a-graphics-issue"></a>
+</h4>
+<div class="section level5">
+<h5 id="could-not-find-function-quartz">Could not find function “quartz”<a class="anchor" aria-label="anchor" href="#could-not-find-function-quartz"></a>
+</h5>
+<p>If you get the following error:</p>
+<pre><code>Error in quartz(width = plate.width * 11.3, height = 7.9) : 
+could not find function "quartz"</code></pre>
+<p>The function quartz is calling a graphics device driver for the macOS
+system, so this error occurs when running the pipeline in Windows or
+Linux. Calling <code>quartz</code> is built into some internals of
+wholebrain functions. One work around is by running the lines below
+every time you load the SMARTR library if you are running Windows or
+Linux (This can only be done on machines/accounts that have access to an
+X server.).</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">quartz</span> <span class="op">&lt;-</span> <span class="va">x11</span></span></code></pre></div>
+</div>
 </div>
 </div>
 </div>

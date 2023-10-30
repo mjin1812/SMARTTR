@@ -34,7 +34,7 @@ Our example images were taken on a confocal scanning microscope (Leica TCS SP8, 
 + z-step size of 3 um
 + z-stack size of 9 um. 
 
-The first channel of our images (C1) captures YFP staining, while the second channel of our images (C2) captures cfos staining. Immunolabelling details are documented in our companion paper (To Link). Fields of view are stitched together to form tiled images by using an automated stage and the tiling function and algorithm of the LAS X software. An example image taken using these settings without any previous pre-processing steps is [downloadable](https://osf.io/6hq42). 
+The first channel of our images (C1) captures YFP staining, while the second channel of our images (C2) captures cfos staining. Immunolabelling details are documented in our companion paper (To Link). Fields of view are stitched together to form tiled images by using an automated stage and the tiling function and algorithm of the LAS X software. An example image taken using these settings without any previous pre-processing steps is [downloadable](https://osf.io/mvjch). 
 
 Although this pipeline is designed to be generalizable to other images with different parameters we recommend organizing and saving channel order in a similar format to ours.
 
