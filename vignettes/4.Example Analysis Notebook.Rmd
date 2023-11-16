@@ -11,46 +11,75 @@ vignette: >
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
 ```
 
-# Background
+# 1 Analysis Setup
 
+In this analysis tutorial we will load the learned helplessness dataset as an experiment object and walk through the analysis and visualization functions in SMARTR with it. You can download the learneod helplessness dataset [here](https://osf.io/fhrxj)! Please see the accompanying paper for an in-depth explanation of the behavioral groups used in this experiment.
 
-
-
-
-
-
-
-## 1.1 Load the libraries needed
+## 1.1 Load the libraries and data needed
 
 ```{r}
 library(SMARTR)
 library(tidyverse)
 ```
 
+
+Load the experiment object
+
 ```{r}
-# Load the 
+# Load the experiment data 
 load("V:\\Michelle_Jin\\Wholebrain pipeline\\LH_analysis\\learned_helplessness_experiment.RDATA")
+
+# Change where the analysis folder is stored in the experiment object
+attr(lh, "info")$output_path <- "V:\\Michelle_Jin\\Wholebrain pipeline\\LH_analysis" # edit this path to point your own folder location
+
+# print the experiment object to see what attributes are available
+print(lh)
+
+```
+Print the names of the current data stored within the experiment object
+```{r}
+print(names(lh))
 ```
 
+## 1.2 Combine the processed cell counts across all the mice. 
 
-## Quality checks
 
+
+This concatenates the normalized regional cell count table from each mouse into one long dataframe. The `by` parameter is a list of the mouse attributes types you want to use to make analysis subgroups. For example, you would include `by = c('sex','age')` if you wanted to perform an analysis where the data is grouped by both males and females and age of the subjects. 
+
+In our dataset `Shock` and `Context` are stored in the flexible generic attribute `group`, so we use that for the `by` variable.
 ```{r}
- # load("V:/Simon_Ogundare/Learned Helplessness/DV_Experiment_2/learned_helplessness_experiment_2023-08-28.RDATA")
-```
-
-```{r}
-# Normalize the cell counts by area and volume
 lh <- combine_norm_cell_counts(lh, by = c('group'))
+
+# print the name of stored data
+print(names(lh))
+```
+There should now be a new list called `combined_normalized_counts`, where each element is a combined normalized cell count table per channel.
+
+
+## 1.3 Normalize colabelled counts by a particular  channel.
+
+This is an optional step, but is particularly pertinent to those doing engram research. Sometimes we want to normalize the number of colabelled cells per region over the number of eYFP cells or c-Fos cells.
+
+
+This allows use to gauge the fraction of cells "reactivated" from an original ensemble population (colabel+/eYFP+) or the number of reactivated cells as a proportion of the ensembles involved in memory expression (colabel+/c-Fos+).  The necessi
+
+
+
+```{r}
 
 # Normalize the colabelled counts by a particular channel
 lh <- normalize_colabel_counts(lh, denominator_channel = "eyfp")
 lh <- normalize_colabel_counts(lh, denominator_channel = "cfos")
 
 ```
+
+## 1.2 Quality checks
+
+
 
 Quality checking the data 
 
@@ -65,7 +94,7 @@ lh <- enough_mice_per_group(lh, by = c("group"), min_n = 4, remove = TRUE, log =
 ## Plotting normalized long regional bar plot across all regions
 ```{r}
 
-# User-chosen 
+# User-chosen hexadecimal color codes per group
 eyfp.colors <- c(Context = "#FFFFFF", Shock = "#028A0F")  
 cfos.colors <- c(Context = "#FFFFFF", Shock = "#ff2a04")
 colabel.colors <- c(Context = "#FFFFFF", Shock = "#ffc845")

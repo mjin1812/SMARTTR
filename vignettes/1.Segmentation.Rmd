@@ -61,7 +61,7 @@ Here, the image or slice name is `733_1_1.lif` with the slice no. being `1_1`. T
 
 ## FIJI/ImageJ Software Setup
 
-To use the segmentation macros we have on this example dataset, [Fiji/ImageJ](https://imagej.net/software/fiji/downloads) needs to be installed as well as the [Bio-Formats Importer](https://imagej.net/formats/bio-formats) and [3D ImageJ suite](https://mcib3d.frama.io/3d-suite-imagej/#installation) plugins. Follow the steps to install the plugins either using the update site option or manually. We have validated our pipeline using ImageJ version 2.9.0 (64-bit).
+To use the segmentation macros we have on this example dataset, [Fiji/ImageJ](https://imagej.net/software/fiji/downloads) needs to be installed as well as the [Bio-Formats Importer](https://imagej.net/formats/bio-formats), [3D ImageJ suite](https://mcib3d.frama.io/3d-suite-imagej/#installation), and [MorphoLibJ](https://imagej.net/plugins/morpholibj#installation) plugins. Follow the steps in each webpage to install the plugins either using the manage update site option in ImageJ or manually. We have validated our pipeline using ImageJ version 2.9.0 (64-bit).
 
 The Bio-Formats Importer is just a plugin that helps import a variety of common imaging formats into ImageJ. 3D ImageJ Suite provides a suite of plugins to enhance 3D  image processing capabilities. Our segmentation and colocalization macros are dependent on the 3D ImageJ Suite plugin and we have validated our segmentation scripts on the latest version of the plugin (v4.1.5).
 

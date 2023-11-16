@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 # 0 Pre-processing 
 
-SMARTR encapsulates the process of registration, importation of segmentation data, and performs downstream analysis. Prior to this, the imaging data must be pre-processed and cells are separately segmented in ImageJ/FIJI. We have a separate, in-depth [article](./articles/Segmentation.html) on our imaging approach, parameters, and segmentation process. We suggest starting there if you would like to walk through the pipeline from raw example image. The remainder of this page will focus on steps relevant to registration, segmentation data import, and downstream data analysis using SMARTR. We recommend completing the pre-processing and segmentation tutorial with the example image so you can walk through the SMARTR tutorial with this data.
+SMARTR encapsulates the process of registration, importation of segmentation data, and performs downstream analysis. Prior to this, the imaging data must be pre-processed and cells are separately segmented in ImageJ/FIJI. We have a separate, in-depth [article](/articles/Segmentation.html) on our imaging approach, parameters, and segmentation process. We suggest starting there if you would like to walk through the pipeline from raw example image. The remainder of this page will focus on steps relevant to registration, segmentation data import, and downstream data analysis using SMARTR. We recommend completing the pre-processing and segmentation tutorial with the example image so you can walk through the SMARTR tutorial with this data.
 
 <figure>
   <img src="../man/figures/SMARTR_package_schematic.jpg" alt="Image" style="width: 800px; height: 400px;">
@@ -521,7 +521,7 @@ Additionally, know that adding mice to an experiment will keep only the processe
 # Initialize an experiment object
 my_experiment <- experiment(experiment_name = "Learned Helplessness",
                             experimenters = c("MJ", "MyInitials"),
-                            output_path = "V:\\Michelle Jin\\path_to_output_folder")
+                            output_path = "V:\\Michelle Jin\\path_to_output_folder") #Set this to a location where you want your figures/analysis output to save
  
 # Add a mouse to the experiment
 my_experiment <- add_mouse(my_experiment, mouse_733)
@@ -560,7 +560,7 @@ lh <- combine_norm_cell_counts(lh, by = c('groups'))
 `by` is a special parameter that will allow up to take advantage of the many mouse attributes that we have recorded during creation of a mouse object. It is a vector of the mouse attributes we will use to split our dataset into subgroups for comparison. In the example above, we use the `group` mouse attributes to compare `Shock` and `Context` groups which received inescapable shock and context training, respectively. If there were additional groupings of interest, such as splitting males and females to look at sex differences,  you can include the `sex` attribute into the vector, e.g. `c('group', 'sex')`. Sometimes, certain attributes like `drug` may not apply to your experiment, so `by` should only include the variables that you intend on using for group comparisons during analysis to avoid cluttering your combined dataframe. For consistency in the functions used to filter out subgroups, the values of the attributes will all be converted to strings.
 
 
-# 8 Quality checking your data
+# 8 Quality checking & saving your data
 
 The quality of the segmentation data may depend on many factors including immunolabelling quality, the sectioning and mounting technique, and performance of the segmentation algorithm. We also want to check for "statistical quality" and ensure that there are enough mice per group within a single brain region to compare. There are a few of functions we can use to check the data which can optionally use to clean our mapped dataset. Additionally, both of them contain `log` parameter which automatically export to the experiment folder a list of regions removed as a .csv file which don't meet the quality checks. 
 
@@ -581,6 +581,22 @@ If you want to check that each analysis subgroup has a minimum n represented per
 ```{r, eval = TRUE}
 lh <- enough_mice_per_group(lh, by = "group", min_n = 4, remove = TRUE, log = TRUE)
 ```
+
+
+## 8.3 Saving your experiment
+
+If you would like to save your experiment object, just run the function below!
+
+```{r}
+save_experiment(lh)
+```
+
+If you use the `timestamp` parameter, the experiment object with automatically save with the date as a way to uniquely timestamp your progress.
+
+```{r}
+save_experiment(lh, timestamp = TRUE)
+```
+
 
 This concludes the end of the mapping tutorial! Check out section 4. Example analysis notebook to see how we apply the analysis and visualization functions in SMARTR to this dataset. 
 
