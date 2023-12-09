@@ -87,14 +87,14 @@ get_percent_colabel <-function(e, by, colabel_channel = "colabel",
   if(!individual){
     # Get the mean of the individual groups
     attr_group_by <- c(attr_group[2:length(attr_group)], "acronym", "name")
-    col_to_summarize <- c("count.colabel", "count.eyfp", "colabel_percentage")
+    col_to_summarize <- c("count.colabel", paste0("count.", channel), "colabel_percentage")
 
     master_counts <- master_counts %>%
       dplyr::group_by(across(all_of(attr_group_by))) %>%
       dplyr::summarise(n = dplyr::n(),
                        colabel_percentage.sd = sd(colabel_percentage),
                        colabel_percentage.sem = colabel_percentage.sd/sqrt(n),
-                       across(all_of(col_to_summarize), mean),) %>%
+                       across(all_of(col_to_summarize), mean)) %>%
       dplyr::rename_with(function(x){paste0(x,".mean")}, all_of(col_to_summarize)) %>%
       dplyr::relocate(colabel_percentage.sd, colabel_percentage.sem, n, .after = last_col())
 

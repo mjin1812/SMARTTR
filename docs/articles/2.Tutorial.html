@@ -87,7 +87,7 @@
 <p>SMARTR encapsulates the process of registration, importation of
 segmentation data, and performs downstream analysis. Prior to this, the
 imaging data must be pre-processed and cells are separately segmented in
-ImageJ/FIJI. We have a separate, in-depth <a href="./articles/Segmentation.html">article</a> on our imaging approach,
+ImageJ/FIJI. We have a separate, in-depth <a href="/articles/Segmentation.html">article</a> on our imaging approach,
 parameters, and segmentation process. We suggest starting there if you
 would like to walk through the pipeline from raw example image. The
 remainder of this page will focus on steps relevant to registration,
@@ -707,7 +707,7 @@ mouse object level.</p>
 <code class="sourceCode R"><span><span class="co"># Initialize an experiment object</span></span>
 <span><span class="va">my_experiment</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/experiment.html">experiment</a></span><span class="op">(</span>experiment_name <span class="op">=</span> <span class="st">"Learned Helplessness"</span>,</span>
 <span>                            experimenters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MJ"</span>, <span class="st">"MyInitials"</span><span class="op">)</span>,</span>
-<span>                            output_path <span class="op">=</span> <span class="st">"V:\\Michelle Jin\\path_to_output_folder"</span><span class="op">)</span></span>
+<span>                            output_path <span class="op">=</span> <span class="st">"V:\\Michelle Jin\\path_to_output_folder"</span><span class="op">)</span> <span class="co">#Set this to a location where you want your figures/analysis output to save</span></span>
 <span> </span>
 <span><span class="co"># Add a mouse to the experiment</span></span>
 <span><span class="va">my_experiment</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/add_mouse.html">add_mouse</a></span><span class="op">(</span><span class="va">my_experiment</span>, <span class="va">mouse_733</span><span class="op">)</span></span></code></pre></div>
@@ -755,7 +755,7 @@ strings.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="quality-checking-your-data">8 Quality checking your data<a class="anchor" aria-label="anchor" href="#quality-checking-your-data"></a>
+<h2 id="quality-checking-saving-your-data">8 Quality checking &amp; saving your data<a class="anchor" aria-label="anchor" href="#quality-checking-saving-your-data"></a>
 </h2>
 <p>The quality of the segmentation data may depend on many factors
 including immunolabelling quality, the sectioning and mounting
@@ -1028,6 +1028,19 @@ comparison groups.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">218</span><span> colabel Shock   TRN         2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">219</span><span> colabel Shock   vCA2        3</span></span></span>
 <span><span class="co">#&gt; Saved regions below the threshold at location: V:\Michelle_Jin\Wholebrain pipeline\LH_analysis/regions_below_N_thresh.csv</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="saving-your-experiment">8.3 Saving your experiment<a class="anchor" aria-label="anchor" href="#saving-your-experiment"></a>
+</h3>
+<p>If you would like to save your experiment object, just run the
+function below!</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/save_experiment.html">save_experiment</a></span><span class="op">(</span><span class="va">lh</span><span class="op">)</span></span></code></pre></div>
+<p>If you use the <code>timestamp</code> parameter, the experiment
+object with automatically save with the date as a way to uniquely
+timestamp your progress.</p>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/save_experiment.html">save_experiment</a></span><span class="op">(</span><span class="va">lh</span>, timestamp <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>This concludes the end of the mapping tutorial! Check out section 4.
 Example analysis notebook to see how we apply the analysis and
 visualization functions in SMARTR to this dataset.</p>
