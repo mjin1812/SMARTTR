@@ -16,12 +16,6 @@
     <loc>/articles/4.Example Analysis Notebook.html</loc>
   </url>
   <url>
-    <loc>/articles/4.FAQ.html</loc>
-  </url>
-  <url>
-    <loc>/articles/5.Development.html</loc>
-  </url>
-  <url>
     <loc>/articles/5.FAQ.html</loc>
   </url>
   <url>
@@ -221,9 +215,6 @@
   </url>
   <url>
     <loc>/reference/print.slice.html</loc>
-  </url>
-  <url>
-    <loc>/reference/print.wb_experiment.html</loc>
   </url>
   <url>
     <loc>/reference/register.html</loc>

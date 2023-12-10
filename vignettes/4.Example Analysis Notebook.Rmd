@@ -326,7 +326,17 @@ plot_normalized_counts(e = lh,
                        image_ext = ".pdf")
 ```
 
-### Plotting all regions with mapped c-Fos counts
+
+<figure>
+  <img src="../man/figures/eyfp_normalized_counts.png" alt="Image" style="width: 500px;">
+  <figcaption><em>All mapped eYFP regions.</em> </figcaption>
+</figure>
+
+
+While the output of the following code chunks are not shown, this function can easily be called for the other channels.
+
+#### Plotting all regions with mapped c-Fos counts
+
 ```{r}
 # Chose the group colors for the cfos channel to plot as a hexadecimal color code
 cfos.colors <- c(Context = "#FFFFFF", Shock = "#ff2a04")
@@ -351,7 +361,7 @@ plot_normalized_counts(e = lh,
 
 ```
 
-### Plotting all regions with mapped colabel/eYFP counts
+#### Plotting all regions with mapped colabel/eYFP counts
 ```{r}
 # Chose the group colors for the colabel channel to plot as a hexadecimal color code
 colabel.colors <- c(Context = "#FFFFFF", Shock = "#ffc845")
@@ -398,6 +408,12 @@ plot_percent_colabel(lh,
 ```
 
 
+<figure>
+  <img src="../man/figures/Colabeled_over_eyfp_plot_by_group.svg" alt="Image" style="width: 500px;">
+  <figcaption><em>Selectively mapped co-labelled regions normalized by eYFP counts.</em> </figcaption>
+</figure>
+
+
 ```{r}
 plot_percent_colabel(lh,
                      channel = "cfos", # Channel to be used as denominator in counts
@@ -410,6 +426,11 @@ plot_percent_colabel(lh,
                      ylim = c(-5,40),
                      image_ext = ".svg")
 ```
+
+<figure>
+  <img src="../man/figures/Colabeled_over_cfos_plot_by_group.svg" alt="Image" style="width: 500px;">
+  <figcaption><em>Selectively mapped co-labelled regions normalized by c-Fos count.</em> </figcaption>
+</figure>
 
 > Note: The optional package ggpattern is required for mapping to the pattern aesthetic using the pattern_mapping parameter so make sure it is installed before running this function.
 
@@ -438,6 +459,16 @@ plot_correlation_heatmaps(lh,
                           colors = c( "#00782e"),
                           save_plot = TRUE)
 ```
+
+
+<figure>
+  <img src="../man/figures/heatmap_Context_eyfp.png" alt="Image" style="width: 500px;">
+  <figcaption><em>Regional correlation heatmap for eYFP activity in the Context group.</em> </figcaption>
+</figure>
+<figure>
+  <img src="../man/figures/heatmap_Shock_eyfp.png" alt="Image" style="width: 500px;">
+  <figcaption><em>Regional correlation heatmap for eYFP activity in the Inescapable Shock group.</em> </figcaption>
+</figure>
 
 
 ## 3.4 Visualization of correlation permutation analysis
@@ -471,7 +502,13 @@ volcano_plot(lh,
              plt_theme = plt_theme)
 ```
 
-We can better visualize which actual region pairs are different between our two analysis groups and in which direction their correlation coefficients change with `parallel_coordinate_plot()`. Only region pairs from the volcano plot that are above the alpha level and have correlation coefficient differences greater than absolute one are included in this graph.
+<figure>
+  <img src="../man/figures/volcano_plot__eyfp.png" alt="Image" style="width: 500px;">
+  <figcaption><em>Volcano plot for the eYFP channel.</em> </figcaption>
+</figure>
+
+
+Next, we can better visualize which actual region pairs are different between our two analysis groups and in which direction their correlation coefficients change with `parallel_coordinate_plot()`. Only region pairs from the volcano plot that are above the alpha level and have correlation coefficient differences greater than absolute one are included in this graph.
 
 
 ```{r}
@@ -502,11 +539,17 @@ parallel_coordinate_plot(lh,
                          )
 ```
 
+<figure>
+  <img src="../man/figures/Context_vs_Shock_parallel_coordinate_plot_eyfp_.png" alt="Image" style="width: 500px;">
+  <figcaption><em>Parallel coordinate plot for the eYFP channel.</em> </figcaption>
+</figure>
+
+
 ## 3.5 Plot network plots
 
 The `plot_networks()` function  automatically plots the output of `create_networks()`. You must specify the name of the network you want to plot. There a some customizable features such as setting the edge color (taken as a hexadecimal string) for positively correlated connections. Additionally, you can further customize aesthetics by adding themes compatible with [ggraph](https://rdrr.io/cran/ggraph/man/theme_graph.html) and `ggplot2` themes. Below we will plot the networks for the eyfp channel in Context and Inescapable Shock groups.
 
-```{r}
+```{r, message=TRUE, warnings=FALSE}
 
 # Custom ggplot and ggraph themes 
 graph_theme <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5, size = 36),
@@ -535,5 +578,18 @@ plot_networks(lh,
               label_size = 6,
               label_offset = 0.15)
 ```
+
+
+<figure>
+  <img src="../man/figures/network_Context_eyfp.png" alt="Image" style="width: 500px;">
+  <figcaption><em>eYFP activity network for the Context group.</em> </figcaption>
+</figure>
+
+
+<figure>
+  <img src="../man/figures/network_Shock_eyfp.png" alt="Image" style="width: 500px;">
+  <figcaption><em>eYFP activity network for the Inescapable Shock group.</em> </figcaption>
+</figure>
+
 
 
