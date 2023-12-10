@@ -254,7 +254,7 @@ names(lh$permutation_p_matrix)
 
 Now we can move on to the process of automatically creating networks in R using the `create_networks()` function. This function is also contingent on running `get_correlations()` first because these networks are constructed on the correlation coefficents.
 
-The `alpha` parameters specifies at which threshold a node is included in the networks based on p-values of pairwise-region correlation coefficients. 
+The `alpha` parameters specifies at which threshold a node is included in the networks based on p-values of pairwise-region correlation coefficients. To keep the edges include in the network the same as those indicated as significant in correlation heatmaps, set the `alpha` parameter to be the same.
 
 ```{r}
 
@@ -353,7 +353,9 @@ plot_normalized_counts(e = lh,
 
 ### Plotting all regions with mapped colabel/eYFP counts
 ```{r}
+# Chose the group colors for the colabel channel to plot as a hexadecimal color code
 colabel.colors <- c(Context = "#FFFFFF", Shock = "#ffc845")
+
 plot_normalized_counts(e = lh,
                        channels = c("colabel_over_eyfp"),
                        groups = c("Context", "Shock"),
@@ -397,7 +399,6 @@ plot_percent_colabel(lh,
 
 
 ```{r}
-cfos.colors <- c(Context = "#FFFFFF", Shock = "#ff2a04")
 plot_percent_colabel(lh,
                      channel = "cfos", # Channel to be used as denominator in counts
                      color_mapping = "group",
@@ -439,104 +440,14 @@ plot_correlation_heatmaps(lh,
 ```
 
 
-# Plot with a separate y_nudge factor for colabel channel
-```{r}
-plot_correlation_heatmaps(lh,
-                          channels = c("colabel"),
-                          correlation_list_name = "Context",
-                          sig_color = "black",
-                          sig_nudge_y = -0.5,
-                          print_plot = FALSE,
-                          colors = c("#f09b08"),
-                          save_plot = TRUE)
+## 3.4 Visualization of correlation permutation analysis
 
-plot_correlation_heatmaps(lh,
-                          channels = c("colabel"),
-                          correlation_list_name = "Shock",
-                          sig_color = "black",
-                          sig_nudge_y = -0.5,
-                          print_plot = FALSE,
-                          colors = c("#f09b08"),
-                          save_plot = TRUE)
-```
+`volcano_plot()` shows us a summary of the analysis results, and plots the pearson correlation coefficient differences (CT pearson coefficient - IS pearson coefficient) against their permuted p-values against a null distribution. 
 
-# Plot with a separate y_nudge factor for colabel channel normalized by eYFP
-```{r}
-plot_correlation_heatmaps(lh,
-                          channels = c("colabel_over_eyfp"),
-                          correlation_list_name = "Context",
-                          sig_color = "black",
-                          sig_nudge_y = -0.5,
-                          print_plot = FALSE,
-                          colors = c("#f09b08"),
-                          save_plot = TRUE)
-
-plot_correlation_heatmaps(lh,
-                          channels = c("colabel_over_eyfp"),
-                          correlation_list_name = "Shock",
-                          sig_color = "black",
-                          sig_nudge_y = -0.5,
-                          print_plot = FALSE,
-                          colors = c("#f09b08"),
-                          save_plot = TRUE)
-```
-
-# Plot with a separate y_nudge factor for colabel channel normalized by cfos
-```{r}
-plot_correlation_heatmaps(lh,
-                          channels = c("colabel_over_cfos"),
-                          correlation_list_name = "Context",
-                          sig_color = "black",
-                          sig_nudge_y = -0.5,
-                          print_plot = FALSE,
-                          colors = c("#f09b08"),
-                          save_plot = TRUE)
-
-plot_correlation_heatmaps(lh,
-                          channels = c("colabel_over_cfos"),
-                          correlation_list_name = "Shock",
-                          sig_color = "black",
-                          sig_nudge_y = -0.5,
-                          print_plot = FALSE,
-                          colors = c("#f09b08"),
-                          save_plot = TRUE)
-
-
-```
-
-
-
+The horizontal line represents the designated significance cutoff. The vertical lines plotted at +/- 1 allow for easier visualization of correlation differences that are large between groups. The colored dots in the upper right or left quadrants, including those which intersect the significance line, indicate the most significantly different regional connections between the groups, which have pearson correlation differences with a magnitude > 1.
 
 ```{r}
-# plot_correlation_heatmaps(lh,
-#                           # channels = c("eyfp"),
-#                           channels = c("cfos", "eyfp", "colabel"),
-#                           correlation_list_name = "Context",
-#                           colors = c("#be0000"),
-#                           # sig_color = "black",
-#                           sig_nudge_y = -0.5,
-#                           colors = c("#be0000", "#00782e", "#f09b08"),
-#                           save_plot = TRUE)
-#
-# plot_correlation_heatmaps(lh,
-#                           channels = c("cfos", "eyfp", "colabel"),
-#                           # channels = c("eyfp"),
-#                           correlation_list_name = "Shock",
-#                           sig_color = "black",
-#                           colors = c("#be0000", "#00782e", "#f09b08"),
-#                           # colors = c("#be0000"),
-#                           save_plot = TRUE)
-```
-
-
-## Correlation permutation analysis
-
-
-
-
-```{r}
-
-
+# User optional theme to define the aesthetics of the plot using ggplot2 syntax
 plt_theme <- ggplot2::theme_classic() +
   theme(text = element_text(size = 34),
         line = element_line(size = 1.0),
@@ -544,18 +455,13 @@ plt_theme <- ggplot2::theme_classic() +
         plot.title = element_text(hjust = 0.5, size = 36),
         axis.ticks.length = unit(5.5,"points"),
         axis.text.x = element_text(colour = "black", size =34),
-        axis.text.y = element_text(colour = "black", size = 34)
-  )
+        axis.text.y = element_text(colour = "black", size = 34))
 
-
+# Plot a volcano plot
 volcano_plot(lh,
              permutation_comparison = "Context_vs_Shock",
-             # channels = c("cfos", "eyfp", "colabel", "colabel_over_eyfp", "colabel_over_cfos"),
-             # channels = c("colabel", "colabel_over_eyfp", "colabel_over_cfos"),
              channels = c("eyfp"),
-             # colors =  c("#be0000", "#00782e", "#f09b08", "#f09b08", "#f09b08"),
              colors =  c("#00782e"),
-             # colors =  c("#f09b08", "#f09b08", "#f09b08"),
              height = 8,
              width = 10,
              title = "",
@@ -565,8 +471,11 @@ volcano_plot(lh,
              plt_theme = plt_theme)
 ```
 
-```{r}
+We can better visualize which actual region pairs are different between our two analysis groups and in which direction their correlation coefficients change with `parallel_coordinate_plot()`. Only region pairs from the volcano plot that are above the alpha level and have correlation coefficient differences greater than absolute one are included in this graph.
 
+
+```{r}
+# User optional theme to define the aesthetics of the plot using ggplot2 syntax
 plt_theme <- ggplot2::theme_classic() +
   theme(text = element_text(size = 34),
         line = element_line(size = 1.0),
@@ -578,80 +487,28 @@ plt_theme <- ggplot2::theme_classic() +
   )
 
 
-
+# Plot a parallel coordinate plot
 parallel_coordinate_plot(lh,
                          permutation_comparison = "Context_vs_Shock",
-                         # channels = c( "colabel", "colabel_over_eyfp", "colabel_over_cfos"),
-                         # colors =  c( "#f09b08", "#f09b08", "#f09b08"),
-                         channels = c("cfos", "eyfp"),
-                         colors =  c("#be0000", "#00782e"),
+                         channels = c( "eyfp"),
+                         colors =  c("#00782e"),
                          x_label_group_1 = "CT",
                          x_label_group_2 = "IS",
                          height = 8,
                          width = 10,
-                         print_plot = FALSE,
-                         reverse_group_order = FALSE,
+                         print_plot = TRUE,
                          label_size = 6,
                          plt_theme= plt_theme
                          )
 ```
 
-```{r}
-parallel_coordinate_plot(lh,
-                         permutation_comparison = "Context_vs_Shock",
-                         channels = c("colabel_over_eyfp", "colabel_over_cfos"),
-                         colors =  c("#be0000", "#00782e", "#f09b08", "#f09b08", "#f09b08"),
-                         x_label_group_1 = "Context",
-                         x_label_group_2 = "Shock",
-                         height = 8,
-                         width = 10,
-                         print_plot = FALSE,
-                         reverse_group_order = FALSE,
-                         label_size = 6,
-                         plt_theme= plt_theme,
-                         nudge_x = 2:3
-                         )
-```
+## 3.5 Plot network plots
 
-
-
-## Create networks
-
-```{r}
-# lh <- create_networks(lh,
-#                       correlation_list_name = "Context",
-#                       channels = c("eyfp"),
-#                       alpha = 0.005)
-# lh <- create_networks(lh,
-#                       correlation_list_name = "Shock",
-#                       channels = c("eyfp"),
-#                       alpha = 0.005)
-# lh <- create_networks(lh,
-#                       correlation_list_name = "Context",
-#                       channels = c("cfos"),
-#                       alpha = 0.002)
-# lh <- create_networks(lh,
-#                       correlation_list_name = "Shock",
-#                       channels = c("cfos"),
-#                       alpha = 0.002)
-
-
-lh <- create_networks(lh,
-                      correlation_list_name = "Context",
-                      channels = c("colabel", "colabel_over_eyfp", "colabel_over_cfos"),
-                      alpha = 0.01)
-lh <- create_networks(lh,
-                      correlation_list_name = "Shock",
-                      channels = c("colabel", "colabel_over_eyfp", "colabel_over_cfos"),
-                      alpha = 0.01)
-```
-
-
-## TODO Fix the network plots
-
+The `plot_networks()` function  automatically plots the output of `create_networks()`. You must specify the name of the network you want to plot. There a some customizable features such as setting the edge color (taken as a hexadecimal string) for positively correlated connections. Additionally, you can further customize aesthetics by adding themes compatible with [ggraph](https://rdrr.io/cran/ggraph/man/theme_graph.html) and `ggplot2` themes. Below we will plot the networks for the eyfp channel in Context and Inescapable Shock groups.
 
 ```{r}
 
+# Custom ggplot and ggraph themes 
 graph_theme <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5, size = 36),
                                              legend.text = element_text(size = 18),
                                              legend.title = element_text(size = 18))
@@ -677,144 +534,6 @@ plot_networks(lh,
               edge_color = "#00782e",
               label_size = 6,
               label_offset = 0.15)
-```
-
-
-```{r}
-plot_networks(lh,
-              network_name ="Context",
-              channels = c("cfos"),
-              title = "Context",
-              degree_scale_limit = c(1,8),
-              height = 10,
-              width = 10,
-              edge_color = "#be0000",
-              label_size = 6,
-              label_offset = 0.15)
-
-plot_networks(lh,
-              network_name = "Shock",
-              channels = c("cfos"),
-              title = "Shock",
-              degree_scale_limit = c(1,8),
-              height = 10,
-              width = 10,
-              edge_color = "#be0000",
-              label_size = 6,
-              label_offset = 0.15)
-
-```
-
-
-
-```{r}
-
-
-plot_networks(lh,
-              network_name ="Context",
-              channels = c("colabel"),
-              title = "Context",
-              degree_scale_limit = c(1,8),
-              height = 10,
-              width = 10,
-              edge_color = "#f09b08",
-              label_size = 6,
-              label_offset = 0.15)
-
-plot_networks(lh,
-              network_name = "Shock",
-              channels = c("colabel"),
-              title = "Shock",
-              degree_scale_limit = c(1,8),
-              height = 10,
-              width = 10,
-              edge_color = "#f09b08",
-              label_size = 6,
-              label_offset = 0.15)
-
-```
-
-
-```{r}
-
-
-plot_networks(lh,
-              network_name ="Context",
-              channels = c("colabel_over_eyfp"),
-              title = "Context",
-              degree_scale_limit = c(1,8),
-              height = 10,
-              width = 10,
-              edge_color = "#f09b08",
-              label_size = 6,
-              label_offset = 0.15)
-
-plot_networks(lh,
-              network_name = "Shock",
-              channels = c("colabel_over_eyfp"),
-              title = "Shock",
-              degree_scale_limit = c(1,8),
-              height = 10,
-              width = 10,
-              edge_color = "#f09b08",
-              label_size = 6,
-              label_offset = 0.15)
-
-```
-
-
-```{r}
-
-
-plot_networks(lh,
-              network_name ="Context",
-              channels = c("colabel_over_cfos"),
-              title = "Context",
-              degree_scale_limit = c(1,8),
-              height = 10,
-              width = 10,
-              edge_color = "#f09b08",
-              label_size = 6,
-              label_offset = 0.15)
-
-plot_networks(lh,
-              network_name = "Shock",
-              channels = c("colabel_over_cfos"),
-              title = "Shock",
-              degree_scale_limit = c(1,8),
-              height = 10,
-              width = 10,
-              edge_color = "#f09b08",
-              label_size = 6,
-              label_offset = 0.15)
-
-```
-
-
-```{r}
-lh <- summarise_networks(lh,
-                         channels = c("eyfp"),
-                         network_names = c("Context", "Shock"),
-                         save_stats = TRUE,
-                         save_degree_distribution = TRUE,
-                         save_betweenness_distribution = TRUE,
-                         save_efficiency_distribution = TRUE)
-
-lh <- summarise_networks(lh,
-                         channels = c("cfos"),
-                         network_names = c("Context", "Shock"),
-                         save_stats = TRUE,
-                         save_degree_distribution = TRUE,
-                         save_betweenness_distribution = TRUE,
-                         save_efficiency_distribution = TRUE)
-
-lh <- summarise_networks(lh,
-                         channels = c("colabel", "colabel_over_eyfp", "colabel_over_cfos"),
-                         network_names = c("Context", "Shock"),
-                         save_stats = TRUE,
-                         save_degree_distribution = TRUE,
-                         save_betweenness_distribution = TRUE,
-                         save_efficiency_distribution = TRUE)
 ```
 
 
