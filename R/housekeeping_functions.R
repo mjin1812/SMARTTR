@@ -319,6 +319,31 @@ match_m_attr <- function(attribs){
 }
 
 
+#' Check for redundant parent regions included in a list of acronyms in a plate. For example, if all the the subregions for
+#' the hypothalamus are represented, the HY should not be included in the list.
+#' @param acronyms (vec) a vector of acronyms to check for possible parents that are redundantly included in the vector.
+#' @return A list of the parent regions considered redundant
+#' @export
+#'
+#' @examples
+check_redundant_parents <- function(acronyms){
+  child_acronyms <- acronyms
+  redundant_parents <- c()
+  keep_going <- TRUE
+  while (keep_going){
+    parent_acronyms <- wholebrain::get.acronym.parent(child_acronyms)
+    intersection <- intersect(parent_acronyms, acronyms)
+
+    if (length(intersection) > 0){
+      redundant_parents <- c(redundant_parents, intersection)
+      child_acronyms <- parent_acronyms
+    } else{
+      keep_going <- FALSE
+    }
+  }
+  return(unique(redundant_parents))
+}
+
 
 #' Get region ontology name from acronym
 #' @description Get whole regional names from acronyms based on a lookup table including SMARTR's custom ontology for the
