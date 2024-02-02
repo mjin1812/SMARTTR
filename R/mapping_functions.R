@@ -1867,7 +1867,7 @@ get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2",
 }
 
 
-## Modification of Marcos' function
+## Marcos' function
 #' Get the registered areas
 #' @param cell.data.list
 #' @param registration
@@ -1882,21 +1882,14 @@ get.registered.areas <- function(cell.data.list, registration, conversion.factor
   cell.data <- do.call("rbind", cell.data.list)
 
   # create a regions dataframe
-  regions.left <- unique(cell.data[!cell.data$right.hemisphere,]$acronym)
-  regions.right <- unique(cell.data[cell.data$right.hemisphere,]$acronym)
-
-  regions.left <- tibble::tibble(acronym = regions.left, right.hemisphere = rep(FALSE, length(regions.left)))
-  regions.right <-tibble::tibble(acronym = regions.right, right.hemisphere = rep(TRUE, length(regions.right)))
-  regions <- rbind(regions.left, regions.right)
-
-  # Sort region acronyms to alphabetical order
-  regions <- regions[order(regions$acronym),]
+  regions <- cell.data %>% dplyr::select(acronym, right.hemisphere) %>%
+    dplyr::distinct() %>% dplyr::arrange(acronym, right.hemisphere)
 
   # Get region registration information
   region.info <- list()
 
-  for (k in 1:nrow(regions)) {
 
+  for (k in 1:nrow(regions)) {
     region.data <- wholebrain::get.region(regions$acronym[k],registration)
     region.data[,1:4] <- region.data[,1:4]*conversion.factor
     region.info <- c(region.info, list(region.data[region.data$right.hemisphere==regions$right.hemisphere[k],]))
