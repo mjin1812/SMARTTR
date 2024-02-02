@@ -322,7 +322,7 @@ match_m_attr <- function(attribs){
 #' Check for redundant parent regions included in a list of acronyms in a plate. For example, if all the the subregions for
 #' the hypothalamus are represented, the HY should not be included in the list.
 #' @param acronyms (vec) a vector of acronyms to check for possible parents that are redundantly included in the vector.
-#' @return A list of the parent regions considered redundant
+#' @return A list containing two elements: one vector of unique child acronyms, a vector of the parent regions considered redundant
 #' @export
 #'
 #' @examples
@@ -341,7 +341,9 @@ check_redundant_parents <- function(acronyms){
       keep_going <- FALSE
     }
   }
-  return(unique(redundant_parents))
+  redundant_parents <- redundant_parents %>% unique()
+  return(list(unique_acronyms = setdiff(acronyms),
+       redundant_parents = redundant_parents))
 }
 
 
