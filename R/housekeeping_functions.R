@@ -342,9 +342,82 @@ check_redundant_parents <- function(acronyms){
     }
   }
   redundant_parents <- redundant_parents %>% unique()
-  return(list(unique_acronyms = setdiff(acronyms),
+  return(list(unique_acronyms = setdiff(acronyms, redundant_parents),
        redundant_parents = redundant_parents))
 }
+
+
+#' Simplify dataframe by keywords.
+#'
+#' @param df (tibble) Must contain columns "acronym" and "name"
+#' @param keywords (vec, default = c("layer","part","stratum","division")) a list of keywords to simplify based on region name.
+#'
+#' @return df
+#' @export
+#'
+#' @examples
+simplify_by_keywords <- function(df, keywords = c("layer","part","stratum","division")){
+  # loop through each keyword
+  for (s in keywords) {
+
+    # Look for row indices where the names contain the keywords
+    k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
+
+    while(length(k) > 0){
+      # Store the parent acronym and full name
+      df$acronym[k] <- wholebrain::get.acronym.parent(df$acronym[k])
+      df$name[k] <- as.character(wholebrain::name.from.acronym(df$acronym[k]))
+
+      # Continue storing storing the parent names until there are no more that match the keyword
+      k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
+    }
+  }
+  df <- df %>% dplyr::arrange(acronym)
+  return(df)
+}
+
+
+#' Simplify vector of acronyms by keywords.
+#'
+#' @param vec (vector) Must contain c"acronym"
+#' @param keywords (vec, default = c("layer","part","stratum","division")) a list of keywords to simplify based on region name.
+#'
+#' @return df, dataframe as a tibble with included long name and acronyms that are simplified to parents
+#' @export
+#'
+#' @examples
+simplify_vec_by_keywords <- function(vec, keywords = c("layer","part","stratum","division")){
+
+  name <- vector(mode="character", length = length(vec))
+  for (v in 1:length(vec)){
+    name[v] <- wholebrain::name.from.acronym(vec[v]) %>% as.character()
+  }
+
+  df <- tibble::tibble(name=name,
+                       acronym=vec) %>% tidyr::drop_na()
+
+  # loop through each keyword
+  for (s in keywords) {
+
+    # Look for row indices where the names contain the keywords
+    k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
+
+    while(length(k) > 0){
+      # Store the parent acronym and full name
+      df$acronym[k] <- wholebrain::get.acronym.parent(df$acronym[k])
+      df$name[k] <- as.character(wholebrain::name.from.acronym(df$acronym[k]))
+
+      # Continue storing storing the parent names until there are no more that match the keyword
+      k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
+    }
+  }
+  df <- df %>% dplyr::arrange(acronym)
+  return(df)
+}
+
+
+
+
 
 
 #' Get region ontology name from acronym
@@ -511,3 +584,20 @@ get_os <- function(){
   }
   return(tolower(os))
 }
+
+
+#' @export
+with_timeout <- function(expr, cpu=1, elapsed=1){
+  expr <- substitute(expr)
+  envir <- parent.frame()
+  setTimeLimit(cpu = cpu, elapsed = elapsed, transient = TRUE)
+  on.exit(setTimeLimit(cpu = Inf, elapsed = Inf, transient = FALSE))
+  eval(expr, envir = envir)
+}
+
+
+
+
+
+
+

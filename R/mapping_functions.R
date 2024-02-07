@@ -1036,6 +1036,8 @@ map_cells_to_atlas.mouse <- function(m,
 #' IN ADDITION to the regions added to the 'exclude_regions' parameter.
 #' Regions added to the 'exclude_regions' parameter will then be updated in the slice attribute to keep track of what was excluded.
 #' @rdname exclude_anatomy
+#' Note: Please see the `simplify_regions` and `simplify_keywords` parameters. By default, if a subregion can be folded into a parent region based on a certain keywords, then this function will automatically
+#' exclude the entire parent region as a conservative exclusion approach. Keep `simplify_regions=TRUE` if the final analysis will contain simplified regions.
 #'
 #' @param s slice object
 #' @param channels (str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.
@@ -1046,6 +1048,9 @@ map_cells_to_atlas.mouse <- function(m,
 #' @param exclude_layer_1 (bool, default = TRUE) excludes all counts from layer 1
 #' @param include_right_regions (str vector, default = NULL) Acronyms of regions to include from the right hemi; if not NULL, takes precedence over `exclude_right_regions` & all other regions will be excluded. Typically, this is used for slices with poor quality/lots of tears.
 #' @param include_left_regions (str vector, default = NULL) Acronyms of regions to include from the light hemi; if not NULL, takes precedence over `exclude_left_regions` & all other regions will be excluded.  Typically, this is used for slices with poor quality/lots of tears.
+#' @param simplify_regions (bool, default = TRUE ) simplify the normalized region counts based on keywords in the internal function, `simplify_keywords`
+#' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure. This means the parent structure is also excluded if the list of excluded right and left
+#' regions can be further
 #' @param plot_filtered (bool, default = TRUE) pop up window to check the excluded anatomy.
 #'
 #' @examples s <-  exclude_anatomy(s, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE, exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE, plot_filtered = TRUE)
@@ -1060,6 +1065,8 @@ exclude_anatomy.slice <- function(s,
                                   exclude_layer_1 = TRUE,
                                   include_right_regions = NULL,
                                   include_left_regions = NULL,
+                                  simplify_regions = TRUE,
+                                  simplify_keywords =  c("layer","part","stratum","division"),
                                   plot_filtered = TRUE){
 
 
@@ -1084,12 +1091,13 @@ exclude_anatomy.slice <- function(s,
   } else{
     # Reassign so that all regions excluded on the right side are tracked
     exclude_right_regions <- unique(c(exclude_right_regions, info$right_regions_excluded))
+    if (isTRUE(simplify_regions)){
+      df <- simplify_vec_by_keywords(exclude_right_regions, keywords = simplify_keywords) %>% dplyr::distinct()
+      exclude_right_regions <- df$acronym
+    }
     attr(s, 'info')$right_regions_excluded <- exclude_right_regions
     all_excluded_right_regions <-  find_all_subregions(exclude_right_regions)
-
   }
-
-
 
   # if (!is.null(include_left_regions)){
   if (!(length(include_left_regions) < 1)){
@@ -1100,12 +1108,13 @@ exclude_anatomy.slice <- function(s,
   } else{
     # Reassign so that all regions excluded on the left side are tracked
     exclude_left_regions <- unique(c(exclude_left_regions, info$left_regions_excluded))
+    if (isTRUE(simplify_regions)){
+      df <- simplify_vec_by_keywords(exclude_left_regions, keywords = simplify_keywords) %>% dplyr::distinct()
+      exclude_left_regions <- df$acronym
+    }
     attr(s, 'info')$left_regions_excluded <- exclude_left_regions
     all_excluded_left_regions <-  find_all_subregions(exclude_left_regions)
   }
-
-
-
 
   ## Filtering per channel
   for (channel in channels){
@@ -1115,9 +1124,9 @@ exclude_anatomy.slice <- function(s,
 
     # if (!is.null(include_right_regions)){
     if (!(length(include_right_regions)<1)){
-      dataset <-  dataset[!dataset$right.hemisphere | (dataset$right.hemisphere & (dataset$acronym %in% include_right_regions)),]
+      dataset <-  dataset[!dataset$right.hemisphere | (dataset$right.hemisphere & (dataset$acronym %in% include_right_regions)),] # Include regions
     } else {
-      dataset <- dataset[!(dataset$right.hemisphere & (dataset$acronym %in% all_excluded_right_regions)),]
+      dataset <- dataset[!(dataset$right.hemisphere & (dataset$acronym %in% all_excluded_right_regions)),] #exclude regions
     }
 
     # 1) Filter out left and left regions
@@ -1127,7 +1136,6 @@ exclude_anatomy.slice <- function(s,
     } else {
       dataset <- dataset[!(!dataset$right.hemisphere & (dataset$acronym %in% all_excluded_left_regions)),]
     }
-
 
     # 2) Filter out hemisphere
     if (exclude_hemisphere){
@@ -1167,7 +1175,11 @@ exclude_anatomy.slice <- function(s,
 #' This function automatically excludes the default regions included in the attribute "regions_excluded" in each slice
 #' IN ADDITION to the regions added to the 'exclude_regions' parameter.
 #' Regions added to the 'exclude_regions' parameter will then be updated in the slice attribute to keep track of what was excluded.
+#'
+#' Note: Please see the `simplify_regions` and `simplify_keywords` parameters. By default, if a subregion can be folded into a parent region based on a certain keywords, then this function will automatically
+#' exclude the entire parent region as a conservative exclusion approach. Keep `simplify_regions=TRUE` if the final analysis will contain simplified regions.
 #' @rdname exclude_anatomy
+#'
 #' @param m mouse object
 #' @param slice_ID (str) ID of slice
 #' @param hemisphere (str) 'left', 'right' or NULL (both)
@@ -1176,8 +1188,11 @@ exclude_anatomy.slice <- function(s,
 #' @param exclude_right_regions (str vector, default = NULL); acronyms of regions you want to exclude from right hemi,in addition to regions that will by default be excluded in the slice attribute 'right_regions_excluded'
 #' @param exclude_left_regions (str vector, default = NULL); acronyms of regions you want to exclude from left hemi, in addition to regions that will by default be excluded in the slice attribute 'left_regions_excluded'
 #' @param exclude_hemisphere (bool, default = TRUE); excludes the contralateral hemisphere from one indicated in slice attribute
+#' @param simplify_regions (bool, default = TRUE ) simplify the normalized region counts based on keywords in the internal function, `simplify_keywords`
+#' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure. This means the parent structure is also excluded if the list of excluded right and left
+#' regions can be further
 #' @param exclude_layer_1 (bool, default = TRUE); excludes all counts from layer 1 (TEMPORARY, may not be hardcoded in later)
-#' @param plot_filtered (bool, default = TRUE) pop up window to check the excluded anatomy.
+#'
 #' @return m mouse object
 #' @examples m <- exclude_anatomy(m, slice_ID = "1_10", hemisphere = NULL, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE,
 #' exclude_regions = NULL,
@@ -1195,6 +1210,8 @@ exclude_anatomy.slice <- function(s,
                                   exclude_left_regions = NULL,
                                   exclude_hemisphere = FALSE,
                                   exclude_layer_1 = TRUE,
+                                  simplify_regions = TRUE,
+                                  simplify_keywords = c("layer","part","stratum","division"),
                                   plot_filtered = TRUE){
 
   # Omit hemisphere name if there is no hemisphere value in the attributes
@@ -1229,6 +1246,8 @@ exclude_anatomy.slice <- function(s,
                                              exclude_left_regions = exclude_left_regions,
                                              exclude_hemisphere = exclude_hemisphere,
                                              exclude_layer_1 = exclude_layer_1,
+                                             simplify_regions = simplify_regions,
+                                             simplify_keywords = simplify_keywords,
                                              plot_filtered = plot_filtered)
       } else {
         stop(paste0("There no forward mapped data to clean up! Run map_cells_to_atlas() to generate a dataset first."))
@@ -1247,31 +1266,102 @@ exclude_anatomy.slice <- function(s,
 #' Method for getting regional areas and volumes per slice
 #' @rdname get_registered_volumes
 #' @description Calculate the registered area (microns^2^) and the regional volumes (microns^3^) of all regions contained in a slice.
+#'
+#' Note: Simplification of the analyzed regions by keywords is highly recommended because there are errors in the wholebrain basecode that results in a mismatch between the region acronym mapped to and the
+#' actual registration contour based on the region acronym. This mismatch is most notable in the dentate gyrus subregions. If simplification by keywords is used, this will circumvent the errors.
+#'
+#' This function also automatically removes parent regions that are redundant, e.g. "CTX" should by volumetrically represented by summing all
+#' subregions, but there is a tiny amount of potential space that allows for cells to get mapped to slim spaces between subregions.
+#' This potential anatomical space should be ignored.
+#' @param simplify_regions (bool, default = TRUE ) simplify the areas based on keywords in found the long-form of a region name. Fed into the internal function, `simplify_keywords`
+#' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure
 #' @param s slice object
 #' @return s slice object with a stored dataframe with columns 'name' (full region name), 'acronym', 'area' (in microns^2^), 'volume' (in microns^3^) 'right.hemisphere'
 #' @examples s <- get_registered_areas(s)
 #' @export
 #' @md
 
-get_registered_volumes.slice <- function(s){
+get_registered_volumes.slice <- function(s,
+                                         simplify_regions = TRUE,
+                                         simplify_keywords = c("layer","part","stratum","division")){
 
   # Get conversion factor from pixel to microns
   # get z-width of this slice (in microns)
     cf <- attr(s, 'info')$conversion_factor
     z_width <- attr(s, 'info')$z_width
 
-    s$volumes <- get.registered.areas(s$forward_warped_data, registration = s$registration_obj, conversion.factor = cf) %>%
-      dplyr::mutate(volume = area*z_width) %>% tidyr::drop_na()
+    ## Below is a big work around for the wholebrain error in returning the right regional outline for certain subregions that show up twice
+
+    # 1) bind forward warped cell tables per channel into one long dataframe
+      combined_cell_counts <- do.call("rbind", s$forward_warped_data) %>% dplyr::as_tibble()
+
+    # 2) Extract only unique acronyms for right and left hemispheres
+      regions <- combined_cell_counts %>% dplyr::select(acronym, name, right.hemisphere) %>%
+        dplyr::distinct() %>% dplyr::arrange(acronym)
+
+      ##################### make big if/else statement here to account for unsimplified mapping approached
+
+      if (simplify_regions){
+        # 3) Simplify the acronyms
+        regions <- simplify_by_keywords(regions, keywords = simplify_keywords)
+        regions <- regions %>% dplyr::distinct() %>% dplyr::arrange(acronym)
+      }
+
+      # Find the number of unique regions that aren't nested further into parent regions
+      redundant_parents <- check_redundant_parents(regions$acronym)
+      regions <- regions %>% dplyr::filter(acronym %in% redundant_parents$unique_acronyms)
+
+      # 4) Loop through parent regions. Per parent acronym:
+      # Find distinct subregions
+      # Loop through all unique subregions
+      # Find their area
+      # Add up the areas of all subregions to obtain values for the parent regions
+
+      ##################### make big if/else statement here to account for unsimplified mapping approached
+
+    areas.td <- get.registered.areas.td(regions, s$registration_obj, conversion.factor = cf)
+
+    ###### Bottum up approach #######
+    regions.bu <- combined_cell_counts %>% dplyr::select(acronym, name, right.hemisphere) %>%
+      dplyr::distinct() %>% dplyr::arrange(acronym)
+    areas.bu <- get.registered.areas.bu(regions.bu, registration, conversion.factor = cf)
+
+    if (simplify_regions){
+      areas.bu <- simplify_by_keywords(areas.bu, keywords = simplify_keywords)
+      areas.bu <- areas.bu %>% dplyr::group_by(acronym, right.hemisphere, name) %>%  dplyr::summarise_at(c("area"), na.rm=TRUE , sum)
+    }
+    areas.bu <- areas.bu  %>% dplyr::arrange(acronym, right.hemisphere) %>% dplyr::filter(acronym %in% redundant_parents$unique_acronyms)
+
+    areas <- dplyr::left_join(areas.td, areas.bu, by=c("acronym", "right.hemisphere", "name"), suffix=c(".td", ".bu"))
+
+    # Take larger of the two areas: bottum-up or top-down
+    areas <- areas %>% dplyr::mutate(area = pmax(area.td, area.bu),
+                                    volume = area*z_width) %>% tidyr::drop_na() %>% dplyr::select(-c(area.td, area.bu))
+    s$volumes <- areas
     return(s)
 }
 
 
 ## ___ Method for getting regional areas and volumes per slice
 #' Method for getting regional areas and volumes for each slice in a mouse object
+#' @description  Calculate the registered area (microns^2^) and the regional volumes (microns^3^) of all regions contained in a slice.
+#' Note: Simplification of the analyzed regions by keywords is HIGHLY RECOMMENDED because there are errors in the wholebrain basecode that results in a mismatch between the region acronym mapped to and the
+#' actual registration contour based on the region acronym. This mismatch is most notable in the dentate gyrus subregions, where certain regions are represented twice because the DG curve along the rostral caudal axis.
+#' If simplification by keywords is used, this will circumvent the errors.
+#'
+#' This function also automatically removes parent regions that are redundant, e.g. "CTX" should by volumetrically represented by summing all
+#' subregions, but there is a tiny amount of potential space that allows for cells to get mapped to slim spaces between subregions.
+#' This potential anatomical space should be ignored.
+#'
 #' @rdname get_registered_areas
+#'
 #' @param m mouse object
 #' @param slice_ID (str) ID of slice
 #' @param hemisphere (str) 'left', 'right' or NULL (both)
+#' @param simplify_regions (bool, default = TRUE ) simplify the normalized region counts based on keywords in the internal function, `simplify_keywords`
+#' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure
+#' @param replace (bool, default = FALSE). Replace previously calculated volumes for a particular slice.
+#'
 #' @return m mouse object
 #' @examples m <- get_registered_areas(m, slice_ID = "1_10", hemisphere = "left", replace = FALSE)
 #' @export
@@ -1279,6 +1369,8 @@ get_registered_volumes.slice <- function(s){
 get_registered_volumes.mouse <- function(m,
                                        slice_ID,
                                        hemisphere = NULL,
+                                       simplify_regions = TRUE,
+                                       simplify_keywords = c("layer","part","stratum","division"),
                                        replace = FALSE){
 
   if (is.null(hemisphere)){
@@ -1308,7 +1400,7 @@ get_registered_volumes.mouse <- function(m,
           stop(paste0("There is an existing volume data for this slice! If you want to overwrite it, set replace to TRUE."))
         }
       } else {
-        m$slices[[match]] <- get_registered_volumes(m$slices[[match]])
+        m$slices[[match]] <- get_registered_volumes(m$slices[[match]], simplify_regions=simplify_regions, simplify_keywords=simplify_keywords)
       }
     }
   }
@@ -1435,7 +1527,6 @@ get_cell_table <- function(m,
   m$cell_table <-  cell_table
   return(m)
 }
-
 
 
 ## normalized_cell_counts per mm^3 function
@@ -1794,8 +1885,6 @@ normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
 }
 
 
-
-
 #__________________ Internal Functions __________________________
 
 
@@ -1867,6 +1956,85 @@ get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2",
 }
 
 
+ ## modified function
+#' @param cell.data.list
+#' @param registration
+#' @param conversion.factor
+#'
+#' @return
+#'
+#' @examples
+get.registered.areas.td <- function(regions, registration, conversion.factor = 1){
+
+  areas <- tibble::tibble(name=as.character(wholebrain::name.from.acronym(regions$acronym)),
+                          acronym=regions$acronym,
+                          right.hemisphere=regions$right.hemisphere,
+                          area=rep(0,nrow(regions)))
+
+  for (k in 1:nrow(regions)) {
+
+    ## Area comparison approach
+    ################### Bottom up approach
+    # if (nrow(region.data) < 1){
+      # warning("No region outlines were detected for ", regions$acronym[k], ". Double checking possible child regions.")
+      # children <- wholebrain::get.acronym.child(regions$acronym[k])
+      # # subregion.data <- region.data  # Should be empty
+      # subregion_areas_bu <- vector(mode = "numeric", length = length(children))
+      #
+      # for (c in 1:length(children)){
+      #   tryCatch({
+      #     subregion.data <- with_timeout({
+      #       wholebrain::get.region(children[c], registration) %>% dplyr::as_tibble() %>%
+      #         dplyr::filter(right.hemisphere == regions$right.hemisphere[k])
+      #     }, Inf, 0.5)
+      #
+      #     # Conversion factor
+      #     subregion.data[,1:4] <- subregion.data[,1:4]*conversion.factor
+      #
+      #
+      #     message("Found info for child regions ", children[c])
+      #
+      #     # Gauss's formula
+      #     area <- subregion.data$xT[1:(nrow(subregion.data)-1)]*subregion.data$yT[2:nrow(subregion.data)] - subregion.data$xT[2:nrow(subregion.data)]*subregion.data$yT[1:(nrow(subregion.data)-1)]
+      #     area <- sum(area)
+      #     area <- 0.5*abs(area + subregion.data$xT[nrow(subregion.data)]*subregion.data$yT[1] - subregion.data$xT[1]*subregion.data$yT[nrow(subregion.data)])
+      #
+      #     # Add to subregion area
+      #     subregion_areas_bu[c] <- area
+      #
+      #   },
+      #   error = function(err) {
+      #     # Code to handle the error
+      #     cat("Timeout. Skipping", children[c], "subregion. An error occurred:", conditionMessage(err), "\n")
+      #   })
+      # }
+      # print(sort(subregion_areas_bu))
+      # areas$area[k] <- sum(subregion_areas_bu)
+    # }
+    # else{
+      region.data <- wholebrain::get.region(regions$acronym[k],registration) %>% dplyr::as_tibble() %>%
+        dplyr::filter(right.hemisphere == regions$right.hemisphere[k]) %>% tidyr::drop_na()
+      region.data[,1:4] <- region.data[,1:4]*conversion.factor
+      unique_subregions <- region.data$name %>% unique()
+      subregion_areas <- vector(mode = "numeric", length = length(unique_subregions))
+      for (l in 1:length(unique_subregions)){
+        subregion.data <- region.data %>% dplyr::filter(unique_subregions[l] == name)
+
+        # Gauss's formula
+        area <- subregion.data$xT[1:(nrow(subregion.data)-1)]*subregion.data$yT[2:nrow(subregion.data)] - subregion.data$xT[2:nrow(subregion.data)]*subregion.data$yT[1:(nrow(subregion.data)-1)]
+        area <- sum(area)
+        area <- 0.5*abs(area + subregion.data$xT[nrow(subregion.data)]*subregion.data$yT[1] - subregion.data$xT[1]*subregion.data$yT[nrow(subregion.data)])
+
+        # Add to subregion area
+        subregion_areas[l] <- area
+      }
+      areas$area[k] <- sum(subregion_areas)
+    }
+    return(areas)
+    # region.info <- c(region.info, list(region.data[region.data$right.hemisphere==regions$right.hemisphere[k],]))
+}
+
+
 ## Marcos' function
 #' Get the registered areas
 #' @param cell.data.list
@@ -1876,16 +2044,8 @@ get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2",
 #' @return
 #'
 #' @examples
-get.registered.areas <- function(cell.data.list, registration, conversion.factor = 1){
+get.registered.areas.bu <- function(regions, registration, conversion.factor = 1){
 
-  # bind the channel cell data into a single dataframe
-  cell.data <- do.call("rbind", cell.data.list)
-
-  # create a regions dataframe
-  regions <- cell.data %>% dplyr::select(acronym, right.hemisphere) %>%
-    dplyr::distinct() %>% dplyr::arrange(acronym, right.hemisphere)
-
-  # Get region registration information
   region.info <- list()
 
 
@@ -1903,17 +2063,14 @@ get.registered.areas <- function(cell.data.list, registration, conversion.factor
   # Use Gauss' area formula (shoelace formula)
   for (k in 1:length(region.info)) {
     r <- region.info[[k]]
-    area <- 0
-    for (j in 1:(nrow(r)-1)) {
-      area <- area + r$xT[j]*r$yT[j+1] - r$xT[j+1]*r$yT[j]
-    }
+    area <- r$xT[1:(nrow(r)-1)]*r$yT[2:nrow(r)] - r$xT[2:nrow(r)]*r$yT[1:(nrow(r)-1)]
+    area <- sum(area)
     area <- 0.5*abs(area + r$xT[nrow(r)]*r$yT[1] - r$xT[1]*r$yT[nrow(r)])
     areas$area[k] <- area
   }
 
   return(areas)
 }
-
 
 #____
 
@@ -2050,8 +2207,6 @@ make.filter <- function(data,
 }
 
 
-
-
 #' Get colabelled cells data table. This is designed specifically to create a segmentation object from the imported raw files that are outputs from the batch_3D_MultiColocalization.ijm macro.
 #' @param coloc_table
 #' @param image_A_objects
@@ -2131,9 +2286,6 @@ get.colabeled.cells <- function(coloc_table,
   seg.coloc$soma$intensity  <- areas # Dummy
   return(seg.coloc)
 }
-
-
-
 
 
 
