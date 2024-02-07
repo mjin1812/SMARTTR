@@ -142,7 +142,7 @@ register.slice <- function(s,
 
   # Detect the OS and set quartz( as graphing function)
   if(get_os() != "osx"){
-    quartz <- X11
+    quartz <<- X11
   }
 
   # Get slice information
@@ -919,6 +919,11 @@ map_cells_to_atlas.slice <- function(s,
                                      mouse_ID = NULL,
                                      ...){
 
+  # Detect the OS and set quartz( as graphing function)
+  if(get_os() != "osx"){
+    quartz <<- X11
+  }
+
   # Get slice information
   info <- attr(s, 'info')
   if (is.null(channels) && !is.null(info$channels)){
@@ -1068,6 +1073,11 @@ exclude_anatomy.slice <- function(s,
                                   simplify_regions = TRUE,
                                   simplify_keywords =  c("layer","part","stratum","division"),
                                   plot_filtered = TRUE){
+
+  # Detect the OS and set quartz( as graphing function)
+  if(get_os() != "osx"){
+    quartz <<- X11
+  }
 
 
   # Get slice information & combine exclude regions parameter with default regions excluded;
@@ -1324,7 +1334,7 @@ get_registered_volumes.slice <- function(s,
     ###### Bottum up approach #######
     regions.bu <- combined_cell_counts %>% dplyr::select(acronym, name, right.hemisphere) %>%
       dplyr::distinct() %>% dplyr::arrange(acronym)
-    areas.bu <- get.registered.areas.bu(regions.bu, registration, conversion.factor = cf)
+    areas.bu <- get.registered.areas.bu(regions.bu, s$registration_obj, conversion.factor = cf)
 
     if (simplify_regions){
       areas.bu <- simplify_by_keywords(areas.bu, keywords = simplify_keywords)
@@ -1335,8 +1345,8 @@ get_registered_volumes.slice <- function(s,
     areas <- dplyr::left_join(areas.td, areas.bu, by=c("acronym", "right.hemisphere", "name"), suffix=c(".td", ".bu"))
 
     # Take larger of the two areas: bottum-up or top-down
-    areas <- areas %>% dplyr::mutate(area = pmax(area.td, area.bu),
-                                    volume = area*z_width) %>% tidyr::drop_na() %>% dplyr::select(-c(area.td, area.bu))
+    areas <- areas %>% dplyr::mutate(area.mm2 = pmax(area.td, area.bu)*1e-6,
+                                    volume.mm3 = area.mm2*z_width*1e-9) %>% tidyr::drop_na() %>% dplyr::select(-c(area.td, area.bu))
     s$volumes <- areas
     return(s)
 }
@@ -1586,7 +1596,8 @@ normalize_cell_counts <- function(m,
 
   # Summarize by acronym and right.hemisphere
   total_volumes <- dplyr::group_by(aggregate_volumes, acronym, right.hemisphere, name) %>%
-    dplyr::summarise(area.mm2 = sum(area)*1e-6, volume.mm3 = sum(volume)*1e-9)
+    # dplyr::summarise(area.mm2 = sum(area)*1e-6, volume.mm3 = sum(volume)*1e-9)
+    dplyr::summarise(area.mm2 = sum(area.mm2), volume.mm3 = sum(volume.mm3))
   m$total_volumes <- total_volumes
 
   # ____________________________________________________________________________
