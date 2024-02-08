@@ -134,7 +134,6 @@ new_slice <- function(data = list(registration_obj = NULL,           #list per s
                                   # raw_segmentation_data = NULL,    #list of length 3(per channel), deprecated
                                   segmentation_filters = NULL,     #Each element containing sublist the length of registration_obj
                                   segmentation_obj = NULL,
-                                  raw_forward_warped_data = NULL,
                                   forward_warped_data = NULL,      # After cleaning up with excluded regions
                                   areas = NULL),
                       info = list(slice_ID = NA,

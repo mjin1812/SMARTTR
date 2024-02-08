@@ -357,12 +357,15 @@ check_redundant_parents <- function(acronyms){
 #' @export
 #'
 #' @examples
-simplify_by_keywords <- function(df, keywords = c("layer","part","stratum","division")){
+simplify_by_keywords <- function(df, keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate")){
   # loop through each keyword
-  for (s in keywords) {
+  dont_fold <- c("Dorsal part of the lateral geniculate complex")
 
+  for (s in keywords) {
     # Look for row indices where the names contain the keywords
     k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
+    k_omit <- grep(dont_fold, df$name, value = FALSE, ignore.case = TRUE)
+    k <- setdiff(k, k_omit)
 
     while(length(k) > 0){
       # Store the parent acronym and full name
@@ -371,6 +374,8 @@ simplify_by_keywords <- function(df, keywords = c("layer","part","stratum","divi
 
       # Continue storing storing the parent names until there are no more that match the keyword
       k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
+      k_omit <- grep(dont_fold, df$name, value = FALSE, ignore.case = TRUE)
+      k <- setdiff(k, k_omit)
     }
   }
   df <- df %>% dplyr::arrange(acronym)
@@ -387,7 +392,9 @@ simplify_by_keywords <- function(df, keywords = c("layer","part","stratum","divi
 #' @export
 #'
 #' @examples
-simplify_vec_by_keywords <- function(vec, keywords = c("layer","part","stratum","division")){
+simplify_vec_by_keywords <- function(vec, keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate")){
+
+  dont_fold <- c("Dorsal part of the lateral geniculate complex") ## this is a major exception in the ontology
 
   name <- vector(mode="character", length = length(vec))
   for (v in 1:length(vec)){
@@ -402,6 +409,8 @@ simplify_vec_by_keywords <- function(vec, keywords = c("layer","part","stratum",
 
     # Look for row indices where the names contain the keywords
     k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
+    k_omit <- grep(dont_fold, df$name, value = FALSE, ignore.case = TRUE)
+    k <- setdiff(k, k_omit)
 
     while(length(k) > 0){
       # Store the parent acronym and full name
@@ -410,6 +419,8 @@ simplify_vec_by_keywords <- function(vec, keywords = c("layer","part","stratum",
 
       # Continue storing storing the parent names until there are no more that match the keyword
       k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
+      k_omit <- grep(dont_fold, df$name, value = FALSE, ignore.case = TRUE)
+      k <- setdiff(k, k_omit)
     }
   }
   df <- df %>% dplyr::arrange(acronym)
@@ -424,36 +435,26 @@ simplify_vec_by_keywords <- function(vec, keywords = c("layer","part","stratum",
 #' Get region ontology name from acronym
 #' @description Get whole regional names from acronyms based on a lookup table including SMARTR's custom ontology for the
 #' dorsal ventral split of the hippocampus
-#' @param x (str) Regional acronym
+#' @param x (str) Regional acronym or vector of regional acronyms
 #' @export
-name.from.acronym <- function (x)
-{
-  unlist(lapply(x, function(y) {
-    if (length(which(SMARTR::ontology$acronym == y)) != 0) {
-      return(SMARTR::ontology$name[which(SMARTR::ontology$acronym == y)])
-    }
-    else {
-      return(NA)
-    }
-  }))
+name.from.acronym <- function (x){
+  x <- na.omit(x)
+  unlist(lapply(x, function(y){ SMARTR::ontology$name[SMARTR::ontology$acronym %in% y] %>% return()})) %>% return()
+
 }
+
 
 #' Get region ontology name from ID
 #' @description Similar to wholebrain package's search functions to get whole regional names from a numerical ID lookup table
 #' including SMARTR's custom ontology for the  dorsal ventral split of the hippocampus
 #' @param x (int) integer ID
 #' @export
-name.from.id <- function (x)
-{
-  unlist(lapply(x, function(y) {
-    if (length(which(SMARTR::ontology$id == y)) != 0) {
-      return(SMARTR::ontology$name[which(SMARTR::ontology$id == y)])
-    }
-    else {
-      return(NA)
-    }
-  }))
+name.from.id <- function (x){
+  x <- na.omit(x)
+  unlist(lapply(x, function(y){ SMARTR::ontology$name[SMARTR::ontology$id %in% y] %>% return()})) %>% return()
 }
+
+
 
 
 #' Get subregion acronyms
@@ -567,6 +568,10 @@ acronym.from.id <- function (x)
     }
   }))
 }
+
+
+
+
 
 #' @export
 # Get current OS
