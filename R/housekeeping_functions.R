@@ -335,6 +335,7 @@ check_redundant_parents <- function(acronyms){
     intersection <- intersect(parent_acronyms, acronyms)
 
     if (length(intersection) > 0){
+      acronyms <- setdiff(acronyms, intersection)
       redundant_parents <- c(redundant_parents, intersection)
       child_acronyms <- parent_acronyms
     } else{

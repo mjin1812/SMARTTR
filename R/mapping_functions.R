@@ -1299,6 +1299,7 @@ get_registered_volumes.slice <- function(s,
   # get z-width of this slice (in microns)
     cf <- attr(s, 'info')$conversion_factor
     z_width <- attr(s, 'info')$z_width
+    hemisphere <- attr(s, 'info')$hemisphere
 
     ## Below is a big work around for the wholebrain error in returning the right regional outline for certain subregions that show up twice
 
@@ -1346,7 +1347,16 @@ get_registered_volumes.slice <- function(s,
 
     # Take larger of the two areas: bottum-up or top-down
     areas <- areas %>% dplyr::mutate(area.mm2 = pmax(area.td, area.bu)*1e-6,
-                                    volume.mm3 = area.mm2*z_width*1e-9) %>% tidyr::drop_na() %>% dplyr::select(-c(area.td, area.bu))
+                                    volume.mm3 = area.mm2*z_width*1e-3) %>% tidyr::drop_na() %>% dplyr::select(-c(area.td, area.bu))
+
+    # Filter out volumes based on hemisphere of the slice
+    if (!is.null(hemisphere)){
+      if (tolower(hemisphere) == "right"){
+        areas <- areas %>% dplyr::filter(right.hemisphere == TRUE)
+      } else {
+        areas <- areas %>% dplyr::filter(right.hemisphere == FALSE)
+      }
+    }
     s$volumes <- areas
     return(s)
 }
@@ -1549,6 +1559,8 @@ get_cell_table <- function(m,
 #' @param combine_hemispheres (bool, default = TRUE) Combine normalized cell counts from both hemispheres
 #' @param simplify_regions (bool, default = TRUE ) simplify the normalized region counts based on keywords in the internal function, `simplify_keywords`
 #' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure
+#' @param split_hipp_DV (bool, default = TRUE) Split the subregions of the CA1, CA2, CA3, and DG based on a specified AP coordinate cutoff. This is because the Allen atlas doesn't have a dorsal/ventral region designation for these ROIs.
+#' @param DV_split_AP_thresh (numeric, default = -2,7) The specified AP coordinate threshold to split hippocampal cell counts into dorsal and ventral.
 #' @return
 #' @examples m <- normalize_cell_counts(m, combine_hemispheres = TRUE, simplify_regions = TRUE)
 #' @export
@@ -1559,15 +1571,19 @@ get_cell_table <- function(m,
 normalize_cell_counts <- function(m,
                                   combine_hemispheres = TRUE,
                                   simplify_regions = TRUE,
-                                  simplify_keywords = c("layer","part","stratum","division")){
+                                  simplify_keywords = c("layer","part","stratum","division"),
+                                  split_hipp_DV = TRUE,
+                                  DV_split_AP_thresh = -2.7
+                                  ){
   # 1) NULL areas check
 
-    for(s in m$slices){
+    for(s in 1:length(m$slices)){
 
       # Get slice information
-      s_info <- attr(s, "info")
+      s_info <- attr(m$slices[[s]], "info")
       hemisphere <- s_info$hemisphere
       slice_ID <-  s_info$slice_ID
+      AP <-  s_info$coordinate
 
       # Omit hemisphere name if there is no hemisphere value in the attributes
       if (is.null(hemisphere)){
@@ -1577,37 +1593,72 @@ normalize_cell_counts <- function(m,
       }
 
       ## Check that this slice has run get_registered_volumes
-      if (is.null(s$volumes)){
+      if (is.null(m$slices[[s]]$volumes)){
         stop(paste0("Slice ", slice_name ," in your mouse dataset has an empty areas vector.\n",
                     "Run the function get_registered_volumes() for this slice before you can normalized all your cell counts by total area or by volume."))
-        }
+      }
+
+      if (s == 1){
+        aggregate_volumes <- m$slices[[s]]$volumes %>% tibble::as_tibble() %>% dplyr::mutate(AP = AP, slice_name = slice_name)
+      } else {
+        volume_to_add <- m$slices[[s]]$volumes %>% tibble::as_tibble() %>% dplyr::mutate(AP = AP, slice_name = slice_name)
+        aggregate_volumes <- rbind(aggregate_volumes, volume_to_add)
+      }
     }
 
-  # ____________________________________________________________________________
-  # 2)  Getting total areas across all slices, separated by hemisphere
-
-  # rbind all the areas table
-  aggregate_volumes <- m$slices[[1]]$volumes
-  if (length(m$slices)  >=  2){
-    for (k in 2:length(m$slices)){
-      aggregate_volumes <- rbind(aggregate_volumes, m$slices[[k]]$volumes)
-    }
+  ## split volumes into dorsal and ventral for the hippocampus
+  if (isTRUE(split_hipp_DV)){
+    all_hipp_subregions <- c(c("DG", "CA1", "CA2", "CA3"), SMARTR::get.sub.structure(c("DG", "CA1", "CA2", "CA3")))
+    # Filter out hippocampal regions only and split into dorsal and ventral
+    hipp_split_volumes <- aggregate_volumes %>% dplyr::filter(acronym %in% all_hipp_subregions) %>%  dplyr::mutate(acronym = if_else(AP > DV_split_AP_thresh , paste0("d", acronym), paste0("v", acronym)),
+                                                                                                                   name = as.character(SMARTR::name.from.acronym(acronym)))
+    # Filter out old hippoampus, append new hippocampal information
+    aggregate_volumes <- aggregate_volumes %>% dplyr::filter(!acronym %in% all_hipp_subregions) %>% dplyr::bind_rows(hipp_split_volumes) %>% dplyr::arrange(desc(AP), acronym, right.hemisphere)
   }
 
-  # Summarize by acronym and right.hemisphere
-  total_volumes <- dplyr::group_by(aggregate_volumes, acronym, right.hemisphere, name) %>%
-    # dplyr::summarise(area.mm2 = sum(area)*1e-6, volume.mm3 = sum(volume)*1e-9)
-    dplyr::summarise(area.mm2 = sum(area.mm2), volume.mm3 = sum(volume.mm3))
-  m$total_volumes <- total_volumes
 
-  # ____________________________________________________________________________
-  # 3)
-  # then use Cell_table to create combined cell counts normalized by area
-  normalized_counts <- normalize.registered.areas(m$cell_table, total_volumes) #tabulate number of cells in each region
+
+  ## Get a tally of cells per region
+  normalized_counts <-vector(mode = "list", length = length(m$cell_table))
   names(normalized_counts) <- names(m$cell_table)
+  ## Get a tally of cells per region
+  normalized_counts_per_slice <-vector(mode = "list", length = length(m$cell_table))
+  names(normalized_counts_per_slice) <- names(m$cell_table)
 
-  # Clean NAs, check for combining hemispheres or simplifying regions
   for (channel in names(normalized_counts)){
+
+    # Simplify the regions is necessary
+    if (isTRUE(simplify_regions)){
+      m$cell_table[[channel]] <-  m$cell_table[[channel]] %>% simplify_by_keywords(keywords = simplify_keywords)
+
+      # Find the number of unique regions that aren't nested further into parent regions
+      acronyms <- m$cell_table[[channel]]$acronym %>% unique()
+      redundant_parents <- check_redundant_parents(acronyms)
+      m$cell_table[[channel]] <- m$cell_table[[channel]]  %>% dplyr::filter(acronym %in% redundant_parents$unique_acronyms)
+
+    }
+
+    # Split the hippocampal counts into dorsal ventral
+    if (isTRUE(split_hipp_DV)){
+      # all_hipp_subregions <- c(c("DG", "CA1", "CA2", "CA3"), SMARTR::get.sub.structure(c("DG", "CA1", "CA2", "CA3")))
+      # Filter out hippocampal regions only and split into dorsal and ventral
+      cell_table_hipp <-  m$cell_table[[channel]] %>% dplyr::filter(acronym %in% all_hipp_subregions) %>%  dplyr::mutate(acronym = if_else(AP > DV_split_AP_thresh , paste0("d", acronym), paste0("v", acronym)),
+                                                                                                                     name = as.character(SMARTR::name.from.acronym(acronym)))
+      # Filter out old hippoampus, append new hippocampal information
+      m$cell_table[[channel]] <-  m$cell_table[[channel]] %>% dplyr::filter(!acronym %in% all_hipp_subregions) %>% dplyr::bind_rows(cell_table_hipp) %>% dplyr::arrange(desc(AP), acronym, right.hemisphere)
+    }
+
+
+    union(setdiff(aggregate_volumes$acronym,  aggregate_counts$acronym), setdiff(aggregate_counts$acronym, aggregate_volumes$acronym))
+    union(setdiff(aggregate_volumes$acronym,  test$acronym), setdiff(test$acronym, aggregate_volumes$acronym))
+    union(setdiff(test$acronym,  aggregate_counts$acronym), setdiff(aggregate_counts$acronym, test$acronym))
+
+    ## Cell counts per slice
+   aggregate_counts <-  m$cell_table[[channel]] %>% dplyr::group_by(slice_name, AP, right.hemisphere, acronym, name) %>% dplyr::summarize(count = n())
+
+
+  test<- aggregate_counts %>% dplyr::inner_join(aggregate_volumes, by = c("slice_name", "AP", "acronym", "name", "right.hemisphere"))
+
 
     # clean NA values in all channels
     normalized_counts[[channel]] <- tidyr::drop_na(normalized_counts[[channel]])
@@ -1637,7 +1688,7 @@ normalize_cell_counts <- function(m,
 
 ## Auto split the HPF dataset into Dorsal and Ventral
 
-#' @title Split the hippocampal dataset to dorsal and ventral regions.
+#' @title Split the hippocampal dataset to dorsal and ventral regions. DEFUNCT DEFUNCT. WILL RETIRE THIS FUNCTION.
 #' @description If [normalize_cell_counts()] has already been run,
 #' the existing hippocampus data will be deleted and either replaced with new dorsal/ventral hippocampus data when merge = TRUE (recommended) or
 #' it will be stored in a separate dataframe if the user wants analyze the hippocampus separately for analysis and the `normalized_counts` dataframe will be unchanged.
