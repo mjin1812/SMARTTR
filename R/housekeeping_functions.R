@@ -343,6 +343,9 @@ check_redundant_parents <- function(acronyms){
     }
   }
   redundant_parents <- redundant_parents %>% unique()
+
+  print(paste0("redundant parents ", redundant_parents)) # This is just for troubleshooting
+
   return(list(unique_acronyms = setdiff(acronyms, redundant_parents),
        redundant_parents = redundant_parents))
 }
@@ -357,14 +360,20 @@ check_redundant_parents <- function(acronyms){
 #' @export
 #'
 #' @examples
-simplify_by_keywords <- function(df, keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate")){
+simplify_by_keywords <- function(df, keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural")){
   # loop through each keyword
-  dont_fold <- c("Dorsal part of the lateral geniculate complex")
+  dont_fold <- c("Dorsal part of the lateral geniculate complex",
+                 "Ventral posterolateral nucleus of the thalamus, parvicellular part",
+                 "Ventral posteromedial nucleus of the thalamus, parvicellular part",
+                 "Ventral posterolateral nucleus of the thalamus, parvicellular part",
+                 "Ventral posteromedial nucleus of the thalamus, parvicellular part",
+                 "Substantia nigra"
+                 )
 
   for (s in keywords) {
     # Look for row indices where the names contain the keywords
     k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
-    k_omit <- grep(dont_fold, df$name, value = FALSE, ignore.case = TRUE)
+    k_omit <- grep(paste(dont_fold, collapse = "|"), df$name, value = FALSE, ignore.case = TRUE)
     k <- setdiff(k, k_omit)
 
     while(length(k) > 0){
@@ -374,7 +383,7 @@ simplify_by_keywords <- function(df, keywords = c("layer","part","stratum","divi
 
       # Continue storing storing the parent names until there are no more that match the keyword
       k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
-      k_omit <- grep(dont_fold, df$name, value = FALSE, ignore.case = TRUE)
+      k_omit <- grep(paste(dont_fold, collapse = "|"), df$name, value = FALSE, ignore.case = TRUE)
       k <- setdiff(k, k_omit)
     }
   }
@@ -392,9 +401,16 @@ simplify_by_keywords <- function(df, keywords = c("layer","part","stratum","divi
 #' @export
 #'
 #' @examples
-simplify_vec_by_keywords <- function(vec, keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate")){
+simplify_vec_by_keywords <- function(vec, keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural")){
 
-  dont_fold <- c("Dorsal part of the lateral geniculate complex") ## this is a major exception in the ontology
+  dont_fold <- c("Dorsal part of the lateral geniculate complex",
+                 "Ventral posterolateral nucleus of the thalamus, parvicellular part",
+                 "Ventral posteromedial nucleus of the thalamus, parvicellular part",
+                 "Ventral posterolateral nucleus of the thalamus, parvicellular part",
+                 "Ventral posteromedial nucleus of the thalamus, parvicellular part",
+                 "Substantia nigra"
+                 ) ## These are major exceptions to the ontology
+
 
   name <- vector(mode="character", length = length(vec))
   for (v in 1:length(vec)){
@@ -409,7 +425,7 @@ simplify_vec_by_keywords <- function(vec, keywords = c("layer","part","stratum",
 
     # Look for row indices where the names contain the keywords
     k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
-    k_omit <- grep(dont_fold, df$name, value = FALSE, ignore.case = TRUE)
+    k_omit <- grep(paste(dont_fold, collapse = "|"), df$name, value = FALSE, ignore.case = TRUE)
     k <- setdiff(k, k_omit)
 
     while(length(k) > 0){
@@ -419,7 +435,7 @@ simplify_vec_by_keywords <- function(vec, keywords = c("layer","part","stratum",
 
       # Continue storing storing the parent names until there are no more that match the keyword
       k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
-      k_omit <- grep(dont_fold, df$name, value = FALSE, ignore.case = TRUE)
+      k_omit <- grep(paste(dont_fold, collapse = "|"), df$name, value = FALSE, ignore.case = TRUE)
       k <- setdiff(k, k_omit)
     }
   }
@@ -605,5 +621,12 @@ with_timeout <- function(expr, cpu=1, elapsed=1){
 
 
 
+# List of standard tiny regions to remove
+# Oculomotor nucleus
+# Trochlear nucleus
+# Lateral terminal nucleus of the accessory optic tract
+#
+#
+#
 
 

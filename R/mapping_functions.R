@@ -1071,7 +1071,7 @@ exclude_anatomy.slice <- function(s,
                                   include_right_regions = NULL,
                                   include_left_regions = NULL,
                                   simplify_regions = TRUE,
-                                  simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands"),
+                                  simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural"),
                                   plot_filtered = TRUE){
 
   # Detect the OS and set quartz( as graphing function)
@@ -1221,7 +1221,7 @@ exclude_anatomy.slice <- function(s,
                                   exclude_hemisphere = FALSE,
                                   exclude_layer_1 = TRUE,
                                   simplify_regions = TRUE,
-                                  simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands"),
+                                  simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural"),
                                   plot_filtered = TRUE){
 
   # Omit hemisphere name if there is no hemisphere value in the attributes
@@ -1293,7 +1293,7 @@ exclude_anatomy.slice <- function(s,
 
 get_registered_volumes.slice <- function(s,
                                          simplify_regions = TRUE,
-                                         simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands")){
+                                         simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural")){
 
   # Get conversion factor from pixel to microns
   # get z-width of this slice (in microns)
@@ -1392,7 +1392,7 @@ get_registered_volumes.mouse <- function(m,
                                        slice_ID,
                                        hemisphere = NULL,
                                        simplify_regions = TRUE,
-                                       simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands"),
+                                       simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural"),
                                        replace = FALSE){
 
   if (is.null(hemisphere)){
@@ -1543,7 +1543,7 @@ get_cell_table <- function(m,
 
     # Add the mouse ID and remove rows with NA values
     # cell_table[[channel]]$<- <- rep(attr(m, "info")$mouse_ID, times = length(cell_table[[channel]]$animal))
-    cell_table[[channel]] <- tidyr::drop_na(cell_table[[channel]])
+    cell_table[[channel]] <- tidyr::drop_na(cell_table[[channel]]) %>% tibble::tibble()
   }
 
   m$cell_table <-  cell_table
@@ -1573,7 +1573,7 @@ get_cell_table <- function(m,
 normalize_cell_counts <- function(m,
                                   combine_hemispheres = TRUE,
                                   simplify_regions = TRUE,
-                                  simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands"),
+                                  simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural"),
                                   split_hipp_DV = TRUE,
                                   DV_split_AP_thresh = -2.7
                                   ){
@@ -1616,6 +1616,8 @@ normalize_cell_counts <- function(m,
     # Filter out old hippoampus, append new hippocampal information
     aggregate_volumes <- aggregate_volumes %>% dplyr::filter(!acronym %in% all_hipp_subregions) %>% dplyr::bind_rows(hipp_split_volumes) %>% dplyr::arrange(desc(AP), acronym, right.hemisphere)
   }
+
+
 
   ## Get a tally of cells per region
   normalized_counts <-vector(mode = "list", length = length(m$cell_table))
@@ -1856,9 +1858,9 @@ normalize_cell_counts <- function(m,
 #' @param by (str) names of the experiment attributes (categorical variables) that will be used to create analysis subgroups.
 #' @return
 #' @export
-#' @examples e <- combine_norm_cell_counts(e, by = c('groups', 'sex'))
+#' @examples e <- combine_cell_counts(e, by = c('groups', 'sex'))
 
-combine_norm_cell_counts <- function(e, by){
+combine_cell_counts <- function(e, by){
 
   # Get experiment info
   e_info <- attr(e, "info")
@@ -1872,32 +1874,44 @@ combine_norm_cell_counts <- function(e, by){
   combined_norm_counts_list <- vector(mode = "list", length(e_info$channels))
   names(combined_norm_counts_list) <- e_info$channels
 
+  combined_counts_per_slice_list <- vector(mode = "list", length(e_info$channels))
+  names(combined_counts_per_slice_list) <- e_info$channels
+
   for (channel in e_info$channels){
     for (m in 1:length(e$mice)){
 
       # Get mouse info
       m_info <- attr(e$mice[[m]], "info")
       df <- e$mice[[m]]$normalized_counts[[channel]]
+      df_slice <- e$mice[[m]]$counts_per_slice[[channel]]
+
       for (attrib in by){
         # Add column keeping track of the mouse attribute
         add_col <- m_info[[e2m_attr(attrib)]] %>% toString() %>% tibble::tibble()
         names(add_col)  <- e2m_attr(attrib)
         df <- df %>% tibble::add_column(add_col, .before = TRUE)
+        df_slice <- df_slice %>% tibble::add_column(add_col, .before = TRUE)
       }
 
       # Always add the mouse ID
       df <- df %>% tibble::add_column(mouse_ID = m_info[["mouse_ID"]], .before = TRUE)
+      df_slice <- df_slice %>% tibble::add_column(mouse_ID = m_info[["mouse_ID"]], .before = TRUE)
+
 
       if (m == 1){
         combined_norm_counts <- df
+        combined_counts_per_slice <- df_slice
       } else{
         # add mouse dataframe of norm counts to growing combined norm counts table
         combined_norm_counts <- combined_norm_counts %>% dplyr::bind_rows(df)
+        combined_counts_per_slice <- combined_counts_per_slice %>% dplyr::bind_rows(df_slice)
       }
     }
     combined_norm_counts_list[[channel]] <- combined_norm_counts
+    combined_counts_per_slice_list[[channel]] <- combined_counts_per_slice
   }
   e$combined_normalized_counts <- combined_norm_counts_list
+  e$combined_counts_per_slice_list <- combined_counts_per_slice_list
   return(e)
 }
 
