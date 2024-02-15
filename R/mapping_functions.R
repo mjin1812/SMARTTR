@@ -1040,10 +1040,9 @@ map_cells_to_atlas.mouse <- function(m,
 #' This function automatically excludes the default regions included in the attribute "regions_excluded" in each slice
 #' IN ADDITION to the regions added to the 'exclude_regions' parameter.
 #' Regions added to the 'exclude_regions' parameter will then be updated in the slice attribute to keep track of what was excluded.
-#' @rdname exclude_anatomy
 #' Note: Please see the `simplify_regions` and `simplify_keywords` parameters. By default, if a subregion can be folded into a parent region based on a certain keywords, then this function will automatically
 #' exclude the entire parent region as a conservative exclusion approach. Keep `simplify_regions=TRUE` if the final analysis will contain simplified regions.
-#'
+#' @rdname exclude_anatomy
 #' @param s slice object
 #' @param channels (str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.
 #' @param clean (bool, default = TRUE ). Remove cells that don't map to any regions. This option is recommended.
@@ -1057,7 +1056,6 @@ map_cells_to_atlas.mouse <- function(m,
 #' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure. This means the parent structure is also excluded if the list of excluded right and left
 #' regions can be further
 #' @param plot_filtered (bool, default = TRUE) pop up window to check the excluded anatomy.
-#'
 #' @examples s <-  exclude_anatomy(s, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE, exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE, plot_filtered = TRUE)
 #' @export
 
@@ -1961,82 +1959,15 @@ normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
 
 #__________________ Internal Functions __________________________
 
-#'
-#' # Rearrange things to be anatomical order
-#'
-#' # anatomical_order<- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
-#' # anat.order$region <- anatomical.order %>% map(get.sub.structure) %>% map(intersect,y=common.regions) %>% unlist()
-#' # for(super.region in anatomical.order){
-#' # anat.order$super.region[anat.order$region %in% get.sub.structure(super.region)] <- super.region
-#' #}
-#' #' Get aggregate volumes in the hippocampus
-#' #'
-#' #' @param m
-#' #' @param AP_coord
-#' #'
-#' #' @return a list the length of channels, total_volumes
-#' #'
-#' #' @examples
-#' get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2", "CA3"), hipp_AP_coordinates){
-#'
-#'   DV <- c("dorsal", "ventral")
-#'
-#'   # Loop through all rois and get all subregions
-#'   regions <- c(rois)
-#'   for (roi in rois) {
-#'     regions <- c(regions, wholebrain::get.sub.structure(roi))
-#'   }
-#'
-#'   # Loop through all slices and concatenate ONLY areas from the hippocampus.
-#'   # Split these areas into dorsal and ventral
-#'   aggregate_volumes_dorsal <- data.frame()
-#'   aggregate_volumes_ventral <- data.frame()
-#'   for (slice in m$slices){
-#'     coordinate <- attr(slice, "info")$coordinate
-#'     if (coordinate %in% hipp_AP_coordinates){
-#'       # dorsal
-#'       if (coordinate > AP_coord){
-#'         aggregate_volumes_dorsal <- rbind(aggregate_volumes_dorsal, slice$volumes)
-#'       }
-#'       # Ventral
-#'       if (coordinate <= AP_coord){
-#'         aggregate_volumes_ventral <- rbind(aggregate_volumes_ventral, slice$volumes)
-#'       }
-#'     }
-#'   }
-#'
-#'   # Drop any NA values
-#'   aggregate_volumes_dorsal  <- tidyr::drop_na(aggregate_volumes_dorsal)
-#'   aggregate_volumes_ventral <- tidyr::drop_na(aggregate_volumes_ventral)
-#'
-#'   # Store total volumes
-#'   total_volumes_hipp <- list("dorsal" = aggregate_volumes_dorsal,
-#'                               "ventral" = aggregate_volumes_ventral)
-#'
-#'   for (dv in names(total_volumes_hipp)){
-#'     if (length(total_volumes_hipp[[dv]]) > 0){
-#'
-#'       total_volumes_hipp[[dv]] <- total_volumes_hipp[[dv]] %>% dplyr::group_by(acronym, right.hemisphere, name) %>%
-#'         dplyr::summarise(area.mm2 = sum(area)*1e-6, volume.mm3 = sum(volume)*1e-9)
-#'
-#'       # Store only regions in the hippocampus
-#'       total_volumes_hipp[[dv]] <- total_volumes_hipp[[dv]][total_volumes_hipp[[dv]]$acronym %in% regions,]
-#'
-#'     } else {
-#'       message("There was no volume data found for the ", dv, " hippocampus!")
-#'     }
-#'   }
-#'   return(total_volumes_hipp)
-#' }
+
 
 
  ## modified function
-#' @param cell.data.list
+#' Get top down registered areas
 #' @param registration
 #' @param conversion.factor
-#'
+#' @param regions
 #' @return
-#'
 #' @examples
 get.registered.areas.td <- function(regions, registration, conversion.factor = 1){
 
@@ -2417,6 +2348,67 @@ find_all_subregions <- function(regions){
 
 
 
+
+
+
+# # Rearrange things to be anatomical order
+#
+# # anatomical_order<- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
+# # anat.order$region <- anatomical.order %>% map(get.sub.structure) %>% map(intersect,y=common.regions) %>% unlist()
+# # for(super.region in anatomical.order){
+# # anat.order$super.region[anat.order$region %in% get.sub.structure(super.region)] <- super.region
+# #}
+# get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2", "CA3"), hipp_AP_coordinates){
+#
+#   DV <- c("dorsal", "ventral")
+#
+#   # Loop through all rois and get all subregions
+#   regions <- c(rois)
+#   for (roi in rois) {
+#     regions <- c(regions, wholebrain::get.sub.structure(roi))
+#   }
+#
+#   # Loop through all slices and concatenate ONLY areas from the hippocampus.
+#   # Split these areas into dorsal and ventral
+#   aggregate_volumes_dorsal <- data.frame()
+#   aggregate_volumes_ventral <- data.frame()
+#   for (slice in m$slices){
+#     coordinate <- attr(slice, "info")$coordinate
+#     if (coordinate %in% hipp_AP_coordinates){
+#       # dorsal
+#       if (coordinate > AP_coord){
+#         aggregate_volumes_dorsal <- rbind(aggregate_volumes_dorsal, slice$volumes)
+#       }
+#       # Ventral
+#       if (coordinate <= AP_coord){
+#         aggregate_volumes_ventral <- rbind(aggregate_volumes_ventral, slice$volumes)
+#       }
+#     }
+#   }
+#
+#   # Drop any NA values
+#   aggregate_volumes_dorsal  <- tidyr::drop_na(aggregate_volumes_dorsal)
+#   aggregate_volumes_ventral <- tidyr::drop_na(aggregate_volumes_ventral)
+#
+#   # Store total volumes
+#   total_volumes_hipp <- list("dorsal" = aggregate_volumes_dorsal,
+#                               "ventral" = aggregate_volumes_ventral)
+#
+#   for (dv in names(total_volumes_hipp)){
+#     if (length(total_volumes_hipp[[dv]]) > 0){
+#
+#       total_volumes_hipp[[dv]] <- total_volumes_hipp[[dv]] %>% dplyr::group_by(acronym, right.hemisphere, name) %>%
+#         dplyr::summarise(area.mm2 = sum(area)*1e-6, volume.mm3 = sum(volume)*1e-9)
+#
+#       # Store only regions in the hippocampus
+#       total_volumes_hipp[[dv]] <- total_volumes_hipp[[dv]][total_volumes_hipp[[dv]]$acronym %in% regions,]
+#
+#     } else {
+#       message("There was no volume data found for the ", dv, " hippocampus!")
+#     }
+#   }
+#   return(total_volumes_hipp)
+# }
 
 
 

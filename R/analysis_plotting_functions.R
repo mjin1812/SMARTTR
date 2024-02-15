@@ -116,6 +116,7 @@ get_percent_colabel <-function(e, by, colabel_channel = "colabel",
 
 #' Get regional cross correlations and their p-values in a correlation list object.
 #' @description This analysis will get regional cross correlations based on cell counts normalized by region volume.
+#'
 #' @param e experiment object
 #' @param by (str) Attribute names to group by, e.g. c("sex", "group")
 #' @param values (str) The respective values of the attributes entered for the `by` parameter to generate a specific analysis group,
@@ -124,7 +125,10 @@ get_percent_colabel <-function(e, by, colabel_channel = "colabel",
 #' @param p_adjust_method (bool or str, default = "BH") Benjamini-Hochberg method is recommended.
 #'  Apply the named method to control for the inflated false discovery rate or family wise error rate (FWER). Set to FALSE or "none"
 #'  to keep "raw" p values. See also [stats::p.adjust()] for the correction options.
+#' @param region_order (list, default = NULL)  optional list with the first element named "acronym" supplying a vector as region acronyms and the second element named
+#' "order"  supplying an vector of integers determining numerical order, e.g. 1, 1, 2, 2.
 #' @param alpha (num, default = 0.05) The alpha level for significance applied AFTER p-adjustment.
+#'
 #' @return e experiment object. The experiment object now has a named `correlation_list` object stored in it.
 #' The name of the correlation object is the concatenation of the variable values separated by a "_".
 #' This name allows for unambiguous identification of different analysis subgroups in the future.
@@ -133,7 +137,8 @@ get_percent_colabel <-function(e, by, colabel_channel = "colabel",
 #' channels = c("cfos", "eyfp", "colabel"),  p_adjust_method = "BH", alpha = 0.05)
 #' @seealso [Hmisc::rcorr()]
 get_correlations <- function(e, by, values,
-                             channels = c("cfos", "eyfp", "colabel"),  p_adjust_method = "BH", alpha = 0.05){
+                             channels = c("cfos", "eyfp", "colabel"),  p_adjust_method = "BH", alpha = 0.05,
+                             region_order = NULL){
   corr_list <- list()
   names(corr_list) <- names(channels)
 
@@ -148,11 +153,20 @@ get_correlations <- function(e, by, values,
       tidyr::pivot_wider(names_from = acronym, values_from = normalized.count.by.volume)
 
     # Rearrange the correlations to be in "anatomical order"
-    anatomical.order <- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
     common.regions <-  df_channel %>% dplyr::select(-all_of(c('mouse_ID', by))) %>% names()
-    common.regions.ordered <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure) %>%
-      purrr::map(intersect, y=common.regions) %>% unlist()
 
+    if (is.null(region_order)){
+      anatomical.order <- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
+
+      common.regions.ordered <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure) %>%
+        purrr::map(intersect, y=common.regions) %>% unlist()
+    } else if (is.list(region_order)){
+      common.regions.ordered <- region_order$acronym[region_order$order]
+      common.regions.ordered <- intersect(common.regions.ordered , common.regions)
+    } else {
+      stop("You did not supply a list object for the variable `region_order`."
+      )
+    }
 
     df_channel <- df_channel %>% dplyr::select(all_of(c(common.regions.ordered))) %>%
       as.matrix()
@@ -161,9 +175,13 @@ get_correlations <- function(e, by, values,
     # n <- colSums(!is.na(df_channel)) %>% min()
 
     # Try-catch statement
-    tryCatch({
+
+
+
+    df_corr <-  tryCatch({
       # Code that may throw an error
-      df_corr <- df_channel %>% Hmisc::rcorr()
+     df_corr <- df_channel %>% Hmisc::rcorr()
+     return(df_corr)
     },
     error = function(err) {
       message(c("One or more of your brain regions has a n below the recommended value."))
@@ -863,6 +881,9 @@ plot_normalized_counts <- function(e,
     # remove parent regions (if any are specified) containing residual counts which are better represented in subregions
     channel_counts <- channel_counts[-c(which(channel_counts$acronym %in% regions_to_remove)),]
     # gather parent regions and assign these regions to subregions containing counts
+
+
+
     anatomical.order <- c("Isocortex", "OLF", "HPF", "CTXsp", "CNU",
                           "TH", "HY", "MB", "HB", "CB")
     regions.ordered <- anatomical.order %>%
@@ -991,7 +1012,10 @@ plot_normalized_counts <- function(e,
 #' @param height (int) Height of the plot in inches.
 #' @param sig_color (str, default = "yellow") Color of the significance symbol in R
 #' @param width (int) Width of the plot in inches.
+#' @param theme.hm (default = NULL) Option to use custom ggplot2 theme if the user wants
+#' @param sig_size (default = 7) Point size for significance symbol.
 #' @param sig_nudge_y (default = -0.7) Relative amount to nudge the significance symbols in the y direction to center over each square.
+#'
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples plot_correlation_heatmaps(e, correlation_list_name = "female_AD") # No return value
@@ -1002,8 +1026,11 @@ plot_correlation_heatmaps <- function(e, correlation_list_name ,
                                       colors = c("#be0000", "#00782e", "#f09b08"),
                                       sig_color = "yellow",
                                       sig_nudge_y = -0.7,
+                                      sig_size = 7,
                                       print_plot = TRUE, save_plot = TRUE, image_ext = ".png",
-                                      plot_title = NULL, height = 10, width = 10){
+                                      plot_title = NULL, height = 10, width = 10,
+                                      theme.hm = NULL
+                                      ){
 
   # Detect the OS and set quartz (as graphing function)
   if(get_os() != "osx"){
@@ -1026,13 +1053,18 @@ plot_correlation_heatmaps <- function(e, correlation_list_name ,
   }
 
   # Create plotting theme for the heatmap
-  theme.hm <- ggplot2::theme(axis.text.x = element_text(hjust = 1, vjust = 0.5, angle = 90, size = 8),
-                    axis.text.y = element_text(vjust = 0.5, size = 8),
-                    plot.title = element_text(hjust = 0.5, size = 36),
-                    axis.title = element_text(size = 18),
-                    legend.text = element_text(size = 22),
-                    legend.key.height = unit(100, "points"),
-                    legend.title = element_text(size = 22))
+  if (is.null(theme.hm)){
+    theme.hm <- ggplot2::theme(axis.text.x = element_text(hjust = 1, vjust = 0.5, angle = 90, size = 8),
+                               axis.text.y = element_text(vjust = 0.5, size = 8),
+                               plot.title = element_text(hjust = 0.5, size = 36),
+                               axis.title = element_text(size = 18),
+                               legend.text = element_text(size = 22),
+                               legend.key.height = unit(100, "points"),
+                               legend.title = element_text(size = 22))
+
+
+  }
+
 
   # List to store the returned plot handles
   p_list <- vector(mode='list', length = length(channels))
@@ -1060,7 +1092,7 @@ plot_correlation_heatmaps <- function(e, correlation_list_name ,
   p <-  ggplot(df, aes(row_acronym, col_acronym, fill = r)) +
         geom_tile() +
         # geom_raster()+
-        geom_text(aes(label = sig_text), size=8, position = position_nudge(y = sig_nudge_y), color = sig_color) +
+        geom_text(aes(label = sig_text), size=sig_size, position = position_nudge(y = sig_nudge_y), color = sig_color) +
         scale_fill_gradient2(low = "#4f4f4f",mid = "#ffffff", high = colors[[channel]],
                          aesthetics = c("color","fill"), na.value = "grey50",
                          limits=c(-1, 1))+
@@ -1088,6 +1120,8 @@ plot_correlation_heatmaps <- function(e, correlation_list_name ,
     # Store the plot handle
     p_list[[channel]] <- p
   }
+  return(p_list)
+
 }
 
 
@@ -1231,6 +1265,8 @@ volcano_plot <- function(e,
     # Store the plot handle
     p_list[[channels[k]]] <- p
   }
+
+  return(p_list)
 }
 
 
@@ -1413,6 +1449,7 @@ parallel_coordinate_plot <- function(e,
     # Store the plot handle
     p_list[[channels[k]]] <- p
   }
+  return(p_list)
 }
 
 #' Plot the networks stored in an experiment object
@@ -1446,6 +1483,7 @@ plot_networks <- function(e,
                           height = 15,
                           width = 15,
                           degree_scale_limit = c(1,10),
+                          correlation_edge_width_limit = c(0.8,1),
                           image_ext = ".png",
                           network_radius = 300,
                           print_plot = TRUE,
@@ -1496,7 +1534,7 @@ plot_networks <- function(e,
                           discrete = TRUE,
                           option = "D",
                           guide = guide_legend(override.aes = list(size=5), order=4)) +
-      ggraph::scale_edge_width(limits=c(0.8,1),range = c(1,3),name = "Correlation Strength",
+      ggraph::scale_edge_width(limits=correlation_edge_width_limit,range = c(1,3),name = "Correlation Strength",
                        guide = guide_legend(order = 3)) +
       ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=c(4,10),
                  guide = guide_legend(order = 2)) +
@@ -1528,12 +1566,14 @@ plot_networks <- function(e,
     # Store the plot handle
     p_list[[channel]] <- p
   }
+  return(p_list)
 }
 
 
 #' Plot the degree distributions
 #' @description
 #' Plot a stacked bar plot of the degree distributions.
+#'
 #' @param e experiment object
 #' @param channels (str, default = c("cfos", "eyfp")) Channels to plot.
 #' @param color_palettes (str, default = c("reds", "greens")) Color palettes from [grDevices::hcl.colors] that are used to for plotting networks for each channel, respectively.
@@ -1550,7 +1590,9 @@ plot_networks <- function(e,
 #' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
+#' @param theme.gg (default = NULL) Option to use custom ggplot2 theme if the user wants
 #' @param image_ext (default = ".png") image extension to the plot as.
+#'
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples
@@ -1568,6 +1610,7 @@ plot_degree_distributions <- function(e,
                                       ylim = c(0,15),
                                       image_ext = ".png",
                                       print_plot = TRUE,
+                                      theme.gg = NULL,
                                       save_plot = TRUE){
 
   # Detect the OS and set quartz( as graphing function)
@@ -1575,11 +1618,13 @@ plot_degree_distributions <- function(e,
     quartz <- X11
   }
 
-  theme.small.xh <- ggplot2::theme_classic() +
-    theme(text = element_text(size = 22),
-          line = element_line(size = 1),
-          plot.title = element_text(hjust = 0.5, size = 36),
-          axis.ticks.length = unit(5.5,"points"))
+  if (is.null(theme.gg)){
+    theme.gg <- ggplot2::theme_classic() +
+                theme(text = element_text(size = 22),
+                      line = element_line(size = 1),
+                      plot.title = element_text(hjust = 0.5, size = 36),
+                      axis.ticks.length = unit(5.5,"points"))
+  }
 
 
   # List to store the returned plot handles
@@ -1609,7 +1654,7 @@ plot_degree_distributions <- function(e,
       ylab("Frequency") +
       xlim(xlim) +
       ylim(ylim) +
-      theme.small.xh
+      theme.gg
 
 
     if (!is.null(title)){
@@ -1640,6 +1685,7 @@ plot_degree_distributions <- function(e,
     # Store the plot handle
     p_list[[channels[k]]] <- p
   }
+  return(p_list)
 }
 
 
@@ -1758,6 +1804,7 @@ plot_mean_degree <- function(e,
     # Store the plot handle
     p_list[[channels[k]]] <- p
   }
+  return(p_list)
 }
 
 
@@ -1878,6 +1925,7 @@ plot_mean_clust_coeff <- function(e,
     # Store the plot handle
     p_list[[channels[k]]] <- p
   }
+  return(p_list)
 }
 
 #' Plot mean global efficiency
@@ -1994,6 +2042,7 @@ plot_mean_global_effic <- function(e,
     # Store the plot handle
     p_list[[channels[k]]] <- p
   }
+  return(p_list)
 }
 
 #' Plot mean betweenness centrality
@@ -2106,6 +2155,7 @@ plot_mean_between_centrality <- function(e,
     # Store the plot handle
     p_list[[channels[k]]] <- p
   }
+  return(p_list)
 }
 
 
@@ -2206,6 +2256,7 @@ plot_degree_regions <- function(e,
     # Store the plot handle
     p_list[[channels[k]]] <- p
   }
+  return(p_list)
 }
 
 
@@ -2302,6 +2353,7 @@ plot_betweenness_regions <- function(e,
     # Store the plot handle
     p_list[[channels[k]]] <- p
   }
+  return(p_list)
 }
 
 
