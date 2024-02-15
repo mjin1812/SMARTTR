@@ -175,39 +175,7 @@ get_correlations <- function(e, by, values,
     # n <- colSums(!is.na(df_channel)) %>% min()
 
     # Try-catch statement
-
-
-
-    df_corr <-  tryCatch({
-      # Code that may throw an error
-     df_corr <- df_channel %>% Hmisc::rcorr()
-     return(df_corr)
-    },
-    error = function(err) {
-      message(c("One or more of your brain regions has a n below the recommended value."))
-      message("\nHere's the original error message:")
-      message(err)
-      message(c("\nCalculating pearsons, using alternative method but we ",
-                "recommend increasing the sample size or excluding that region due to insufficient data"))
-
-      df_channel %>% dim() -> shape
-      df_corr <- vector(mode = "list")
-      df_corr$r <- matrix(nrow = shape[2], ncol = shape[2])
-      rownames(df_corr$r) <- colnames(df_channel)
-      colnames(df_corr$r) <- colnames(df_channel)
-      df_corr$n <-  df_corr$r
-      df_corr$P <- df_corr$r
-
-      for(r1 in 1:shape[2]){
-        for(r2 in 1:r1){
-          df_corr$n[r1,r2] <- sum(df_channel[,r1] & df_channel[,r2], na.rm = TRUE)
-          ct <- cor.test(df_channel[,r1], df_channel[,r2])
-          df_corr$P[r1,r2] <- ct$p.value
-          df_corr$r[r1,r2] <- ct$estimate
-        }
-      }
-      return(df_corr)
-    })
+    df_corr <-  try_correlate(df_channel)
 
     if (!isFALSE(p_adjust_method)){
       lowertri <- df_corr$P %>%  lower.tri(diag = FALSE)
@@ -2481,3 +2449,47 @@ rois_intersect_region_list <- function(common_reg, rois){
 sem <- function(x){
   sd(x) / sqrt(length(x))
 }
+
+
+
+#' Try to correlate
+#'
+#' @param df_channel
+#'
+#' @return
+#'
+#' @examples
+try_correlate <- function(df_channel){
+  tryCatch({
+    # Code that may throw an error
+    df_corr <- df_channel %>% Hmisc::rcorr()
+    return(df_corr)
+  },
+  error = function(err) {
+    message(c("One or more of your brain regions has a n below the recommended value."))
+    message("\nHere's the original error message:")
+    message(err)
+    message(c("\nCalculating pearsons, using alternative method but we ",
+              "recommend increasing the sample size or excluding that region due to insufficient data"))
+
+    df_channel %>% dim() -> shape
+    df_corr <- vector(mode = "list")
+    df_corr$r <- matrix(nrow = shape[2], ncol = shape[2])
+    rownames(df_corr$r) <- colnames(df_channel)
+    colnames(df_corr$r) <- colnames(df_channel)
+    df_corr$n <-  df_corr$r
+    df_corr$P <- df_corr$r
+
+    for(r1 in 1:shape[2]){
+      for(r2 in 1:r1){
+        df_corr$n[r1,r2] <- sum(df_channel[,r1] & df_channel[,r2], na.rm = TRUE)
+        ct <- cor.test(df_channel[,r1], df_channel[,r2])
+        df_corr$P[r1,r2] <- ct$p.value
+        df_corr$r[r1,r2] <- ct$estimate
+      }
+    }
+    return(df_corr)
+  })
+}
+
+
