@@ -208,7 +208,7 @@ get_correlations <- function(e, by, values,
 #' @description The data from two different analysis groups are compared by specifying the
 #' `correlation_list_name_1` and `correlation_list_name_2` parameters. Note that both of these analysis groups must have the same
 #' number of channels to compare. The functions `get_correlations()` needs to have been run for each of these analysis groups prior to
-#' running this function.
+#' running this function. The test statistics used is the pearson values of those in correlation_list_name_2 subtracted from corresponding Pearson values in correlation_list_name_1.
 #' @param e experiment object
 #' @param correlation_list_name_1 (str) The name of the correlation list object used as the first group for comparison.
 #' @param correlation_list_name_2 (str) The name of the correlation list object used as the second group for comparison.
@@ -289,7 +289,7 @@ correlation_diff_permutation <- function(e,
       as.matrix() %>% Hmisc::rcorr()
     group_2_corr <- df_channel_group_2 %>% dplyr::select(-c(mouse_ID:corr_group)) %>%
       as.matrix() %>% Hmisc::rcorr()
-    test_statistic <- group_1_corr$r - group_2_corr$r
+    test_statistic <- group_2_corr$r - group_1_corr$r
 
     # Get an array of distribution of correlation differences
     test_statistic_distributions <- permute_corr_diff_distrib(df_channel_groups,
@@ -799,7 +799,8 @@ plot_percent_colabel <- function(e,
 #' @param channels (str, default = c("cfos", "eyfp", "colabel"))
 #' @param groups (str, default = c("Context", "Shock")) The groups to be plotted. The order of this vector will dictate the ordering of grouped bars in the resulting plot.
 #' @param colors (str, default = c("white", "lightblue")) Hexadecimal codes corresponding to the groups (respectively) to plot.
-#' @param regions_to_remove (str, default = c("CTX", "grey", "MB", "TH", "HY")) A vector of strings corresponding to regions to remove from the plot. The default regions are parent regions from which their subregions have already been plotted.
+#' @param regions_to_remove (str, default = c("CTX", "grey", "MB", "TH", "HY")) A vector of strings corresponding to regions to remove from the plot. The default regions are parent regions from which their subregions have already been plotted. Set to NULL,
+#' FALSE, NULL or NA  to avoid removing regions.
 #' @param title (str, default = NULL) An optional title for the plot
 #' @param height height of the plot in inches.
 #' @param width width of the plot in inches.
@@ -846,11 +847,12 @@ plot_normalized_counts <- function(e,
       dplyr::group_by(group, acronym, name) %>%
       dplyr::summarise(mean_normalized_counts = mean(normalized.count.by.volume),
                        sem = sd(normalized.count.by.volume)/sqrt(n()))
-    # remove parent regions (if any are specified) containing residual counts which are better represented in subregions
-    channel_counts <- channel_counts[-c(which(channel_counts$acronym %in% regions_to_remove)),]
-    # gather parent regions and assign these regions to subregions containing counts
 
-
+    if (!(isFALSE(regions_to_remove) || is.null(regions_to_remove) || is.na(regions_to_remove))){
+      # remove parent regions (if any are specified) containing residual counts which are better represented in subregions
+      channel_counts <- channel_counts[-c(which(channel_counts$acronym %in% regions_to_remove)),]
+      # gather parent regions and assign these regions to subregions containing counts
+    }
 
     anatomical.order <- c("Isocortex", "OLF", "HPF", "CTXsp", "CNU",
                           "TH", "HY", "MB", "HB", "CB")
@@ -1204,7 +1206,7 @@ volcano_plot <- function(e,
       geom_hline(yintercept = -log10(alpha), color = colors[k], size = 1) +
       ggplot2::coord_cartesian(xlim = c(-2.1, 2.1)) +
       # xlim(c(-2.2, 2.2)) +
-      scale_x_reverse() +
+      # scale_x_reverse() +
       ylim(ylim) +
       labs(title = title, x = "Correlation Difference", y = "-log(p-value)") +
       plt_theme
@@ -2406,7 +2408,7 @@ permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_l
     correlations_list[[correlation_list_name_2]] <- matrix_list[[correlation_list_name_2]][,-1] %>% Hmisc::rcorr()
 
     # subtract R coefficient differences
-    corr_diff_matrix[,,n] <- correlations_list[[correlation_list_name_1]]$r - correlations_list[[correlation_list_name_2]]$r
+    corr_diff_matrix[,,n] <- correlations_list[[correlation_list_name_2]]$r - correlations_list[[correlation_list_name_1]]$r
   }
   return(corr_diff_matrix)
 
@@ -2488,6 +2490,12 @@ try_correlate <- function(df_channel){
         df_corr$r[r1,r2] <- ct$estimate
       }
     }
+    # df_corr is lower triangle.
+    # need to ,mirror to upper tri
+    upper_tri <- upper.tri(df_corr$r)
+    df_corr$P[upper_tri] <- t(df_corr$P)[upper_tri]
+    df_corr$r[upper_tri] <- t(df_corr$r)[upper_tri]
+    df_corr$n[upper_tri] <- t(df_corr$n)[upper_tri]
     return(df_corr)
   })
 }
