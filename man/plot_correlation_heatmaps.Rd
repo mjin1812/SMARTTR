@@ -16,7 +16,8 @@ plot_correlation_heatmaps(
   image_ext = ".png",
   plot_title = NULL,
   height = 10,
-  width = 10
+  width = 10,
+  theme.hm = NULL
 )
 }
 \arguments{
@@ -45,6 +46,8 @@ the experiment object output folder.}
 \item{height}{(int) Height of the plot in inches.}
 
 \item{width}{(int) Width of the plot in inches.}
+
+\item{theme.hm}{(default = NULL) Option to use custom ggplot2 theme if the user wants}
 }
 \value{
 p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.

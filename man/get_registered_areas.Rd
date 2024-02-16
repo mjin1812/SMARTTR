@@ -4,7 +4,16 @@
 \alias{get_registered_volumes.mouse}
 \title{Method for getting regional areas and volumes for each slice in a mouse object}
 \usage{
-\method{get_registered_volumes}{mouse}(m, slice_ID, hemisphere = NULL, replace = FALSE)
+\method{get_registered_volumes}{mouse}(
+  m,
+  slice_ID,
+  hemisphere = NULL,
+  simplify_regions = TRUE,
+  simplify_keywords = c("layer", "part", "stratum", "division", "leaflet",
+    "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch",
+    "Precommissural"),
+  replace = FALSE
+)
 }
 \arguments{
 \item{m}{mouse object}
@@ -12,12 +21,25 @@
 \item{slice_ID}{(str) ID of slice}
 
 \item{hemisphere}{(str) 'left', 'right' or NULL (both)}
+
+\item{simplify_regions}{(bool, default = TRUE ) simplify the normalized region counts based on keywords in the internal function, \code{simplify_keywords}}
+
+\item{simplify_keywords}{(str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure}
+
+\item{replace}{(bool, default = FALSE). Replace previously calculated volumes for a particular slice.}
 }
 \value{
 m mouse object
 }
 \description{
-Method for getting regional areas and volumes for each slice in a mouse object
+Calculate the registered area (microns^2^) and the regional volumes (microns^3^) of all regions contained in a slice.
+Note: Simplification of the analyzed regions by keywords is HIGHLY RECOMMENDED because there are errors in the wholebrain basecode that results in a mismatch between the region acronym mapped to and the
+actual registration contour based on the region acronym. This mismatch is most notable in the dentate gyrus subregions, where certain regions are represented twice because the DG curve along the rostral caudal axis.
+If simplification by keywords is used, this will circumvent the errors.
+
+This function also automatically removes parent regions that are redundant, e.g. "CTX" should by volumetrically represented by summing all
+subregions, but there is a tiny amount of potential space that allows for cells to get mapped to slim spaces between subregions.
+This potential anatomical space should be ignored.
 }
 \examples{
 m <- get_registered_areas(m, slice_ID = "1_10", hemisphere = "left", replace = FALSE)

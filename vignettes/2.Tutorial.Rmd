@@ -112,7 +112,6 @@ mouse_733 <- mouse(mouse_ID = "733",
                    output_path = "V:/Michelle_Jin/Wholebrain pipeline/733")   # replace the output path with the path to your specific mouse folder
             
 
-
 print(mouse_733)
 
 ```
@@ -416,6 +415,7 @@ mouse_733 <- exclude_anatomy(mouse_733,
                              channels = c("eyfp", "cfos", "colabel"),
                              clean = TRUE, 
                              exclude_left_regions = c("MOs"),
+                             exclude_right_regions = c("SS")
                              exclude_layer_1 = TRUE, 
                              exclude_hemisphere = FALSE,
                              plot_filtered = TRUE)
@@ -554,7 +554,7 @@ print(names(lh$mice))
 Aggregating the normalized cell counts across mice into one dataframe is done with the `combine_norm_cell_counts()` function.  
 
 ```{r, eval = TRUE}
-lh <- combine_norm_cell_counts(lh, by = c('groups'))
+lh <- combine_norm_cell_counts(lh, by = c('groups', "sex", "age"))
 ```
 
 `by` is a special parameter that will allow up to take advantage of the many mouse attributes that we have recorded during creation of a mouse object. It is a vector of the mouse attributes we will use to split our dataset into subgroups for comparison. In the example above, we use the `group` mouse attributes to compare `Shock` and `Context` groups which received inescapable shock and context training, respectively. If there were additional groupings of interest, such as splitting males and females to look at sex differences,  you can include the `sex` attribute into the vector, e.g. `c('group', 'sex')`. Sometimes, certain attributes like `drug` may not apply to your experiment, so `by` should only include the variables that you intend on using for group comparisons during analysis to avoid cluttering your combined dataframe. For consistency in the functions used to filter out subgroups, the values of the attributes will all be converted to strings.
@@ -570,7 +570,7 @@ The function `find_outlier_counts()` will first organize counts into sub analysi
 
 
 ```{r, eval = TRUE}
-lh <- find_outlier_counts(lh, by = c("group"), n_sd = 2, remove = TRUE, log = TRUE)
+lh <- find_outlier_counts(lh, by = c('groups', 'sex', 'age'), n_sd = 2, remove = TRUE, log = TRUE)
 ```
 
 

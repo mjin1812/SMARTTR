@@ -13,6 +13,7 @@ plot_networks(
   height = 15,
   width = 15,
   degree_scale_limit = c(1, 10),
+  correlation_edge_width_limit = c(0.8, 1),
   image_ext = ".png",
   network_radius = 300,
   print_plot = TRUE,

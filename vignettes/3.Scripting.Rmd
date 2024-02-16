@@ -192,14 +192,9 @@ for (s in 1:length(df$slice)){
 
 ## Registration correction looping notebooks
 
-To improve the experience of registrations, we provide an interactive notebook for looping through each image. This automatically streamlines the process of finding an accurate brain contour for each image, and 
-
-
-Instructions for using the notebook are included 
+To improve the experience of registrations, we provide an interactive notebook for looping through each image. This automatically streamlines the process of finding an accurate brain contour for each image, and will auto-loop to the next image to register within each mouse. Instructions for each code chunk are included in the notebook.
 
 [looping notebook](https://osf.io/uqrsc)
-
-
 
 
 ## Batch segmentation importation and mapping

@@ -7,7 +7,7 @@
 name.from.acronym(x)
 }
 \arguments{
-\item{x}{(str) Regional acronym}
+\item{x}{(str) Regional acronym or vector of regional acronyms}
 }
 \description{
 Get whole regional names from acronyms based on a lookup table including SMARTR's custom ontology for the

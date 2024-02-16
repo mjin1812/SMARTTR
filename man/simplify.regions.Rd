@@ -2,7 +2,8 @@
 % Please edit documentation in R/mapping_functions.R
 \name{simplify.regions}
 \alias{simplify.regions}
-\title{Modification of Marcos' combine regions function}
+\title{\subsection{Modification of Marcos' function}{
+}}
 \usage{
 simplify.regions(
   normalized_counts,
@@ -18,5 +19,9 @@ simplify.regions(
 a list with length = No. channels. Each channel df has simplified parent acronyms and names is summed from original df based on them.
 }
 \description{
-Modification of Marcos' combine regions function
+
 }
+\section{Initializing a normalized cell count list that will store df of  normalized cell counts}{
+
+}
+

@@ -1,0 +1,7 @@
+template:
+  bootstrap: 5
+  bootswatch: pulse
+navbar:
+  structure:
+    left:  [intro, articles, tutorials, reference, news]
+    right: [search, github]

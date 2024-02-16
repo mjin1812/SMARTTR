@@ -199,7 +199,7 @@ The `get_correlations()` function is used to calculate pairwise Pearson correlat
 Like previous functions, there is a `by` parameter so the analysis is focused on the correct grouping variables and values to stratify your data into groups. Because each heat map is calculated for one set of grouping variable values, these need to be specified with the `values` parameter. The following example will generated a correlation matrix for the eyfp channel independently for the Context and Shock groups. For this channel we have decided to use an alpha threshold of 0.005 for indicating significantly correlated regions. You can add additional channels to process, if you would like to use the same alpha across all channels.
 
 
-```{r}
+```{r, results='hide', message=FALSE, warning=FALSE}
 
 # Get correlations for the eyfp 
 lh <- get_correlations(lh,
@@ -235,7 +235,7 @@ It also allows you to specify the number of shuffles and the random seed number 
 
 In the example below, we will compare the `Context` analysis group with the `Shock` group.
 
-```{r, echo = FALSE}
+```{r, results='hide', message=FALSE, warning=FALSE}
 lh <- correlation_diff_permutation(lh,
                                    correlation_list_name_1 = "Context",
                                    correlation_list_name_2 = "Shock",
@@ -265,7 +265,7 @@ lh <- create_networks(lh,
 lh <- create_networks(lh,
                       correlation_list_name = "Shock",
                       channels = c("eyfp"),
-                      alpha = 0.005)
+                      alpha = 0.005))
 
 ```
 

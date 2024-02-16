@@ -8,7 +8,11 @@ normalize_cell_counts(
   m,
   combine_hemispheres = TRUE,
   simplify_regions = TRUE,
-  simplify_keywords = c("layer", "part", "stratum", "division")
+  simplify_keywords = c("layer", "part", "stratum", "division", "leaflet",
+    "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch",
+    "Precommissural"),
+  split_hipp_DV = TRUE,
+  DV_split_AP_thresh = -2.7
 )
 }
 \arguments{
@@ -19,6 +23,10 @@ normalize_cell_counts(
 \item{simplify_regions}{(bool, default = TRUE ) simplify the normalized region counts based on keywords in the internal function, \code{simplify_keywords}}
 
 \item{simplify_keywords}{(str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure}
+
+\item{split_hipp_DV}{(bool, default = TRUE) Split the subregions of the CA1, CA2, CA3, and DG based on a specified AP coordinate cutoff. This is because the Allen atlas doesn't have a dorsal/ventral region designation for these ROIs.}
+
+\item{DV_split_AP_thresh}{(numeric, default = -2,7) The specified AP coordinate threshold to split hippocampal cell counts into dorsal and ventral.}
 }
 \value{
 

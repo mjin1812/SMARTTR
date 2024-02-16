@@ -7,12 +7,22 @@
 \usage{
 get_registered_volumes(x, ...)
 
-\method{get_registered_volumes}{slice}(s)
+\method{get_registered_volumes}{slice}(
+  s,
+  simplify_regions = TRUE,
+  simplify_keywords = c("layer", "part", "stratum", "division", "leaflet",
+    "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch",
+    "Precommissural")
+)
 }
 \arguments{
 \item{...}{}
 
 \item{s}{slice object}
+
+\item{simplify_regions}{(bool, default = TRUE ) simplify the areas based on keywords in found the long-form of a region name. Fed into the internal function, \code{simplify_keywords}}
+
+\item{simplify_keywords}{(str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure}
 }
 \value{
 
@@ -21,6 +31,13 @@ s slice object with a stored dataframe with columns 'name' (full region name), '
 }
 \description{
 Calculate the registered area (microns^2^) and the regional volumes (microns^3^) of all regions contained in a slice.
+
+Note: Simplification of the analyzed regions by keywords is highly recommended because there are errors in the wholebrain basecode that results in a mismatch between the region acronym mapped to and the
+actual registration contour based on the region acronym. This mismatch is most notable in the dentate gyrus subregions. If simplification by keywords is used, this will circumvent the errors.
+
+This function also automatically removes parent regions that are redundant, e.g. "CTX" should by volumetrically represented by summing all
+subregions, but there is a tiny amount of potential space that allows for cells to get mapped to slim spaces between subregions.
+This potential anatomical space should be ignored.
 }
 \examples{
 s <- get_registered_areas(s)

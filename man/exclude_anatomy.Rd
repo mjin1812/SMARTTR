@@ -18,6 +18,10 @@ exclude_anatomy(x, ...)
   exclude_layer_1 = TRUE,
   include_right_regions = NULL,
   include_left_regions = NULL,
+  simplify_regions = TRUE,
+  simplify_keywords = c("layer", "part", "stratum", "division", "leaflet",
+    "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch",
+    "Precommissural"),
   plot_filtered = TRUE
 )
 
@@ -31,6 +35,10 @@ exclude_anatomy(x, ...)
   exclude_left_regions = NULL,
   exclude_hemisphere = FALSE,
   exclude_layer_1 = TRUE,
+  simplify_regions = TRUE,
+  simplify_keywords = c("layer", "part", "stratum", "division", "leaflet",
+    "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch",
+    "Precommissural"),
   plot_filtered = TRUE
 )
 }
@@ -55,6 +63,11 @@ exclude_anatomy(x, ...)
 
 \item{include_left_regions}{(str vector, default = NULL) Acronyms of regions to include from the light hemi; if not NULL, takes precedence over \code{exclude_left_regions} & all other regions will be excluded.  Typically, this is used for slices with poor quality/lots of tears.}
 
+\item{simplify_regions}{(bool, default = TRUE ) simplify the normalized region counts based on keywords in the internal function, \code{simplify_keywords}}
+
+\item{simplify_keywords}{(str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure. This means the parent structure is also excluded if the list of excluded right and left
+regions can be further}
+
 \item{plot_filtered}{(bool, default = TRUE) pop up window to check the excluded anatomy.}
 
 \item{m}{mouse object}
@@ -73,11 +86,16 @@ Method for excluding user specified regions, layer 1, and contralateral hemisphe
 This function automatically excludes the default regions included in the attribute "regions_excluded" in each slice
 IN ADDITION to the regions added to the 'exclude_regions' parameter.
 Regions added to the 'exclude_regions' parameter will then be updated in the slice attribute to keep track of what was excluded.
+Note: Please see the \code{simplify_regions} and \code{simplify_keywords} parameters. By default, if a subregion can be folded into a parent region based on a certain keywords, then this function will automatically
+exclude the entire parent region as a conservative exclusion approach. Keep \code{simplify_regions=TRUE} if the final analysis will contain simplified regions.
 
 Method for excluding cell counts in specified regions, layer 1, out-of-bounds cells counts, and hemispheres per mouse.
 This function automatically excludes the default regions included in the attribute "regions_excluded" in each slice
 IN ADDITION to the regions added to the 'exclude_regions' parameter.
 Regions added to the 'exclude_regions' parameter will then be updated in the slice attribute to keep track of what was excluded.
+
+Note: Please see the \code{simplify_regions} and \code{simplify_keywords} parameters. By default, if a subregion can be folded into a parent region based on a certain keywords, then this function will automatically
+exclude the entire parent region as a conservative exclusion approach. Keep \code{simplify_regions=TRUE} if the final analysis will contain simplified regions.
 }
 \examples{
 s <-  exclude_anatomy(s, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE, exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE, plot_filtered = TRUE)
