@@ -11,6 +11,7 @@ plot_correlation_heatmaps(
   colors = c("#be0000", "#00782e", "#f09b08"),
   sig_color = "yellow",
   sig_nudge_y = -0.7,
+  sig_size = 7,
   print_plot = TRUE,
   save_plot = TRUE,
   image_ext = ".png",
@@ -33,6 +34,8 @@ input compatible with ggplot2 plotting functions.}
 \item{sig_color}{(str, default = "yellow") Color of the significance symbol in R}
 
 \item{sig_nudge_y}{(default = -0.7) Relative amount to nudge the significance symbols in the y direction to center over each square.}
+
+\item{sig_size}{(default = 7) Point size for significance symbol.}
 
 \item{print_plot}{(bool, default = TRUE) Print the plot as graphics windows.}
 

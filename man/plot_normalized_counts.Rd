@@ -32,7 +32,8 @@ plot_normalized_counts(
 
 \item{colors}{(str, default = c("white", "lightblue")) Hexadecimal codes corresponding to the groups (respectively) to plot.}
 
-\item{regions_to_remove}{(str, default = c("CTX", "grey", "MB", "TH", "HY")) A vector of strings corresponding to regions to remove from the plot. The default regions are parent regions from which their subregions have already been plotted.}
+\item{regions_to_remove}{(str, default = c("CTX", "grey", "MB", "TH", "HY")) A vector of strings corresponding to regions to remove from the plot. The default regions are parent regions from which their subregions have already been plotted. Set to NULL,
+FALSE, NULL or NA  to avoid removing regions.}
 
 \item{title}{(str, default = NULL) An optional title for the plot}
 

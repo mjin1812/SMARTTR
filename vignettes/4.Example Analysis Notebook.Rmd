@@ -59,7 +59,7 @@ This concatenates the normalized regional cell count table from each mouse into 
 
 In our dataset `Shock` and `Context` are stored in the flexible generic attribute `group`, so we use that for the `by` variable.
 ```{r}
-lh <- combine_norm_cell_counts(lh, by = c('group'))
+lh <- combine_cell_counts(lh, by = c('group'))
 
 # print the name of stored data
 print(names(lh))
@@ -265,7 +265,7 @@ lh <- create_networks(lh,
 lh <- create_networks(lh,
                       correlation_list_name = "Shock",
                       channels = c("eyfp"),
-                      alpha = 0.005))
+                      alpha = 0.005)
 
 ```
 
@@ -346,7 +346,7 @@ cfos.colors <- c(Context = "#FFFFFF", Shock = "#ff2a04")
 plot_normalized_counts(e = lh,
                        channels = c("cfos"),
                        groups = c("Context", "Shock"),
-                       regions_to_remove = c("CTX", "grey", "MB", "TH", "HY", "IPN"), # These are parent regions, whose subregions are already mapped. We can remove them from the plot.
+                       regions_to_remove = NULL, # These are parent regions, whose subregions are already mapped. We can remove them from the plot.
                        colors = cfos.colors,
                        title = NULL,
                        height = 11, # Specify the height of the saved plot in inches
@@ -369,8 +369,8 @@ colabel.colors <- c(Context = "#FFFFFF", Shock = "#ffc845")
 plot_normalized_counts(e = lh,
                        channels = c("colabel_over_eyfp"),
                        groups = c("Context", "Shock"),
-                       regions_to_remove = c("CTX", "grey", "MB", "TH", "HY", "IPN"),
                        colors = colabel.colors,
+                       regions_to_remove = NULL,
                        title = NULL,
                        height = 11,
                        width = 7.5,
@@ -441,20 +441,20 @@ We can automatically plot heatmaps of the pairwise region correlations using the
 
 
 ```{r}
-plot_correlation_heatmaps(lh,
+p_list <- plot_correlation_heatmaps(lh,
                           channels = c("eyfp"),
                           correlation_list_name = "Context",
                           sig_color = "black",
-                          sig_nudge_y = -0.7, # helps center and shift the significance asterisks
+                          sig_nudge_y = -0.5, # helps center and shift the significance asterisks
                           print_plot = FALSE,
                           colors = c( "#00782e"),
                           save_plot = TRUE)
 
-plot_correlation_heatmaps(lh,
+p_list <- plot_correlation_heatmaps(lh,
                           channels = c("eyfp"),
                           correlation_list_name = "Shock",
                           sig_color = "black",
-                          sig_nudge_y = -0.7,
+                          sig_nudge_y = -0.5,
                           print_plot = FALSE,
                           colors = c( "#00782e"),
                           save_plot = TRUE)

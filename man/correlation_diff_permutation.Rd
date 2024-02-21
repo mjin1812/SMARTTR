@@ -43,7 +43,7 @@ the outputs of different permutation comparison analyses. These elements are nam
 The data from two different analysis groups are compared by specifying the
 \code{correlation_list_name_1} and \code{correlation_list_name_2} parameters. Note that both of these analysis groups must have the same
 number of channels to compare. The functions \code{get_correlations()} needs to have been run for each of these analysis groups prior to
-running this function.
+running this function. The test statistics used is the pearson values of those in correlation_list_name_2 subtracted from corresponding Pearson values in correlation_list_name_1.
 }
 \examples{
 e <- correlation_diff_permutation(sundowning,

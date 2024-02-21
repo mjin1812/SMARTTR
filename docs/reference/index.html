@@ -85,7 +85,13 @@ m &lt;- add_slice(m, s, replace = FALSE)</dd>
         <dd>attr2match</dd>
       </dl><dl><dt>
           
-          <code><a href="combine_norm_cell_counts.html">combine_norm_cell_counts()</a></code> 
+          <code><a href="check_redundant_parents.html">check_redundant_parents()</a></code> 
+        </dt>
+        <dd>Check for redundant parent regions included in a list of acronyms in a plate. For example, if all the the subregions for
+the hypothalamus are represented, the HY should not be included in the list.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="combine_cell_counts.html">combine_cell_counts()</a></code> 
         </dt>
         <dd>Combine cell counts across all mice in an experiment into a single dataframe.</dd>
       </dl><dl><dt>
@@ -159,9 +165,14 @@ than their cohort mean.</dd>
         <dd>Get colabelled cells data table. This is designed specifically to create a segmentation object from the imported raw files that are outputs from the batch_3D_MultiColocalization.ijm macro.</dd>
       </dl><dl><dt>
           
-          <code><a href="get.registered.areas.html">get.registered.areas()</a></code> 
+          <code><a href="get.registered.areas.bu.html">get.registered.areas.bu()</a></code> 
         </dt>
         <dd>Get the registered areas</dd>
+      </dl><dl><dt>
+          
+          <code><a href="get.registered.areas.td.html">get.registered.areas.td()</a></code> 
+        </dt>
+        <dd>Get top down registered areas</dd>
       </dl><dl><dt>
           
           <code><a href="get.sub.structure.html">get.sub.structure()</a></code> 
@@ -187,11 +198,6 @@ than their cohort mean.</dd>
           <code><a href="get_correlations.html">get_correlations()</a></code> 
         </dt>
         <dd>Get regional cross correlations and their p-values in a correlation list object.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get_hipp_DV_volumes.html">get_hipp_DV_volumes()</a></code> 
-        </dt>
-        <dd>Get aggregate volumes in the hippocampus</dd>
       </dl><dl><dt>
           
           <code><a href="get_percent_colabel.html">get_percent_colabel()</a></code> 
@@ -252,11 +258,6 @@ than their cohort mean.</dd>
           <code><a href="name.from.id.html">name.from.id()</a></code> 
         </dt>
         <dd>Get region ontology name from ID</dd>
-      </dl><dl><dt>
-          
-          <code><a href="normalize.registered.areas.html">normalize.registered.areas()</a></code> 
-        </dt>
-        <dd>normalize registered areas</dd>
       </dl><dl><dt>
           
           <code><a href="normalize_cell_counts.html">normalize_cell_counts()</a></code> 
@@ -400,7 +401,21 @@ set it to the <code>color_mapping</code> parameter and set the <code>pattern_map
           
           <code><a href="simplify.regions.html">simplify.regions()</a></code> 
         </dt>
-        <dd>Modification of Marcos' combine regions function</dd>
+        <dd><div class="section">
+<h3 id="modification-of-marcos-function">Modification of Marcos' function<a class="anchor" aria-label="anchor" href="#modification-of-marcos-function"></a></h3>
+
+
+</div></dd>
+      </dl><dl><dt>
+          
+          <code><a href="simplify_by_keywords.html">simplify_by_keywords()</a></code> 
+        </dt>
+        <dd>Simplify dataframe by keywords.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="simplify_vec_by_keywords.html">simplify_vec_by_keywords()</a></code> 
+        </dt>
+        <dd>Simplify vector of acronyms by keywords.</dd>
       </dl><dl><dt>
           
           <code><a href="slice.html">slice()</a></code> 
@@ -413,22 +428,23 @@ set it to the <code>color_mapping</code> parameter and set the <code>pattern_map
         <dd>SMARTR: A mapping, analysis, and visualization package for wholebrain dual-ensemble coronal datasets.</dd>
       </dl><dl><dt>
           
-          <code><a href="split_hipp_DV.html">split_hipp_DV()</a></code> 
-        </dt>
-        <dd>Split the hippocampal dataset to dorsal and ventral regions.</dd>
-      </dl><dl><dt>
-          
           <code><a href="summarise_networks.html">summarise_networks()</a></code> 
         </dt>
         <dd>Summarize multiple networks. Create summary dataframes of for multiple networks and
 calculate network statistics for each network.</dd>
       </dl><dl><dt>
           
+          <code><a href="try_correlate.html">try_correlate()</a></code> 
+        </dt>
+        <dd>Try to correlate</dd>
+      </dl><dl><dt>
+          
           <code><a href="volcano_plot.html">volcano_plot()</a></code> 
         </dt>
         <dd>Plot the results of the permutation histogram used to determine the p-value of the pairwise region comparison</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

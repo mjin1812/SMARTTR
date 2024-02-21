@@ -66,12 +66,14 @@
 <span>  colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#be0000"</span>, <span class="st">"#00782e"</span>, <span class="st">"#f09b08"</span><span class="op">)</span>,</span>
 <span>  sig_color <span class="op">=</span> <span class="st">"yellow"</span>,</span>
 <span>  sig_nudge_y <span class="op">=</span> <span class="op">-</span><span class="fl">0.7</span>,</span>
+<span>  sig_size <span class="op">=</span> <span class="fl">7</span>,</span>
 <span>  print_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  save_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  image_ext <span class="op">=</span> <span class="st">".png"</span>,</span>
 <span>  plot_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  height <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  width <span class="op">=</span> <span class="fl">10</span></span>
+<span>  width <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  theme.hm <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -102,6 +104,10 @@ input compatible with ggplot2 plotting functions.</p></dd>
 <dd><p>(default = -0.7) Relative amount to nudge the significance symbols in the y direction to center over each square.</p></dd>
 
 
+<dt>sig_size</dt>
+<dd><p>(default = 7) Point size for significance symbol.</p></dd>
+
+
 <dt>print_plot</dt>
 <dd><p>(bool, default = TRUE) Print the plot as graphics windows.</p></dd>
 
@@ -125,6 +131,10 @@ the experiment object output folder.</p></dd>
 
 <dt>width</dt>
 <dd><p>(int) Width of the plot in inches.</p></dd>
+
+
+<dt>theme.hm</dt>
+<dd><p>(default = NULL) Option to use custom ggplot2 theme if the user wants</p></dd>
 
 </dl></div>
     <div class="section level2">

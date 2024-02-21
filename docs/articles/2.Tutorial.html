@@ -192,24 +192,8 @@ to process!</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load SMARTR</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SMARTR</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: stringdist</span></span>
-<span><span class="co">#&gt; Loading required package: stringr</span></span>
-<span><span class="co">#&gt; Loading required package: Hmisc</span></span>
-<span><span class="co">#&gt; Loading required package: lattice</span></span>
-<span><span class="co">#&gt; Loading required package: survival</span></span>
-<span><span class="co">#&gt; Loading required package: Formula</span></span>
-<span><span class="co">#&gt; Loading required package: ggplot2</span></span>
 <span><span class="co">#&gt; Warning: replacing previous import 'lifecycle::last_warnings' by 'rlang::last_warnings' when loading 'tibble'</span></span>
-<span><span class="co">#&gt; Warning: replacing previous import 'lifecycle::last_warnings' by 'rlang::last_warnings' when loading 'pillar'</span></span>
-<span><span class="co">#&gt; Registered S3 methods overwritten by 'tibble':</span></span>
-<span><span class="co">#&gt;   method     from  </span></span>
-<span><span class="co">#&gt;   format.tbl pillar</span></span>
-<span><span class="co">#&gt;   print.tbl  pillar</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'Hmisc'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     format.pval, units</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning: replacing previous import 'lifecycle::last_warnings' by 'rlang::last_warnings' when loading 'pillar'</span></span></code></pre></div>
 <p>You can download our example fully pre-processed image folder <a href="https://osf.io/4qfsc" class="external-link">here</a>. This image came from mouse 733, so
 create a empty folder named <code>733</code> in a location of your
 choice and upzip the image folder into this folder.</p>
@@ -232,7 +216,6 @@ metadata related to this mouse. All of this can be done using the
 <span>                   cohort <span class="op">=</span> <span class="st">"group_A"</span>,</span>
 <span>                   output_path <span class="op">=</span> <span class="st">"V:/Michelle_Jin/Wholebrain pipeline/733"</span><span class="op">)</span>   <span class="co"># replace the output path with the path to your specific mouse folder</span></span>
 <span>            </span>
-<span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mouse_733</span><span class="op">)</span></span></code></pre></div>
 <p>Note that when we don’t initially store the mouse metadata using
@@ -579,6 +562,7 @@ hemisphere</li>
 <span>                             channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"eyfp"</span>, <span class="st">"cfos"</span>, <span class="st">"colabel"</span><span class="op">)</span>,</span>
 <span>                             clean <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                             exclude_left_regions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MOs"</span><span class="op">)</span>,</span>
+<span>                             exclude_right_regions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SS"</span><span class="op">)</span>,</span>
 <span>                             exclude_layer_1 <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                             exclude_hemisphere <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                             plot_filtered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -647,11 +631,12 @@ keywords found. This reduces the overwhelming amount of substructures
 that we can compare and helps simplify our analysis.</p>
 </blockquote>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mouse_733</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_cell_counts.html">normalize_cell_counts</a></span><span class="op">(</span><span class="va">mouse_733</span>, </span>
+<code class="sourceCode R"><span><span class="va">mouse_733_0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_cell_counts.html">normalize_cell_counts</a></span><span class="op">(</span><span class="va">mouse_733</span>, </span>
 <span>                                   combine_hemispheres <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>                                   split_hipp_DV <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                                   simplify_regions <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># Print preview of normalized counts</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mouse_733</span><span class="op">$</span><span class="va">normalized_counts</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mouse_733_0</span><span class="op">$</span><span class="va">normalized_counts</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="split-hippocampal-counts-into-dorsalventral-counts-optional">6.4 Split hippocampal counts into Dorsal/Ventral counts
@@ -664,17 +649,20 @@ Brain Atlas, which does not intrinsically have <em>dorsal</em> and
 <em>ventral</em> subdivisions for the hippocampus. Our current strategy
 is to use an AP coordinate cutoff, where hippocampal counts anterior to
 this cutoff are considered <em>dorsal</em> and posterior to this cutoff
-are considered <em>ventral</em>.</p>
+are considered <em>ventral</em>. You can accomplish this by setting the
+parameters <code>split_hipp_DV = TRUE</code>
+and<code>DV_split_AP_thresh = -2.7</code> in the
+<code>normalize_cell_counts</code> function.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mouse_733</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/split_hipp_DV.html">split_hipp_DV</a></span><span class="op">(</span><span class="va">mouse_733</span>, AP_coord <span class="op">=</span> <span class="op">-</span><span class="fl">2.7</span>, combine_hemispheres <span class="op">=</span> <span class="cn">TRUE</span>, simplify_regions <span class="op">=</span> <span class="cn">TRUE</span>, merge <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mouse_733</span><span class="op">$</span><span class="va">hipp_DV_normalized_counts</span><span class="op">)</span></span></code></pre></div>
-<p>We can choose to overwrite the existing hippocampal data stored in
-the <code>normalized_counts</code> dataframe with the hippocampal data
-split dorsal and ventrally by setting the <code>merge</code> parameter
-to <code>TRUE</code>. I recommend this option, as all future analysis
-functions are designed to operate on this data.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mouse_733</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/split_hipp_DV.html">split_hipp_DV</a></span><span class="op">(</span><span class="va">mouse_733</span>, AP_coord <span class="op">=</span> <span class="op">-</span><span class="fl">2.7</span>, combine_hemispheres <span class="op">=</span> <span class="cn">TRUE</span>, simplify_regions <span class="op">=</span> <span class="cn">TRUE</span>, merge <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span></span>
+<span></span>
+<span><span class="va">mouse_733</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_cell_counts.html">normalize_cell_counts</a></span><span class="op">(</span><span class="va">mouse_733</span>, </span>
+<span>                                     combine_hemispheres <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>                                     simplify_regions <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                                     split_hipp_DV <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                                     DV_split_AP_thresh <span class="op">=</span> <span class="op">-</span><span class="fl">2.7</span><span class="op">)</span></span>
+<span><span class="co"># Print preview of normalized counts</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mouse_733</span><span class="op">$</span><span class="va">normalized_counts</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -703,7 +691,7 @@ information. This is to ensure that unnecessary computer memory isn’t
 being used during analysis. Therefore, any changes you want to make to
 cleaning up or modifying individual slice data should be done at the
 mouse object level.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Initialize an experiment object</span></span>
 <span><span class="va">my_experiment</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/experiment.html">experiment</a></span><span class="op">(</span>experiment_name <span class="op">=</span> <span class="st">"Learned Helplessness"</span>,</span>
 <span>                            experimenters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MJ"</span>, <span class="st">"MyInitials"</span><span class="op">)</span>,</span>
@@ -713,7 +701,7 @@ mouse object level.</p>
 <span><span class="va">my_experiment</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/add_mouse.html">add_mouse</a></span><span class="op">(</span><span class="va">my_experiment</span>, <span class="va">mouse_733</span><span class="op">)</span></span></code></pre></div>
 <p>Just like a mouse object, you can save an experiment object, with or
 without a timestamp.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_experiment.html">save_experiment</a></span><span class="op">(</span><span class="va">my_experiment</span>, timestamp <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -725,7 +713,7 @@ perform analysis on.</p>
 <p>For now we will load a saved example experiment object named
 <code>lh</code> that already contains all the mapped mouse object data
 from our learned helplessness mapping experiment.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load the presaved data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">"V:\\Michelle_Jin\\Wholebrain pipeline\\LH_analysis\\learned_helplessness_experiment.RDATA"</span><span class="op">)</span></span>
 <span></span>
@@ -733,9 +721,9 @@ from our learned helplessness mapping experiment.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">lh</span><span class="op">$</span><span class="va">mice</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "829"  "831"  "833"  "9658" "9659" "669"  "732"  "733"  "9716" "9753" "9755"</span></span></code></pre></div>
 <p>Aggregating the normalized cell counts across mice into one dataframe
-is done with the <code><a href="../reference/combine_norm_cell_counts.html">combine_norm_cell_counts()</a></code> function.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">lh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combine_norm_cell_counts.html">combine_norm_cell_counts</a></span><span class="op">(</span><span class="va">lh</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'groups'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+is done with the <code>combine_norm_cell_counts()</code> function.</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">lh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combine_cell_counts.html">combine_cell_counts</a></span><span class="op">(</span><span class="va">lh</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'groups'</span>, <span class="st">"sex"</span>, <span class="st">"age"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><code>by</code> is a special parameter that will allow up to take
 advantage of the many mouse attributes that we have recorded during
 creation of a mouse object. It is a vector of the mouse attributes we
@@ -780,15 +768,8 @@ the file stem <code>region_count_outliers_[channel]</code>. This may be
 helpful to look back at the raw data and examine whether the
 segmentation algorithm is doing a good job around these regions for a
 given mouse.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">lh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/find_outlier_counts.html">find_outlier_counts</a></span><span class="op">(</span><span class="va">lh</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span><span class="op">)</span>, n_sd <span class="op">=</span> <span class="fl">2</span>, remove <span class="op">=</span> <span class="cn">TRUE</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; There were 1 outliers found. Outliers were based on within group mean and standard deviation.</span></span>
-<span><span class="co">#&gt; Saved regions outliers dataframe at:</span></span>
-<span><span class="co">#&gt; V:\Michelle_Jin\Wholebrain pipeline\LH_analysis/region_count_outliers_cfos.csv</span></span>
-<span><span class="co">#&gt; There were 3 outliers found. Outliers were based on within group mean and standard deviation.</span></span>
-<span><span class="co">#&gt; Saved regions outliers dataframe at:</span></span>
-<span><span class="co">#&gt; V:\Michelle_Jin\Wholebrain pipeline\LH_analysis/region_count_outliers_eyfp.csv</span></span>
-<span><span class="co">#&gt; No regions outliers were found within each group for channel colabel</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">lh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/find_outlier_counts.html">find_outlier_counts</a></span><span class="op">(</span><span class="va">lh</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'groups'</span>, <span class="st">'sex'</span>, <span class="st">'age'</span><span class="op">)</span>, n_sd <span class="op">=</span> <span class="fl">2</span>, remove <span class="op">=</span> <span class="cn">TRUE</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="checking-for-the-minimum-n-number">8.2 Checking for the minimum n number<a class="anchor" aria-label="anchor" href="#checking-for-the-minimum-n-number"></a>
@@ -799,247 +780,236 @@ represented per brain region, you can use the function
 <code>by</code> parameter as well. Additionally, This function also
 automatically keeps only the common regions that are found across all
 comparison groups.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enough_mice_per_group.html">enough_mice_per_group</a></span><span class="op">(</span><span class="va">lh</span>, by <span class="op">=</span> <span class="st">"group"</span>, min_n <span class="op">=</span> <span class="fl">4</span>, remove <span class="op">=</span> <span class="cn">TRUE</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Removed regions for cfos channel.</span></span>
-<span><span class="co">#&gt; Removed regions for eyfp channel.</span></span>
-<span><span class="co">#&gt; Removed regions for colabel channel.</span></span>
-<span><span class="co">#&gt; There were regions below the minimum n:</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 219 x 4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 213 x 4</span></span></span>
 <span><span class="co">#&gt;     channel group   acronym     n</span></span>
 <span><span class="co">#&gt;     <span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>   </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>   </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>   </span><span style="color: #949494;font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  1</span><span> cfos    Context AD          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  2</span><span> cfos    Context AHN         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  3</span><span> cfos    Context AUDpo       3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  4</span><span> cfos    Context AV          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  5</span><span> cfos    Context CS          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  6</span><span> cfos    Context III         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  7</span><span> cfos    Context INC         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  8</span><span> cfos    Context LM          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  9</span><span> cfos    Context LT          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  1</span><span> cfos    Context AD          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  2</span><span> cfos    Context AHN         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  3</span><span> cfos    Context APN         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  4</span><span> cfos    Context AUDpo       3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  5</span><span> cfos    Context AV          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  6</span><span> cfos    Context CLI         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  7</span><span> cfos    Context CS          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  8</span><span> cfos    Context III         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  9</span><span> cfos    Context LM          2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 10</span><span> cfos    Context MEPO        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 11</span><span> cfos    Context MPT         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 12</span><span> cfos    Context NB          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 13</span><span> cfos    Context NLOT        3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 14</span><span> cfos    Context NPC         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 15</span><span> cfos    Context OP          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 16</span><span> cfos    Context P           2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 17</span><span> cfos    Context PPT         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 18</span><span> cfos    Context PRE         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 19</span><span> cfos    Context PRNr        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 20</span><span> cfos    Context PSTN        3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 21</span><span> cfos    Context RR          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 22</span><span> cfos    Context SCH         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 23</span><span> cfos    Context SFO         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 24</span><span> cfos    Context SubG        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 25</span><span> cfos    Context SUM         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 26</span><span> cfos    Context TRN         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 27</span><span> cfos    Context vCA2        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 28</span><span> cfos    Context VP          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 29</span><span> cfos    Shock   ADP         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 30</span><span> cfos    Shock   ARH         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 31</span><span> cfos    Shock   AVP         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 32</span><span> cfos    Shock   CL          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 33</span><span> cfos    Shock   CS          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 34</span><span> cfos    Shock   DMH         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 35</span><span> cfos    Shock   FS          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 36</span><span> cfos    Shock   III         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 37</span><span> cfos    Shock   LM          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 38</span><span> cfos    Shock   LT          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 39</span><span> cfos    Shock   MA          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 40</span><span> cfos    Shock   MEZ         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 41</span><span> cfos    Shock   MM          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 42</span><span> cfos    Shock   NB          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 43</span><span> cfos    Shock   P           2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 44</span><span> cfos    Shock   PCN         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 45</span><span> cfos    Shock   POST        3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 46</span><span> cfos    Shock   PRC         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 47</span><span> cfos    Shock   PRNr        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 48</span><span> cfos    Shock   RR          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 49</span><span> cfos    Shock   SMT         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 50</span><span> cfos    Shock   SPA         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 51</span><span> cfos    Shock   SSp-tr      3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 52</span><span> cfos    Shock   SSp-un      3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 53</span><span> cfos    Shock   TRN         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 54</span><span> cfos    Shock   TRS         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 55</span><span> eyfp    Context AD          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 56</span><span> eyfp    Context AHN         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 57</span><span> eyfp    Context AUDpo       3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 58</span><span> eyfp    Context AV          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 59</span><span> eyfp    Context CLI         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 60</span><span> eyfp    Context CS          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 61</span><span> eyfp    Context IF          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 62</span><span> eyfp    Context IG          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 63</span><span> eyfp    Context IGL         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 64</span><span> eyfp    Context III         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 65</span><span> eyfp    Context IMD         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 66</span><span> eyfp    Context INC         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 67</span><span> eyfp    Context isl         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 68</span><span> eyfp    Context LD          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 69</span><span> eyfp    Context MA          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 70</span><span> eyfp    Context MBsta       3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 71</span><span> eyfp    Context MD          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 72</span><span> eyfp    Context MPT         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 73</span><span> eyfp    Context NB          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 74</span><span> eyfp    Context NLOT        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 75</span><span> eyfp    Context NOT         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 76</span><span> eyfp    Context NPC         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 77</span><span> eyfp    Context OP          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 78</span><span> eyfp    Context POL         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 79</span><span> eyfp    Context PP          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 80</span><span> eyfp    Context PPT         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 81</span><span> eyfp    Context PRE         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 82</span><span> eyfp    Context PRNr        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 83</span><span> eyfp    Context PSTN        3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 84</span><span> eyfp    Context PT          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 85</span><span> eyfp    Context PVR         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 86</span><span> eyfp    Context RE          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 87</span><span> eyfp    Context RL          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 88</span><span> eyfp    Context RR          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 89</span><span> eyfp    Context RT          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 90</span><span> eyfp    Context SF          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 91</span><span> eyfp    Context SFO         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 92</span><span> eyfp    Context SGN         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 93</span><span> eyfp    Context SPF         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 94</span><span> eyfp    Context STN         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 95</span><span> eyfp    Context SubG        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 96</span><span> eyfp    Context SUM         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 97</span><span> eyfp    Context TRN         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 98</span><span> eyfp    Context VAL         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 99</span><span> eyfp    Context vCA2        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">100</span><span> eyfp    Context VMH         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">101</span><span> eyfp    Context VP          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">102</span><span> eyfp    Context VPL         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">103</span><span> eyfp    Context VPM         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">104</span><span> eyfp    Shock   AM          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">105</span><span> eyfp    Shock   ARH         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">106</span><span> eyfp    Shock   AVP         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">107</span><span> eyfp    Shock   CLI         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">108</span><span> eyfp    Shock   CM          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">109</span><span> eyfp    Shock   CS          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">110</span><span> eyfp    Shock   DMH         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">111</span><span> eyfp    Shock   FS          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">112</span><span> eyfp    Shock   GENd        3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">113</span><span> eyfp    Shock   III         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">114</span><span> eyfp    Shock   INC         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">115</span><span> eyfp    Shock   LD          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">116</span><span> eyfp    Shock   LM          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">117</span><span> eyfp    Shock   MBsta       3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">118</span><span> eyfp    Shock   MD          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">119</span><span> eyfp    Shock   MEZ         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">120</span><span> eyfp    Shock   MH          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">121</span><span> eyfp    Shock   MM          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">122</span><span> eyfp    Shock   OP          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">123</span><span> eyfp    Shock   P           2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">124</span><span> eyfp    Shock   PO          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">125</span><span> eyfp    Shock   POST        3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">126</span><span> eyfp    Shock   PP          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">127</span><span> eyfp    Shock   PRC         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">128</span><span> eyfp    Shock   PRE         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">129</span><span> eyfp    Shock   PRNr        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">130</span><span> eyfp    Shock   RCH         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">131</span><span> eyfp    Shock   RL          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">132</span><span> eyfp    Shock   RR          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">133</span><span> eyfp    Shock   SCH         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">134</span><span> eyfp    Shock   SF          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">135</span><span> eyfp    Shock   SGN         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">136</span><span> eyfp    Shock   SPA         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">137</span><span> eyfp    Shock   SSp-tr      3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">138</span><span> eyfp    Shock   SSp-un      3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">139</span><span> eyfp    Shock   SUM         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">140</span><span> eyfp    Shock   TM          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">141</span><span> eyfp    Shock   TRN         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">142</span><span> eyfp    Shock   VAL         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">143</span><span> eyfp    Shock   VP          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">144</span><span> eyfp    Shock   VPM         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">145</span><span> colabel Context AAA         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">146</span><span> colabel Context APN         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">147</span><span> colabel Context ARH         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">148</span><span> colabel Context AUDpo       2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">149</span><span> colabel Context EW          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">150</span><span> colabel Context FC          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">151</span><span> colabel Context GENv        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">152</span><span> colabel Context GPe         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">153</span><span> colabel Context islm        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">154</span><span> colabel Context LH          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">155</span><span> colabel Context MA          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">156</span><span> colabel Context MB          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">157</span><span> colabel Context MBmot       2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">158</span><span> colabel Context MM          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">159</span><span> colabel Context MPN         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">160</span><span> colabel Context MRN         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">161</span><span> colabel Context MS          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">162</span><span> colabel Context ND          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">163</span><span> colabel Context NDB         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">164</span><span> colabel Context OLF         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">165</span><span> colabel Context OT          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">166</span><span> colabel Context PA          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">167</span><span> colabel Context PG          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">168</span><span> colabel Context PO          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">169</span><span> colabel Context POST        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">170</span><span> colabel Context PVH         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">171</span><span> colabel Context PVR         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">172</span><span> colabel Context PVT         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">173</span><span> colabel Context PVZ         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">174</span><span> colabel Context RE          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">175</span><span> colabel Context RR          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">176</span><span> colabel Context sAMY        3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">177</span><span> colabel Context SUM         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">178</span><span> colabel Context TH          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">179</span><span> colabel Context TR          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">180</span><span> colabel Context TRN         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">181</span><span> colabel Context VMH         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">182</span><span> colabel Context VPM         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">183</span><span> colabel Context VTA         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">184</span><span> colabel Shock   APN         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">185</span><span> colabel Shock   ARH         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">186</span><span> colabel Shock   BST         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">187</span><span> colabel Shock   CS          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">188</span><span> colabel Shock   DMH         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">189</span><span> colabel Shock   GENv        3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">190</span><span> colabel Shock   IMD         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">191</span><span> colabel Shock   IPN         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">192</span><span> colabel Shock   islm        3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">193</span><span> colabel Shock   LH          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">194</span><span> colabel Shock   LPO         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">195</span><span> colabel Shock   MBmot       2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">196</span><span> colabel Shock   MG          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">197</span><span> colabel Shock   MPT         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">198</span><span> colabel Shock   MS          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">199</span><span> colabel Shock   NDB         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">200</span><span> colabel Shock   NLOT        3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">201</span><span> colabel Shock   OP          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">202</span><span> colabel Shock   OT          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">203</span><span> colabel Shock   PF          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">204</span><span> colabel Shock   PMd         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">205</span><span> colabel Shock   POST        3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">206</span><span> colabel Shock   PRNr        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">207</span><span> colabel Shock   PVZ         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">208</span><span> colabel Shock   RN          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">209</span><span> colabel Shock   RT          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">210</span><span> colabel Shock   sAMY        3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">211</span><span> colabel Shock   SBPV        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">212</span><span> colabel Shock   SH          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">213</span><span> colabel Shock   SSp-tr      3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">214</span><span> colabel Shock   SSp-un      3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">215</span><span> colabel Shock   SUM         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">216</span><span> colabel Shock   TH          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">217</span><span> colabel Shock   TM          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">218</span><span> colabel Shock   TRN         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">219</span><span> colabel Shock   vCA2        3</span></span></span>
-<span><span class="co">#&gt; Saved regions below the threshold at location: V:\Michelle_Jin\Wholebrain pipeline\LH_analysis/regions_below_N_thresh.csv</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 11</span><span> cfos    Context MM          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 12</span><span> cfos    Context MPN         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 13</span><span> cfos    Context MPT         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 14</span><span> cfos    Context NB          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 15</span><span> cfos    Context NLOT        2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 16</span><span> cfos    Context NOT         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 17</span><span> cfos    Context NPC         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 18</span><span> cfos    Context OP          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 19</span><span> cfos    Context PA          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 20</span><span> cfos    Context PG          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 21</span><span> cfos    Context POST        3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 22</span><span> cfos    Context PPT         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 23</span><span> cfos    Context PRE         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 24</span><span> cfos    Context PRNr        2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 25</span><span> cfos    Context PSTN        2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 26</span><span> cfos    Context RH          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 27</span><span> cfos    Context RR          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 28</span><span> cfos    Context SCH         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 29</span><span> cfos    Context SF          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 30</span><span> cfos    Context SMT         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 31</span><span> cfos    Context SUM         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 32</span><span> cfos    Context TRN         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 33</span><span> cfos    Context VAL         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 34</span><span> cfos    Context vCA2        2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 35</span><span> cfos    Context VMH         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 36</span><span> cfos    Shock   AD          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 37</span><span> cfos    Shock   AHN         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 38</span><span> cfos    Shock   AM          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 39</span><span> cfos    Shock   AV          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 40</span><span> cfos    Shock   FC          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 41</span><span> cfos    Shock   FS          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 42</span><span> cfos    Shock   GPe         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 43</span><span> cfos    Shock   IAD         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 44</span><span> cfos    Shock   IAM         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 45</span><span> cfos    Shock   IF          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 46</span><span> cfos    Shock   LD          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 47</span><span> cfos    Shock   LPO         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 48</span><span> cfos    Shock   MA          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 49</span><span> cfos    Shock   MPT         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 50</span><span> cfos    Shock   NPC         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 51</span><span> cfos    Shock   OP          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 52</span><span> cfos    Shock   PO          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 53</span><span> cfos    Shock   POST        2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 54</span><span> cfos    Shock   PT          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 55</span><span> cfos    Shock   PVH         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 56</span><span> cfos    Shock   RCH         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 57</span><span> cfos    Shock   RH          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 58</span><span> cfos    Shock   SBPV        2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 59</span><span> cfos    Shock   SCH         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 60</span><span> cfos    Shock   SF          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 61</span><span> cfos    Shock   SFO         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 62</span><span> cfos    Shock   SPA         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 63</span><span> cfos    Shock   SSp-un      2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 64</span><span> cfos    Shock   SUM         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 65</span><span> cfos    Shock   TRS         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 66</span><span> cfos    Shock   vCA2        2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 67</span><span> cfos    Shock   VPMpc       2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 68</span><span> eyfp    Context AD          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 69</span><span> eyfp    Context APN         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 70</span><span> eyfp    Context AUDpo       3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 71</span><span> eyfp    Context AV          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 72</span><span> eyfp    Context CLI         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 73</span><span> eyfp    Context CS          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 74</span><span> eyfp    Context FS          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 75</span><span> eyfp    Context GENv        3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 76</span><span> eyfp    Context IA          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 77</span><span> eyfp    Context IG          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 78</span><span> eyfp    Context III         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 79</span><span> eyfp    Context IMD         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 80</span><span> eyfp    Context LD          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 81</span><span> eyfp    Context MA          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 82</span><span> eyfp    Context MD          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 83</span><span> eyfp    Context MH          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 84</span><span> eyfp    Context MM          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 85</span><span> eyfp    Context MPN         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 86</span><span> eyfp    Context MPT         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 87</span><span> eyfp    Context NB          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 88</span><span> eyfp    Context NDB         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 89</span><span> eyfp    Context NOT         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 90</span><span> eyfp    Context NPC         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 91</span><span> eyfp    Context OP          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 92</span><span> eyfp    Context PA          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 93</span><span> eyfp    Context PG          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 94</span><span> eyfp    Context POL         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 95</span><span> eyfp    Context POST        3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 96</span><span> eyfp    Context PP          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 97</span><span> eyfp    Context PPT         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 98</span><span> eyfp    Context PRE         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 99</span><span> eyfp    Context PRNr        2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">100</span><span> eyfp    Context PSTN        2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">101</span><span> eyfp    Context PT          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">102</span><span> eyfp    Context PVT         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">103</span><span> eyfp    Context RL          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">104</span><span> eyfp    Context RR          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">105</span><span> eyfp    Context RT          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">106</span><span> eyfp    Context SF          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">107</span><span> eyfp    Context SNc         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">108</span><span> eyfp    Context SO          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">109</span><span> eyfp    Context SPF         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">110</span><span> eyfp    Context STN         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">111</span><span> eyfp    Context SUM         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">112</span><span> eyfp    Context TRN         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">113</span><span> eyfp    Context TU          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">114</span><span> eyfp    Context vCA2        2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">115</span><span> eyfp    Context VMH         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">116</span><span> eyfp    Context VPL         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">117</span><span> eyfp    Context VPM         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">118</span><span> eyfp    Shock   AHN         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">119</span><span> eyfp    Shock   AV          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">120</span><span> eyfp    Shock   FS          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">121</span><span> eyfp    Shock   GPe         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">122</span><span> eyfp    Shock   IMD         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">123</span><span> eyfp    Shock   LPO         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">124</span><span> eyfp    Shock   MD          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">125</span><span> eyfp    Shock   MG          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">126</span><span> eyfp    Shock   MPT         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">127</span><span> eyfp    Shock   MS          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">128</span><span> eyfp    Shock   NDB         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">129</span><span> eyfp    Shock   NPC         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">130</span><span> eyfp    Shock   PF          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">131</span><span> eyfp    Shock   PMd         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">132</span><span> eyfp    Shock   POL         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">133</span><span> eyfp    Shock   POST        2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">134</span><span> eyfp    Shock   PP          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">135</span><span> eyfp    Shock   PVH         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">136</span><span> eyfp    Shock   RCH         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">137</span><span> eyfp    Shock   RE          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">138</span><span> eyfp    Shock   RL          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">139</span><span> eyfp    Shock   SF          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">140</span><span> eyfp    Shock   SFO         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">141</span><span> eyfp    Shock   SNc         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">142</span><span> eyfp    Shock   SNr         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">143</span><span> eyfp    Shock   SO          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">144</span><span> eyfp    Shock   SPA         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">145</span><span> eyfp    Shock   SSp-un      2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">146</span><span> eyfp    Shock   SUM         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">147</span><span> eyfp    Shock   VAL         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">148</span><span> eyfp    Shock   vCA2        2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">149</span><span> eyfp    Shock   VPM         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">150</span><span> colabel Context AAA         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">151</span><span> colabel Context APN         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">152</span><span> colabel Context ARH         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">153</span><span> colabel Context AUDpo       3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">154</span><span> colabel Context CEA         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">155</span><span> colabel Context dCA2        3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">156</span><span> colabel Context EW          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">157</span><span> colabel Context FC          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">158</span><span> colabel Context GENv        3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">159</span><span> colabel Context LGd         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">160</span><span> colabel Context LH          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">161</span><span> colabel Context LPO         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">162</span><span> colabel Context MA          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">163</span><span> colabel Context MG          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">164</span><span> colabel Context MH          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">165</span><span> colabel Context MM          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">166</span><span> colabel Context MPN         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">167</span><span> colabel Context MPO         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">168</span><span> colabel Context MS          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">169</span><span> colabel Context NDB         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">170</span><span> colabel Context NOT         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">171</span><span> colabel Context NPC         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">172</span><span> colabel Context PA          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">173</span><span> colabel Context PG          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">174</span><span> colabel Context PO          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">175</span><span> colabel Context POST        3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">176</span><span> colabel Context PPT         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">177</span><span> colabel Context PRE         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">178</span><span> colabel Context PVH         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">179</span><span> colabel Context PVT         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">180</span><span> colabel Context RN          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">181</span><span> colabel Context RR          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">182</span><span> colabel Context SCs         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">183</span><span> colabel Context SH          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">184</span><span> colabel Context SPF         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">185</span><span> colabel Context SUM         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">186</span><span> colabel Context TR          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">187</span><span> colabel Context TRN         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">188</span><span> colabel Context TU          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">189</span><span> colabel Context vCA2        2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">190</span><span> colabel Context VMH         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">191</span><span> colabel Context VPM         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">192</span><span> colabel Shock   AHN         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">193</span><span> colabel Shock   APN         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">194</span><span> colabel Shock   IA          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">195</span><span> colabel Shock   IMD         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">196</span><span> colabel Shock   MEA         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">197</span><span> colabel Shock   MG          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">198</span><span> colabel Shock   MRN         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">199</span><span> colabel Shock   NPC         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">200</span><span> colabel Shock   OT          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">201</span><span> colabel Shock   PA          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">202</span><span> colabel Shock   PMd         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">203</span><span> colabel Shock   POST        2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">204</span><span> colabel Shock   PVH         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">205</span><span> colabel Shock   PVT         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">206</span><span> colabel Shock   RE          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">207</span><span> colabel Shock   RN          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">208</span><span> colabel Shock   SCs         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">209</span><span> colabel Shock   SH          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">210</span><span> colabel Shock   SI          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">211</span><span> colabel Shock   SSp-un      2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">212</span><span> colabel Shock   vCA2        2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">213</span><span> colabel Shock   VTA         2</span></span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="saving-your-experiment">8.3 Saving your experiment<a class="anchor" aria-label="anchor" href="#saving-your-experiment"></a>
 </h3>
 <p>If you would like to save your experiment object, just run the
 function below!</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_experiment.html">save_experiment</a></span><span class="op">(</span><span class="va">lh</span><span class="op">)</span></span></code></pre></div>
 <p>If you use the <code>timestamp</code> parameter, the experiment
 object with automatically save with the date as a way to uniquely
 timestamp your progress.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_experiment.html">save_experiment</a></span><span class="op">(</span><span class="va">lh</span>, timestamp <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>This concludes the end of the mapping tutorial! Check out section 4.
 Example analysis notebook to see how we apply the analysis and

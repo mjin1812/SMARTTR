@@ -17,6 +17,7 @@ plot_degree_distributions(
   ylim = c(0, 15),
   image_ext = ".png",
   print_plot = TRUE,
+  theme.gg = NULL,
   save_plot = TRUE
 )
 }
@@ -47,6 +48,8 @@ the experiment object output folder.}
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 
 \item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.}
+
+\item{theme.gg}{(default = NULL) Option to use custom ggplot2 theme if the user wants}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}

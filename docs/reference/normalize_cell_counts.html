@@ -69,7 +69,11 @@ where a cell table was made using the latter function.</p>
 <span>  <span class="va">m</span>,</span>
 <span>  combine_hemispheres <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  simplify_regions <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  simplify_keywords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"layer"</span>, <span class="st">"part"</span>, <span class="st">"stratum"</span>, <span class="st">"division"</span><span class="op">)</span></span>
+<span>  simplify_keywords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"layer"</span>, <span class="st">"part"</span>, <span class="st">"stratum"</span>, <span class="st">"division"</span>, <span class="st">"leaflet"</span>,</span>
+<span>    <span class="st">"Subgeniculate"</span>, <span class="st">"island"</span>, <span class="st">"Islands"</span>, <span class="st">"Fields of Forel"</span>, <span class="st">"Cajal"</span>, <span class="st">"Darkschewitsch"</span>,</span>
+<span>    <span class="st">"Precommissural"</span><span class="op">)</span>,</span>
+<span>  split_hipp_DV <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  DV_split_AP_thresh <span class="op">=</span> <span class="op">-</span><span class="fl">2.7</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -89,6 +93,14 @@ where a cell table was made using the latter function.</p>
 
 <dt>simplify_keywords</dt>
 <dd><p>(str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure</p></dd>
+
+
+<dt>split_hipp_DV</dt>
+<dd><p>(bool, default = TRUE) Split the subregions of the CA1, CA2, CA3, and DG based on a specified AP coordinate cutoff. This is because the Allen atlas doesn't have a dorsal/ventral region designation for these ROIs.</p></dd>
+
+
+<dt>DV_split_AP_thresh</dt>
+<dd><p>(numeric, default = -2,7) The specified AP coordinate threshold to split hippocampal cell counts into dorsal and ventral.</p></dd>
 
 </dl></div>
     <div class="section level2">

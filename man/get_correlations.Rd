@@ -10,7 +10,8 @@ get_correlations(
   values,
   channels = c("cfos", "eyfp", "colabel"),
   p_adjust_method = "BH",
-  alpha = 0.05
+  alpha = 0.05,
+  region_order = NULL
 )
 }
 \arguments{
@@ -28,6 +29,9 @@ Apply the named method to control for the inflated false discovery rate or famil
 to keep "raw" p values. See also \code{\link[stats:p.adjust]{stats::p.adjust()}} for the correction options.}
 
 \item{alpha}{(num, default = 0.05) The alpha level for significance applied AFTER p-adjustment.}
+
+\item{region_order}{(list, default = NULL)  optional list with the first element named "acronym" supplying a vector as region acronyms and the second element named
+"order"  supplying an vector of integers determining numerical order, e.g. 1, 1, 2, 2.}
 }
 \value{
 e experiment object. The experiment object now has a named \code{correlation_list} object stored in it.

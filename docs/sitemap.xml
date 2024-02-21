@@ -52,7 +52,10 @@
     <loc>/reference/attr2match.html</loc>
   </url>
   <url>
-    <loc>/reference/combine_norm_cell_counts.html</loc>
+    <loc>/reference/check_redundant_parents.html</loc>
+  </url>
+  <url>
+    <loc>/reference/combine_cell_counts.html</loc>
   </url>
   <url>
     <loc>/reference/correlation_diff_permutation.html</loc>
@@ -94,7 +97,10 @@
     <loc>/reference/get.colabeled.cells.html</loc>
   </url>
   <url>
-    <loc>/reference/get.registered.areas.html</loc>
+    <loc>/reference/get.registered.areas.bu.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get.registered.areas.td.html</loc>
   </url>
   <url>
     <loc>/reference/get.sub.structure.html</loc>
@@ -110,9 +116,6 @@
   </url>
   <url>
     <loc>/reference/get_correlations.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_hipp_DV_volumes.html</loc>
   </url>
   <url>
     <loc>/reference/get_percent_colabel.html</loc>
@@ -152,9 +155,6 @@
   </url>
   <url>
     <loc>/reference/name.from.id.html</loc>
-  </url>
-  <url>
-    <loc>/reference/normalize.registered.areas.html</loc>
   </url>
   <url>
     <loc>/reference/normalize_cell_counts.html</loc>
@@ -241,16 +241,22 @@
     <loc>/reference/simplify.regions.html</loc>
   </url>
   <url>
+    <loc>/reference/simplify_by_keywords.html</loc>
+  </url>
+  <url>
+    <loc>/reference/simplify_vec_by_keywords.html</loc>
+  </url>
+  <url>
     <loc>/reference/slice.html</loc>
   </url>
   <url>
     <loc>/reference/SMARTR.html</loc>
   </url>
   <url>
-    <loc>/reference/split_hipp_DV.html</loc>
+    <loc>/reference/summarise_networks.html</loc>
   </url>
   <url>
-    <loc>/reference/summarise_networks.html</loc>
+    <loc>/reference/try_correlate.html</loc>
   </url>
   <url>
     <loc>/reference/volcano_plot.html</loc>

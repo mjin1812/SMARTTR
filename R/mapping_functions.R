@@ -1308,7 +1308,7 @@ get_registered_volumes.slice <- function(s,
       regions <- combined_cell_counts %>% dplyr::select(acronym, name, right.hemisphere) %>%
         dplyr::distinct() %>% dplyr::arrange(acronym)
 
-      ##################### make big if/else statement here to account for unsimplified mapping approached
+      ##################### make  if/else statement here to account for unsimplified mapping approached
 
       if (simplify_regions){
         # 3) Simplify the acronyms
@@ -1652,12 +1652,11 @@ normalize_cell_counts <- function(m,
     }
     ## Cell counts per slice
    aggregate_counts <-  m$cell_table[[channel]] %>% dplyr::group_by(slice_name, AP, right.hemisphere, acronym, name) %>% dplyr::summarize(count = n())
-   ###################  acronym checking
-
-   mismatch <- union(setdiff(aggregate_volumes$acronym,  aggregate_counts$acronym), setdiff(aggregate_counts$acronym, aggregate_volumes$acronym))
-   print(paste0("mismatched acronyms between volumes and simplified counts df ", mismatch))
-   message("For channel ",channel, paste0(" mismatched acronym ", mismatch))
-   mismatched_regions[[channel]] <- mismatch
+   ###################  acronym checking This is primarily for troubleshooting.
+   # mismatch <- union(setdiff(aggregate_volumes$acronym,  aggregate_counts$acronym), setdiff(aggregate_counts$acronym, aggregate_volumes$acronym))
+   # print(paste0("mismatched acronyms between volumes and simplified counts df ", mismatch))
+   # message("For channel ",channel, paste0(" mismatched acronym ", mismatch))
+   # mismatched_regions[[channel]] <- mismatch
    ###################
    counts_per_slice[[channel]]  <- dplyr::inner_join(aggregate_counts, aggregate_volumes, by = c("slice_name", "AP", "right.hemisphere", "acronym", "name")) %>%
      dplyr::arrange(desc(AP), acronym, right.hemisphere) %>% tidyr::drop_na()
@@ -1678,7 +1677,7 @@ normalize_cell_counts <- function(m,
   # Store the normalized counts in the mouse object
   m$normalized_counts <- normalized_counts
   m$counts_per_slice <- counts_per_slice
-  m$mismatched_regions <- mismatched_regions
+  # m$mismatched_regions <- mismatched_regions
   return(m)
 }
 

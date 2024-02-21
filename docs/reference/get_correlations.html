@@ -65,7 +65,8 @@
 <span>  <span class="va">values</span>,</span>
 <span>  channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cfos"</span>, <span class="st">"eyfp"</span>, <span class="st">"colabel"</span><span class="op">)</span>,</span>
 <span>  p_adjust_method <span class="op">=</span> <span class="st">"BH"</span>,</span>
-<span>  alpha <span class="op">=</span> <span class="fl">0.05</span></span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  region_order <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -96,6 +97,11 @@ to keep "raw" p values. See also <code><a href="https://rdrr.io/r/stats/p.adjust
 
 <dt>alpha</dt>
 <dd><p>(num, default = 0.05) The alpha level for significance applied AFTER p-adjustment.</p></dd>
+
+
+<dt>region_order</dt>
+<dd><p>(list, default = NULL)  optional list with the first element named "acronym" supplying a vector as region acronyms and the second element named
+"order"  supplying an vector of integers determining numerical order, e.g. 1, 1, 2, 2.</p></dd>
 
 </dl></div>
     <div class="section level2">

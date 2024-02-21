@@ -738,10 +738,10 @@ plot_percent_colabel <- function(e,
   } else{
 
     # Create the plot
-    p <-ggplot(e$colabel_percent[[channel]]$average %>% dplyr::filter(acronym %in% rois),
-               aes(x = !!color_var,
-                   y = colabel_percentage.mean,
-                   fill = !!color_var)) +
+    p <- ggplot(e$colabel_percent[[channel]]$average %>% dplyr::filter(acronym %in% rois),
+                aes(x = !!color_var,
+                    y = colabel_percentage.mean,
+                    fill = !!color_var)) +
       ggplot2::geom_bar(stat='identity',
                         position = position_dodge(width = .5),
                         color = "black",
@@ -831,7 +831,7 @@ plot_normalized_counts <- function(e,
                                    save_plot = TRUE,
                                    flip_axis = FALSE,
                                    facet_background_color =  NULL,
-                                   image_ext = ".pdf") {
+                                   image_ext = ".pdf"){
   # check os and set graphics window
   if (get_os() != "osx") {
     quartz <- X11
@@ -965,6 +965,7 @@ plot_normalized_counts <- function(e,
     }
     p_list[[channels[k]]] <- p
   }
+  return(p_list)
 }
 
 #' Plot correlation heatmaps

@@ -199,3 +199,9 @@ To improve the experience of registrations, we provide an interactive notebook f
 
 ## Batch segmentation importation and mapping
 
+To automate the process of atlas mapping across many mice, we provide a demo batch script that allows for batch segmentation importation, mapping, region exclusion, and concatenation of datasets across all slices for each mouse. Before running this code, make sure all registrations are complete within all mice. Additionally make sure all segmentation macros in ImageJ have been run on all images so that segmentation output is available for importation into SMARTR. 
+
+
+[batch mapping script](https://osf.io/fdp8v)
+
+
