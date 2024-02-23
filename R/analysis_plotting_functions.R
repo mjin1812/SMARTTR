@@ -792,6 +792,216 @@ plot_percent_colabel <- function(e,
   return(p)
 }
 
+
+#' This function allows for plotting of normalized cell counts by area across specific regions to plot. Two different mouse attributes can be used as categorical variables to map to either the color or
+#' pattern aesthetics of the bar plot, e.g. sex and experimental group.
+#' The color aesthetic takes precedence over the pattern aesthetic so if you only want to use one mouse attribute, for plotting
+#' set it to the `color_mapping` parameter and set the `pattern_mapping` parameter to NULL.
+#'
+#' @param e experiment object
+#' @param channel (str, default = "eyfp") The channel used as denominator in fraction counts.
+#' @param rois
+#' @param color_mapping
+#' @param colors
+#' @param pattern_mapping
+#' @param patterns
+#' @param error_bar (str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.
+#' @return p Plot handle to the figure
+#' @export
+#' @examples plot_percentage_colabel
+plot_cell_counts <- function(e,
+                             channel = "eyfp",
+                             rois = c("AAA", "dDG", "HY"),
+                             color_mapping = "group",
+                             colors = c("#952899", "#358a9c"),
+                             pattern_mapping = NULL,
+                             patterns = c("gray100", 'hs_fdiagonal', "hs_horizontal", "gray90", "hs_vertical"),
+                             ylab = bquote('Cell counts '('cells/mm'^3)),
+                             error_bar = "sem",
+                             ylim = c(0, 100),
+                             plot_individual = TRUE,
+                             height = 8,
+                             width = 8,
+                             print_plot = TRUE,
+                             save_plot = TRUE,
+                             image_ext = ".png"){
+
+  # Detect the OS and set quartz( as graphing function)
+  if(get_os() != "osx"){
+    quartz <- X11
+  }
+
+  # Re-running the get_percent_colabel function for the color &/or pattern mapping
+  if(is.null(pattern_mapping)){
+    by <- match_m_attr(color_mapping)
+  } else{
+    by <- match_m_attr(c(color_mapping, pattern_mapping))
+  }
+
+  if(is.null(e$combined_normalized_counts)){
+    warning("You have not run `combine_cell_counts()` yet. Running this automatically based on your color_mapping and pattern_mappings parameters.")
+   e <- combine_cell_counts(e, by = by)
+  }
+  # Get the average and individual percentages
+  # e <- get_percent_colabel(e, by = by, colabel_channel = colabel_channel, channel = channel, save_table = FALSE, rois = rois, individual = FALSE)
+  # e <- get_percent_colabel(e, by = by, colabel_channel = colabel_channel, channel = channel, save_table = FALSE, rois = rois, individual = TRUE)
+
+  # Get rois of all the child regions
+  child_r <- SMARTR::get.acronym.child(rois)
+  while (length(child_r) > 0){
+    rois <- c(rois, child_r)
+    child_r <- SMARTR::get.acronym.child(child_r) %>% na.omit()
+  }
+
+
+  df <- e$combined_normalized_counts[[channel]] %>% dplyr::group_by(group, acronym, name) %>%
+    dplyr::summarise(normalized.count.mean = mean(normalized.count.by.volume),
+                     normalized.count.sem = sd(normalized.count.by.volume)/sqrt(n()),
+                     normalized.count.sd = sd(normalized.count.by.volume),
+                     n = n())
+
+  df <- df %>% dplyr::filter(acronym %in% rois)
+  df_indiv <- e$combined_normalized_counts[[channel]]  %>% dplyr::filter(acronym %in% rois)
+
+
+  # Error bar check
+  if (error_bar == "sem"){
+    error_var <- sym("normalized.count.sem")
+  } else if (error_bar == "sd") {
+    error_var <- sym("normalized.count.sem")
+  } else {
+    stop("You did not supply a valid option for the error_bar. Valid options are 'sem' and 'sd'.")
+  }
+
+  # Set up custom bar plot theme
+  bar_theme <- theme(axis.title.x=element_blank(),
+                     axis.text.x=element_blank(),
+                     axis.ticks.x=element_blank(),
+                     strip.background = element_rect(fill = "white"),
+                     strip.text =  element_text(size = 20, color = "black"),
+                     plot.title = element_text(hjust = 0.5, size = 36,  color = "black"),
+                     axis.text.y = element_text(size = 20,  color = "black"),
+                     axis.title = element_text(size = 20, color = "black"),
+                     legend.text = element_text(size = 20,  color = "black"),
+                     legend.title = element_text(size = 20, color = "black"),
+                     # axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
+                     axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))
+
+  # Create  variable names for mapping
+  color_var <- sym(color_mapping)
+
+  # Use pattern as a variable if not NULL
+  if (!is.null(pattern_mapping)){
+
+    # Check if ggpattern is installed
+    if (!requireNamespace("ggpattern", quietly = TRUE)) {
+      message("Package \"ggpattern\" (>= 0.2.0) is needed for the pattern mapping to work. Installing it now.",
+              call. = FALSE)
+      install.packages('ggpattern')
+    }
+
+    pattern_var <- sym(pattern_mapping)
+
+    # Create the plot
+    p <- ggplot(df,
+                aes(x = interaction(!!pattern_var, !!color_var),
+                    y = normalized.count.mean,
+                    fill = !!color_var)) +
+      ggpattern::geom_bar_pattern(aes(pattern_type = !!pattern_var),
+                                  stat = "identity",
+                                  color = "black",
+                                  pattern_color = "black",
+                                  pattern_fill = "black",
+                                  pattern = "magick",
+                                  position = position_dodge(width = .5),
+                                  show.legend = TRUE,
+                                  width = 0.4) +
+      ggplot2::scale_fill_manual(values = colors) +
+      ggpattern::scale_pattern_type_manual(values = patterns) +
+      geom_errorbar(aes(ymin = normalized.count.mean - !!error_var,
+                        ymax = normalized.count.mean + !!error_var),
+                    width=.2,
+                    position = position_dodge(width = .5)) +
+      geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
+      facet_wrap(~acronym,
+                 strip.position = "bottom") +
+      # ylim(ylim) +
+      geom_text(aes(x=c(2.5), y= 0.4, label=c("|")),
+                vjust=1.2, size=3) +
+      labs(y = ylab) +
+      bar_theme
+
+    if (plot_individual){
+      p <- p + geom_jitter(data = df_indiv,
+                           aes(x = interaction(!!pattern_var, !!color_var),
+                               y = count),
+                           size = 2,
+                           width = 0.1)
+    }
+  } else{
+
+    # Create the plot
+    p <- ggplot(df,
+                aes(x = !!color_var,
+                    y = normalized.count.mean,
+                    fill = !!color_var)) +
+      ggplot2::geom_bar(stat='identity',
+                        position = position_dodge(width = .5),
+                        color = "black",
+                        show.legend = TRUE,
+                        width = 0.4) +
+      scale_fill_manual(values = colors) +
+      geom_errorbar(aes(ymin = normalized.count.mean - !!error_var,
+                        ymax = normalized.count.mean + !!error_var),
+                    width=.2,
+                    position = position_dodge(width = .5)) +
+      geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
+      facet_wrap(~acronym,
+                 strip.position = "bottom") +
+      # ylim(ylim) +
+      geom_text(aes(x=c(2.5), y= 0.4, label=c("|")),
+                vjust=1.2, size=3) +
+      labs(y = ylab) +
+      bar_theme
+
+    if (plot_individual){
+      p <- p + geom_jitter(data = df_indiv,
+                           aes(x = !!color_var,
+                               y = normalized.count.by.volume),
+                           size = 2,
+                           width = 0.1)
+    }
+  }
+
+  if (print_plot){
+    quartz()
+    print(p)
+  }
+
+  if(save_plot){
+    # Plot the plot
+    quartz(width = width, height = height)
+    print(p)
+    # Create figure directory if it doesn't already exists
+    output_dir <-  file.path(attr(e, "info")$output_path, "figures")
+    if(!dir.exists(output_dir)){
+      dir.create(output_dir)
+    }
+    image_file <- file.path(output_dir,
+                            paste0("region_count_", channel, "_plot_by_", paste0(by, collapse = "_"), image_ext))
+    ggsave(filename = image_file,  width = width, height = height, units = "in")
+  }
+  return(p)
+}
+
+
+
+
+
+
+
+
+
 #' Plot normalized cell counts
 #' @description Plot the cell counts normalized by volume for a given channel
 #'
