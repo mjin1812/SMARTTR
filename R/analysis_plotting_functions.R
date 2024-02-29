@@ -347,11 +347,14 @@ correlation_diff_permutation <- function(e,
 }
 
 #' Create %>% graph objects for plotting different analysis subgroups.
+#'
 #' @param e experiment object
 #' @param correlation_list_name (str) Name of the correlation list object used to generate the networks.
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
-#' @param alpha (float, default = 0.05) The significance cutoff for including brain regions in the network.
-#'
+#' @param alpha (float, default = 0.05) The significance threshold for including brain regions in the network. if NULL or NA,
+#' this threshold is not applied.
+#' @param pearson_thresh (float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out
+#' spurious edges. If NULL or NA, the threshold is not applied.
 #' @return e experiment object. This object now has a new added element called `networks.` This is a list storing a
 #' graph object per channel for each network analysis run.
 #' The name of each network (`network_name`) is the same as the `correlation_list_name`
@@ -364,7 +367,8 @@ correlation_diff_permutation <- function(e,
 create_networks <- function(e,
                             correlation_list_name,
                             channels = c("cfos", "eyfp", "colabel"),
-                            alpha = 0.05){
+                            alpha = 0.05,
+                            pearson_thresh){
 
   # List to store the networks
   networks <- vector(mode = "list", length = length(channels))
@@ -430,7 +434,15 @@ create_networks <- function(e,
       tidygraph::select(-.tidygraph_node_index)
 
     # filter by alpha
-    network <- network %>% activate(edges) %>% dplyr::filter(p.value < alpha)
+    if(!is.na(alpha) && !is.null(alpha)){
+      network <- network %>% activate(edges) %>% dplyr::filter(p.value < alpha)
+    }
+
+    # Filter by pearson correlation coefficient
+    if(!is.na(pearson_thresh) && !is.null(pearson_thresh)){
+      network <- network %>% activate(edges) %>% dplyr::filter(weight > pearson_thresh)
+    }
+
     network <- network %>% activate(nodes) %>%
       dplyr::mutate(super.region = factor(super.region,levels = unique(super.region)),
                     degree = tidygraph::centrality_degree(),
@@ -1652,6 +1664,8 @@ parallel_coordinate_plot <- function(e,
 #' @param graph_theme (default = NULL) Add a [ggraph::theme()] to the network graph. If NULL, the default is taken.
 #' @param label_size (default = 5) Default font size for network region labels.
 #' @param label_offset (default = 0.15) Distance of label from nodes.
+#' @param region_legend (default = TRUE) Boolean determining whether or not to show the region legend categorizing subregions into their largest parent region. Only works well if the Allen ontology is used for the dataset.
+#' @param correlation_edge_width_limit
 #' Can also be a hexadecimal color code written as a string.
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
@@ -1663,6 +1677,7 @@ plot_networks <- function(e,
                           edge_color = "firebrick",
                           height = 15,
                           width = 15,
+                          region_legend = TRUE,
                           degree_scale_limit = c(1,10),
                           correlation_edge_width_limit = c(0.8,1),
                           image_ext = ".png",
@@ -1698,25 +1713,27 @@ plot_networks <- function(e,
       ggraph::geom_edge_diagonal(aes(color = sign, width = abs(weight)),
                                  edge_alpha = 0.6, n = 1000) +
       ggraph::geom_node_point(aes(size = degree,
-                                  color = super.region)) +
+                                    color = super.region),
+                                show.legend = TRUE) +
       ggraph::geom_node_text(aes(x = (sqrt(x^2+y^2)+label_offset)*cos(atan(y/x))*sign(x),
                          y = abs((sqrt(x^2+y^2)+label_offset)*sin(atan(y/x)))*sign(y),
                          angle = atan(y/x)*180/pi,
                          label = name),
                      repel = FALSE, color = "grey25",
-                     size = label_size) +
+                     size = label_size,
+                     show.legend = NA) +
       ggraph::scale_edge_color_manual(values = c(pos = edge_color,
-                                         neg = "grey20"),
-                              labels = c(pos = "Positive", neg = "Negative"),
-                              name = "Correlation",
-                              guide = guide_legend(order = 1,
-                                                   override.aes = list(size = 8))) +
-      ggraph::scale_color_viridis(name = "Anatomical Region",
-                          discrete = TRUE,
-                          option = "D",
-                          guide = guide_legend(override.aes = list(size=5), order=4)) +
+                                                 neg = "grey20"),
+                                      labels = c(pos = "Positive", neg = "Negative"),
+                                      name = "Correlation",
+                                      guide = guide_legend(order = 1,
+                                                           override.aes = list(size = 8))) +
       ggraph::scale_edge_width(limits=correlation_edge_width_limit,range = c(1,3),name = "Correlation Strength",
                        guide = guide_legend(order = 3)) +
+      ggraph::scale_color_viridis(name = "Anatomical Region",
+                                  discrete = TRUE,
+                                  option = "D",
+                                  guide = guide_legend(override.aes = list(size=5), order=4)) +
       ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=c(4,10),
                  guide = guide_legend(order = 2)) +
       ggplot2::coord_equal() + graph_theme
