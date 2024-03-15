@@ -368,7 +368,7 @@ create_networks <- function(e,
                             correlation_list_name,
                             channels = c("cfos", "eyfp", "colabel"),
                             alpha = 0.05,
-                            pearson_thresh){
+                            pearson_thresh = 0.8){
 
   # List to store the networks
   networks <- vector(mode = "list", length = length(channels))
@@ -812,12 +812,21 @@ plot_percent_colabel <- function(e,
 #'
 #' @param e experiment object
 #' @param channel (str, default = "eyfp") The channel used as denominator in fraction counts.
-#' @param rois
-#' @param color_mapping
-#' @param colors
-#' @param pattern_mapping
-#' @param patterns
+#' @param rois (vec,  default = c("AAA", "dDG", "HY")) Allen acronyms of the ROIS that the user would like to plot
+#' @param color_mapping (str, default = "group") The variable name that maps subgroups  you would like to graphically distinguish through colors.
+#' @param colors (vec, default = c("#952899", "#358a9c")) A vector of hexadecimal color codes for each subgroup distinguished by the color mapping variable.
+#' @param pattern_mapping (str, default = NULL) variable name that maps subgroups  you would like to graphically distinguish through bar patterns.Set to NULL if not in use.
+#' @param patterns  (default = c("gray100", 'hs_fdiagonal', "hs_horizontal", "gray90", "hs_vertical") Available patterns in ggpattern package to map to subgroups distinguished by the pattern mapping variable.
+#' @param ylab (str, default =  bquote('Cell counts '('cells/mm'^3))) unit of measurement
+#' @param ylim
+#' @param plot_individua (bool) whether to plot individual points
+#' @param height (numeric) height of the plot in inches to save as.
+#' @param width (numeric) height of the plot in inches to save as.
+#' @param print_plot
+#' @param save_plot (book) Whether to save the plot in the experiment figures folder.
+#' @param image_ext (str, default = ".png") Extension of the output file
 #' @param error_bar (str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.
+#'
 #' @return p Plot handle to the figure
 #' @export
 #' @examples plot_percentage_colabel
@@ -937,7 +946,7 @@ plot_cell_counts <- function(e,
       geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
       facet_wrap(~acronym,
                  strip.position = "bottom") +
-      # ylim(ylim) +
+      ylim(ylim) +
       geom_text(aes(x=c(2.5), y= 0.4, label=c("|")),
                 vjust=1.2, size=3) +
       labs(y = ylab) +
@@ -970,7 +979,7 @@ plot_cell_counts <- function(e,
       geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
       facet_wrap(~acronym,
                  strip.position = "bottom") +
-      # ylim(ylim) +
+      ylim(ylim) +
       geom_text(aes(x=c(2.5), y= 0.4, label=c("|")),
                 vjust=1.2, size=3) +
       labs(y = ylab) +
@@ -1052,6 +1061,7 @@ plot_normalized_counts <- function(e,
                                    print_plot = TRUE,
                                    save_plot = TRUE,
                                    flip_axis = FALSE,
+                                   legend.position = "none",
                                    facet_background_color =  NULL,
                                    image_ext = ".pdf"){
   # check os and set graphics window
@@ -1117,7 +1127,7 @@ plot_normalized_counts <- function(e,
           panel.grid.minor = element_blank(),
           panel.border = element_blank()) +
         theme(axis.line = element_line(color = 'black')) +
-        theme(legend.position = "none") +
+        theme(legend.position = legend.position) +
         theme(axis.text.y = element_text(angle = region_label_angle, hjust = 1, size = label_text_size)) +
         theme(strip.text.y = element_text(angle = 0),
               strip.placement = "outside",
@@ -1152,7 +1162,7 @@ plot_normalized_counts <- function(e,
           panel.grid.minor = element_blank(),
           panel.border = element_blank()) +
         theme(axis.line = element_line(color = 'black')) +
-        theme(legend.position = "none") +
+        theme(legend.position = legend.position) +
         theme(axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size)) +
         theme(strip.text.x = element_text(angle = 0),
               strip.placement = "outside",
@@ -1705,7 +1715,9 @@ plot_networks <- function(e,
     if (is.null(graph_theme)){
       graph_theme <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5,size = 28),
                                                      legend.text = element_text(size = 15),
-                                                     legend.title = element_text(size = 15))
+                                                     legend.title = element_text(size = 15)
+                                               )
+
     }
 
 
@@ -1726,8 +1738,7 @@ plot_networks <- function(e,
                                                  neg = "grey20"),
                                       labels = c(pos = "Positive", neg = "Negative"),
                                       name = "Correlation",
-                                      guide = guide_legend(order = 1,
-                                                           override.aes = list(size = 8))) +
+                                      guide = guide_legend(order = 1)) +
       ggraph::scale_edge_width(limits=correlation_edge_width_limit,range = c(1,3),name = "Correlation Strength",
                        guide = guide_legend(order = 3)) +
       ggraph::scale_color_viridis(name = "Anatomical Region",

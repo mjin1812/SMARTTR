@@ -8,7 +8,8 @@ create_networks(
   e,
   correlation_list_name,
   channels = c("cfos", "eyfp", "colabel"),
-  alpha = 0.05
+  alpha = 0.05,
+  pearson_thresh = 0.8
 )
 }
 \arguments{
@@ -18,7 +19,11 @@ create_networks(
 
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel")) The channels to process.}
 
-\item{alpha}{(float, default = 0.05) The significance cutoff for including brain regions in the network.}
+\item{alpha}{(float, default = 0.05) The significance threshold for including brain regions in the network. if NULL or NA,
+this threshold is not applied.}
+
+\item{pearson_thresh}{(float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out
+spurious edges. If NULL or NA, the threshold is not applied.}
 }
 \value{
 e experiment object. This object now has a new added element called \code{networks.} This is a list storing a

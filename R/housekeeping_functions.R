@@ -344,7 +344,7 @@ check_redundant_parents <- function(acronyms){
   }
   redundant_parents <- redundant_parents %>% unique()
 
-  print(paste0("redundant parents ", redundant_parents)) # This is just for troubleshooting
+  # print(paste0("redundant parents ", redundant_parents)) # This is just for troubleshooting
 
   return(list(unique_acronyms = setdiff(acronyms, redundant_parents),
        redundant_parents = redundant_parents))

@@ -12,6 +12,7 @@ plot_networks(
   edge_color = "firebrick",
   height = 15,
   width = 15,
+  region_legend = TRUE,
   degree_scale_limit = c(1, 10),
   correlation_edge_width_limit = c(0.8, 1),
   image_ext = ".png",
@@ -38,7 +39,11 @@ plot_networks(
 
 \item{width}{width of the plot in inches.}
 
+\item{region_legend}{(default = TRUE) Boolean determining whether or not to show the region legend categorizing subregions into their largest parent region. Only works well if the Allen ontology is used for the dataset.}
+
 \item{degree_scale_limit}{(vec, default = c(1,10)) Scale limit for degree size}
+
+\item{correlation_edge_width_limit}{Can also be a hexadecimal color code written as a string.}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 
@@ -49,8 +54,7 @@ the experiment object output folder.}
 
 \item{label_size}{(default = 5) Default font size for network region labels.}
 
-\item{label_offset}{(default = 0.15) Distance of label from nodes.
-Can also be a hexadecimal color code written as a string.}
+\item{label_offset}{(default = 0.15) Distance of label from nodes.}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}

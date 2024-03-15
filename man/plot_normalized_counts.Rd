@@ -19,6 +19,7 @@ plot_normalized_counts(
   print_plot = TRUE,
   save_plot = TRUE,
   flip_axis = FALSE,
+  legend.position = "none",
   facet_background_color = NULL,
   image_ext = ".pdf"
 )
