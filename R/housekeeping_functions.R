@@ -321,19 +321,26 @@ match_m_attr <- function(attribs){
 
 #' Check for redundant parent regions included in a list of acronyms in a plate. For example, if all the the subregions for
 #' the hypothalamus are represented, the HY should not be included in the list.
+#'
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #' @param acronyms (vec) a vector of acronyms to check for possible parents that are redundantly included in the vector.
+#'
 #' @return A list containing two elements: one vector of unique child acronyms, a vector of the parent regions considered redundant
 #' @export
 #'
 #' @examples
-check_redundant_parents <- function(acronyms){
+check_redundant_parents <- function(acronyms, ontology = "allen"){
   child_acronyms <- acronyms
   redundant_parents <- c()
   keep_going <- TRUE
   while (keep_going){
-    parent_acronyms <- wholebrain::get.acronym.parent(child_acronyms)
-    intersection <- intersect(parent_acronyms, acronyms)
 
+    if (tolower(ontology)=="allen"){
+      parent_acronyms <- SMARTR::get.acronym.parent(child_acronyms)
+    } else{
+      parent_acronyms <- SMARTR::get.acronym.parent.custom(child_acronyms, ontology = ontology)
+    }
+    intersection <- intersect(parent_acronyms, acronyms)
     if (length(intersection) > 0){
       acronyms <- setdiff(acronyms, intersection)
       redundant_parents <- c(redundant_parents, intersection)
@@ -354,67 +361,97 @@ check_redundant_parents <- function(acronyms){
 #' Simplify dataframe by keywords.
 #'
 #' @param df (tibble) Must contain columns "acronym" and "name"
-#' @param keywords (vec, default = c("layer","part","stratum","division")) a list of keywords to simplify based on region name.
+#' @param keywords (vec, default = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural")) a list of keywords to simplify based on region name.
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
+#' @param dont_fold (vec, default = c("Dorsal part of the lateral geniculate complex", "Ventral posterolateral nucleus of the thalamus, parvicellular part", "
+#' Ventral posteromedial nucleus of the thalamus, parvicellular part","Ventral posterolateral nucleus of the thalamus, parvicellular part",
+#' "Ventral posteromedial nucleus of the thalamus, parvicellular part","Substantia nigra")) Regions that are exceptions to being folded into their parent regions.
 #'
 #' @return df
 #' @export
 #'
 #' @examples
-simplify_by_keywords <- function(df, keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural")){
-  # loop through each keyword
-  dont_fold <- c("Dorsal part of the lateral geniculate complex",
-                 "Ventral posterolateral nucleus of the thalamus, parvicellular part",
-                 "Ventral posteromedial nucleus of the thalamus, parvicellular part",
-                 "Ventral posterolateral nucleus of the thalamus, parvicellular part",
-                 "Ventral posteromedial nucleus of the thalamus, parvicellular part",
-                 "Substantia nigra"
-                 )
+simplify_by_keywords <- function(df,
+                                 keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural"),
+                                 ontology = "allen",
+                                 dont_fold = c("Dorsal part of the lateral geniculate complex",
+                                                "Ventral posterolateral nucleus of the thalamus, parvicellular part",
+                                                "Ventral posteromedial nucleus of the thalamus, parvicellular part",
+                                                "Ventral posterolateral nucleus of the thalamus, parvicellular part",
+                                                "Ventral posteromedial nucleus of the thalamus, parvicellular part",
+                                                "Substantia nigra")){
 
   for (s in keywords) {
     # Look for row indices where the names contain the keywords
     k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
-    k_omit <- grep(paste(dont_fold, collapse = "|"), df$name, value = FALSE, ignore.case = TRUE)
-    k <- setdiff(k, k_omit)
 
-    while(length(k) > 0){
-      # Store the parent acronym and full name
-      df$acronym[k] <- wholebrain::get.acronym.parent(df$acronym[k])
-      df$name[k] <- as.character(wholebrain::name.from.acronym(df$acronym[k]))
-
-      # Continue storing storing the parent names until there are no more that match the keyword
-      k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
+    if (!is.na(dont_fold) && (!dont_fold=="")){
       k_omit <- grep(paste(dont_fold, collapse = "|"), df$name, value = FALSE, ignore.case = TRUE)
       k <- setdiff(k, k_omit)
     }
+
+    while(length(k) > 0){
+
+
+      if (tolower(ontology) == "allen"){
+        # Store the parent acronym and full name
+        df$acronym[k] <- SMARTR::get.acronym.parent(df$acronym[k])
+        df$name[k] <- as.character(SMARTR::name.from.acronym(df$acronym[k]))
+      } else {
+        # df$acronym[k] <- SMARTR::get.acronym.parent.custom(df$acronym[k], ontology = ontology)
+        # df$name[k] <- as.character(SMARTR::name.from.acronym.custom(df$acronym[k], ontology = ontology))
+        ids <- SMARTR::id.from.acronym.custom(df$acronym[k], ontology = ontology)
+        parent_ids <- parentid.from.id.custom(ids, ontology=ontology)
+        df$acronym[k] <- acronym.from.id.custom(parent_ids, ontology = ontology)
+        df$name[k] <- name.from.id.custom(parent_ids, ontology = ontology)
+      }
+
+      # Continue storing storing the parent names until there are no more that match the keyword
+      k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
+      if (!is.na(dont_fold) && (!dont_fold=="")){
+        k_omit <- grep(paste(dont_fold, collapse = "|"), df$name, value = FALSE, ignore.case = TRUE)
+        k <- setdiff(k, k_omit)
+      }
+    }
   }
-  df <- df %>% dplyr::arrange(acronym)
+  # df <- df %>% dplyr::arrange(acronym)
   return(df)
 }
 
 
 #' Simplify vector of acronyms by keywords.
 #'
-#' @param vec (vector) Must contain c"acronym"
+#' @param vec (vector) Must contain acronyms
 #' @param keywords (vec, default = c("layer","part","stratum","division")) a list of keywords to simplify based on region name.
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
+#' @param dont_fold (vec, default = c("Dorsal part of the lateral geniculate complex", "Ventral posterolateral nucleus of the thalamus, parvicellular part", "
+#' Ventral posteromedial nucleus of the thalamus, parvicellular part","Ventral posterolateral nucleus of the thalamus, parvicellular part",
+#' "Ventral posteromedial nucleus of the thalamus, parvicellular part","Substantia nigra")) Regions that are exceptions to being folded into their parent regions.
 #'
 #' @return df, dataframe as a tibble with included long name and acronyms that are simplified to parents
 #' @export
 #'
 #' @examples
-simplify_vec_by_keywords <- function(vec, keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural")){
-
-  dont_fold <- c("Dorsal part of the lateral geniculate complex",
-                 "Ventral posterolateral nucleus of the thalamus, parvicellular part",
-                 "Ventral posteromedial nucleus of the thalamus, parvicellular part",
-                 "Ventral posterolateral nucleus of the thalamus, parvicellular part",
-                 "Ventral posteromedial nucleus of the thalamus, parvicellular part",
-                 "Substantia nigra"
-                 ) ## These are major exceptions to the ontology
+simplify_vec_by_keywords <- function(vec,
+                                     keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural"),
+                                     ontology = "allen",
+                                     dont_fold = c("Dorsal part of the lateral geniculate complex",
+                                                   "Ventral posterolateral nucleus of the thalamus, parvicellular part",
+                                                   "Ventral posteromedial nucleus of the thalamus, parvicellular part",
+                                                   "Ventral posterolateral nucleus of the thalamus, parvicellular part",
+                                                   "Ventral posteromedial nucleus of the thalamus, parvicellular part",
+                                                   "Substantia nigra"
+                                     )){
+## These are major exceptions to the ontology
 
 
   name <- vector(mode="character", length = length(vec))
   for (v in 1:length(vec)){
-    name[v] <- wholebrain::name.from.acronym(vec[v]) %>% as.character()
+    if (tolower(ontology) == "allen"){
+      name[v] <- SMARTR::name.from.acronym(vec[v]) %>% as.character()
+    } else {
+      name[v] <- SMARTR::name.from.acronym.custom(vec[v], ontology = ontology) %>% as.character()
+    }
   }
 
   df <- tibble::tibble(name=name,
@@ -425,21 +462,36 @@ simplify_vec_by_keywords <- function(vec, keywords = c("layer","part","stratum",
 
     # Look for row indices where the names contain the keywords
     k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
-    k_omit <- grep(paste(dont_fold, collapse = "|"), df$name, value = FALSE, ignore.case = TRUE)
-    k <- setdiff(k, k_omit)
-
-    while(length(k) > 0){
-      # Store the parent acronym and full name
-      df$acronym[k] <- wholebrain::get.acronym.parent(df$acronym[k])
-      df$name[k] <- as.character(wholebrain::name.from.acronym(df$acronym[k]))
-
-      # Continue storing storing the parent names until there are no more that match the keyword
-      k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
+    if (!is.na(dont_fold) && (!dont_fold=="")){
       k_omit <- grep(paste(dont_fold, collapse = "|"), df$name, value = FALSE, ignore.case = TRUE)
       k <- setdiff(k, k_omit)
     }
+
+    while(length(k) > 0){
+
+      if (tolower(ontology) == "allen"){
+      # Store the parent acronym and full name
+        df$acronym[k] <- SMARTR::get.acronym.parent(df$acronym[k])
+        df$name[k] <- as.character(SMARTR::name.from.acronym(df$acronym[k]))
+      } else {
+        # df$acronym[k] <- SMARTR::get.acronym.parent.custom(df$acronym[k], ontology = ontology)
+        # df$name[k] <- as.character(SMARTR::name.from.acronym.custom(df$acronym[k], ontology = ontology))
+        ids <- SMARTR::id.from.acronym.custom(df$acronym[k], ontology = ontology)
+        parent_ids <- parentid.from.id.custom(ids, ontology=ontology)
+        df$acronym[k] <- acronym.from.id.custom(parent_ids, ontology = ontology)
+        df$name[k] <- name.from.id.custom(parent_ids, ontology = ontology)
+
+      }
+
+      # Continue storing storing the parent names until there are no more that match the keyword
+      k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
+      if (!is.na(dont_fold) && (!dont_fold=="")){
+        k_omit <- grep(paste(dont_fold, collapse = "|"), df$name, value = FALSE, ignore.case = TRUE)
+        k <- setdiff(k, k_omit)
+      }
+    }
   }
-  df <- df %>% dplyr::arrange(acronym)
+  # df <- df %>% dplyr::arrange(acronym)
   return(df)
 }
 
@@ -588,7 +640,6 @@ acronym.from.id <- function (x)
 
 
 
-
 #' @export
 # Get current OS
 get_os <- function(){
@@ -629,4 +680,222 @@ with_timeout <- function(expr, cpu=1, elapsed=1){
 #
 #
 
+################################### Functions designed to accommodate custom atlases ############################
+
+
+
+
+
+#' Get region ontology name from acronym
+#' @description Get whole regional names from acronyms based on a custom lookup table imported to accomodate other ontologies.
+#'
+#' @param ontology (str, options: "unified")
+#' @param x (str) Regional acronym or vector of regional acronyms
+#'
+#' @export
+name.from.acronym.custom <- function (x, ontology = "unified"){
+  # x <- na.omit(x)
+
+  if (tolower(ontology) == "unified"){
+    indices <- lapply(x, function(y){which(SMARTR::ontology.unified$acronym %in% y)}) %>% unlist()
+    return(SMARTR::ontology.unified$name[indices])
+    } else {
+    stop("You did not enter a valid ontology name.")
+  }
+
+}
+
+
+#' Get region ontology name from ID
+#' @description Similar to wholebrain package's search functions to get whole regional names from a numerical ID lookup table. For custom ontologies.
+#' @param ontology (str, options: "unified")
+#' @param x (int) integer ID
+#'
+#' @export
+name.from.id.custom <- function (x, ontology = "unified"){
+  # x <- na.omit(x)
+  if (tolower(ontology) == "unified"){
+    unlist(lapply(x, function(y){SMARTR::ontology.unified$name[SMARTR::ontology.unified$id %in% y] %>% return()})) %>% return()
+  }else {
+    stop("You did not enter a valid ontology name.")
+  }
+
+}
+
+
+#' Get region ontology  ID from acronym
+#' @description Similar to wholebrain package's search functions to get whole regional names from a numerical ID lookup table. For custom ontologies.
+#' @param ontology (str, options: "unified")
+#' @param x (int) integer ID
+#'
+#' @export
+id.from.acronym.custom <- function (x, ontology = "unified"){
+  # x <- na.omit(x)
+  if (tolower(ontology) == "unified"){
+    unlist(lapply(x, function(y){SMARTR::ontology.unified$id[SMARTR::ontology.unified$acronym %in% y] %>% return()})) %>% return()
+  } else {
+    stop("You did not enter a valid ontology name.")
+  }
+
+}
+
+
+#' Get acronyms of child structures
+#' @description Function to get the acronym of parent regions in the ontology
+#'
+#' @param ontology (str, options: "unified")
+#' @param x (str) Regional acronym
+#'
+#' @export
+get.acronym.child.custom <-  function (x, ontology = "unified")
+{
+  if (tolower(ontology) == "unified"){
+    acronyms <- unlist(lapply(x, function(y) {
+      if (length(which(SMARTR::ontology.unified$parent_acronym == y) != 0)) {
+        return(SMARTR::ontology.unified$acronym[which(SMARTR::ontology.unified$parent_acronym == y)])
+      }
+      else {
+        return(NA)
+      }
+    }
+    ))
+
+  } else {
+    stop("You did not enter a valid ontology name.")
+  }
+  return(acronyms)
+}
+
+#' Get parent region acronyms
+#' @description Function to get the acronym of parent regions
+#' @param ontology (str, options: "unified")
+#' @param x (str) Regional acronym
+#'
+#' @export
+get.acronym.parent.custom <- function (x, ontology = "unified")
+{
+
+  if (tolower(ontology) == "unified"){
+    parents <- unlist(lapply(x, function(y) {
+      if (length(which(SMARTR::ontology.unified$acronym == y)) != 0) {
+        if (y == "root") {
+          return("")
+        }
+        else {
+          return(SMARTR::ontology.unified$parent_acronym[which(SMARTR::ontology.unified$acronym ==
+                                                 y)])
+        }
+      }
+      else {
+        return(NA)
+      }
+    }))
+  } else {
+    stop("You did not enter a valid ontology name.")
+  }
+
+  return(parents)
+}
+
+#' @export
+acronym.from.id.custom <- function (x, ontology = "unified"){
+  if (tolower(ontology) == "unified"){
+    acronyms <- unlist(lapply(x, function(y) {
+      if (length(which(SMARTR::ontology.unified$id == y)) != 0) {
+        return(as.character(SMARTR::ontology.unified$acronym[which(SMARTR::ontology.unified$id == y)]))
+      }
+      else {
+        return(NA)
+      }
+    }))
+  } else {
+    stop("You did not enter a valid ontology name.")
+  }
+  return(acronyms)
+}
+
+
+
+#' Get parent id from id
+#' @param x
+#'
+#' @param ontology
+#'
+#' @export
+parentid.from.id.custom <- function (x, ontology = "unified"){
+  if (tolower(ontology) == "unified"){
+    acronyms <- unlist(lapply(x, function(y) {
+      if (length(which(SMARTR::ontology.unified$id == y)) != 0) {
+        return(SMARTR::ontology.unified$parent[which(SMARTR::ontology.unified$id == y)])
+      }
+      else {
+        return(NA)
+      }
+    }))
+  } else {
+    stop("You did not enter a valid ontology name.")
+  }
+  return(acronyms)
+}
+
+
+
+
+######### These functions are the recursive ones that should be used ###############
+
+
+#' Get subregion acronyms
+#' @description Search function to get ALL substructure acronyms from parent acronym. Note this functions is recursive.
+#' @param ontology (str, options: "unified")
+#' @param x (str vector) Regional acronyms in a vector
+#'
+#' @export
+get.sub.structure.custom <- function(x, ontology = "unified"){
+  if (tolower(ontology) == "unified"){
+    tmp <- get.acronym.child.custom(x, ontology = ontology)
+    if (sum(is.na(tmp)/length(tmp)) != 0) {
+      tmp <- x
+      return(tmp)
+    }
+    tmp2 <- tmp
+    for (i in tmp) {
+      # print(paste0("getting sub for ", i))
+      # print(get.sub.structure.custom(i, ontology = ontology))
+      tmp2 <- append(tmp2, get.sub.structure.custom(i, ontology = ontology))
+    }
+    tmp2 <- intersect(tmp2, ontology.unified$acronym)
+  } else {
+    stop("You did not enter a valid ontology name.")
+  }
+  return(tmp2)
+}
+
+
+
+
+#' Get super parent region acronyms
+#' @description Function to get the acronym of super parent regions in the ontology
+#' @param x (str) Regional acronym
+#' @param ontology (str, options: "unified")
+#' @param matching.string (str vector, default = c("CTX", "CNU", "IB", "MB", "HB", "grey", "root", "VS", "fiber tracts")) Vector of the basest parent levels to stop at.
+#'
+#' @export
+get.sup.structure.custom <- function (x,
+                                      ontology = "unified",
+                                      matching.string = c("root", "grey", "CH", "VS", "CTX", "CNU", "MB", "HB"))
+{
+  if (x %in% matching.string) {
+    return(x)
+  }
+
+  tmp <- get.acronym.parent.custom(x, ontology = ontology)
+
+  while (!(tmp %in% matching.string)) {
+    tmp0 <- tmp
+    tmp <- get.acronym.parent.custom(tmp0, ontology = ontology)
+  }
+
+  return(tmp)
+
+}
 

@@ -103,8 +103,8 @@ exclude_anatomy <- function(x, ...){
   UseMethod('exclude_anatomy')
 }
 
-## excluded designated regions from the mapped cell data table
-#' get_registered_areas (generic function)
+## Combine volumes of all slices mapped
+#' get_registered_volumes (generic function)
 #'
 #' @param x
 #' @param ...
@@ -115,6 +115,7 @@ exclude_anatomy <- function(x, ...){
 get_registered_volumes <- function(x, ...){
   UseMethod('get_registered_volumes')
 }
+
 
 
 # #_________ TESTING NEW SEGMENTATION METHOD _________
@@ -1681,170 +1682,6 @@ normalize_cell_counts <- function(m,
   return(m)
 }
 
-
-#'
-#' ## Auto split the HPF dataset into Dorsal and Ventral
-#'
-#' #' @title Split the hippocampal dataset to dorsal and ventral regions. DEFUNCT DEFUNCT. WILL RETIRE THIS FUNCTION.
-#' #' @description If [normalize_cell_counts()] has already been run,
-#' #' the existing hippocampus data will be deleted and either replaced with new dorsal/ventral hippocampus data when merge = TRUE (recommended) or
-#' #' it will be stored in a separate dataframe if the user wants analyze the hippocampus separately for analysis and the `normalized_counts` dataframe will be unchanged.
-#' #' @param m mouse object
-#' #' @param AP_coord (double) The AP coordinate which separates dorsal hippocampus from ventral hippocampus. Counts anterior to this are considered dorsal, counts posterior to
-#' #' this are considered ventral.
-#' #' @param combine_hemispheres (bool, default = TRUE) Combine normalized cell counts from both hemispheres
-#' #' @param merge (bool, default = TRUE) Recommended setting. Whether to include the division of dHipp and vHipp into the normalized counts dataframe of the mouse or to store as a separate element for isolated analysis.
-#' #' Merging will replace the hippocampal counts currently in the normalized counts table. Not merging will create a separate data element in the mouse. TODO: Currently not functional.
-#' #' @param simplify_regions (bool, default = TRUE ) simplify the normalized region counts based on keywords in the internal function, `simplify_keywords`
-#' #' @param simplify_keywords (str, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure
-#' #' @param rois (str, default = c("DG", "CA1", "CA2", "CA3")) List of the region acronyms to include in the hippocampus
-#' #' @return m mouse object with DV cell counts from the hippocampus included
-#' #' @export
-#' #'
-#' #' @examples
-#' split_hipp_DV <- function(m,
-#'                           AP_coord = -2.7,
-#'                           combine_hemispheres = TRUE,
-#'                           merge = TRUE,
-#'                           simplify_regions = TRUE,
-#'                           simplify_keywords = c("layer","part","stratum","division"),
-#'                           rois = c("DG", "CA1", "CA2", "CA3")
-#'                           ){
-#'
-#'
-#'   # Channels
-#'   channels <- names(m$cell_table)
-#'
-#'   # Loop through all rois and get all subregions
-#'   regions <- c(rois)
-#'   for (roi in rois) {
-#'     regions <- c(regions, SMARTR::get.sub.structure(roi))
-#'   }
-#'
-#'   ## Isolating counts from the hippocampus & sorting them by coordinate
-#'   dHipp_cell_table <- vector(mode = "list", length = length(channels))
-#'   vHipp_cell_table <- vector(mode = "list", length = length(channels))
-#'   names(dHipp_cell_table) <- channels
-#'   names(vHipp_cell_table) <- channels
-#'
-#'   # process each channel separately
-#'   hipp_AP_coordinates <- c()
-#'   for (channel in channels){
-#'
-#'     # Get cell table of just the hippocampus
-#'     hipp_df <- m$cell_table[[channel]] %>% dplyr::filter(acronym %in% regions)
-#'
-#'     # Store dorsal counts if there are any, else erase
-#'     if (sum(hipp_df$AP > AP_coord) > 0){
-#'       dHipp_cell_table[[channel]] <- hipp_df[hipp_df$AP > AP_coord, ]
-#'     } else {
-#'       dHipp_cell_table[[channel]] <- NULL
-#'     }
-#'
-#'     # Store ventral counts if there are any, else erase
-#'     if (sum(hipp_df$AP <= AP_coord) > 0){
-#'       vHipp_cell_table[[channel]] <- hipp_df[hipp_df$AP <= AP_coord, ]
-#'     } else {
-#'       vHipp_cell_table[[channel]] <- NULL
-#'     }
-#'
-#'     # Keep track of the unique AP coordinate (slice identifier)
-#'     hipp_AP_coordinates <- c(hipp_AP_coordinates, hipp_df$AP) %>% unique()
-#'
-#'     # Remove existing hippocampus data from the normalized cell counts table if it exists
-#'     if (!is.null(m$normalized_counts) & merge){
-#'       hipp_delete <- which(m$normalized_counts[[channel]]$acronym %in% regions)
-#'       m$normalized_counts[[channel]] <- m$normalized_counts[[channel]][-hipp_delete,]
-#'
-#'       message(paste0("Removed existing hippocampus data for ", channel,
-#'                      " channel from the normalized counts dataframe"))
-#'     }
-#'
-#'   }
-#'
-#'   # Get hippocampal areas
-#'   DV_volumes <- get_hipp_DV_volumes(m, AP_coord = AP_coord, rois = rois, hipp_AP_coordinates)
-#'
-#'   # Create combine cell_table and initialize list for normalized hippocampus cell counts
-#'   hipp_cell_tables <- list(dHipp_cell_table,vHipp_cell_table)
-#'   hipp_norm_counts <- vector(mode = "list", length = 2)
-#'   names(hipp_cell_tables) <- c("dorsal", "ventral")
-#'   names(hipp_norm_counts) <- c("dorsal", "ventral")
-#'
-#'   # Get normalized cell counts
-#'   for (dv in names(hipp_cell_tables)){
-#'     if(length(hipp_cell_tables[[dv]]) > 0){
-#'       hipp_norm_counts[[dv]] <- normalize.registered.areas(hipp_cell_tables[[dv]], DV_volumes[[dv]])
-#'
-#'       # Simplify the subregions regions
-#'       if (simplify_regions){
-#'         hipp_norm_counts[[dv]] <- suppressWarnings(simplify.regions(hipp_norm_counts[[dv]],
-#'                                                                     keywords = simplify_keywords))
-#'         message("Simplified regions.")
-#'       }
-#'
-#'       for (channel in names(hipp_norm_counts[[dv]])){
-#'
-#'         # clean NA values in all channels
-#'         hipp_norm_counts[[dv]][[channel]] <- tidyr::drop_na(hipp_norm_counts[[dv]][[channel]])
-#'
-#'         # Rename the regions to match regions of the dorsal and ventral hippocampus
-#'         if (dv == "dorsal"){
-#'           dorsal_acronyms <- paste0("d", hipp_norm_counts[[dv]][[channel]]$acronym)
-#'           # print(dorsal_acronyms)
-#'           hipp_norm_counts[[dv]][[channel]]$acronym <- dorsal_acronyms
-#'           hipp_norm_counts[[dv]][[channel]]$name <- SMARTR::name.from.acronym(dorsal_acronyms) %>% as.character()
-#'
-#'         } else {
-#'
-#'           ventral_acronyms <- paste0("v", hipp_norm_counts[[dv]][[channel]]$acronym)
-#'           # print(ventral_acronyms)
-#'           hipp_norm_counts[[dv]][[channel]]$acronym <- ventral_acronyms
-#'           hipp_norm_counts[[dv]][[channel]]$name <- SMARTR::name.from.acronym(ventral_acronyms) %>% as.character()
-#'         }
-#'
-#'         # combine hemispheres
-#'         if (combine_hemispheres){
-#'         hipp_norm_counts[[dv]][[channel]] <-  dplyr::group_by(hipp_norm_counts[[dv]][[channel]], acronym, name) %>%
-#'           dplyr::summarise_at(c("count", "area.mm2", "volume.mm3"), sum) %>%
-#'           dplyr::mutate(normalized.count.by.area = count/area.mm2,
-#'                         normalized.count.by.volume = count/volume.mm3)
-#'           message(paste0("Combined hemispheres for ", channel, " channel."))
-#'         }
-#'       }
-#'     } else{
-#'       hipp_norm_counts[[dv]] <- NULL
-#'     }
-#'   }
-#'
-#'
-#'   suppressWarnings(
-#'   # Whether to merge the information in each channel to the large normalized counts dataframe
-#'   if (merge){
-#'     # merged right.hemisphere check
-#'     if (is.null(m$normalized_counts[[1]]$right.hemisphere) && is.null(hipp_norm_counts[[1]][[1]]$right.hemisphere) ||
-#'         !is.null(m$normalized_counts[[1]]$right.hemisphere) && !is.null(hipp_norm_counts[[1]][[1]]$right.hemisphere)){
-#'
-#'       ## continue with merge
-#'       for (dv in names(hipp_norm_counts)){
-#'         for (channel in channels){
-#'           m$normalized_counts[[channel]] <- rbind(m$normalized_counts[[channel]], hipp_norm_counts[[dv]][[channel]]) %>% arrange(acronym)
-#'         }
-#'       }
-#'       message("Merged into main normalized counts dataframe.")
-#'
-#'     } else {
-#'       stop(paste0("If you want to merge the dorsal ventral split dataset into the main normalized counts dataframe, the \n",
-#'                   "combine_hemispheres parameter needs to be identical when you run normalize_cell_counts() and split_hipp_DV()."))
-#'     }
-#'   } else {
-#'     m$hipp_DV_normalized_counts <- hipp_norm_counts
-#'     message("Data is now stored in hipp_DV_normalized_counts dataframe. Future analysis of the hippocampus will be stored separately.\n")
-#'   }
-#'   )
-#'   return(m)
-#' }
-
  #__________________ Experiment object specific functions __________________________
 
 
@@ -1931,19 +1768,19 @@ combine_cell_counts <- function(e, by){
 normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
 
 
+  end_index <- which(names(e$combined_normalized_counts$colabel) == "name")
+  by <- names(e$combined_normalized_counts$colabel)[1:end_index]
+
   colabel_normalized <- dplyr::inner_join(e$combined_normalized_counts$colabel,
                                           e$combined_normalized_counts[[denominator_channel]],
-                                          by= c("mouse_ID",
-                                                "group",
-                                                "acronym",
-                                                "name"),
+                                          by = by,
                                           unmatched = "drop",
                                           suffix = c(".colabel", ".denom")) %>% dplyr::mutate(count = count.colabel/count.denom,
                                                                                        area.mm2 = area.mm2.denom,
                                                                                        volume.mm3 = volume.mm3.denom,
                                                                                        normalized.count.by.area = count.colabel/count.denom,
                                                                                        normalized.count.by.volume = count.colabel/count.denom)
-  colabel_normalized <- colabel_normalized %>% dplyr::select(mouse_ID, group, acronym, name, count, area.mm2, volume.mm3, normalized.count.by.area, normalized.count.by.volume)
+  colabel_normalized <- colabel_normalized %>% dplyr::select(dplyr::all_of(c(by, "count", "area.mm2", "volume.mm3", "normalized.count.by.area", "normalized.count.by.volume")))
   # Returns normalized channel
   norm_chan <- paste0("colabel_over_", denominator_channel)
   e$combined_normalized_counts[[norm_chan]] <- colabel_normalized
@@ -1956,12 +1793,71 @@ normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
 }
 
 
+
+
+
+
+
+#' @title Simplify the combined cell count table
+#' @description This function is designed to offer flexible simplification of mapped cells counts. This can be applied after running
+#'  [SMARTR::combine_norm_cell_counts()]. However, if mapping is being conducted using the SMARTR package, we recommend simplifying mapped counts earlier, at the level of mouse objects using [SMARTR::normalize_cell_counts()]
+#'  because the options offered for simplification are more flexible.
+#'  The benefit of this function is that it can operate on experiment objects with externally imported combined cell counts tables that are formatted for compatibility. This allows
+#'  for simplification using other ontologies. See the available atlas options under the `ontology` parameter.
+#'
+#' @param e experiment object
+#' @param ontology
+#' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural")).
+#' Keywords to search through region names and simplify to parent structure. This means the parent structure is also excluded if the list of excluded right and left
+#' @param dont_fold (vec) vector of regions to not fold in.
+#' regions can be further
+#' @return e experiment object with simplified keywords
+#' @export
+#' @examples
+simplify_cell_count <- function(e,
+                                ontology = "unified",
+                                simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island",
+                                                      "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural"),
+                                dont_fold = c("Dorsal part of the lateral geniculate complex",
+                                              "Ventral posterolateral nucleus of the thalamus, parvicellular part",
+                                              "Ventral posteromedial nucleus of the thalamus, parvicellular part",
+                                              "Ventral posterolateral nucleus of the thalamus, parvicellular part",
+                                              "Ventral posteromedial nucleus of the thalamus, parvicellular part",
+                                              "Substantia nigra")){
+  # Get experiment info
+  e_info <- attr(e, "info")
+
+  for (channel in e_info$channels){
+
+    e$combined_normalized_counts[[channel]] <-  e$combined_normalized_counts[[channel]] %>% simplify_by_keywords(keywords = simplify_keywords,
+                                                                                                                  ontology = ontology,
+                                                                                                                  dont_fold = dont_fold)
+    acronyms <- e$combined_normalized_counts[[channel]]$acronym %>% unique()
+    redundant_parents <- check_redundant_parents(acronyms, ontology = ontology)
+
+    # # Find the number of unique regions that aren't nested further into parent regions
+    # acronyms <- m$cell_table[[channel]]$acronym %>% unique()
+    # redundant_parents <- check_redundant_parents(acronyms)
+    e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]]  %>% dplyr::filter(acronym %in% redundant_parents$unique_acronyms)
+
+    end_index <- which(names(e$combined_normalized_counts[[channel]]) == "name")
+    by <- names(e$combined_normalized_counts[[channel]])[1:end_index]
+
+    e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]] %>% group_by(across(all_of(by))) %>%
+      dplyr::summarize(counts = sum(counts),
+                       volume.mm3 = sum(volume.mm3)) %>%
+      dplyr::mutate(normalized.count.by.volume = counts/volume.mm3)
+  }
+  return(e)
+}
+
+
+
+
+
 #__________________ Internal Functions __________________________
 
-
-
-
- ## modified function
+## modified function
 #' Get top down registered areas
 #' @param registration
 #' @param conversion.factor
@@ -1977,46 +1873,6 @@ get.registered.areas.td <- function(regions, registration, conversion.factor = 1
                           area=rep(0,nrow(regions)))
 
   for (k in 1:nrow(regions)) {
-
-    ## Area comparison approach
-    ################### Bottom up approach
-    # if (nrow(region.data) < 1){
-      # warning("No region outlines were detected for ", regions$acronym[k], ". Double checking possible child regions.")
-      # children <- wholebrain::get.acronym.child(regions$acronym[k])
-      # # subregion.data <- region.data  # Should be empty
-      # subregion_areas_bu <- vector(mode = "numeric", length = length(children))
-      #
-      # for (c in 1:length(children)){
-      #   tryCatch({
-      #     subregion.data <- with_timeout({
-      #       wholebrain::get.region(children[c], registration) %>% dplyr::as_tibble() %>%
-      #         dplyr::filter(right.hemisphere == regions$right.hemisphere[k])
-      #     }, Inf, 0.5)
-      #
-      #     # Conversion factor
-      #     subregion.data[,1:4] <- subregion.data[,1:4]*conversion.factor
-      #
-      #
-      #     message("Found info for child regions ", children[c])
-      #
-      #     # Gauss's formula
-      #     area <- subregion.data$xT[1:(nrow(subregion.data)-1)]*subregion.data$yT[2:nrow(subregion.data)] - subregion.data$xT[2:nrow(subregion.data)]*subregion.data$yT[1:(nrow(subregion.data)-1)]
-      #     area <- sum(area)
-      #     area <- 0.5*abs(area + subregion.data$xT[nrow(subregion.data)]*subregion.data$yT[1] - subregion.data$xT[1]*subregion.data$yT[nrow(subregion.data)])
-      #
-      #     # Add to subregion area
-      #     subregion_areas_bu[c] <- area
-      #
-      #   },
-      #   error = function(err) {
-      #     # Code to handle the error
-      #     cat("Timeout. Skipping", children[c], "subregion. An error occurred:", conditionMessage(err), "\n")
-      #   })
-      # }
-      # print(sort(subregion_areas_bu))
-      # areas$area[k] <- sum(subregion_areas_bu)
-    # }
-    # else{
       region.data <- wholebrain::get.region(regions$acronym[k],registration) %>% dplyr::as_tibble() %>%
         dplyr::filter(right.hemisphere == regions$right.hemisphere[k]) %>% tidyr::drop_na()
       region.data[,1:4] <- region.data[,1:4]*conversion.factor
@@ -2036,11 +1892,9 @@ get.registered.areas.td <- function(regions, registration, conversion.factor = 1
       areas$area[k] <- sum(subregion_areas)
     }
     return(areas)
-    # region.info <- c(region.info, list(region.data[region.data$right.hemisphere==regions$right.hemisphere[k],]))
 }
 
-
-## Marcos' function
+## Modification of Marcos' function
 #' Get the registered areas
 #' @param cell.data.list
 #' @param registration
@@ -2077,118 +1931,77 @@ get.registered.areas.bu <- function(regions, registration, conversion.factor = 1
   return(areas)
 }
 
-#____
 
-#' ## Modification of Marcos' function
-#'
-#' #' normalize registered areas
+
+#' #' Modification of Marcos' combine regions function
 #' #'
-#' #' @param cell_table cell_tables list from get_cell_table()
-#' #' @param total_volumes computed total volumes list
+#' #' @param normalized_counts list with length = No. channels., each channel element is df of normalized counts
+#' #' @param keywords a vector of keywords with which to simplify the region names
 #' #'
-#' #' @return
+#' #' @return a list with length = No. channels. Each channel df has simplified parent acronyms and names is summed from original df based on them.
 #' #'
 #' #' @examples
-#' normalize.registered.areas <- function(cell_table, total_volumes){
+#' simplify.regions <- function(normalized_counts, keywords = c("layer","part","stratum","division")) {
 #'
-#'   # Initializing a normalized cell count list that will store df of  normalized cell counts
-#'   normalized.list <- vector(mode = "list", length = length(cell_table))
-#'   names(normalized.list) <- names(cell_table)
 #'
-#'   for(channel in names(cell_table)) {
+#'   # Initialize empty list vector to store the simplified counts
+#'   simplified_counts <- vector(mode = "list", length = length(normalized_counts))
+#'   names(simplified_counts) <- names(normalized_counts)
 #'
-#'     # Get cell data for channel
-#'     cell.data <-  cell_table[[channel]]
+#'   for(channel in names(normalized_counts)) {
 #'
-#'     # Table tally of how many counts there are in a given region
-#'     counts <- as.data.frame(table(cell.data$right.hemisphere, cell.data$acronym), stringsAsFactors = FALSE)
-#'     names(counts) <- c("right.hemisphere","acronym","count")
+#'     # Extract the dataframe for one channel
+#'     simplified_counts_chan <- normalized_counts[[channel]]
 #'
-#'     # Merge the total areas with the counts df by acronym and hemisphere
-#'     norm_counts <- merge(counts, total_volumes, by=c("acronym","right.hemisphere"), all = TRUE)
-#'     norm_counts$normalized.count.by.area <- norm_counts$count/norm_counts$area.mm2
-#'     norm_counts$normalized.count.by.volume <- norm_counts$count/norm_counts$volume.mm3
+#'     # loop through each keyword
+#'     for (s in keywords) {
 #'
-#'     # Add acronym names
-#'     norm_counts$name <- as.character(wholebrain::name.from.acronym(norm_counts$acronym))
+#'       # Look for row indices where the names contain the keywords
+#'       k <- grep(s, simplified_counts_chan$name, value = FALSE, ignore.case = TRUE)
 #'
-#'     # store the data into the normalized list
-#'     normalized.list[[channel]] <- norm_counts %>% tidyr::drop_na() %>% tibble::as_tibble()
+#'       while(length(k) > 0){
+#'         # Store the parent acronym and full name
+#'         simplified_counts_chan$acronym[k] <- wholebrain::get.acronym.parent(simplified_counts_chan$acronym[k])
+#'         simplified_counts_chan$name[k] <- as.character(wholebrain::name.from.acronym(simplified_counts_chan$acronym[k]))
+#'
+#'         # Continue storing storing the parent names until there are no more that match the keyword
+#'         k <- grep(s, simplified_counts_chan$name, value = FALSE, ignore.case = TRUE)
+#'       }
+#'     }
+#'
+#'     # Check if the data has been collapsed by hemisphere
+#'     if (!"right.hemisphere" %in% names(simplified_counts_chan)){
+#'
+#'       # step to collapse by name/acronym
+#'       # simplified_counts_chan <- plyr::ddply(simplified_counts_chan, c("acronym", "name"), plyr::numcolwise(sum))
+#'
+#'       simplified_counts_chan <- dplyr::group_by(simplified_counts_chan, acronym, name) %>%
+#'         dplyr::summarise_at(c("count", "area.mm2", "volume.mm3"), sum) %>%
+#'         dplyr::mutate(normalized.count.by.area = count/area.mm2,
+#'                       normalized.count.by.volume = count/volume.mm3)
+#'
+#'     } else {
+#'       # step to collapse by name/acronym and hemisphere
+#'       # simplified_counts_chan <- plyr::ddply(simplified_counts_chan, c("acronym", "name", "right.hemisphere"), plyr::numcolwise(sum))
+#'
+#'       simplified_counts_chan <- dplyr::group_by(simplified_counts_chan, acronym, name, right.hemisphere) %>%
+#'         dplyr::summarise_at(c("count", "area.mm2", "volume.mm3"), sum) %>%
+#'         dplyr::mutate(normalized.count.by.area = count/area.mm2,
+#'                       normalized.count.by.volume = count/volume.mm3)
+#'     }
+#'
+#'     # # Recalculated normalized count by area
+#'     # simplified_counts_chan$normalized.count.by.area <- simplified_counts_chan$count/simplified_counts_chan$area.mm2
+#'     #
+#'     # # Recalculate normalized count by volume
+#'     # simplified_counts_chan$normalized.count.by.volume <- simplified_counts_chan$count/simplified_counts_chan$volume.mm3
+#'
+#'     # Store in simplified counts list
+#'     simplified_counts[[channel]] <- simplified_counts_chan
 #'   }
 #'
-#'   return(normalized.list)
+#'   return(simplified_counts)
 #' }
-
-
-#' Modification of Marcos' combine regions function
-#'
-#' @param normalized_counts list with length = No. channels., each channel element is df of normalized counts
-#' @param keywords a vector of keywords with which to simplify the region names
-#'
-#' @return a list with length = No. channels. Each channel df has simplified parent acronyms and names is summed from original df based on them.
-#'
-#' @examples
-simplify.regions <- function(normalized_counts, keywords = c("layer","part","stratum","division")) {
-
-
-  # Initialize empty list vector to store the simplified counts
-  simplified_counts <- vector(mode = "list", length = length(normalized_counts))
-  names(simplified_counts) <- names(normalized_counts)
-
-  for(channel in names(normalized_counts)) {
-
-    # Extract the dataframe for one channel
-    simplified_counts_chan <- normalized_counts[[channel]]
-
-    # loop through each keyword
-    for (s in keywords) {
-
-      # Look for row indices where the names contain the keywords
-      k <- grep(s, simplified_counts_chan$name, value = FALSE, ignore.case = TRUE)
-
-      while(length(k) > 0){
-        # Store the parent acronym and full name
-        simplified_counts_chan$acronym[k] <- wholebrain::get.acronym.parent(simplified_counts_chan$acronym[k])
-        simplified_counts_chan$name[k] <- as.character(wholebrain::name.from.acronym(simplified_counts_chan$acronym[k]))
-
-        # Continue storing storing the parent names until there are no more that match the keyword
-        k <- grep(s, simplified_counts_chan$name, value = FALSE, ignore.case = TRUE)
-      }
-    }
-
-    # Check if the data has been collapsed by hemisphere
-    if (!"right.hemisphere" %in% names(simplified_counts_chan)){
-
-      # step to collapse by name/acronym
-      # simplified_counts_chan <- plyr::ddply(simplified_counts_chan, c("acronym", "name"), plyr::numcolwise(sum))
-
-      simplified_counts_chan <- dplyr::group_by(simplified_counts_chan, acronym, name) %>%
-        dplyr::summarise_at(c("count", "area.mm2", "volume.mm3"), sum) %>%
-        dplyr::mutate(normalized.count.by.area = count/area.mm2,
-                      normalized.count.by.volume = count/volume.mm3)
-
-    } else {
-      # step to collapse by name/acronym and hemisphere
-      # simplified_counts_chan <- plyr::ddply(simplified_counts_chan, c("acronym", "name", "right.hemisphere"), plyr::numcolwise(sum))
-
-      simplified_counts_chan <- dplyr::group_by(simplified_counts_chan, acronym, name, right.hemisphere) %>%
-        dplyr::summarise_at(c("count", "area.mm2", "volume.mm3"), sum) %>%
-        dplyr::mutate(normalized.count.by.area = count/area.mm2,
-                      normalized.count.by.volume = count/volume.mm3)
-    }
-
-    # # Recalculated normalized count by area
-    # simplified_counts_chan$normalized.count.by.area <- simplified_counts_chan$count/simplified_counts_chan$area.mm2
-    #
-    # # Recalculate normalized count by volume
-    # simplified_counts_chan$normalized.count.by.volume <- simplified_counts_chan$count/simplified_counts_chan$volume.mm3
-
-    # Store in simplified counts list
-    simplified_counts[[channel]] <- simplified_counts_chan
-  }
-
-  return(simplified_counts)
-}
 
 
 
