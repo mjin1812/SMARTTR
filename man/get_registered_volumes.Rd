@@ -3,7 +3,7 @@
 \name{get_registered_volumes}
 \alias{get_registered_volumes}
 \alias{get_registered_volumes.slice}
-\title{get_registered_areas (generic function)}
+\title{get_registered_volumes (generic function)}
 \usage{
 get_registered_volumes(x, ...)
 

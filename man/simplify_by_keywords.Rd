@@ -7,13 +7,26 @@
 simplify_by_keywords(
   df,
   keywords = c("layer", "part", "stratum", "division", "leaflet", "Subgeniculate",
-    "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural")
+    "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural"),
+  ontology = "allen",
+  dont_fold = c("Dorsal part of the lateral geniculate complex",
+    "Ventral posterolateral nucleus of the thalamus, parvicellular part",
+    "Ventral posteromedial nucleus of the thalamus, parvicellular part",
+    "Ventral posterolateral nucleus of the thalamus, parvicellular part",
+    "Ventral posteromedial nucleus of the thalamus, parvicellular part",
+    "Substantia nigra")
 )
 }
 \arguments{
 \item{df}{(tibble) Must contain columns "acronym" and "name"}
 
-\item{keywords}{(vec, default = c("layer","part","stratum","division")) a list of keywords to simplify based on region name.}
+\item{keywords}{(vec, default = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural")) a list of keywords to simplify based on region name.}
+
+\item{ontology}{(str, default = "allen") Region ontology to use. options = "allen" or "unified"}
+
+\item{dont_fold}{(vec, default = c("Dorsal part of the lateral geniculate complex", "Ventral posterolateral nucleus of the thalamus, parvicellular part", "
+Ventral posteromedial nucleus of the thalamus, parvicellular part","Ventral posterolateral nucleus of the thalamus, parvicellular part",
+"Ventral posteromedial nucleus of the thalamus, parvicellular part","Substantia nigra")) Regions that are exceptions to being folded into their parent regions.}
 }
 \value{
 df

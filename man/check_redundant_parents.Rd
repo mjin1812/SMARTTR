@@ -5,10 +5,12 @@
 \title{Check for redundant parent regions included in a list of acronyms in a plate. For example, if all the the subregions for
 the hypothalamus are represented, the HY should not be included in the list.}
 \usage{
-check_redundant_parents(acronyms)
+check_redundant_parents(acronyms, ontology = "allen")
 }
 \arguments{
 \item{acronyms}{(vec) a vector of acronyms to check for possible parents that are redundantly included in the vector.}
+
+\item{ontology}{(str, default = "allen") Region ontology to use. options = "allen" or "unified"}
 }
 \value{
 A list containing two elements: one vector of unique child acronyms, a vector of the parent regions considered redundant

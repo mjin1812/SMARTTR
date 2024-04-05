@@ -7,11 +7,16 @@
 plot_normalized_counts(
   e,
   channels = c("cfos", "eyfp", "colabel"),
-  groups = c("Context", "Shock"),
-  colors = c("white", "lightblue"),
+  by = c("sex", "group"),
+  values = list(c("female", "non"), c("female", "agg"), c("female", "control"),
+    c("male", "agg"), c("male", "control")),
+  colors = c("white", "lightblue", "black", "red", "green"),
+  ontology = "allen",
   regions_to_remove = c("CTX", "grey", "MB", "TH", "HY"),
   title = NULL,
   unit_label = bquote(`Cell counts `("cells/mm"^3)),
+  anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB",
+    "HB", "CB"),
   height = 7,
   width = 20,
   region_label_angle = 50,
@@ -29,9 +34,16 @@ plot_normalized_counts(
 
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel"))}
 
-\item{groups}{(str, default = c("Context", "Shock")) The groups to be plotted. The order of this vector will dictate the ordering of grouped bars in the resulting plot.}
+\item{by}{(str) Attribute names to group by, e.g. c("sex", "group")}
 
-\item{colors}{(str, default = c("white", "lightblue")) Hexadecimal codes corresponding to the groups (respectively) to plot.}
+\item{values}{(list) A list with a length the number of groups desired for plotting. Each element of the list is a vector in the order of the
+the respective values for the attributes entered for the \code{by} parameter to generate a specific analysis group. Each vector should be unique to generate a
+uniquely colored bar.
+e.g.values = c("female", "AD").}
+
+\item{colors}{(str, default = c("white", "lightblue")) Hexadecimal codes corresponding to the groups (respectively) to plot. The length of this vector should be the length of the list.}
+
+\item{ontology}{(str, default = "allen") Region ontology to use. options = "allen" or "unified"}
 
 \item{regions_to_remove}{(str, default = c("CTX", "grey", "MB", "TH", "HY")) A vector of strings corresponding to regions to remove from the plot. The default regions are parent regions from which their subregions have already been plotted. Set to NULL,
 FALSE, NULL or NA  to avoid removing regions.}
@@ -39,6 +51,9 @@ FALSE, NULL or NA  to avoid removing regions.}
 \item{title}{(str, default = NULL) An optional title for the plot}
 
 \item{unit_label}{(str, default = bquote('Cell counts '('cells/mm'^3))) Default unit label for the graphs}
+
+\item{anatomical.order}{(default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order
+The exact acronyms used will be ontology dependent so make sure that these match the \code{ontology} parameter}
 
 \item{height}{height of the plot in inches.}
 

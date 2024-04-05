@@ -2,7 +2,15 @@
 % Please edit documentation in R/mapping_functions.R
 \name{make.filter}
 \alias{make.filter}
-\title{Make a filter for the cfos or eyfp channel}
+\title{#' Modification of Marcos' combine regions function
+#'
+#' @param normalized_counts list with length = No. channels., each channel element is df of normalized counts
+#' @param keywords a vector of keywords with which to simplify the region names
+#'
+#' @return a list with length = No. channels. Each channel df has simplified parent acronyms and names is summed from original df based on them.
+#'
+#' @examples
+simplify.regions <- function(normalized_counts, keywords = c("layer","part","stratum","division")) {}
 \usage{
 make.filter(
   data,
@@ -17,5 +25,21 @@ make.filter(
 
 }
 \description{
-Make a filter for the cfos or eyfp channel
+#' Modification of Marcos' combine regions function
+#'
+#' @param normalized_counts list with length = No. channels., each channel element is df of normalized counts
+#' @param keywords a vector of keywords with which to simplify the region names
+#'
+#' @return a list with length = No. channels. Each channel df has simplified parent acronyms and names is summed from original df based on them.
+#'
+#' @examples
+simplify.regions <- function(normalized_counts, keywords = c("layer","part","stratum","division")) {
 }
+\details{
+
+}
+\section{Initialize empty list vector to store the simplified counts}{
+simplified_counts <- vector(mode = "list", length = length(normalized_counts))
+names(simplified_counts) <- names(normalized_counts)
+}
+

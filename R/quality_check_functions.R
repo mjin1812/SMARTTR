@@ -141,7 +141,7 @@ enough_mice_per_group <- function(e, by = c("group", "sex"), min_n = 5, remove =
     }
 
     ## Keep only common regions found across all groups
-    common_regions <- get_common_regions(mouse_count, by)
+    n_comb <- get_common_regions(mouse_count, by)
     to_keep <- which(e$combined_normalized_counts[[channel]]$acronym %in% common_regions$acronym)
     e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]][to_keep,]
 
@@ -179,15 +179,14 @@ enough_mice_per_group <- function(e, by = c("group", "sex"), min_n = 5, remove =
 #' @examples
 get_common_regions <- function(mouse_count, by){
   # keeps track of number of group combinations
-  combs <- 1
-  for (attrib in by){
-    combs <-combs*mouse_count[[attrib]] %>% unique() %>% length()
-  }
+
+  combs <- mouse_count %>% dplyr::ungroup() %>% dplyr::select(dplyr::all_of(by)) %>% dplyr::distinct()
+  n_combs <- dim(combs)[1]
 
   common_regions <-  mouse_count %>% dplyr::group_by(across(all_of(c("acronym")))) %>%
     dplyr::count() %>% dplyr::rename(group_n = n)
 
-  common_regions <- common_regions[common_regions$group_n == combs, "acronym"]
+  common_regions <- common_regions[common_regions$group_n == n_combs, "acronym"]
   return(common_regions)
 }
 

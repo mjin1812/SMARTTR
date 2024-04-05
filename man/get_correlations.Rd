@@ -11,6 +11,9 @@ get_correlations(
   channels = c("cfos", "eyfp", "colabel"),
   p_adjust_method = "BH",
   alpha = 0.05,
+  ontology = "allen",
+  anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB",
+    "HB", "CB"),
   region_order = NULL
 )
 }
@@ -29,6 +32,11 @@ Apply the named method to control for the inflated false discovery rate or famil
 to keep "raw" p values. See also \code{\link[stats:p.adjust]{stats::p.adjust()}} for the correction options.}
 
 \item{alpha}{(num, default = 0.05) The alpha level for significance applied AFTER p-adjustment.}
+
+\item{ontology}{(str, default = "allen") Region ontology to use. options = "allen" or "unified"}
+
+\item{anatomical.order}{(vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that sorts all subregions in the dataset for grouped
+positioning in the correlation matrix. Supercedes \code{region_order} parameter.}
 
 \item{region_order}{(list, default = NULL)  optional list with the first element named "acronym" supplying a vector as region acronyms and the second element named
 "order"  supplying an vector of integers determining numerical order, e.g. 1, 1, 2, 2.}

@@ -13,7 +13,7 @@ A dataframe
 ontology
 }
 \description{
-A custom ontology where the hippocampus (CA1, CA2, CA3, and DG) and it's subregions are split into dorsal and ventral regions and acronyms.
+A custom adjustment of the Allen Common Coordinate Framework where the hippocampus (CA1, CA2, CA3, and DG) and it's subregions are split into dorsal and ventral regions and acronyms.
 They are given unique IDs and parent ids except for the c("dCA1", "dCA2", "dCA3", "dDG") and c("vCA1", "vCA2", "vCA3", "vDG"), whose parents are c(CA1, CA2, CA3, and DG)
 respectively.
 }
