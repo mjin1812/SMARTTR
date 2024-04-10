@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">SMARTR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,13 +94,8 @@ groups used in this experiment.</p>
 <h3 id="load-the-libraries-and-data-needed">1.1 Load the libraries and data needed<a class="anchor" aria-label="anchor" href="#load-the-libraries-and-data-needed"></a>
 </h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SMARTR</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: replacing previous import 'lifecycle::last_warnings' by</span></span>
-<span><span class="co">## 'rlang::last_warnings' when loading 'tibble'</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: replacing previous import 'lifecycle::last_warnings' by</span></span>
-<span><span class="co">## 'rlang::last_warnings' when loading 'pillar'</span></span></code></pre>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SMARTR</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Install rstatix if it is not installed already</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/rstatix/" class="external-link">rstatix</a></span><span class="op">)</span> </span>
@@ -108,7 +103,7 @@ groups used in this experiment.</p>
 <span><span class="co"># Re-routing the quartz function call for Macs to the X11 graphics call for windows/linux setups</span></span>
 <span><span class="va">quartz</span> <span class="op">&lt;-</span> <span class="va">x11</span></span></code></pre></div>
 <p>Load the experiment object</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load the experiment data </span></span>
 <span><span class="co"># Change to point to the experiment object downloaded</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">"V:\\Michelle_Jin\\Wholebrain pipeline\\LH_analysis\\learned_helplessness_experiment.RDATA"</span><span class="op">)</span></span>
@@ -156,7 +151,7 @@ groups used in this experiment.</p>
 <span><span class="co">## [1] "V:\\Michelle_Jin\\Wholebrain pipeline\\LH_analysis"</span></span></code></pre>
 <p>Print the names of the current data stored within the experiment
 object</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">lh</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "mice"</span></span></code></pre>
 </div>
@@ -173,7 +168,7 @@ subjects.</p>
 <p>In our dataset <code>Shock</code> and <code>Context</code> are stored
 in the flexible generic attribute <code>group</code>, so we use that for
 the <code>by</code> variable.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combine_cell_counts.html">combine_cell_counts</a></span><span class="op">(</span><span class="va">lh</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'group'</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># print the name of stored data</span></span>
@@ -183,10 +178,22 @@ the <code>by</code> variable.</p>
 <p>There should now be a new list called
 <code>combined_normalized_counts</code>, where each element is a
 combined normalized cell count table per channel.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># print the names of each channel cell count table</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">lh</span><span class="op">$</span><span class="va">combined_normalized_counts</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "cfos"    "eyfp"    "colabel"</span></span></code></pre>
+<p>If there are specific regions you would like to exclude from your
+analysis, you can do so using the code below by entering region acronyms
+into the <code>toremove</code> vector. Here, we demonstrate removing the
+CA2 region.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">toremove</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CA2"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">channels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">lh</span><span class="op">$</span><span class="va">combined_normalized_counts</span><span class="op">)</span></span>
+<span><span class="va">toremove</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">toremove</span>, <span class="fu">SMARTR</span><span class="fu">::</span><span class="fu"><a href="../reference/get.sub.structure.html">get.sub.structure</a></span><span class="op">(</span><span class="va">toremove</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">channel</span> <span class="kw">in</span> <span class="va">channels</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">lh</span><span class="op">$</span><span class="va">combined_normalized_counts</span><span class="op">[[</span><span class="va">channel</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">lh</span><span class="op">$</span><span class="va">combined_normalized_counts</span><span class="op">[[</span><span class="va">channel</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">acronym</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">toremove</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="normalize-colabelled-counts-by-a-particular-channel-">1.3 Normalize colabelled counts by a particular channel.<a class="anchor" aria-label="anchor" href="#normalize-colabelled-counts-by-a-particular-channel-"></a>
@@ -200,7 +207,7 @@ an original ensemble population (colabel+/eYFP+) or the number of
 reactivated cells as a proportion of the ensembles active during memory
 expression (colabel+/c-Fos+). We leave the choice to use either/both of
 these denominators to further analyze the data up to users.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Normalize the colabelled counts by a particular channel</span></span>
 <span><span class="va">lh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_colabel_counts.html">normalize_colabel_counts</a></span><span class="op">(</span><span class="va">lh</span>, denominator_channel <span class="op">=</span> <span class="st">"eyfp"</span><span class="op">)</span></span>
 <span></span>
@@ -224,21 +231,44 @@ channels.<a class="anchor" aria-label="anchor" href="#quality-checking-all-regio
 Removing all region outliers where counts above or below 2 standard
 deviations of the group mean are removed. This is evaluated in
 independently per channel.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/find_outlier_counts.html">find_outlier_counts</a></span><span class="op">(</span><span class="va">lh</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span><span class="op">)</span>, n_sd <span class="op">=</span> <span class="fl">2</span>, remove <span class="op">=</span> <span class="cn">TRUE</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## There were 1 outliers found. Outliers were based on within group mean and standard deviation.</span></span></code></pre>
 <pre><code><span><span class="co">## Saved regions outliers dataframe at:</span></span>
 <span><span class="co">## V:\Michelle_Jin\Wholebrain pipeline\LH_analysis/region_count_outliers_cfos.csv</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 1 x 10</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Groups:   acronym [1]</span></span></span>
+<span><span class="co">##   mouse_ID group acronym name   count area.mm2 volume.mm3 normalized.count.by.~1</span></span>
+<span><span class="co">##      <span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>   </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>  </span><span style="color: #949494;font-style: italic;">&lt;int&gt;</span><span>    </span><span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span><span>      </span><span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span><span>                  </span><span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span><span>      732 Shock RE      Nucle~   108   0.066</span><span style="text-decoration: underline;">6</span><span>   0.000</span><span style="text-decoration: underline;">600</span><span>                  </span><span style="text-decoration: underline;">1</span><span>621.</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># i abbreviated name: 1: normalized.count.by.area</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># i 2 more variables: normalized.count.by.volume &lt;dbl&gt;, outlier &lt;lgl&gt;</span></span></span></code></pre>
 <pre><code><span><span class="co">## There were 3 outliers found. Outliers were based on within group mean and standard deviation.</span></span></code></pre>
 <pre><code><span><span class="co">## Saved regions outliers dataframe at:</span></span>
 <span><span class="co">## V:\Michelle_Jin\Wholebrain pipeline\LH_analysis/region_count_outliers_eyfp.csv</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 3 x 10</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Groups:   acronym [3]</span></span></span>
+<span><span class="co">##   mouse_ID group acronym name   count area.mm2 volume.mm3 normalized.count.by.~1</span></span>
+<span><span class="co">##      <span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>   </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>  </span><span style="color: #949494;font-style: italic;">&lt;int&gt;</span><span>    </span><span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span><span>      </span><span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span><span>                  </span><span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span><span>     </span><span style="text-decoration: underline;">9</span><span>755 Shock FC      Fasci~    24    0.114    0.001</span><span style="text-decoration: underline;">03</span><span>                  210. </span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span><span>      669 Shock OT      Olfac~   309    2.14     0.019</span><span style="text-decoration: underline;">3</span><span>                   144. </span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span><span>      669 Shock SI      Subst~   129    2.51     0.022</span><span style="text-decoration: underline;">6</span><span>                    51.5</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># i abbreviated name: 1: normalized.count.by.area</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># i 2 more variables: normalized.count.by.volume &lt;dbl&gt;, outlier &lt;lgl&gt;</span></span></span></code></pre>
 <pre><code><span><span class="co">## There were 1 outliers found. Outliers were based on within group mean and standard deviation.</span></span></code></pre>
 <pre><code><span><span class="co">## Saved regions outliers dataframe at:</span></span>
 <span><span class="co">## V:\Michelle_Jin\Wholebrain pipeline\LH_analysis/region_count_outliers_colabel.csv</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 1 x 10</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Groups:   acronym [1]</span></span></span>
+<span><span class="co">##   mouse_ID group acronym name   count area.mm2 volume.mm3 normalized.count.by.~1</span></span>
+<span><span class="co">##      <span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>   </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>  </span><span style="color: #949494;font-style: italic;">&lt;int&gt;</span><span>    </span><span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span><span>      </span><span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span><span>                  </span><span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span><span>      669 Shock LA      Later~     3    0.151    0.001</span><span style="text-decoration: underline;">36</span><span>                   19.8</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># i abbreviated name: 1: normalized.count.by.area</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># i 2 more variables: normalized.count.by.volume &lt;dbl&gt;, outlier &lt;lgl&gt;</span></span></span></code></pre>
 <pre><code><span><span class="co">## No regions outliers were found within each group for channel colabel_over_eyfp</span></span></code></pre>
 <p>Making sure a minimum of mice per group are represented in each
 region count.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enough_mice_per_group.html">enough_mice_per_group</a></span><span class="op">(</span><span class="va">lh</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span><span class="op">)</span>, min_n <span class="op">=</span> <span class="fl">4</span>, remove <span class="op">=</span> <span class="cn">TRUE</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Removed regions for cfos channel.</span></span></code></pre>
 <pre><code><span><span class="co">## Removed regions for eyfp channel.</span></span></code></pre>
@@ -279,7 +309,7 @@ multiple comparisons<a class="anchor" aria-label="anchor" href="#perform-pairwis
 <p>The code below uses the FDR (Benjamini-Hochberg) method for adjusting
 the p-values for multiple comparisons. It is done separately for the
 eYFP, c-Fos, and colabel/eYFP channels.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">stats.eyfp</span> <span class="op">&lt;-</span> <span class="va">lh</span><span class="op">$</span><span class="va">combined_normalized_counts</span><span class="op">$</span><span class="va">eyfp</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">acronym</span>, <span class="va">name</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rpkgs.datanovia.com/rstatix/reference/t_test.html" class="external-link">t_test</a></span><span class="op">(</span><span class="va">normalized.count.by.volume</span><span class="op">~</span><span class="va">group</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rpkgs.datanovia.com/rstatix/reference/adjust_pvalue.html" class="external-link">adjust_pvalue</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"BH"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://rpkgs.datanovia.com/rstatix/reference/add_significance.html" class="external-link">add_significance</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -295,7 +325,7 @@ eYFP, c-Fos, and colabel/eYFP channels.</p>
 </h4>
 <p>The following code pivots the stats table to long form to concatenate
 with the raw normalized counts</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wide_eyfp_norm_counts</span> <span class="op">&lt;-</span> <span class="va">lh</span><span class="op">$</span><span class="va">combined_normalized_counts</span><span class="op">$</span><span class="va">eyfp</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">group</span>, <span class="va">acronym</span>, <span class="va">name</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>mean.normalized.count.by.volume <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">normalized.count.by.volume</span><span class="op">)</span>,</span>
 <span>      sem.normalized.count.by.volume <span class="op">=</span> <span class="fu">SMARTR</span><span class="fu">::</span><span class="fu"><a href="../reference/sem.html">sem</a></span><span class="op">(</span><span class="va">normalized.count.by.volume</span><span class="op">)</span>,</span>
@@ -311,7 +341,7 @@ with the raw normalized counts</p>
 <div class="section level4">
 <h4 id="create-summary-table-for-c-fos">Create summary table for c-Fos<a class="anchor" aria-label="anchor" href="#create-summary-table-for-c-fos"></a>
 </h4>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wide_cfos_norm_counts</span> <span class="op">&lt;-</span> <span class="va">lh</span><span class="op">$</span><span class="va">combined_normalized_counts</span><span class="op">$</span><span class="va">cfos</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">group</span>, <span class="va">acronym</span>, <span class="va">name</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>mean.normalized.count.by.volume <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">normalized.count.by.volume</span><span class="op">)</span>,</span>
 <span>      sem.normalized.count.by.volume <span class="op">=</span> <span class="fu">SMARTR</span><span class="fu">::</span><span class="fu"><a href="../reference/sem.html">sem</a></span><span class="op">(</span><span class="va">normalized.count.by.volume</span><span class="op">)</span>,</span>
@@ -329,7 +359,7 @@ with the raw normalized counts</p>
 <div class="section level4">
 <h4 id="create-summary-table-for-colabeleyfp-channels">Create summary table for colabel/eYFP channels<a class="anchor" aria-label="anchor" href="#create-summary-table-for-colabeleyfp-channels"></a>
 </h4>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wide_colabel_over_eyfp_norm_counts</span> <span class="op">&lt;-</span> <span class="va">lh</span><span class="op">$</span><span class="va">combined_normalized_counts</span><span class="op">$</span><span class="va">colabel_over_eyfp</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">group</span>, <span class="va">acronym</span>, <span class="va">name</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>mean.normalized.count.by.volume <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">normalized.count.by.volume</span><span class="op">)</span>,</span>
 <span>      sem.normalized.count.by.volume <span class="op">=</span> <span class="fu">SMARTR</span><span class="fu">::</span><span class="fu"><a href="../reference/sem.html">sem</a></span><span class="op">(</span><span class="va">normalized.count.by.volume</span><span class="op">)</span>,</span>
@@ -367,21 +397,21 @@ and Shock groups. For this channel we have decided to use an alpha
 threshold of 0.005 for indicating significantly correlated regions. You
 can add additional channels to process, if you would like to use the
 same alpha across all channels.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get correlations for the eyfp </span></span>
 <span><span class="va">lh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_correlations.html">get_correlations</a></span><span class="op">(</span><span class="va">lh</span>,</span>
 <span>                       by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span><span class="op">)</span>,</span>
 <span>                       values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Context"</span><span class="op">)</span>,</span>
 <span>                       channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"eyfp"</span><span class="op">)</span>,</span>
 <span>                       p_adjust_method <span class="op">=</span> <span class="st">"none"</span>,</span>
-<span>                       alpha <span class="op">=</span> <span class="fl">0.005</span><span class="op">)</span></span>
+<span>                       alpha <span class="op">=</span>  <span class="fl">0.01</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">lh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_correlations.html">get_correlations</a></span><span class="op">(</span><span class="va">lh</span>,</span>
 <span>                       by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span><span class="op">)</span>,</span>
 <span>                       values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Shock"</span><span class="op">)</span>,</span>
 <span>                       channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"eyfp"</span><span class="op">)</span>,</span>
 <span>                       p_adjust_method <span class="op">=</span> <span class="st">"none"</span>,</span>
-<span>                       alpha <span class="op">=</span> <span class="fl">0.005</span><span class="op">)</span></span></code></pre></div>
+<span>                       alpha <span class="op">=</span>  <span class="fl">0.01</span><span class="op">)</span></span></code></pre></div>
 <p>Because the values of the grouping variables identify a unique
 analysis group, they are used to name the stored results in the
 experiment separated, with values separated by an “_“. For example, in
@@ -392,7 +422,7 @@ results would be stored as a list under the name <code>female_AD</code>.
 We will refer to this as the <code>correlation_list_name</code>.</p>
 <p>You can check all the <code>correlation_list_name</code> values you
 have by printing them:</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">lh</span><span class="op">$</span><span class="va">correlation_list</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "Context" "Shock"</span></span></code></pre>
 </div>
@@ -414,17 +444,17 @@ applied. Multiple comparisons adjustment will change the p-value that is
 later plotted in a volcano plot.</p>
 <p>In the example below, we will compare the <code>Context</code>
 analysis group with the <code>Shock</code> group.</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correlation_diff_permutation.html">correlation_diff_permutation</a></span><span class="op">(</span><span class="va">lh</span>,</span>
 <span>                                   correlation_list_name_1 <span class="op">=</span> <span class="st">"Context"</span>,</span>
 <span>                                   correlation_list_name_2 <span class="op">=</span> <span class="st">"Shock"</span>,</span>
 <span>                                   channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"eyfp"</span><span class="op">)</span>,</span>
 <span>                                   p_adjust_method <span class="op">=</span> <span class="st">"none"</span>,</span>
-<span>                                   alpha <span class="op">=</span> <span class="fl">0.001</span></span>
+<span>                                   alpha <span class="op">=</span> <span class="fl">0.01</span></span>
 <span>                                   <span class="op">)</span></span></code></pre></div>
 <p>The results of the analysis are stored within the experiment object
 in list called permutation_p_matrix</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">lh</span><span class="op">$</span><span class="va">permutation_p_matrix</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "Context_vs_Shock"</span></span></code></pre>
 </div>
@@ -440,15 +470,17 @@ is included in the networks based on p-values of pairwise-region
 correlation coefficients. To keep the edges include in the network the
 same as those indicated as significant in correlation heatmaps, set the
 <code>alpha</code> parameter to be the same.</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_networks.html">create_networks</a></span><span class="op">(</span><span class="va">lh</span>,</span>
 <span>                      correlation_list_name <span class="op">=</span> <span class="st">"Context"</span>,</span>
 <span>                      channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"eyfp"</span><span class="op">)</span>,</span>
-<span>                      alpha <span class="op">=</span> <span class="fl">0.005</span><span class="op">)</span></span>
+<span>                      alpha <span class="op">=</span> <span class="fl">0.01</span>,</span>
+<span>                      pearson_thresh <span class="op">=</span> <span class="fl">.9</span><span class="op">)</span></span>
 <span><span class="va">lh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_networks.html">create_networks</a></span><span class="op">(</span><span class="va">lh</span>,</span>
 <span>                      correlation_list_name <span class="op">=</span> <span class="st">"Shock"</span>,</span>
 <span>                      channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"eyfp"</span><span class="op">)</span>,</span>
-<span>                      alpha <span class="op">=</span> <span class="fl">0.005</span><span class="op">)</span></span></code></pre></div>
+<span>                      alpha <span class="op">=</span> <span class="fl">0.01</span>,</span>
+<span>                      pearson_thresh <span class="op">=</span> <span class="fl">.9</span><span class="op">)</span></span></code></pre></div>
 <p>After running this function,a network object for each channel per
 analysis group was created using tidygraph and they have been stored in
 our experiment object. We can access the data with
@@ -467,7 +499,7 @@ the parameter network_names.</p>
 network summary statistics as csv files in the experiment object folder.
 This is handy if you would prefer to graph these values externally in
 another software, such as Graphpad Prism instead of R.</p>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summarise_networks.html">summarise_networks</a></span><span class="op">(</span><span class="va">lh</span>,</span>
 <span>                         channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"eyfp"</span><span class="op">)</span>,</span>
 <span>                         network_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Context"</span>, <span class="st">"Shock"</span><span class="op">)</span>,</span>
@@ -475,7 +507,7 @@ another software, such as Graphpad Prism instead of R.</p>
 <span>                         save_degree_distribution <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                         save_betweenness_distribution <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                         save_efficiency_distribution <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Joining, by = "group"Joining, by = "group"</span></span></code></pre>
+<pre><code><span><span class="co">## Joining with `by = join_by(group)`Joining with `by = join_by(group)`</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -508,7 +540,7 @@ attributes such as <code>age</code> or <code>sex</code>.</p>
 <div class="section level4">
 <h4 id="plotting-all-regions-with-mapped-eyfp-counts">Plotting all regions with mapped eYFP counts<a class="anchor" aria-label="anchor" href="#plotting-all-regions-with-mapped-eyfp-counts"></a>
 </h4>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chose the group colors for the eyfp channel to plot as a hexadecimal color code</span></span>
 <span><span class="va">eyfp.colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Context <span class="op">=</span> <span class="st">"#FFFFFF"</span>, Shock <span class="op">=</span> <span class="st">"#028A0F"</span><span class="op">)</span></span>
 <span></span>
@@ -516,8 +548,8 @@ attributes such as <code>age</code> or <code>sex</code>.</p>
 <span><span class="co"># Plot a long region bar plot</span></span>
 <span><span class="fu"><a href="../reference/plot_normalized_counts.html">plot_normalized_counts</a></span><span class="op">(</span>e <span class="op">=</span> <span class="va">lh</span>,</span>
 <span>                       channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"eyfp"</span><span class="op">)</span>,</span>
-<span>                       groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Context"</span>, <span class="st">"Shock"</span><span class="op">)</span>,</span>
-<span>                       regions_to_remove <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CTX"</span>, <span class="st">"grey"</span>, <span class="st">"MB"</span>, <span class="st">"TH"</span>, <span class="st">"HY"</span>, <span class="st">"IPN"</span><span class="op">)</span>, <span class="co"># These are parent regions, whose subregions are already mapped. We can remove them from the plot.</span></span>
+<span>                       by <span class="op">=</span> <span class="st">"group"</span>,</span>
+<span>                       values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Context"</span>, <span class="st">"Shock"</span><span class="op">)</span>,</span>
 <span>                       colors <span class="op">=</span> <span class="va">eyfp.colors</span>,</span>
 <span>                       title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                       height <span class="op">=</span> <span class="fl">11</span>, <span class="co"># Specify the height of the saved plot in inches</span></span>
@@ -527,6 +559,10 @@ attributes such as <code>age</code> or <code>sex</code>.</p>
 <span>                       print_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                       flip_axis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                       save_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                       legend.justification <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,</span>
+<span>                       legend.position <span class="op">=</span> <span class="st">"inside"</span>,</span>
+<span>                       legend.position.inside <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="fl">0.05</span><span class="op">)</span>,</span>
+<span>                       legend.direction <span class="op">=</span> <span class="st">"vertical"</span>,</span>
 <span>                       facet_background_color <span class="op">=</span> <span class="st">"#FFFFFF"</span>,</span>
 <span>                       image_ext <span class="op">=</span> <span class="st">".pdf"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## $eyfp</span></span></code></pre>
@@ -536,7 +572,7 @@ function can easily be called for the other channels.</p>
 <div class="section level5">
 <h5 id="plotting-all-regions-with-mapped-c-fos-counts">Plotting all regions with mapped c-Fos counts<a class="anchor" aria-label="anchor" href="#plotting-all-regions-with-mapped-c-fos-counts"></a>
 </h5>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chose the group colors for the cfos channel to plot as a hexadecimal color code</span></span>
 <span><span class="va">cfos.colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Context <span class="op">=</span> <span class="st">"#FFFFFF"</span>, Shock <span class="op">=</span> <span class="st">"#ff2a04"</span><span class="op">)</span></span>
 <span></span>
@@ -544,8 +580,8 @@ function can easily be called for the other channels.</p>
 <span><span class="co"># Plot a long region bar plot</span></span>
 <span><span class="fu"><a href="../reference/plot_normalized_counts.html">plot_normalized_counts</a></span><span class="op">(</span>e <span class="op">=</span> <span class="va">lh</span>,</span>
 <span>                       channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cfos"</span><span class="op">)</span>,</span>
-<span>                       groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Context"</span>, <span class="st">"Shock"</span><span class="op">)</span>,</span>
-<span>                       regions_to_remove <span class="op">=</span> <span class="cn">NULL</span>, <span class="co"># These are parent regions, whose subregions are already mapped. We can remove them from the plot.</span></span>
+<span>                       by <span class="op">=</span> <span class="st">"group"</span>,</span>
+<span>                       values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Context"</span>, <span class="st">"Shock"</span><span class="op">)</span>,</span>
 <span>                       colors <span class="op">=</span> <span class="va">cfos.colors</span>,</span>
 <span>                       title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                       height <span class="op">=</span> <span class="fl">11</span>, <span class="co"># Specify the height of the saved plot in inches</span></span>
@@ -555,6 +591,10 @@ function can easily be called for the other channels.</p>
 <span>                       print_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                       flip_axis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                       save_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                       legend.justification <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,</span>
+<span>                       legend.position <span class="op">=</span> <span class="st">"inside"</span>,</span>
+<span>                       legend.position.inside <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="fl">0.05</span><span class="op">)</span>,</span>
+<span>                       legend.direction <span class="op">=</span> <span class="st">"vertical"</span>,</span>
 <span>                       facet_background_color <span class="op">=</span> <span class="st">"#FFFFFF"</span>,</span>
 <span>                       image_ext <span class="op">=</span> <span class="st">".pdf"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## $cfos</span></span></code></pre>
@@ -562,15 +602,15 @@ function can easily be called for the other channels.</p>
 <div class="section level5">
 <h5 id="plotting-all-regions-with-mapped-colabeleyfp-counts">Plotting all regions with mapped colabel/eYFP counts<a class="anchor" aria-label="anchor" href="#plotting-all-regions-with-mapped-colabeleyfp-counts"></a>
 </h5>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chose the group colors for the colabel channel to plot as a hexadecimal color code</span></span>
 <span><span class="va">colabel.colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Context <span class="op">=</span> <span class="st">"#FFFFFF"</span>, Shock <span class="op">=</span> <span class="st">"#ffc845"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plot_normalized_counts.html">plot_normalized_counts</a></span><span class="op">(</span>e <span class="op">=</span> <span class="va">lh</span>,</span>
 <span>                       channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"colabel_over_eyfp"</span><span class="op">)</span>,</span>
-<span>                       groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Context"</span>, <span class="st">"Shock"</span><span class="op">)</span>,</span>
+<span>                       by <span class="op">=</span> <span class="st">"group"</span>,</span>
+<span>                       values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Context"</span>, <span class="st">"Shock"</span><span class="op">)</span>,</span>
 <span>                       colors <span class="op">=</span> <span class="va">colabel.colors</span>,</span>
-<span>                       regions_to_remove <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                       title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                       height <span class="op">=</span> <span class="fl">11</span>,</span>
 <span>                       width <span class="op">=</span> <span class="fl">7.5</span>,</span>
@@ -580,6 +620,10 @@ function can easily be called for the other channels.</p>
 <span>                       print_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                       flip_axis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                       save_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                       legend.justification <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,</span>
+<span>                       legend.position <span class="op">=</span> <span class="st">"inside"</span>,</span>
+<span>                       legend.position.inside <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="fl">0.85</span><span class="op">)</span>,</span>
+<span>                       legend.direction <span class="op">=</span> <span class="st">"vertical"</span>,</span>
 <span>                       facet_background_color <span class="op">=</span> <span class="st">"#e5f3e7"</span>,</span>
 <span>                       image_ext <span class="op">=</span> <span class="st">".pdf"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## $colabel_over_eyfp</span></span></code></pre>
@@ -600,7 +644,7 @@ of specific regions and their subregions of interest. Just enter in a
 few acronyms as a string vector into the <code>rois</code> parameter.
 Below we will plot any regions that are subregions of the the Dentate
 Gyrus (DG) or the Cornu Ammonis (CA).</p>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_percent_colabel.html">plot_percent_colabel</a></span><span class="op">(</span><span class="va">lh</span>,</span>
 <span>                     channel <span class="op">=</span> <span class="st">"eyfp"</span>, <span class="co"># Channel to be used as denominator in counts</span></span>
 <span>                     color_mapping <span class="op">=</span> <span class="st">"group"</span>,</span>
@@ -615,17 +659,22 @@ Gyrus (DG) or the Cornu Ammonis (CA).</p>
 <span><span class="co">##             regions of both channels will be used.</span></span>
 <span><span class="co">## Checking also for child regions of specified roi(s). Only rois and child rois that overlap with common</span></span>
 <span><span class="co">##             regions of both channels will be used.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: geom_hline(): Ignoring `mapping` because `yintercept` was provided.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: Removed 2 rows containing missing values (geom_point).</span></span>
+<pre><code><span><span class="co">## Warning: `geom_hline()`: Ignoring `mapping` because `yintercept` was</span></span>
+<span><span class="co">## provided.</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_point()`).</span></span>
 <span></span>
-<span><span class="co">## Warning: Removed 2 rows containing missing values (geom_point).</span></span>
+<span><span class="co">## Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_point()`).</span></span>
 <span></span>
-<span><span class="co">## Warning: Removed 2 rows containing missing values (geom_point).</span></span>
+<span><span class="co">## Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_point()`).</span></span>
 <span></span>
-<span><span class="co">## Warning: Removed 2 rows containing missing values (geom_point).</span></span></code></pre>
+<span><span class="co">## Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_point()`).</span></span></code></pre>
 <figure><img src="../reference/figures/Colabeled_over_eyfp_plot_by_group.svg" alt="Image" style="width: 500px;"><figcaption><em>Selectively mapped co-labelled regions normalized by eYFP
 counts.</em>
-</figcaption></figure><div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+</figcaption></figure><div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_percent_colabel.html">plot_percent_colabel</a></span><span class="op">(</span><span class="va">lh</span>,</span>
 <span>                     channel <span class="op">=</span> <span class="st">"cfos"</span>, <span class="co"># Channel to be used as denominator in counts</span></span>
 <span>                     color_mapping <span class="op">=</span> <span class="st">"group"</span>,</span>
@@ -640,7 +689,8 @@ counts.</em>
 <span><span class="co">##             regions of both channels will be used.</span></span>
 <span><span class="co">## Checking also for child regions of specified roi(s). Only rois and child rois that overlap with common</span></span>
 <span><span class="co">##             regions of both channels will be used.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: geom_hline(): Ignoring `mapping` because `yintercept` was provided.</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: `geom_hline()`: Ignoring `mapping` because `yintercept` was</span></span>
+<span><span class="co">## provided.</span></span></code></pre>
 <figure><img src="../reference/figures/Colabeled_over_cfos_plot_by_group.svg" alt="Image" style="width: 500px;"><figcaption><em>Selectively mapped co-labelled regions normalized by c-Fos
 count.</em>
 </figcaption></figure><blockquote>
@@ -658,7 +708,7 @@ correlations using the function
 name of the correlation list and the respective colors (in a hexadecimal
 string) corresponding to the channels that were specified in
 <code><a href="../reference/get_correlations.html">get_correlations()</a></code>.</p>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_correlation_heatmaps.html">plot_correlation_heatmaps</a></span><span class="op">(</span><span class="va">lh</span>,</span>
 <span>                          channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"eyfp"</span><span class="op">)</span>,</span>
 <span>                          correlation_list_name <span class="op">=</span> <span class="st">"Context"</span>,</span>
@@ -676,9 +726,11 @@ string) corresponding to the channels that were specified in
 <span>                          print_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                          colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"#00782e"</span><span class="op">)</span>,</span>
 <span>                          save_plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: Removed 16 rows containing missing values (geom_text).</span></span>
+<pre><code><span><span class="co">## Warning: Removed 16 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_text()`).</span></span>
 <span></span>
-<span><span class="co">## Warning: Removed 16 rows containing missing values (geom_text).</span></span></code></pre>
+<span><span class="co">## Warning: Removed 16 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_text()`).</span></span></code></pre>
 <figure><img src="../reference/figures/heatmap_Context_eyfp.png" alt="Image" style="width: 500px;"><figcaption><em>Regional correlation heatmap for eYFP activity in the Context
 group.</em>
 </figcaption></figure><figure><img src="../reference/figures/heatmap_Shock_eyfp.png" alt="Image" style="width: 500px;"><figcaption><em>Regional correlation heatmap for eYFP activity in the Inescapable
@@ -699,7 +751,7 @@ in the upper right or left quadrants, including those which intersect
 the significance line, indicate the most significantly different
 regional connections between the groups, which have pearson correlation
 differences with a magnitude &gt; 1.</p>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># User optional theme to define the aesthetics of the plot using ggplot2 syntax</span></span>
 <span><span class="va">plt_theme</span> <span class="op">&lt;-</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">34</span><span class="op">)</span>,</span>
@@ -708,9 +760,13 @@ differences with a magnitude &gt; 1.</p>
 <span>        plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span>, size <span class="op">=</span> <span class="fl">36</span><span class="op">)</span>,</span>
 <span>        axis.ticks.length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">5.5</span>,<span class="st">"points"</span><span class="op">)</span>,</span>
 <span>        axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span><span class="fl">34</span><span class="op">)</span>,</span>
-<span>        axis.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span> <span class="fl">34</span><span class="op">)</span><span class="op">)</span></span>
+<span>        axis.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span> <span class="fl">34</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: The `size` argument of `element_line()` is deprecated as of ggplot2</span></span>
+<span><span class="co">## 3.4.0.</span></span>
 <span></span>
-<span><span class="co"># Plot a volcano plot</span></span>
+<span><span class="co">## Warning: Please use the `linewidth` argument instead.</span></span></code></pre>
+<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Plot a volcano plot</span></span>
 <span><span class="fu"><a href="../reference/volcano_plot.html">volcano_plot</a></span><span class="op">(</span><span class="va">lh</span>,</span>
 <span>             permutation_comparison <span class="op">=</span> <span class="st">"Context_vs_Shock"</span>,</span>
 <span>             channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"eyfp"</span><span class="op">)</span>,</span>
@@ -730,7 +786,7 @@ coefficients change with <code><a href="../reference/parallel_coordinate_plot.ht
 region pairs from the volcano plot that are above the alpha level and
 have correlation coefficient differences greater than absolute one are
 included in this graph.</p>
-<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># User optional theme to define the aesthetics of the plot using ggplot2 syntax</span></span>
 <span><span class="va">plt_theme</span> <span class="op">&lt;-</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">34</span><span class="op">)</span>,</span>
@@ -756,8 +812,6 @@ included in this graph.</p>
 <span>                         label_size <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>                         plt_theme<span class="op">=</span> <span class="va">plt_theme</span></span>
 <span>                         <span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in dplyr::pull(df, nudge) * nudge_x: longer object length is not a</span></span>
-<span><span class="co">## multiple of shorter object length</span></span></code></pre>
 <pre><code><span><span class="co">## $eyfp</span></span></code></pre>
 <figure><img src="../reference/figures/Context_vs_Shock_parallel_coordinate_plot_eyfp_.png" alt="Image" style="width: 500px;"><figcaption><em>Parallel coordinate plot for the eYFP channel.</em>
 </figcaption></figure>
@@ -773,7 +827,7 @@ correlated connections. Additionally, you can further customize
 aesthetics by adding themes compatible with <a href="https://rdrr.io/cran/ggraph/man/theme_graph.html" class="external-link">ggraph</a> and
 <code>ggplot2</code> themes. Below we will plot the networks for the
 eyfp channel in Context and Inescapable Shock groups.</p>
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Custom ggplot and ggraph themes </span></span>
 <span><span class="va">graph_theme</span> <span class="op">&lt;-</span> <span class="fu">ggraph</span><span class="fu">::</span><span class="fu"><a href="https://ggraph.data-imaginist.com/reference/theme_graph.html" class="external-link">theme_graph</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span>, size <span class="op">=</span> <span class="fl">36</span><span class="op">)</span>,</span>
 <span>                                             legend.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">18</span><span class="op">)</span>,</span>
@@ -789,44 +843,48 @@ eyfp channel in Context and Inescapable Shock groups.</p>
 <span>              edge_color <span class="op">=</span> <span class="st">"#00782e"</span>,</span>
 <span>              label_size <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>              label_offset <span class="op">=</span> <span class="fl">0.15</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: Removed 6 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_point()`).</span></span></code></pre>
 <pre><code><span><span class="co">## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not</span></span>
 <span><span class="co">## found in Windows font database</span></span>
 <span></span>
 <span><span class="co">## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not</span></span>
 <span><span class="co">## found in Windows font database</span></span></code></pre>
 <pre><code><span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
-<span><span class="co">## family not found in Windows font database</span></span>
-<span></span>
-<span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
-<span><span class="co">## family not found in Windows font database</span></span>
-<span></span>
-<span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
-<span><span class="co">## family not found in Windows font database</span></span>
-<span></span>
-<span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
-<span><span class="co">## family not found in Windows font database</span></span>
-<span></span>
-<span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
-<span><span class="co">## family not found in Windows font database</span></span>
-<span></span>
-<span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
-<span><span class="co">## family not found in Windows font database</span></span>
-<span></span>
-<span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
 <span><span class="co">## family not found in Windows font database</span></span></code></pre>
-<pre><code><span><span class="co">## $eyfp</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :</span></span>
+<span><span class="co">## font family not found in Windows font database</span></span>
+<span></span>
+<span><span class="co">## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :</span></span>
+<span><span class="co">## font family not found in Windows font database</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: Removed 6 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_point()`).</span></span></code></pre>
 <pre><code><span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
 <span><span class="co">## family not found in Windows font database</span></span>
 <span></span>
 <span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
-<span><span class="co">## family not found in Windows font database</span></span>
+<span><span class="co">## family not found in Windows font database</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :</span></span>
+<span><span class="co">## font family not found in Windows font database</span></span>
 <span></span>
-<span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
+<span><span class="co">## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :</span></span>
+<span><span class="co">## font family not found in Windows font database</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: Removed 6 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_point()`).</span></span></code></pre>
+<pre><code><span><span class="co">## $eyfp</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: Removed 6 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_point()`).</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
 <span><span class="co">## family not found in Windows font database</span></span>
 <span></span>
 <span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
 <span><span class="co">## family not found in Windows font database</span></span></code></pre>
-<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
+<pre><code><span><span class="co">## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :</span></span>
+<span><span class="co">## font family not found in Windows font database</span></span>
+<span></span>
+<span><span class="co">## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :</span></span>
+<span><span class="co">## font family not found in Windows font database</span></span></code></pre>
+<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_networks.html">plot_networks</a></span><span class="op">(</span><span class="va">lh</span>,</span>
 <span>              network_name <span class="op">=</span> <span class="st">"Shock"</span>,</span>
 <span>              channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"eyfp"</span><span class="op">)</span>,</span>
@@ -837,41 +895,45 @@ eyfp channel in Context and Inescapable Shock groups.</p>
 <span>              edge_color <span class="op">=</span> <span class="st">"#00782e"</span>,</span>
 <span>              label_size <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>              label_offset <span class="op">=</span> <span class="fl">0.15</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_point()`).</span></span></code></pre>
 <pre><code><span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
 <span><span class="co">## family not found in Windows font database</span></span>
 <span></span>
 <span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
-<span><span class="co">## family not found in Windows font database</span></span>
+<span><span class="co">## family not found in Windows font database</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :</span></span>
+<span><span class="co">## font family not found in Windows font database</span></span>
 <span></span>
-<span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
-<span><span class="co">## family not found in Windows font database</span></span>
-<span></span>
-<span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
-<span><span class="co">## family not found in Windows font database</span></span>
-<span></span>
-<span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
-<span><span class="co">## family not found in Windows font database</span></span>
-<span></span>
-<span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
-<span><span class="co">## family not found in Windows font database</span></span>
-<span></span>
-<span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
+<span><span class="co">## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :</span></span>
+<span><span class="co">## font family not found in Windows font database</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_point()`).</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
 <span><span class="co">## family not found in Windows font database</span></span>
 <span></span>
 <span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
 <span><span class="co">## family not found in Windows font database</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :</span></span>
+<span><span class="co">## font family not found in Windows font database</span></span>
+<span></span>
+<span><span class="co">## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :</span></span>
+<span><span class="co">## font family not found in Windows font database</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_point()`).</span></span></code></pre>
 <pre><code><span><span class="co">## $eyfp</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_point()`).</span></span></code></pre>
 <pre><code><span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
 <span><span class="co">## family not found in Windows font database</span></span>
 <span></span>
 <span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
-<span><span class="co">## family not found in Windows font database</span></span>
-<span></span>
-<span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
-<span><span class="co">## family not found in Windows font database</span></span>
-<span></span>
-<span><span class="co">## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font</span></span>
 <span><span class="co">## family not found in Windows font database</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :</span></span>
+<span><span class="co">## font family not found in Windows font database</span></span>
+<span></span>
+<span><span class="co">## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :</span></span>
+<span><span class="co">## font family not found in Windows font database</span></span></code></pre>
 <figure><img src="../reference/figures/network_Context_eyfp.png" alt="Image" style="width: 500px;"><figcaption><em>eYFP activity network for the Context group.</em>
 </figcaption></figure><figure><img src="../reference/figures/network_Shock_eyfp.png" alt="Image" style="width: 500px;"><figcaption><em>eYFP activity network for the Inescapable Shock group.</em>
 </figcaption></figure>

@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">SMARTR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -150,9 +150,19 @@ than their cohort mean.</dd>
         <dd>Find segmentation files following the naming conventions of the denny lab given a channel name and a root slice directory</dd>
       </dl><dl><dt>
           
+          <code><a href="get.acronym.child.custom.html">get.acronym.child.custom()</a></code> 
+        </dt>
+        <dd>Get acronyms of child structures</dd>
+      </dl><dl><dt>
+          
           <code><a href="get.acronym.child.html">get.acronym.child()</a></code> 
         </dt>
         <dd>Get acronyms of child structures</dd>
+      </dl><dl><dt>
+          
+          <code><a href="get.acronym.parent.custom.html">get.acronym.parent.custom()</a></code> 
+        </dt>
+        <dd>Get parent region acronyms</dd>
       </dl><dl><dt>
           
           <code><a href="get.acronym.parent.html">get.acronym.parent()</a></code> 
@@ -175,9 +185,19 @@ than their cohort mean.</dd>
         <dd>Get top down registered areas</dd>
       </dl><dl><dt>
           
+          <code><a href="get.sub.structure.custom.html">get.sub.structure.custom()</a></code> 
+        </dt>
+        <dd>Get subregion acronyms</dd>
+      </dl><dl><dt>
+          
           <code><a href="get.sub.structure.html">get.sub.structure()</a></code> 
         </dt>
         <dd>Get subregion acronyms</dd>
+      </dl><dl><dt>
+          
+          <code><a href="get.sup.structure.custom.html">get.sup.structure.custom()</a></code> 
+        </dt>
+        <dd>Get super parent region acronyms</dd>
       </dl><dl><dt>
           
           <code><a href="get.sup.structure.html">get.sup.structure()</a></code> 
@@ -212,7 +232,12 @@ than their cohort mean.</dd>
           
           <code><a href="get_registered_volumes.html">get_registered_volumes()</a></code> 
         </dt>
-        <dd>get_registered_areas (generic function)</dd>
+        <dd>get_registered_volumes (generic function)</dd>
+      </dl><dl><dt>
+          
+          <code><a href="id.from.acronym.custom.html">id.from.acronym.custom()</a></code> 
+        </dt>
+        <dd>Get region ontology  ID from acronym</dd>
       </dl><dl><dt>
           
           <code><a href="import_segmentation_custom.html">import_segmentation_custom()</a></code> 
@@ -225,9 +250,47 @@ than their cohort mean.</dd>
         <dd>import_segmentation (generic function)</dd>
       </dl><dl><dt>
           
-          <code><a href="make.filter.html">make.filter()</a></code> 
+          <code><a href="make.filter.html">make.filter</a></code> 
         </dt>
-        <dd>Make a filter for the cfos or eyfp channel</dd>
+        <dd>#' Modification of Marcos' combine regions function
+#'
+#' @param normalized_counts list with length = No. channels., each channel element is df of normalized counts
+#' @param keywords a vector of keywords with which to simplify the region names
+#'
+#' @return a list with length = No. channels. Each channel df has simplified parent acronyms and names is summed from original df based on them.
+#'
+#' @examples
+simplify.regions &lt;- function(normalized_counts, keywords = c("layer","part","stratum","division")) 
+
+make.filter(
+  data,
+  params = c("Vol..unit.", "Moment1", "Moment2", "Moment3", "Moment4", "Sigma"),
+  ranges = list(c(200, 12000), c(3, 50), c(0, 600), c(0, 2000), c(0, 5), c(20, Inf))
+)
+
+
+ranges
+
+
+
+
+
+#' Modification of Marcos' combine regions function
+#'
+#' @param normalized_counts list with length = No. channels., each channel element is df of normalized counts
+#' @param keywords a vector of keywords with which to simplify the region names
+#'
+#' @return a list with length = No. channels. Each channel df has simplified parent acronyms and names is summed from original df based on them.
+#'
+#' @examples
+simplify.regions &lt;- function(normalized_counts, keywords = c("layer","part","stratum","division")) 
+
+
+
+
+Initialize empty list vector to store the simplified counts
+simplified_counts &lt;- vector(mode = "list", length = length(normalized_counts))
+names(simplified_counts) &lt;- names(normalized_counts)</dd>
       </dl><dl><dt>
           
           <code><a href="make_segmentation_filter.html">make_segmentation_filter()</a></code> 
@@ -250,9 +313,19 @@ than their cohort mean.</dd>
         <dd>Create a mouse object</dd>
       </dl><dl><dt>
           
+          <code><a href="name.from.acronym.custom.html">name.from.acronym.custom()</a></code> 
+        </dt>
+        <dd>Get region ontology name from acronym</dd>
+      </dl><dl><dt>
+          
           <code><a href="name.from.acronym.html">name.from.acronym()</a></code> 
         </dt>
         <dd>Get region ontology name from acronym</dd>
+      </dl><dl><dt>
+          
+          <code><a href="name.from.id.custom.html">name.from.id.custom()</a></code> 
+        </dt>
+        <dd>Get region ontology name from ID</dd>
       </dl><dl><dt>
           
           <code><a href="name.from.id.html">name.from.id()</a></code> 
@@ -275,9 +348,19 @@ than their cohort mean.</dd>
         <dd>Ontology</dd>
       </dl><dl><dt>
           
+          <code><a href="ontology.unified.html">ontology.unified</a></code> 
+        </dt>
+        <dd>Unified Kim ontology</dd>
+      </dl><dl><dt>
+          
           <code><a href="parallel_coordinate_plot.html">parallel_coordinate_plot()</a></code> 
         </dt>
         <dd>Create a parallel coordinate plot</dd>
+      </dl><dl><dt>
+          
+          <code><a href="parentid.from.id.custom.html">parentid.from.id.custom()</a></code> 
+        </dt>
+        <dd>Get parent id from id</dd>
       </dl><dl><dt>
           
           <code><a href="permute_corr_diff_distrib.html">permute_corr_diff_distrib()</a></code> 
@@ -288,6 +371,14 @@ than their cohort mean.</dd>
           <code><a href="plot_betweenness_regions.html">plot_betweenness_regions()</a></code> 
         </dt>
         <dd>Plot the betweenness distributions across regions</dd>
+      </dl><dl><dt>
+          
+          <code><a href="plot_cell_counts.html">plot_cell_counts()</a></code> 
+        </dt>
+        <dd>This function allows for plotting of normalized cell counts by area across specific regions to plot. Two different mouse attributes can be used as categorical variables to map to either the color or
+pattern aesthetics of the bar plot, e.g. sex and experimental group.
+The color aesthetic takes precedence over the pattern aesthetic so if you only want to use one mouse attribute, for plotting
+set it to the <code>color_mapping</code> parameter and set the <code>pattern_mapping</code> parameter to NULL.</dd>
       </dl><dl><dt>
           
           <code><a href="plot_correlation_heatmaps.html">plot_correlation_heatmaps()</a></code> 
@@ -399,18 +490,14 @@ set it to the <code>color_mapping</code> parameter and set the <code>pattern_map
         <dd>Standard error function</dd>
       </dl><dl><dt>
           
-          <code><a href="simplify.regions.html">simplify.regions()</a></code> 
-        </dt>
-        <dd><div class="section">
-<h3 id="modification-of-marcos-function">Modification of Marcos' function<a class="anchor" aria-label="anchor" href="#modification-of-marcos-function"></a></h3>
-
-
-</div></dd>
-      </dl><dl><dt>
-          
           <code><a href="simplify_by_keywords.html">simplify_by_keywords()</a></code> 
         </dt>
         <dd>Simplify dataframe by keywords.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="simplify_cell_count.html">simplify_cell_count()</a></code> 
+        </dt>
+        <dd>Simplify the combined cell count table</dd>
       </dl><dl><dt>
           
           <code><a href="simplify_vec_by_keywords.html">simplify_vec_by_keywords()</a></code> 
@@ -443,8 +530,7 @@ calculate network statistics for each network.</dd>
         </dt>
         <dd>Plot the results of the permutation histogram used to determine the p-value of the pairwise region comparison</dd>
       </dl></div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
-    </nav></aside></div>
+  </main></div>
 
 
     <footer><div class="pkgdown-footer-left">

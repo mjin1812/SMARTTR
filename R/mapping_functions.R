@@ -1806,7 +1806,7 @@ normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
 #'  for simplification using other ontologies. See the available atlas options under the `ontology` parameter.
 #'
 #' @param e experiment object
-#' @param ontology
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural")).
 #' Keywords to search through region names and simplify to parent structure. This means the parent structure is also excluded if the list of excluded right and left
 #' @param dont_fold (vec) vector of regions to not fold in.
@@ -1815,7 +1815,7 @@ normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
 #' @export
 #' @examples
 simplify_cell_count <- function(e,
-                                ontology = "unified",
+                                ontology = "allen",
                                 simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island",
                                                       "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural"),
                                 dont_fold = c("Dorsal part of the lateral geniculate complex",

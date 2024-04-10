@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">SMARTR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +63,11 @@
 <span>  <span class="va">e</span>,</span>
 <span>  <span class="va">correlation_list_name</span>,</span>
 <span>  channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cfos"</span>, <span class="st">"eyfp"</span>, <span class="st">"colabel"</span><span class="op">)</span>,</span>
-<span>  alpha <span class="op">=</span> <span class="fl">0.05</span></span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  ontology <span class="op">=</span> <span class="st">"allen"</span>,</span>
+<span>  anatomical.order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Isocortex"</span>, <span class="st">"OLF"</span>, <span class="st">"HPF"</span>, <span class="st">"CTXsp"</span>, <span class="st">"CNU"</span>, <span class="st">"TH"</span>, <span class="st">"HY"</span>, <span class="st">"MB"</span>,</span>
+<span>    <span class="st">"HB"</span>, <span class="st">"CB"</span><span class="op">)</span>,</span>
+<span>  pearson_thresh <span class="op">=</span> <span class="fl">0.8</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -82,7 +86,20 @@
 
 
 <dt>alpha</dt>
-<dd><p>(float, default = 0.05) The significance cutoff for including brain regions in the network.</p></dd>
+<dd><p>(float, default = 0.05) The significance threshold for including brain regions in the network. if NULL or NA,
+this threshold is not applied.</p></dd>
+
+
+<dt>ontology</dt>
+<dd><p>(str, default = "allen") Region ontology to use. options = "allen" or "unified"</p></dd>
+
+
+<dt>anatomical.order</dt>
+<dd><p>(vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.</p></dd>
+
+
+<dt>pearson_thresh</dt>
+<dd><p>(float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out</p></dd>
 
 </dl></div>
     <div class="section level2">

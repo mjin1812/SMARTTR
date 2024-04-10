@@ -12,7 +12,7 @@ The values of these attributes (group, drug, age) will automatically be converte
     
     <a class="navbar-brand me-2" href="../index.html">SMARTR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,85 +80,6 @@ The values of these attributes (<code>group</code>, <code>drug</code>, <code>age
     
 
 
-    </div>
-    <div class="section level2">
-    <h2 id="channels">Channels<a class="anchor" aria-label="anchor" href="#channels"></a></h2>
-    <p>channels &lt;- names(m$cell_table)</p>
-    </div>
-    <div class="section level2">
-    <h2 id="loop-through-all-rois-and-get-all-subregions">Loop through all rois and get all subregions<a class="anchor" aria-label="anchor" href="#loop-through-all-rois-and-get-all-subregions"></a></h2>
-    <p>regions &lt;- c(rois)
-for (roi in rois) 
-regions &lt;- c(regions, SMARTR::get.sub.structure(roi))</p><div class="section">
-<h3 id="isolating-counts-from-the-hippocampus-amp-sorting-them-by-coordinate">Isolating counts from the hippocampus &amp; sorting them by coordinate<a class="anchor" aria-label="anchor" href="#isolating-counts-from-the-hippocampus-amp-sorting-them-by-coordinate"></a></h3>
-
-
-<p>dHipp_cell_table &lt;- vector(mode = "list", length = length(channels))
-vHipp_cell_table &lt;- vector(mode = "list", length = length(channels))
-names(dHipp_cell_table) &lt;- channels
-names(vHipp_cell_table) &lt;- channels</p>
-</div>
-
-    </div>
-    <div class="section level2">
-    <h2 id="process-each-channel-separately">process each channel separately<a class="anchor" aria-label="anchor" href="#process-each-channel-separately"></a></h2>
-    <p>hipp_AP_coordinates &lt;- c()
-for (channel in channels)</p><div class="sourceCode"><pre><code># Get cell table of just the hippocampus
-hipp_df &lt;- m$cell_table[[channel]] %&gt;% dplyr::filter(acronym %in% regions)# Store dorsal counts if there are any, else erase
-if (sum(hipp_df$AP &gt; AP_coord) &gt; 0){
-  dHipp_cell_table[[channel]] &lt;- hipp_df[hipp_df$AP &gt; AP_coord, ]
-} else {
-  dHipp_cell_table[[channel]] &lt;- NULL
-}# Store ventral counts if there are any, else erase
-if (sum(hipp_df$AP &lt;= AP_coord) &gt; 0){
-  vHipp_cell_table[[channel]] &lt;- hipp_df[hipp_df$AP &lt;= AP_coord, ]
-} else {
-  vHipp_cell_table[[channel]] &lt;- NULL
-}# Keep track of the unique AP coordinate (slice identifier)
-hipp_AP_coordinates &lt;- c(hipp_AP_coordinates, hipp_df$AP) %&gt;% unique()# Remove existing hippocampus data from the normalized cell counts table if it exists
-if (!is.null(m$normalized_counts) &amp; merge){
-  hipp_delete &lt;- which(m$normalized_counts[[channel]]$acronym %in% regions)
-  m$normalized_counts[[channel]] &lt;- m$normalized_counts[[channel]][-hipp_delete,]  message(paste0("Removed existing hippocampus data for ", channel,
-                 " channel from the normalized counts dataframe"))
-}
-</code></pre></div>
-    </div>
-    <div class="section level2">
-    <h2 id="get-hippocampal-areas">Get hippocampal areas<a class="anchor" aria-label="anchor" href="#get-hippocampal-areas"></a></h2>
-    <p>DV_volumes &lt;- get_hipp_DV_volumes(m, AP_coord = AP_coord, rois = rois, hipp_AP_coordinates)</p>
-    </div>
-    <div class="section level2">
-    <h2 id="create-combine-cell-table-and-initialize-list-for-normalized-hippocampus-cell-counts">Create combine cell_table and initialize list for normalized hippocampus cell counts<a class="anchor" aria-label="anchor" href="#create-combine-cell-table-and-initialize-list-for-normalized-hippocampus-cell-counts"></a></h2>
-    <p>hipp_cell_tables &lt;- list(dHipp_cell_table,vHipp_cell_table)
-hipp_norm_counts &lt;- vector(mode = "list", length = 2)
-names(hipp_cell_tables) &lt;- c("dorsal", "ventral")
-names(hipp_norm_counts) &lt;- c("dorsal", "ventral")</p>
-    </div>
-    <div class="section level2">
-    <h2 id="get-normalized-cell-counts">Get normalized cell counts<a class="anchor" aria-label="anchor" href="#get-normalized-cell-counts"></a></h2>
-    
-
-
-    </div>
-    <div class="section level2">
-    <h2 id="whether-to-merge-the-information-in-each-channel-to-the-large-normalized-counts-dataframe">Whether to merge the information in each channel to the large normalized counts dataframe<a class="anchor" aria-label="anchor" href="#whether-to-merge-the-information-in-each-channel-to-the-large-normalized-counts-dataframe"></a></h2>
-    <p>if (merge)
-# merged right.hemisphere check
-if (is.null(m$normalized_counts[1]$right.hemisphere) &amp;&amp; is.null(hipp_norm_counts[1][1]$right.hemisphere) ||
-!is.null(m$normalized_counts[1]$right.hemisphere) &amp;&amp; !is.null(hipp_norm_counts[1][1]$right.hemisphere))</p><div class="sourceCode"><pre><code>  ## continue with merge
-  for (dv in names(hipp_norm_counts)){
-    for (channel in channels){
-      m$normalized_counts[[channel]] &lt;- rbind(m$normalized_counts[[channel]], hipp_norm_counts[[dv]][[channel]]) %&gt;% arrange(acronym)
-    }
-  }
-  message("Merged into main normalized counts dataframe.")} else {
-  stop(paste0("If you want to merge the dorsal ventral split dataset into the main normalized counts dataframe, the \n",
-              "combine_hemispheres parameter needs to be identical when you run normalize_cell_counts() and split_hipp_DV()."))
-}
-</code></pre></div> else 
-m$hipp_DV_normalized_counts &lt;- hipp_norm_counts
-message("Data is now stored in hipp_DV_normalized_counts dataframe. Future analysis of the hippocampus will be stored separately."))
-return(m)
     </div>
 
     <div class="section level2">

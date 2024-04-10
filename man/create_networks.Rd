@@ -9,6 +9,9 @@ create_networks(
   correlation_list_name,
   channels = c("cfos", "eyfp", "colabel"),
   alpha = 0.05,
+  ontology = "allen",
+  anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB",
+    "HB", "CB"),
   pearson_thresh = 0.8
 )
 }
@@ -22,8 +25,11 @@ create_networks(
 \item{alpha}{(float, default = 0.05) The significance threshold for including brain regions in the network. if NULL or NA,
 this threshold is not applied.}
 
-\item{pearson_thresh}{(float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out
-spurious edges. If NULL or NA, the threshold is not applied.}
+\item{ontology}{(str, default = "allen") Region ontology to use. options = "allen" or "unified"}
+
+\item{anatomical.order}{(vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.}
+
+\item{pearson_thresh}{(float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out}
 }
 \value{
 e experiment object. This object now has a new added element called \code{networks.} This is a list storing a

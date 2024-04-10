@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">SMARTR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,6 +66,9 @@
 <span>  channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cfos"</span>, <span class="st">"eyfp"</span>, <span class="st">"colabel"</span><span class="op">)</span>,</span>
 <span>  p_adjust_method <span class="op">=</span> <span class="st">"BH"</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  ontology <span class="op">=</span> <span class="st">"allen"</span>,</span>
+<span>  anatomical.order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Isocortex"</span>, <span class="st">"OLF"</span>, <span class="st">"HPF"</span>, <span class="st">"CTXsp"</span>, <span class="st">"CNU"</span>, <span class="st">"TH"</span>, <span class="st">"HY"</span>, <span class="st">"MB"</span>,</span>
+<span>    <span class="st">"HB"</span>, <span class="st">"CB"</span><span class="op">)</span>,</span>
 <span>  region_order <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -97,6 +100,15 @@ to keep "raw" p values. See also <code><a href="https://rdrr.io/r/stats/p.adjust
 
 <dt>alpha</dt>
 <dd><p>(num, default = 0.05) The alpha level for significance applied AFTER p-adjustment.</p></dd>
+
+
+<dt>ontology</dt>
+<dd><p>(str, default = "allen") Region ontology to use. options = "allen" or "unified"</p></dd>
+
+
+<dt>anatomical.order</dt>
+<dd><p>(vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that sorts all subregions in the dataset for grouped
+positioning in the correlation matrix. Supercedes <code>region_order</code> parameter.</p></dd>
 
 
 <dt>region_order</dt>

@@ -88,7 +88,13 @@
     <loc>/reference/find_segmentation_files.html</loc>
   </url>
   <url>
+    <loc>/reference/get.acronym.child.custom.html</loc>
+  </url>
+  <url>
     <loc>/reference/get.acronym.child.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get.acronym.parent.custom.html</loc>
   </url>
   <url>
     <loc>/reference/get.acronym.parent.html</loc>
@@ -103,7 +109,13 @@
     <loc>/reference/get.registered.areas.td.html</loc>
   </url>
   <url>
+    <loc>/reference/get.sub.structure.custom.html</loc>
+  </url>
+  <url>
     <loc>/reference/get.sub.structure.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get.sup.structure.custom.html</loc>
   </url>
   <url>
     <loc>/reference/get.sup.structure.html</loc>
@@ -125,6 +137,9 @@
   </url>
   <url>
     <loc>/reference/get_registered_volumes.html</loc>
+  </url>
+  <url>
+    <loc>/reference/id.from.acronym.custom.html</loc>
   </url>
   <url>
     <loc>/reference/import_segmentation_custom.html</loc>
@@ -151,7 +166,13 @@
     <loc>/reference/mouse.html</loc>
   </url>
   <url>
+    <loc>/reference/name.from.acronym.custom.html</loc>
+  </url>
+  <url>
     <loc>/reference/name.from.acronym.html</loc>
+  </url>
+  <url>
+    <loc>/reference/name.from.id.custom.html</loc>
   </url>
   <url>
     <loc>/reference/name.from.id.html</loc>
@@ -166,13 +187,22 @@
     <loc>/reference/ontology.html</loc>
   </url>
   <url>
+    <loc>/reference/ontology.unified.html</loc>
+  </url>
+  <url>
     <loc>/reference/parallel_coordinate_plot.html</loc>
+  </url>
+  <url>
+    <loc>/reference/parentid.from.id.custom.html</loc>
   </url>
   <url>
     <loc>/reference/permute_corr_diff_distrib.html</loc>
   </url>
   <url>
     <loc>/reference/plot_betweenness_regions.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_cell_counts.html</loc>
   </url>
   <url>
     <loc>/reference/plot_correlation_heatmaps.html</loc>
@@ -238,10 +268,10 @@
     <loc>/reference/sem.html</loc>
   </url>
   <url>
-    <loc>/reference/simplify.regions.html</loc>
+    <loc>/reference/simplify_by_keywords.html</loc>
   </url>
   <url>
-    <loc>/reference/simplify_by_keywords.html</loc>
+    <loc>/reference/simplify_cell_count.html</loc>
   </url>
   <url>
     <loc>/reference/simplify_vec_by_keywords.html</loc>

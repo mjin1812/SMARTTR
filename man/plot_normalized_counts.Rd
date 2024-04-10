@@ -12,7 +12,6 @@ plot_normalized_counts(
     c("male", "agg"), c("male", "control")),
   colors = c("white", "lightblue", "black", "red", "green"),
   ontology = "allen",
-  regions_to_remove = c("CTX", "grey", "MB", "TH", "HY"),
   title = NULL,
   unit_label = bquote(`Cell counts `("cells/mm"^3)),
   anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB",
@@ -24,7 +23,10 @@ plot_normalized_counts(
   print_plot = TRUE,
   save_plot = TRUE,
   flip_axis = FALSE,
-  legend.position = "none",
+  legend.justification = c(0, 0),
+  legend.position = "inside",
+  legend.position.inside = c(0.05, 0.6),
+  legend.direction = "vertical",
   facet_background_color = NULL,
   image_ext = ".pdf"
 )
@@ -44,9 +46,6 @@ e.g.values = c("female", "AD").}
 \item{colors}{(str, default = c("white", "lightblue")) Hexadecimal codes corresponding to the groups (respectively) to plot. The length of this vector should be the length of the list.}
 
 \item{ontology}{(str, default = "allen") Region ontology to use. options = "allen" or "unified"}
-
-\item{regions_to_remove}{(str, default = c("CTX", "grey", "MB", "TH", "HY")) A vector of strings corresponding to regions to remove from the plot. The default regions are parent regions from which their subregions have already been plotted. Set to NULL,
-FALSE, NULL or NA  to avoid removing regions.}
 
 \item{title}{(str, default = NULL) An optional title for the plot}
 

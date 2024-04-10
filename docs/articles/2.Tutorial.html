@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">SMARTR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -191,9 +191,7 @@ that others can modify for their own datasets.</p>
 to process!</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load SMARTR</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SMARTR</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: replacing previous import 'lifecycle::last_warnings' by 'rlang::last_warnings' when loading 'tibble'</span></span>
-<span><span class="co">#&gt; Warning: replacing previous import 'lifecycle::last_warnings' by 'rlang::last_warnings' when loading 'pillar'</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SMARTR</span><span class="op">)</span></span></code></pre></div>
 <p>You can download our example fully pre-processed image folder <a href="https://osf.io/4qfsc" class="external-link">here</a>. This image came from mouse 733, so
 create a empty folder named <code>733</code> in a location of your
 choice and upzip the image folder into this folder.</p>
@@ -818,8 +816,8 @@ comparison groups.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 31</span><span> cfos    Context SUM         3</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 32</span><span> cfos    Context TRN         2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 33</span><span> cfos    Context VAL         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 34</span><span> cfos    Context vCA2        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 35</span><span> cfos    Context VMH         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 34</span><span> cfos    Context VMH         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 35</span><span> cfos    Context vCA2        2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 36</span><span> cfos    Shock   AD          2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 37</span><span> cfos    Shock   AHN         2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 38</span><span> cfos    Shock   AM          2</span></span></span>
@@ -850,8 +848,8 @@ comparison groups.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 63</span><span> cfos    Shock   SSp-un      2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 64</span><span> cfos    Shock   SUM         2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 65</span><span> cfos    Shock   TRS         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 66</span><span> cfos    Shock   vCA2        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 67</span><span> cfos    Shock   VPMpc       2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 66</span><span> cfos    Shock   VPMpc       2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 67</span><span> cfos    Shock   vCA2        2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 68</span><span> eyfp    Context AD          2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 69</span><span> eyfp    Context APN         3</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 70</span><span> eyfp    Context AUDpo       3</span></span></span>
@@ -898,10 +896,10 @@ comparison groups.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">111</span><span> eyfp    Context SUM         3</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">112</span><span> eyfp    Context TRN         2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">113</span><span> eyfp    Context TU          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">114</span><span> eyfp    Context vCA2        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">115</span><span> eyfp    Context VMH         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">116</span><span> eyfp    Context VPL         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">117</span><span> eyfp    Context VPM         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">114</span><span> eyfp    Context VMH         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">115</span><span> eyfp    Context VPL         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">116</span><span> eyfp    Context VPM         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">117</span><span> eyfp    Context vCA2        2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">118</span><span> eyfp    Shock   AHN         2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">119</span><span> eyfp    Shock   AV          2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">120</span><span> eyfp    Shock   FS          2</span></span></span>
@@ -932,50 +930,50 @@ comparison groups.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">145</span><span> eyfp    Shock   SSp-un      2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">146</span><span> eyfp    Shock   SUM         2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">147</span><span> eyfp    Shock   VAL         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">148</span><span> eyfp    Shock   vCA2        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">149</span><span> eyfp    Shock   VPM         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">148</span><span> eyfp    Shock   VPM         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">149</span><span> eyfp    Shock   vCA2        2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">150</span><span> colabel Context AAA         3</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">151</span><span> colabel Context APN         2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">152</span><span> colabel Context ARH         3</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">153</span><span> colabel Context AUDpo       3</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">154</span><span> colabel Context CEA         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">155</span><span> colabel Context dCA2        3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">156</span><span> colabel Context EW          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">157</span><span> colabel Context FC          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">158</span><span> colabel Context GENv        3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">159</span><span> colabel Context LGd         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">160</span><span> colabel Context LH          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">161</span><span> colabel Context LPO         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">162</span><span> colabel Context MA          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">163</span><span> colabel Context MG          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">164</span><span> colabel Context MH          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">165</span><span> colabel Context MM          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">166</span><span> colabel Context MPN         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">167</span><span> colabel Context MPO         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">168</span><span> colabel Context MS          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">169</span><span> colabel Context NDB         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">170</span><span> colabel Context NOT         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">171</span><span> colabel Context NPC         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">172</span><span> colabel Context PA          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">173</span><span> colabel Context PG          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">174</span><span> colabel Context PO          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">175</span><span> colabel Context POST        3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">176</span><span> colabel Context PPT         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">177</span><span> colabel Context PRE         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">178</span><span> colabel Context PVH         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">179</span><span> colabel Context PVT         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">180</span><span> colabel Context RN          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">181</span><span> colabel Context RR          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">182</span><span> colabel Context SCs         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">183</span><span> colabel Context SH          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">184</span><span> colabel Context SPF         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">185</span><span> colabel Context SUM         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">186</span><span> colabel Context TR          3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">187</span><span> colabel Context TRN         2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">188</span><span> colabel Context TU          2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">189</span><span> colabel Context vCA2        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">190</span><span> colabel Context VMH         3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">191</span><span> colabel Context VPM         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">155</span><span> colabel Context EW          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">156</span><span> colabel Context FC          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">157</span><span> colabel Context GENv        3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">158</span><span> colabel Context LGd         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">159</span><span> colabel Context LH          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">160</span><span> colabel Context LPO         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">161</span><span> colabel Context MA          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">162</span><span> colabel Context MG          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">163</span><span> colabel Context MH          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">164</span><span> colabel Context MM          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">165</span><span> colabel Context MPN         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">166</span><span> colabel Context MPO         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">167</span><span> colabel Context MS          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">168</span><span> colabel Context NDB         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">169</span><span> colabel Context NOT         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">170</span><span> colabel Context NPC         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">171</span><span> colabel Context PA          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">172</span><span> colabel Context PG          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">173</span><span> colabel Context PO          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">174</span><span> colabel Context POST        3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">175</span><span> colabel Context PPT         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">176</span><span> colabel Context PRE         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">177</span><span> colabel Context PVH         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">178</span><span> colabel Context PVT         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">179</span><span> colabel Context RN          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">180</span><span> colabel Context RR          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">181</span><span> colabel Context SCs         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">182</span><span> colabel Context SH          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">183</span><span> colabel Context SPF         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">184</span><span> colabel Context SUM         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">185</span><span> colabel Context TR          3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">186</span><span> colabel Context TRN         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">187</span><span> colabel Context TU          2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">188</span><span> colabel Context VMH         3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">189</span><span> colabel Context VPM         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">190</span><span> colabel Context dCA2        3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">191</span><span> colabel Context vCA2        2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">192</span><span> colabel Shock   AHN         2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">193</span><span> colabel Shock   APN         2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">194</span><span> colabel Shock   IA          2</span></span></span>
@@ -996,8 +994,8 @@ comparison groups.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">209</span><span> colabel Shock   SH          2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">210</span><span> colabel Shock   SI          2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">211</span><span> colabel Shock   SSp-un      2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">212</span><span> colabel Shock   vCA2        2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">213</span><span> colabel Shock   VTA         2</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">212</span><span> colabel Shock   VTA         2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">213</span><span> colabel Shock   vCA2        2</span></span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="saving-your-experiment">8.3 Saving your experiment<a class="anchor" aria-label="anchor" href="#saving-your-experiment"></a>

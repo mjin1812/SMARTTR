@@ -128,6 +128,9 @@ get_percent_colabel <-function(e, by, colabel_channel = "colabel",
 #' @param region_order (list, default = NULL)  optional list with the first element named "acronym" supplying a vector as region acronyms and the second element named
 #' "order"  supplying an vector of integers determining numerical order, e.g. 1, 1, 2, 2.
 #' @param alpha (num, default = 0.05) The alpha level for significance applied AFTER p-adjustment.
+#' @param anatomical.order (vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that sorts all subregions in the dataset for grouped
+#' positioning in the correlation matrix. Supercedes `region_order` parameter.
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #'
 #' @return e experiment object. The experiment object now has a named `correlation_list` object stored in it.
 #' The name of the correlation object is the concatenation of the variable values separated by a "_".
@@ -137,7 +140,11 @@ get_percent_colabel <-function(e, by, colabel_channel = "colabel",
 #' channels = c("cfos", "eyfp", "colabel"),  p_adjust_method = "BH", alpha = 0.05)
 #' @seealso [Hmisc::rcorr()]
 get_correlations <- function(e, by, values,
-                             channels = c("cfos", "eyfp", "colabel"),  p_adjust_method = "BH", alpha = 0.05,
+                             channels = c("cfos", "eyfp", "colabel"),
+                             p_adjust_method = "BH",
+                             alpha = 0.05,
+                             ontology = "allen",
+                             anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"),
                              region_order = NULL){
   corr_list <- list()
   names(corr_list) <- names(channels)
@@ -150,17 +157,24 @@ get_correlations <- function(e, by, values,
 
     # Pivot wider
     df_channel <- df_channel %>%  dplyr::select(mouse_ID:acronym, normalized.count.by.volume) %>%
-      tidyr::pivot_wider(names_from = acronym, values_from = normalized.count.by.volume)
+      tidyr::pivot_wider(names_from = acronym, values_from = normalized.count.by.volume, values_fill = NA)
 
     # Rearrange the correlations to be in "anatomical order"
-    common.regions <-  df_channel %>% dplyr::select(-all_of(c('mouse_ID', by))) %>% names()
+    common.regions <-  df_channel %>% dplyr::ungroup() %>% dplyr::select(-all_of(c('mouse_ID', by))) %>% names()
 
     if (is.null(region_order)){
-      anatomical.order <- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
+      if (tolower(ontology) == "allen"){
+        # anatomical.order <- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
 
-      common.regions.ordered <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure) %>%
-        purrr::map(intersect, y=common.regions) %>% unlist()
-    } else if (is.list(region_order)){
+        common.regions.ordered <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure) %>%
+          purrr::map(intersect, y=common.regions) %>% unlist()
+      } else {
+        # anatomical.order <- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
+        common.regions.ordered <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure.custom, ontology = ontology) %>%
+          purrr::map(intersect, y=common.regions) %>% unlist()
+
+      }
+      } else if (is.list(region_order)){
       common.regions.ordered <- region_order$acronym[region_order$order]
       common.regions.ordered <- intersect(common.regions.ordered , common.regions)
     } else {
@@ -168,7 +182,7 @@ get_correlations <- function(e, by, values,
       )
     }
 
-    df_channel <- df_channel %>% dplyr::select(all_of(c(common.regions.ordered))) %>%
+    df_channel <- df_channel %>% dplyr::ungroup() %>% dplyr::select(all_of(c(common.regions.ordered))) %>%
       as.matrix()
 
     # Get minimum number of mice that we have data for across all regions
@@ -264,18 +278,20 @@ correlation_diff_permutation <- function(e,
     df_channel_group_1  <- df_channel_group_1  %>%  dplyr::select(mouse_ID:acronym, normalized.count.by.volume) %>%
       tidyr::pivot_wider(names_from = acronym, values_from = normalized.count.by.volume) %>%
       dplyr::mutate(corr_group = correlation_list_name_1) %>% dplyr::relocate(corr_group, .before = 2) %>%
+      dplyr::ungroup() %>%
       dplyr::select(-all_of(attr_group_1$group_by))
 
     df_channel_group_2  <- df_channel_group_2  %>%  dplyr::select(mouse_ID:acronym, normalized.count.by.volume) %>%
       tidyr::pivot_wider(names_from = acronym, values_from = normalized.count.by.volume) %>%
       dplyr::mutate(corr_group = correlation_list_name_2) %>% dplyr::relocate(corr_group, .before = 2) %>%
+      dplyr::ungroup() %>%
       dplyr::select(-all_of(attr_group_2$group_by))
 
     # Get common regions between each group
     common_regions_btwn_groups <- intersect(names(df_channel_group_1), names(df_channel_group_2))
 
     # Sort names into anatomical order
-    common_regions_btwn_groups <- sort_anatomical_order(common_regions_btwn_groups)
+    # common_regions_btwn_groups <- sort_anatomical_order(common_regions_btwn_groups)
 
     # Select the common regions in anatomical order across the two group dataframes
     df_channel_group_1 <- df_channel_group_1 %>% dplyr::select(mouse_ID, corr_group, all_of(common_regions_btwn_groups))
@@ -286,9 +302,9 @@ correlation_diff_permutation <- function(e,
 
     # Get group region pairwise correlational differences
     group_1_corr <- df_channel_group_1 %>% dplyr::select(-c(mouse_ID:corr_group)) %>%
-      as.matrix() %>% Hmisc::rcorr()
+      as.matrix() %>% try_correlate()
     group_2_corr <- df_channel_group_2 %>% dplyr::select(-c(mouse_ID:corr_group)) %>%
-      as.matrix() %>% Hmisc::rcorr()
+      as.matrix() %>% try_correlate()
     test_statistic <- group_2_corr$r - group_1_corr$r
 
     # Get an array of distribution of correlation differences
@@ -304,11 +320,12 @@ correlation_diff_permutation <- function(e,
     # aperm(c(3, 2, 1))
 
     # calculate the p-value of the permutation
-    p_matrix <- matrix(nrow = length(common_regions_btwn_groups),
-                       ncol = length(common_regions_btwn_groups),
+    p_matrix <- matrix(nrow = dim(test_statistic)[1],
+                       ncol = dim(test_statistic)[1],
                        dimnames = dimnames(test_statistic))
 
-    l_reg <- length(common_regions_btwn_groups)
+    # Change to names just to be precise?
+    l_reg <- dim(test_statistic)[1]
     for (i in 1:l_reg){
       for (j in 1:l_reg){
         null_distrib <- test_statistic_distributions[i,j] %>% unlist()
@@ -354,7 +371,8 @@ correlation_diff_permutation <- function(e,
 #' @param alpha (float, default = 0.05) The significance threshold for including brain regions in the network. if NULL or NA,
 #' this threshold is not applied.
 #' @param pearson_thresh (float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out
-#' spurious edges. If NULL or NA, the threshold is not applied.
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
+#' @param anatomical.order (vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.
 #' @return e experiment object. This object now has a new added element called `networks.` This is a list storing a
 #' graph object per channel for each network analysis run.
 #' The name of each network (`network_name`) is the same as the `correlation_list_name`
@@ -368,6 +386,8 @@ create_networks <- function(e,
                             correlation_list_name,
                             channels = c("cfos", "eyfp", "colabel"),
                             alpha = 0.05,
+                            ontology = "allen",
+                            anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"),
                             pearson_thresh = 0.8){
 
   # List to store the networks
@@ -399,20 +419,29 @@ create_networks <- function(e,
              p.value = P)
 
     # ___________Create Node tibble ________________
-    anatomical.order <- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
+
 
     # Get unique common regions
     acronyms <-  e$correlation_list[[correlation_list_name]][[channel]]$r %>% rownames()
 
     # get the parent super region
     super.region <- acronyms
-    for (sup.region in anatomical.order){
-      super.region[super.region %in% SMARTR::get.sub.structure(sup.region)] <- sup.region
+
+    if (tolower(ontology) == "allen"){
+      for (sup.region in anatomical.order){
+        super.region[super.region %in% SMARTR::get.sub.structure(sup.region)] <- sup.region
+      }
+    } else {
+      for (sup.region in anatomical.order){
+        super.region[super.region %in% SMARTR::get.sub.structure.custom(sup.region, ontology = ontology)] <- sup.region
+      }
     }
 
+
     # get the color
-    color <- wholebrain::color.from.acronym(super.region)
-    nodes <- tibble::tibble(name = acronyms, super.region = super.region, color = color)
+    # color <- wholebrain::color.from.acronym(super.region)
+    # nodes <- tibble::tibble(name = acronyms, super.region = super.region, color = color)
+    nodes <- tibble::tibble(name = acronyms, super.region = super.region)
 
     # _____________ Create the network ________________
     network <- tidygraph::tbl_graph(nodes = nodes,
@@ -1028,10 +1057,12 @@ plot_cell_counts <- function(e,
 #'
 #' @param e experiment object
 #' @param channels (str, default = c("cfos", "eyfp", "colabel"))
-#' @param groups (str, default = c("Context", "Shock")) The groups to be plotted. The order of this vector will dictate the ordering of grouped bars in the resulting plot.
-#' @param colors (str, default = c("white", "lightblue")) Hexadecimal codes corresponding to the groups (respectively) to plot.
-#' @param regions_to_remove (str, default = c("CTX", "grey", "MB", "TH", "HY")) A vector of strings corresponding to regions to remove from the plot. The default regions are parent regions from which their subregions have already been plotted. Set to NULL,
-#' FALSE, NULL or NA  to avoid removing regions.
+#' @param by (str) Attribute names to group by, e.g. c("sex", "group")
+#' @param values (list) A list with a length the number of groups desired for plotting. Each element of the list is a vector in the order of the
+#' the respective values for the attributes entered for the `by` parameter to generate a specific analysis group. Each vector should be unique to generate a
+#' uniquely colored bar.
+#' e.g.values = c("female", "AD").
+#' @param colors (str, default = c("white", "lightblue")) Hexadecimal codes corresponding to the groups (respectively) to plot. The length of this vector should be the length of the list.
 #' @param title (str, default = NULL) An optional title for the plot
 #' @param height height of the plot in inches.
 #' @param width width of the plot in inches.
@@ -1043,17 +1074,32 @@ plot_cell_counts <- function(e,
 #' @param region_label_angle (int, default = 50) Angle of the region label.
 #' @param label_text_size  (int, default = 8) Size of the text element for the region labels.
 #' @param image_ext (default = ".png") image extension to the plot as.
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
+#' @param legend.position
 #' @param facet_background_color (default = NULL) Set to a hexadecimal string, e.g."#FFFFFF", when you want to shade the background of the graph. Defaults to no background when NULL.
+#' @param anatomical.order (default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order
+#' The exact acronyms used will be ontology dependent so make sure that these match the `ontology` parameter
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @example
+#' p_list <- plot_normalized_counts(e, channels = "cfos", by = c("sex", "group"), values = list(c("female", "non"), c("female", "agg")), colors = c("white", "lightblue"))
+#'
 plot_normalized_counts <- function(e,
                                    channels = c("cfos", "eyfp", "colabel"),
-                                   groups = c("Context", "Shock"),
-                                   colors = c("white", "lightblue"),
-                                   regions_to_remove = c("CTX", "grey", "MB", "TH", "HY"),
+                                   by = c("sex", "group"),
+                                   values = list(c("female", "non"),
+                                                 c("female", "agg"),
+                                                 c("female", "control"),
+                                                 c("male", "agg"),
+                                                 c("male", "control")),
+                                   # groups = c("Context", "Shock"),
+                                   colors = c("white", "lightblue", "black", "red", "green"),
+                                   ontology = "allen",
+                                   # regions_to_remove = c("CTX", "grey", "MB", "TH", "HY"),
                                    title = NULL,
                                    unit_label = bquote('Cell counts '('cells/mm'^3)),
+                                   anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU",
+                                                         "TH", "HY", "MB", "HB", "CB"),
                                    height = 7,
                                    width = 20,
                                    region_label_angle = 50,
@@ -1061,7 +1107,10 @@ plot_normalized_counts <- function(e,
                                    print_plot = TRUE,
                                    save_plot = TRUE,
                                    flip_axis = FALSE,
-                                   legend.position = "none",
+                                   legend.justification = c(0, 0),
+                                   legend.position = "inside",
+                                   legend.position.inside = c(0.05, 0.6),
+                                   legend.direction = "vertical",
                                    facet_background_color =  NULL,
                                    image_ext = ".pdf"){
   # check os and set graphics window
@@ -1070,43 +1119,81 @@ plot_normalized_counts <- function(e,
   }
   # create plot list containing number of plots equal to the number of channels
   p_list <- vector(mode = 'list', length = length(channels))
+  labels <- purrr::map(values, function(x){paste(x, collapse = "_")}) %>% unlist()
+
   names(p_list) <- channels
   for (k in 1:length(channels)) {
-    # group channel counts by region and group
-    channel_counts <- e$combined_normalized_counts[[channels[k]]] %>%
-      dplyr::filter(group %in% groups) %>%
-      dplyr::select(group, mouse_ID, name, acronym, normalized.count.by.volume) %>%
-      dplyr::group_by(group, acronym, name) %>%
-      dplyr::summarise(mean_normalized_counts = mean(normalized.count.by.volume),
-                       sem = sd(normalized.count.by.volume)/sqrt(n()))
 
-    if (!(isFALSE(regions_to_remove) || is.null(regions_to_remove) || is.na(regions_to_remove))){
-      # remove parent regions (if any are specified) containing residual counts which are better represented in subregions
-      channel_counts <- channel_counts[-c(which(channel_counts$acronym %in% regions_to_remove)),]
-      # gather parent regions and assign these regions to subregions containing counts
+    channel <- channels[[k]]
+    channel_counts <- NULL
+    for (g in 1:length(values)){
+      if (is.null(channel_counts)){
+        # filter by parameters
+        channel_counts <-  e$combined_normalized_counts[[channel]] %>%
+          filter_df_by_char_params(by, values[[g]]) %>% dplyr::distinct() %>%
+          dplyr::select(dplyr::all_of(c(by, "mouse_ID", "name", "acronym", "normalized.count.by.volume"))) %>%
+          dplyr::group_by(across(all_of(c(by, "acronym", "name" )))) %>%
+          dplyr::summarise(mean_normalized_counts = mean(normalized.count.by.volume),
+                           sem = sd(normalized.count.by.volume)/sqrt(n()))
+      } else {
+        to_bind <-  e$combined_normalized_counts[[channel]] %>%
+          filter_df_by_char_params(by, values[[g]]) %>% dplyr::distinct() %>%
+          dplyr::select(dplyr::all_of(c(by, "mouse_ID", "name", "acronym", "normalized.count.by.volume"))) %>%
+          dplyr::group_by(across(all_of(c(by, "acronym", "name" )))) %>%
+          dplyr::summarise(mean_normalized_counts = mean(normalized.count.by.volume),
+                           sem = sd(normalized.count.by.volume)/sqrt(n()))
+        channel_counts <- dplyr::bind_rows(channel_counts, to_bind)
+      }
     }
 
-    anatomical.order <- c("Isocortex", "OLF", "HPF", "CTXsp", "CNU",
-                          "TH", "HY", "MB", "HB", "CB")
-    regions.ordered <- anatomical.order %>%
-      purrr::map(SMARTR::get.sub.structure) %>%
-      unlist()
+    # if (!(isFALSE(regions_to_remove) || is.null(regions_to_remove) || is.na(regions_to_remove))){
+    #   # remove parent regions (if any are specified) containing residual counts which are better represented in subregions
+    #   channel_counts <- channel_counts[-c(which(channel_counts$acronym %in% regions_to_remove)),]
+    #   # gather parent regions and assign these regions to subregions containing counts
+    # }
+
+    if (tolower(ontology) == "allen") {
+      regions.ordered <- anatomical.order %>%
+        purrr::map(SMARTR::get.sub.structure) %>%
+        unlist()
+    } else {
+      regions.ordered <- anatomical.order %>%
+        purrr::map(SMARTR::get.sub.structure.custom, ontology = ontology) %>%
+        unlist()
+    }
+
     common.regions.ordered <- channel_counts$name[unique(match(regions.ordered, channel_counts$acronym))]
     channel_counts$name <- factor(channel_counts$name, levels = common.regions.ordered)
+
+    if (tolower(ontology) == "allen") {
     channel_counts <- channel_counts %>%
       mutate(parent = get.sup.structure(acronym, matching.string = anatomical.order)) %>%
       na.omit()
     channel_counts$parent <- factor(channel_counts$parent, levels = anatomical.order)
+    } else {
+      channel_counts <- channel_counts %>%
+        mutate(parent = get.sup.structure.custom(acronym, ontology = ontology, matching.string = anatomical.order)) %>%
+        na.omit()
+      channel_counts$parent <- factor(channel_counts$parent, levels = anatomical.order)
+    }
 
+
+    # Annoying work around for the dynamic references of column names with a string vector
+    dynamic_ref <-  rep(".data[[by[[1]]]]", times = length(by))
+    for (b in 1:length(by)){
+      dynamic_ref[[b]] <- dynamic_ref[[b]] %>% gsub("1", as.character(b), .)
+    }
+    dynamic_ref <- paste(dynamic_ref, collapse = ", ")
+    text <- paste( "channel_counts <- channel_counts %>% mutate(unique_groups=paste(", dynamic_ref, ", sep='_' ))", collapse = "")
+    eval((parse(text=text)))
 
     # plot normalized cell counts, grouped by specified groups and ordered by parent region
+    channel_counts$unique_groups <- factor(channel_counts$unique_groups, levels = rev(labels))
 
     if (flip_axis) {
-      channel_counts$group <- factor(channel_counts$group, levels = rev(groups))
-
       p <- channel_counts %>%
         ggplot(aes(x = mean_normalized_counts, y = name,
-                   fill = group), color = "black") +
+                   fill = unique_groups), color = "black") +
         geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
         geom_errorbar(aes(xmin = mean_normalized_counts - sem,
                           xmax = mean_normalized_counts + sem, y = name),
@@ -1121,14 +1208,18 @@ plot_normalized_counts <- function(e,
         scale_fill_manual(values=c(colors)) +
         facet_grid(parent~., scales = "free", space = "free_y", switch = "y") +
         theme_bw() +
-        theme(
-          plot.background = element_blank(),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-          panel.border = element_blank()) +
+        theme(plot.background = element_blank(),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.border = element_blank()) +
         theme(axis.line = element_line(color = 'black')) +
-        theme(legend.position = legend.position) +
-        theme(axis.text.y = element_text(angle = region_label_angle, hjust = 1, size = label_text_size)) +
+        theme(legend.justification = legend.justification,
+              legend.position = legend.position,
+              legend.position.inside = legend.position.inside,
+              legend.direction = legend.direction) +
+        theme(axis.text.y = element_text(angle = region_label_angle,
+                                         hjust = 1,
+                                         size = label_text_size)) +
         theme(strip.text.y = element_text(angle = 0),
               strip.placement = "outside",
               strip.background = element_rect(color = "black",
@@ -1137,11 +1228,9 @@ plot_normalized_counts <- function(e,
         theme(plot.margin = margin(1,1.5,0,1.5, "cm"))
 
     } else if (isFALSE(flip_axis)) {
-      channel_counts$group <- factor(channel_counts$group, levels = groups)
-
       p <- channel_counts %>%
         ggplot(aes(y = mean_normalized_counts, x = name,
-                   fill = group), color = "black") +
+                   fill = unique_groups), color = "black") +
         geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
         geom_errorbar(aes(ymin = mean_normalized_counts - sem,
                           ymax = mean_normalized_counts + sem, x = name),
@@ -1153,7 +1242,8 @@ plot_normalized_counts <- function(e,
              x = "",
              fill = "Group") +
         scale_y_continuous(expand = c(0,0)) +
-        scale_fill_manual(values=c(colors)) +
+        scale_fill_manual(values=colors, labels = labels) +
+
         facet_grid(~parent, scales = "free_x", space = "free_x", switch = "x") +
         theme_bw() +
         theme(
@@ -1162,14 +1252,16 @@ plot_normalized_counts <- function(e,
           panel.grid.minor = element_blank(),
           panel.border = element_blank()) +
         theme(axis.line = element_line(color = 'black')) +
-        theme(legend.position = legend.position) +
+        theme(legend.justification = legend.justification,
+              legend.position = legend.position,
+              legend.position.inside = legend.position.inside,
+              legend.direction = legend.direction) +
         theme(axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size)) +
         theme(strip.text.x = element_text(angle = 0),
               strip.placement = "outside",
               strip.background = element_rect(color = "black",
                                               fill = "lightblue")) +
         theme(plot.margin = margin(1,1.5,0,1.5, "cm"))
-
     }
 
     if(!is.null(facet_background_color)){
@@ -1191,7 +1283,7 @@ plot_normalized_counts <- function(e,
 
       # save in figures
       ggsave(p, filename = paste0(channels[k], "_normalized_counts", image_ext),
-             path = file.path(attr(e, 'info')$output_path, "figures"), width = width, height = height)
+             path = file.path(attr(e, 'info')$output_path, "figures"), width = width, height = height, limitsize = FALSE)
 
 
     }
@@ -1224,7 +1316,7 @@ plot_normalized_counts <- function(e,
 #' @examples plot_correlation_heatmaps(e, correlation_list_name = "female_AD") # No return value
 #' @seealso [SMARTR::get_correlations()]
 
-plot_correlation_heatmaps <- function(e, correlation_list_name ,
+plot_correlation_heatmaps <- function(e, correlation_list_name,
                                       channels = c('cfos', 'eyfp', 'colabel'),
                                       colors = c("#be0000", "#00782e", "#f09b08"),
                                       sig_color = "yellow",
@@ -2575,6 +2667,7 @@ filter_df_by_char_params <- function(df, by, values){
     # Convert the variable name into a symbol
     var <- rlang::sym(by[k])
     df <- df %>% dplyr::filter(!!var == values[k])
+    # df <- df %>% dplyr::filter(dplyr::all_of(by[k]) == values[k])
   }
   return(df)
 }
@@ -2582,11 +2675,19 @@ filter_df_by_char_params <- function(df, by, values){
 
 # Sort the dataframes columns to be in anatomical order
 
-sort_anatomical_order <- function(common_regions){
-  anatomical.order <- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
-  common_regions <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure) %>%
-    purrr::map(intersect,y=common_regions) %>% unlist()
-}
+sort_anatomical_order <- function(common_regions, ontology ="allen",
+                                  anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")){
+
+  if (tolower(ontology) == "allen"){
+    common_regions <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure) %>%
+      purrr::map(intersect,y=common_regions) %>% unlist()
+  } else {
+    common_regions <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure.custom, ontology=ontology) %>%
+      purrr::map(intersect,y=common_regions) %>% unlist()
+  }
+  return(common_regions)
+
+  }
 
 #' Generate array of null distribution of region pairwise correlation differences.
 #' @param df
@@ -2598,7 +2699,8 @@ sort_anatomical_order <- function(common_regions){
 #' @return
 #'
 #' @examples
-permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_list_name_2, n_shuffle = n_shuffle, seed = 5, ...){
+permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_list_name_2,
+                                      n_shuffle = n_shuffle, seed = 5, ...){
 
 
   # Set the random seed
@@ -2643,8 +2745,8 @@ permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_l
     correlations_list <- vector(mode = "list", length = 2)
     names(correlations_list) <- c(correlation_list_name_1, correlation_list_name_2)
 
-    correlations_list[[correlation_list_name_1]] <- matrix_list[[correlation_list_name_1]][,-1] %>% Hmisc::rcorr()
-    correlations_list[[correlation_list_name_2]] <- matrix_list[[correlation_list_name_2]][,-1] %>% Hmisc::rcorr()
+    correlations_list[[correlation_list_name_1]] <- matrix_list[[correlation_list_name_1]][,-1] %>% try_correlate()
+    correlations_list[[correlation_list_name_2]] <- matrix_list[[correlation_list_name_2]][,-1] %>% try_correlate()
 
     # subtract R coefficient differences
     corr_diff_matrix[,,n] <- correlations_list[[correlation_list_name_2]]$r - correlations_list[[correlation_list_name_1]]$r

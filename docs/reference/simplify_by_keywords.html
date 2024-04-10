@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">SMARTR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,14 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">simplify_by_keywords</span><span class="op">(</span></span>
 <span>  <span class="va">df</span>,</span>
 <span>  keywords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"layer"</span>, <span class="st">"part"</span>, <span class="st">"stratum"</span>, <span class="st">"division"</span>, <span class="st">"leaflet"</span>, <span class="st">"Subgeniculate"</span>,</span>
-<span>    <span class="st">"island"</span>, <span class="st">"Islands"</span>, <span class="st">"Fields of Forel"</span>, <span class="st">"Cajal"</span>, <span class="st">"Darkschewitsch"</span>, <span class="st">"Precommissural"</span><span class="op">)</span></span>
+<span>    <span class="st">"island"</span>, <span class="st">"Islands"</span>, <span class="st">"Fields of Forel"</span>, <span class="st">"Cajal"</span>, <span class="st">"Darkschewitsch"</span>, <span class="st">"Precommissural"</span><span class="op">)</span>,</span>
+<span>  ontology <span class="op">=</span> <span class="st">"allen"</span>,</span>
+<span>  dont_fold <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dorsal part of the lateral geniculate complex"</span>,</span>
+<span>    <span class="st">"Ventral posterolateral nucleus of the thalamus, parvicellular part"</span>,</span>
+<span>    <span class="st">"Ventral posteromedial nucleus of the thalamus, parvicellular part"</span>,</span>
+<span>    <span class="st">"Ventral posterolateral nucleus of the thalamus, parvicellular part"</span>,</span>
+<span>    <span class="st">"Ventral posteromedial nucleus of the thalamus, parvicellular part"</span>,</span>
+<span>    <span class="st">"Substantia nigra"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -73,7 +80,17 @@
 
 
 <dt>keywords</dt>
-<dd><p>(vec, default = c("layer","part","stratum","division")) a list of keywords to simplify based on region name.</p></dd>
+<dd><p>(vec, default = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural")) a list of keywords to simplify based on region name.</p></dd>
+
+
+<dt>ontology</dt>
+<dd><p>(str, default = "allen") Region ontology to use. options = "allen" or "unified"</p></dd>
+
+
+<dt>dont_fold</dt>
+<dd><p>(vec, default = c("Dorsal part of the lateral geniculate complex", "Ventral posterolateral nucleus of the thalamus, parvicellular part", "
+Ventral posteromedial nucleus of the thalamus, parvicellular part","Ventral posterolateral nucleus of the thalamus, parvicellular part",
+"Ventral posteromedial nucleus of the thalamus, parvicellular part","Substantia nigra")) Regions that are exceptions to being folded into their parent regions.</p></dd>
 
 </dl></div>
     <div class="section level2">

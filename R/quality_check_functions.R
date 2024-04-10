@@ -78,6 +78,7 @@ find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FA
         out_path <- file.path(e_info$output_path, paste0("region_count_outliers_", channel,".csv"))
         write.csv(log_df, file = out_path)
         message(paste0("Saved regions outliers dataframe at:\n", out_path))
+        print(log_df)
       } else {
         message("No regions outliers were found within each group for channel ", channel)
       }
@@ -141,7 +142,7 @@ enough_mice_per_group <- function(e, by = c("group", "sex"), min_n = 5, remove =
     }
 
     ## Keep only common regions found across all groups
-    n_comb <- get_common_regions(mouse_count, by)
+    common_regions <- get_common_regions(mouse_count, by)
     to_keep <- which(e$combined_normalized_counts[[channel]]$acronym %in% common_regions$acronym)
     e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]][to_keep,]
 
