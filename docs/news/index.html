@@ -62,6 +62,7 @@
 <li>Change in the <code>exclude_anatomy</code>, <code>get_registered_volumes</code>, and <code>normalize_cell_counts</code> functions to include a <code>simplify_keywords</code> parameter which automatically re categorizes subregions to their major parent regions based on specific keywords.</li>
 <li>Modified the <code>normalize_cell_counts</code> and <code>combine_cell_counts</code> function to also store counts and areas/volume by slice in the mouse and experiment objects, respectively. This allows for easy evaluation of the raw mapped dataset.</li>
 <li>The <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6838086/" class="external-link">unified</a> synthesizes label from two of the most highly used atlases –Franklin-Paxinos (FP) and the common coordinate framework (CCF) from the Allen Institute.</li>
+<li>Incorporated <code>simplify_cell_count</code> function to process external datasets and simplify regions based on keywords.</li>
 <li>Our various analysis and visualization function are now compatible with the Kim lab’s <a href="https://kimlab.io/brain-map/atlas/" class="external-link">unified atlas</a>. Check out the various help pages for analysis and plotting functions to see which ones now include<code>ontology</code> as a relevant parameter. Simply change the value from <code>allen</code> to <code>unified</code> to process datasets using this ontology.</li>
 </ul></div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
