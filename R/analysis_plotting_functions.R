@@ -1069,6 +1069,7 @@ plot_cell_counts <- function(e,
 #' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of
 #'  the experiment object output folder.
+#' @param limits (c(0,100000)) Range of the normalized cell counts.
 #' @param flip_axis plot cell counts on x-axis rather than y-axis.
 #' @param unit_label (str, default = bquote('Cell counts '('cells/mm'^3))) Default unit label for the graphs
 #' @param region_label_angle (int, default = 50) Angle of the region label.
@@ -1078,6 +1079,10 @@ plot_cell_counts <- function(e,
 #' @param legend.position
 #' @param facet_background_color (default = NULL) Set to a hexadecimal string, e.g."#FFFFFF", when you want to shade the background of the graph. Defaults to no background when NULL.
 #' @param anatomical.order (default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order
+#' @param legend.justification
+#' @param legend.position.inside
+#' @param legend.direction
+
 #' The exact acronyms used will be ontology dependent so make sure that these match the `ontology` parameter
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
@@ -1111,6 +1116,7 @@ plot_normalized_counts <- function(e,
                                    legend.position = "inside",
                                    legend.position.inside = c(0.05, 0.6),
                                    legend.direction = "vertical",
+                                   limits = c(0, 100000),
                                    facet_background_color =  NULL,
                                    image_ext = ".pdf"){
   # check os and set graphics window
@@ -1134,17 +1140,22 @@ plot_normalized_counts <- function(e,
           dplyr::select(dplyr::all_of(c(by, "mouse_ID", "name", "acronym", "normalized.count.by.volume"))) %>%
           dplyr::group_by(across(all_of(c(by, "acronym", "name" )))) %>%
           dplyr::summarise(mean_normalized_counts = mean(normalized.count.by.volume),
-                           sem = sd(normalized.count.by.volume)/sqrt(n()))
+                           sem = sd(normalized.count.by.volume, na.rm=TRUE)/sqrt(n()))
       } else {
         to_bind <-  e$combined_normalized_counts[[channel]] %>%
           filter_df_by_char_params(by, values[[g]]) %>% dplyr::distinct() %>%
           dplyr::select(dplyr::all_of(c(by, "mouse_ID", "name", "acronym", "normalized.count.by.volume"))) %>%
           dplyr::group_by(across(all_of(c(by, "acronym", "name" )))) %>%
           dplyr::summarise(mean_normalized_counts = mean(normalized.count.by.volume),
-                           sem = sd(normalized.count.by.volume)/sqrt(n()))
+                           sem = sd(normalized.count.by.volume, na.rm=TRUE)/sqrt(n()))
         channel_counts <- dplyr::bind_rows(channel_counts, to_bind)
       }
     }
+
+    # # Filter regions meeting minimum n of both groups
+    # region_counts <- channel_counts %>% group_by(acronym, name) %>% summarize(n = sum(!is.na(sem))) %>%
+    #   filter(n == length(values))
+    # channel_counts <- channel_counts %>% filter(acronym %in% region_counts$acronym)
 
     # if (!(isFALSE(regions_to_remove) || is.null(regions_to_remove) || is.na(regions_to_remove))){
     #   # remove parent regions (if any are specified) containing residual counts which are better represented in subregions
@@ -1204,7 +1215,7 @@ plot_normalized_counts <- function(e,
              x = unit_label,
              y = "",
              fill = "Group") +
-        scale_x_continuous(expand = c(0,0)) +
+        scale_x_continuous(expand = c(0,0), limits = limits) +
         scale_fill_manual(values=c(colors)) +
         facet_grid(parent~., scales = "free", space = "free_y", switch = "y") +
         theme_bw() +
@@ -1224,11 +1235,8 @@ plot_normalized_counts <- function(e,
               strip.placement = "outside",
               strip.background = element_rect(color = "black",
                                               fill = "lightblue"),
-              strip.switch.pad.grid = unit(0.1, "in")) +
-        theme(plot.margin = margin(1,1.5,0,1.5, "cm"))
-
+              strip.switch.pad.grid = unit(0.1, "in"))
     } else if (isFALSE(flip_axis)) {
-      p <- channel_counts %>%
         ggplot(aes(y = mean_normalized_counts, x = name,
                    fill = unique_groups), color = "black") +
         geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
@@ -1241,7 +1249,7 @@ plot_normalized_counts <- function(e,
              y = unit_label,
              x = "",
              fill = "Group") +
-        scale_y_continuous(expand = c(0,0)) +
+        scale_y_continuous(expand = c(0,0), limits = limits) +
         scale_fill_manual(values=colors, labels = labels) +
 
         facet_grid(~parent, scales = "free_x", space = "free_x", switch = "x") +
@@ -1420,9 +1428,6 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
 }
 
 
-###########################################################################################
-#  Breakpoint 4.7.2022
-###########################################################################################
 
 #' Plot the results of the permutation histogram used to determine the p-value of the pairwise region comparison
 #'
@@ -1768,6 +1773,7 @@ parallel_coordinate_plot <- function(e,
 #' @param label_offset (default = 0.15) Distance of label from nodes.
 #' @param region_legend (default = TRUE) Boolean determining whether or not to show the region legend categorizing subregions into their largest parent region. Only works well if the Allen ontology is used for the dataset.
 #' @param correlation_edge_width_limit
+#' @param edge_type (default = "arc") "arc" or "diagonal".
 #' Can also be a hexadecimal color code written as a string.
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
@@ -1779,6 +1785,7 @@ plot_networks <- function(e,
                           edge_color = "firebrick",
                           height = 15,
                           width = 15,
+                          edge_type = "arc",
                           region_legend = TRUE,
                           degree_scale_limit = c(1,10),
                           correlation_edge_width_limit = c(0.8,1),
@@ -1807,16 +1814,21 @@ plot_networks <- function(e,
     if (is.null(graph_theme)){
       graph_theme <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5,size = 28),
                                                      legend.text = element_text(size = 15),
-                                                     legend.title = element_text(size = 15)
-                                               )
-
+                                                     legend.title = element_text(size = 15))
     }
 
+    if (edge_type == "diagonal"){
+      p <- ggraph::ggraph(network, layout = "linear", circular = TRUE) +
+        ggraph::geom_edge_diagonal(aes(color = sign, width = abs(weight)),
+                                   edge_alpha = 0.6, n = 1000)
 
-    p <- ggraph::ggraph(network, layout = "linear", circular = TRUE) +
-      ggraph::geom_edge_diagonal(aes(color = sign, width = abs(weight)),
-                                 edge_alpha = 0.6, n = 1000) +
-      ggraph::geom_node_point(aes(size = degree,
+    } else if (edge_type == "arc"){
+      p <- ggraph::ggraph(network, layout = "linear", circular = TRUE) +
+        ggraph::geom_edge_arc(aes(color = sign, width = abs(weight)),
+                              edge_alpha = 0.6, n = 1000)
+
+    }
+   p <- p + ggraph::geom_node_point(aes(size = degree,
                                     color = super.region),
                                 show.legend = TRUE) +
       ggraph::geom_node_text(aes(x = (sqrt(x^2+y^2)+label_offset)*cos(atan(y/x))*sign(x),
@@ -1831,6 +1843,8 @@ plot_networks <- function(e,
                                       labels = c(pos = "Positive", neg = "Negative"),
                                       name = "Correlation",
                                       guide = guide_legend(order = 1)) +
+
+
       ggraph::scale_edge_width(limits=correlation_edge_width_limit,range = c(1,3),name = "Correlation Strength",
                        guide = guide_legend(order = 3)) +
       ggraph::scale_color_viridis(name = "Anatomical Region",
@@ -2550,7 +2564,7 @@ plot_degree_regions <- function(e,
       if(!dir.exists(output_dir)){
         dir.create(output_dir)
       }
-      image_file <- file.path(output_dir, paste0("networks_degree_per_region_", channel, image_ext))
+      image_file <- file.path(output_dir, paste0("networks_degree_per_region_", channel, "_",network, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
 
@@ -2647,7 +2661,7 @@ plot_betweenness_regions <- function(e,
       if(!dir.exists(output_dir)){
         dir.create(output_dir)
       }
-      image_file <- file.path(output_dir, paste0("networks_betweenness_per_region_", channel, image_ext))
+      image_file <- file.path(output_dir, paste0("networks_betweenness_per_region_", channel, "_", network, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
 

@@ -343,7 +343,7 @@ plot_normalized_counts(e = lh,
                        legend.position.inside = c(0.7, 0.05),
                        legend.direction = "vertical",
                        facet_background_color = "#FFFFFF",
-                       image_ext = ".pdf")
+                       image_ext = ".png")
 ```
 
 
