@@ -27,6 +27,7 @@ plot_normalized_counts(
   legend.position = "inside",
   legend.position.inside = c(0.05, 0.6),
   legend.direction = "vertical",
+  limits = c(0, 1e+05),
   facet_background_color = NULL,
   image_ext = ".pdf"
 )
@@ -51,8 +52,7 @@ e.g.values = c("female", "AD").}
 
 \item{unit_label}{(str, default = bquote('Cell counts '('cells/mm'^3))) Default unit label for the graphs}
 
-\item{anatomical.order}{(default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order
-The exact acronyms used will be ontology dependent so make sure that these match the \code{ontology} parameter}
+\item{anatomical.order}{(default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order}
 
 \item{height}{height of the plot in inches.}
 
@@ -68,6 +68,10 @@ The exact acronyms used will be ontology dependent so make sure that these match
 the experiment object output folder.}
 
 \item{flip_axis}{plot cell counts on x-axis rather than y-axis.}
+
+\item{legend.direction}{The exact acronyms used will be ontology dependent so make sure that these match the \code{ontology} parameter}
+
+\item{limits}{(c(0,100000)) Range of the normalized cell counts.}
 
 \item{facet_background_color}{(default = NULL) Set to a hexadecimal string, e.g."#FFFFFF", when you want to shade the background of the graph. Defaults to no background when NULL.}
 

@@ -82,6 +82,7 @@
 <span>  legend.position <span class="op">=</span> <span class="st">"inside"</span>,</span>
 <span>  legend.position.inside <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.6</span><span class="op">)</span>,</span>
 <span>  legend.direction <span class="op">=</span> <span class="st">"vertical"</span>,</span>
+<span>  limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1e+05</span><span class="op">)</span>,</span>
 <span>  facet_background_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  image_ext <span class="op">=</span> <span class="st">".pdf"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -125,8 +126,7 @@ e.g.values = c("female", "AD").</p></dd>
 
 
 <dt>anatomical.order</dt>
-<dd><p>(default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order
-The exact acronyms used will be ontology dependent so make sure that these match the <code>ontology</code> parameter</p></dd>
+<dd><p>(default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order</p></dd>
 
 
 <dt>height</dt>
@@ -156,6 +156,14 @@ the experiment object output folder.</p></dd>
 
 <dt>flip_axis</dt>
 <dd><p>plot cell counts on x-axis rather than y-axis.</p></dd>
+
+
+<dt>legend.direction</dt>
+<dd><p>The exact acronyms used will be ontology dependent so make sure that these match the <code>ontology</code> parameter</p></dd>
+
+
+<dt>limits</dt>
+<dd><p>(c(0,100000)) Range of the normalized cell counts.</p></dd>
 
 
 <dt>facet_background_color</dt>

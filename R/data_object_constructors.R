@@ -151,8 +151,8 @@ new_slice <- function(data = list(registration_obj = NULL,           #list per s
                                   #                           "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
                                   # right_regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
                                   #                            "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
-                                  left_regions_excluded = c("layer 1","fiber tracts","VS"),
-                                  right_regions_excluded = c("layer 1","fiber tracts","VS"),
+                                  left_regions_excluded = c("fiber tracts","VS"),
+                                  right_regions_excluded = c("fiber tracts","VS"),
                                   left_regions_included = NULL,
                                   right_regions_included = NULL
 
@@ -253,8 +253,8 @@ slice <- function(slice_ID = NA,
                   #                           "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
                   # right_regions_excluded = c("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",
                   #                            "BA","TU","MEAav","ME","TMv","PVp","SUMl","SCzo","fiber tracts","VS"),
-                  left_regions_excluded = c("layer 1","fiber tracts","VS"),
-                  right_regions_excluded = c("layer 1","fiber tracts","VS"),
+                  left_regions_excluded = c("fiber tracts","VS"),
+                  right_regions_excluded = c("fiber tracts","VS"),
                   left_regions_included = NULL,
                   right_regions_included = NULL,
                   ...){

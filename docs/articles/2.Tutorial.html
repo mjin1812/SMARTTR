@@ -87,14 +87,14 @@
 <p>SMARTR encapsulates the process of registration, importation of
 segmentation data, and performs downstream analysis. Prior to this, the
 imaging data must be pre-processed and cells are separately segmented in
-ImageJ/FIJI. We have a separate, in-depth <a href="/articles/Segmentation.html">article</a> on our imaging approach,
-parameters, and segmentation process. We suggest starting there if you
-would like to walk through the pipeline from raw example image. The
-remainder of this page will focus on steps relevant to registration,
-segmentation data import, and downstream data analysis using SMARTR. We
-recommend completing the pre-processing and segmentation tutorial with
-the example image so you can walk through the SMARTR tutorial with this
-data.</p>
+ImageJ/FIJI. We have a separate, in-depth <a href="/articles/1.Segmentation.html">article</a> on our imaging
+approach, parameters, and segmentation process. We suggest starting
+there if you would like to walk through the pipeline from raw example
+image. The remainder of this page will focus on steps relevant to
+registration, segmentation data import, and downstream data analysis
+using SMARTR. We recommend completing the pre-processing and
+segmentation tutorial with the example image so you can walk through the
+SMARTR tutorial with this data.</p>
 <figure><img src="../reference/figures/SMARTR_package_schematic.jpg" alt="Image" style="width: 800px; height: 400px;"><figcaption><em>SMARTR package features</em>
 </figcaption></figure><div class="section level3">
 <h3 id="file-organization">0.1 File organization<a class="anchor" aria-label="anchor" href="#file-organization"></a>
@@ -119,7 +119,7 @@ mouse ID separate by an underscore to name images unambiguously.</p>
 <p>Here, the image or slice name is <code>733_1_1.lif</code> with the
 slice no. being <code>1_1</code>. This section came from mouse 733. This
 heirarchical file structure is helpful, as all segmentation files and
-preprocessing files will be stored in each image folder while all mouse
+pre-processing files will be stored in each image folder while all mouse
 object files will be stored in the parent mouse directory.</p>
 </div>
 <div class="section level3">
@@ -131,7 +131,7 @@ is fitted to a 2D <code>.tif</code> image. Therefore, if you are
 processing any z-stack images, they need to be flattened and channels
 need to be collapsed into a single image used for the purpose of
 registration. This step needs to be completed prior to using SMARTR for
-registration. We detail how to do this in using our pre-processing <a href="./articles/Segmentation.html">article</a></p>
+registration. We detail how to do this in using our pre-processing <a href="./articles/1.Segmentation.html">article</a></p>
 </div>
 </div>
 <div class="section level2">
@@ -155,8 +155,6 @@ following ways:
 <li>Omitting regions by a default list of regions to omit.</li>
 <li>Omitting new regions to omit by user-curated list for each
 image.</li>
-<li>Removing any Layer 1 cortex segmented cells, which tends to have
-segmentation artifacts, even though this is a dendritic layer.</li>
 <li>Removing cells from a contralateral hemisphere per slice if the
 registrations are divided by right and left hemispheres.</li>
 </ol>
@@ -172,9 +170,9 @@ analysis.<br>
 <li>Functions for easy analysis, based on categorical variables entered
 as mouse attributes. These will include functions for region cross
 correlations and network analyses.</li>
-<li>Functions for automated visualization of the analysis
-functions.</li>
 </ol>
+<p>Functions for analysis and automated visualization are detailed in
+our example analysis <a href="./articles/4.Example%20Analysis%20Notebook.html">notebook</a></p>
 <p>These steps will be achieved through functions that operate on
 objects in SMARTR. Objects are used to store raw data and processed
 data, as well as imaging, animal, and experimental parameters relevant
@@ -1009,8 +1007,8 @@ object with automatically save with the date as a way to uniquely
 timestamp your progress.</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_experiment.html">save_experiment</a></span><span class="op">(</span><span class="va">lh</span>, timestamp <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>This concludes the end of the mapping tutorial! Check out section 4.
-Example analysis notebook to see how we apply the analysis and
+<p>This concludes the end of the mapping tutorial! Check out <a href="./articles/4.Example%20Analysis%20Notebook.html">section 4.
+Example analysis notebook</a> to see how we apply the analysis and
 visualization functions in SMARTR to this dataset.</p>
 </div>
 </div>

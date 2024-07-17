@@ -16,8 +16,8 @@ slice(
   registration_path = "set registration image path",
   segmentation_path = "set segmentation data path",
   slice_directory = NULL,
-  left_regions_excluded = c("layer 1", "fiber tracts", "VS"),
-  right_regions_excluded = c("layer 1", "fiber tracts", "VS"),
+  left_regions_excluded = c("fiber tracts", "VS"),
+  right_regions_excluded = c("fiber tracts", "VS"),
   left_regions_included = NULL,
   right_regions_included = NULL,
   ...

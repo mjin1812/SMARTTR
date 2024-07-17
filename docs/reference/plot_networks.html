@@ -67,6 +67,7 @@
 <span>  edge_color <span class="op">=</span> <span class="st">"firebrick"</span>,</span>
 <span>  height <span class="op">=</span> <span class="fl">15</span>,</span>
 <span>  width <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>  edge_type <span class="op">=</span> <span class="st">"arc"</span>,</span>
 <span>  region_legend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  degree_scale_limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  correlation_edge_width_limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">1</span><span class="op">)</span>,</span>
@@ -110,16 +111,17 @@
 <dd><p>width of the plot in inches.</p></dd>
 
 
+<dt>edge_type</dt>
+<dd><p>(default = "arc") "arc" or "diagonal".
+Can also be a hexadecimal color code written as a string.</p></dd>
+
+
 <dt>region_legend</dt>
 <dd><p>(default = TRUE) Boolean determining whether or not to show the region legend categorizing subregions into their largest parent region. Only works well if the Allen ontology is used for the dataset.</p></dd>
 
 
 <dt>degree_scale_limit</dt>
 <dd><p>(vec, default = c(1,10)) Scale limit for degree size</p></dd>
-
-
-<dt>correlation_edge_width_limit</dt>
-<dd><p>Can also be a hexadecimal color code written as a string.</p></dd>
 
 
 <dt>image_ext</dt>

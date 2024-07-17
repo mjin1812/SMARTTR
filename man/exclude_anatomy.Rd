@@ -35,6 +35,8 @@ exclude_anatomy(x, ...)
   exclude_left_regions = NULL,
   exclude_hemisphere = FALSE,
   exclude_layer_1 = TRUE,
+  include_right_regions = NULL,
+  include_left_regions = NULL,
   simplify_regions = TRUE,
   simplify_keywords = c("layer", "part", "stratum", "division", "leaflet",
     "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch",
@@ -68,7 +70,7 @@ exclude_anatomy(x, ...)
 \item{simplify_keywords}{(str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure. This means the parent structure is also excluded if the list of excluded right and left
 regions can be further}
 
-\item{plot_filtered}{(bool, default = TRUE) pop up window to check the excluded anatomy.}
+\item{plot_filtered}{}
 
 \item{m}{mouse object}
 

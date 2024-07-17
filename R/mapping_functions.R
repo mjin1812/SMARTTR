@@ -1201,6 +1201,9 @@ exclude_anatomy.slice <- function(s,
 #' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure. This means the parent structure is also excluded if the list of excluded right and left
 #' regions can be further
 #' @param exclude_layer_1 (bool, default = TRUE); excludes all counts from layer 1 (TEMPORARY, may not be hardcoded in later)
+#' @param include_right_regions (str vector, default = NULL) Acronyms of regions to include from the right hemi; if not NULL, takes precedence over `exclude_right_regions` & all other regions will be excluded. Typically, this is used for slices with poor quality/lots of tears.
+#' @param include_left_regions (str vector, default = NULL) Acronyms of regions to include from the light hemi; if not NULL, takes precedence over `exclude_left_regions` & all other regions will be excluded.  Typically, this is used for slices with poor quality/lots of tears.
+#' @param plot_filtered
 #'
 #' @return m mouse object
 #' @examples m <- exclude_anatomy(m, slice_ID = "1_10", hemisphere = NULL, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE,
@@ -1219,6 +1222,8 @@ exclude_anatomy.slice <- function(s,
                                   exclude_left_regions = NULL,
                                   exclude_hemisphere = FALSE,
                                   exclude_layer_1 = TRUE,
+                                  include_right_regions = NULL,
+                                  include_left_regions = NULL,
                                   simplify_regions = TRUE,
                                   simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural"),
                                   plot_filtered = TRUE){
@@ -1255,6 +1260,8 @@ exclude_anatomy.slice <- function(s,
                                              exclude_left_regions = exclude_left_regions,
                                              exclude_hemisphere = exclude_hemisphere,
                                              exclude_layer_1 = exclude_layer_1,
+                                             include_right_regions = include_right_regions,
+                                             include_left_regions = include_left_regions,
                                              simplify_regions = simplify_regions,
                                              simplify_keywords = simplify_keywords,
                                              plot_filtered = plot_filtered)
