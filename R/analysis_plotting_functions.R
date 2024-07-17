@@ -1230,8 +1230,10 @@ plot_normalized_counts <- function(e,
               legend.direction = legend.direction) +
         theme(axis.text.y = element_text(angle = region_label_angle,
                                          hjust = 1,
-                                         size = label_text_size)) +
-        theme(strip.text.y = element_text(angle = 0),
+                                         size = label_text_size,
+                                         color = "black"),
+              axis.text.x = element_text(color = "black")) +
+        theme(strip.text.y = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
               strip.placement = "outside",
               strip.background = element_rect(color = "black",
                                               fill = "lightblue"),
@@ -1264,8 +1266,9 @@ plot_normalized_counts <- function(e,
               legend.position = legend.position,
               legend.position.inside = legend.position.inside,
               legend.direction = legend.direction) +
-        theme(axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size)) +
-        theme(strip.text.x = element_text(angle = 0),
+        theme(axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size, color = "black"),
+              axis.text.y = element_text(color = "black")) +
+        theme(strip.text.x = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
               strip.placement = "outside",
               strip.background = element_rect(color = "black",
                                               fill = "lightblue")) +
