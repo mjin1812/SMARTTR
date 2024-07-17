@@ -106,7 +106,7 @@ We have developed a generalized ImageJ [macro](https://osf.io/bek56) that works 
 
 The macro segments c-Fos cells using the following steps.
 
-+ Images are [bandpass filtered](https://imagej.nih.gov/ij/plugins/fft-filter.html) in Fourier space
++ Images are [bandpass filtered](https://imagej.net/ij/plugins/fft-filter.html) in Fourier space
 + Image background is subtracted using a [rolling ball algorithm](https://imagej.net/plugins/rolling-ball-background-subtraction)
 + Cells are identified using the 3D Local Maxima Faster Filter, [3D Spot Segmentation](https://imagej.net/plugins/3d-segmentation)
 + Cells are quantified and saved using the 3D Manager plugin
