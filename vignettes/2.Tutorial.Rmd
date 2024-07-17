@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 # 0 Pre-processing 
 
-SMARTR encapsulates the process of registration, importation of segmentation data, and performs downstream analysis. Prior to this, the imaging data must be pre-processed and cells are separately segmented in ImageJ/FIJI. We have a separate, in-depth [article](/articles/1.Segmentation.html) on our imaging approach, parameters, and segmentation process. We suggest starting there if you would like to walk through the pipeline from raw example image. The remainder of this page will focus on steps relevant to registration, segmentation data import, and downstream data analysis using SMARTR. We recommend completing the pre-processing and segmentation tutorial with the example image so you can walk through the SMARTR tutorial with this data.
+SMARTR encapsulates the process of registration, importation of segmentation data, and performs downstream analysis. Prior to this, the imaging data must be pre-processed and cells are separately segmented in ImageJ/FIJI. We have a separate, in-depth [article](../articles/1.Segmentation.html) on our imaging approach, parameters, and segmentation process. We suggest starting there if you would like to walk through the pipeline from raw example image. The remainder of this page will focus on steps relevant to registration, segmentation data import, and downstream data analysis using SMARTR. We recommend completing the pre-processing and segmentation tutorial with the example image so you can walk through the SMARTR tutorial with this data.
 
 <figure>
   <img src="../man/figures/SMARTR_package_schematic.jpg" alt="Image" style="width: 800px; height: 400px;">
@@ -75,7 +75,7 @@ IX    Aggregating cell counts across multiple animals.
 X.    Quality checks to look for outliers in region cell counts prior to analysis.  
 XI.   Functions for easy analysis, based on categorical variables entered as mouse attributes. These will include functions for region cross correlations and network analyses.
 
-Functions for analysis and automated visualization are detailed in our example analysis [notebook](/articles/4.Example Analysis Notebook.html)
+Functions for analysis and automated visualization are detailed in our example analysis [notebook](../articles/4.Example Analysis Notebook.html)
   
 These steps will be achieved through functions that operate on objects in SMARTR. Objects are used to store raw data and processed data, as well as imaging, animal, and experimental parameters relevant to the analysis. Note that in a separate article, we describe ways to scale-up many of these steps to map images in a high-throughput manner with scripts. The modularity of these functions lend to the creation of many different custom workflows. We provide links to example notebooks that others can modify for their own datasets.
 
@@ -603,7 +603,7 @@ save_experiment(lh, timestamp = TRUE)
 ```
 
 
-This concludes the end of the mapping tutorial! Check out [section 4. Example analysis notebook ](/articles/4.Example Analysis Notebook.html) to see how we apply the analysis and visualization functions in SMARTR to this dataset. 
+This concludes the end of the mapping tutorial! Check out [section 4. Example analysis notebook ](../articles/4.Example Analysis Notebook.html) to see how we apply the analysis and visualization functions in SMARTR to this dataset. 
 
 
 
