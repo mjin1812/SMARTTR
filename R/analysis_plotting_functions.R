@@ -313,8 +313,11 @@ correlation_diff_permutation <- function(e,
                                                          correlation_list_name_2 = correlation_list_name_2,
                                                          n_shuffle = n_shuffle,
                                                          seed = seed, ...)
+
+    message("dim before sort", dim(test_statistic_distributions))
     # For each pairwise distribution, sort the values
-    test_statistic_distributions <- apply(test_statistic_distributions, 1:2, sort)
+    # test_statistic_distributions <- apply(test_statistic_distributions, 1:2, sort)
+    # message("dim after sort", dim(test_statistic_distributions))
     # do.call(sort, 1:2)
     # test_statistic_distributions <- test_statistic_distributions %>% aperm(c(1, 2, 3))
     # aperm(c(3, 2, 1))
@@ -325,15 +328,17 @@ correlation_diff_permutation <- function(e,
                        dimnames = dimnames(test_statistic))
 
     # Change to names just to be precise?
-    l_reg <- dim(test_statistic)[1]
-    for (i in 1:l_reg){
-      for (j in 1:l_reg){
-        null_distrib <- test_statistic_distributions[i,j] %>% unlist()
-
-        p_matrix[i,j] <-  (sum(abs(null_distrib) >= abs(test_statistic[i,j])) + 1) / (n_shuffle + 1)
+    l_reg <- dimnames(test_statistic)[1] %>% unlist()
+    for (i in 1:length(l_reg)){
+      for (j in 1:length(l_reg)){
+        # print(l_reg[i])
+        # print(l_reg[j])
+        # test_statistic_distributions %>% dim() %>% print()
+        null_distrib <- test_statistic_distributions[l_reg[i],l_reg[j],] %>% unlist()
+        p_matrix[l_reg[i],l_reg[j]] <-  (sum(abs(null_distrib) >= abs(test_statistic[l_reg[i],l_reg[j]])) + 1) / (n_shuffle + 1)
 
         if(j>=i){
-          p_matrix[i,j:l_reg] <- NA
+          p_matrix[i,j:length(l_reg)] <- NA
         }
       }
     }
@@ -342,7 +347,7 @@ correlation_diff_permutation <- function(e,
     if (!isFALSE(p_adjust_method)){
       # Calculate without removing NAs
       p_matrix <- p_matrix %>% p.adjust(method = p_adjust_method) %>%
-        matrix(nrow = l_reg, ncol= l_reg, dimnames = dimnames(test_statistic))
+        matrix(nrow = length(l_reg), ncol= length(l_reg), dimnames = dimnames(test_statistic))
     }
 
     p_matrix_list[[channel]] <- list(p_val = p_matrix,
@@ -1239,6 +1244,7 @@ plot_normalized_counts <- function(e,
                                               fill = "lightblue"),
               strip.switch.pad.grid = unit(0.1, "in"))
     } else if (isFALSE(flip_axis)) {
+      p <- channel_counts %>%
         ggplot(aes(y = mean_normalized_counts, x = name,
                    fill = unique_groups), color = "black") +
         geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
