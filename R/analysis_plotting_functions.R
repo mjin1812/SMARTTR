@@ -300,10 +300,13 @@ correlation_diff_permutation <- function(e,
     # Bind group dfs together
     df_channel_groups <- dplyr::bind_rows(df_channel_group_1, df_channel_group_2)
 
+    df_channel_groups <- dplyr::bind_cols(df_channel_groups %>% dplyr::select(c(mouse_ID, corr_group)),
+                                          df_channel_groups %>% dplyr::select(dplyr::where(is.numeric)))
+
     # Get group region pairwise correlational differences
-    group_1_corr <- df_channel_group_1 %>% dplyr::select(-c(mouse_ID:corr_group)) %>%
+    group_1_corr <- df_channel_group_1 %>% dplyr::select(dplyr::where(is.numeric)) %>%
       as.matrix() %>% try_correlate()
-    group_2_corr <- df_channel_group_2 %>% dplyr::select(-c(mouse_ID:corr_group)) %>%
+    group_2_corr <- df_channel_group_2 %>%  dplyr::select(dplyr::where(is.numeric)) %>%
       as.matrix() %>% try_correlate()
     test_statistic <- group_2_corr$r - group_1_corr$r
 
