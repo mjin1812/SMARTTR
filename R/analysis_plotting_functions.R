@@ -317,7 +317,7 @@ correlation_diff_permutation <- function(e,
                                                          n_shuffle = n_shuffle,
                                                          seed = seed, ...)
 
-    message("dim before sort", dim(test_statistic_distributions))
+    # message("dim before sort", dim(test_statistic_distributions))
     # For each pairwise distribution, sort the values
     # test_statistic_distributions <- apply(test_statistic_distributions, 1:2, sort)
     # message("dim after sort", dim(test_statistic_distributions))
