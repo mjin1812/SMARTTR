@@ -59,6 +59,7 @@ find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FA
 
     # Get the mean and sd of each group
     stats_df <- e$combined_normalized_counts[[channel]] %>%
+      dplyr::ungroup() %>%
       dplyr::group_by(across(all_of(c(by, "acronym")))) %>%
       dplyr::summarise(mean_norm_counts = mean(normalized.count.by.volume),
                        sd_norm_counts = sd(normalized.count.by.volume))
@@ -119,6 +120,7 @@ enough_mice_per_group <- function(e, by = c("group", "sex"), min_n = 5, remove =
 
     ## Get mouse counts
     mouse_count <- e$combined_normalized_counts[[channel]] %>%
+      dplyr::ungroup() %>%
       dplyr::select(all_of(c(by, "mouse_ID", "acronym"))) %>% dplyr::distinct() %>%
       dplyr::group_by(across(all_of(c(by, "acronym")))) %>% dplyr::count()
 
