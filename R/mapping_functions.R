@@ -1860,8 +1860,6 @@ simplify_cell_count <- function(e,
 
 
 
-
-
 #__________________ Internal Functions __________________________
 
 ## modified function
@@ -2114,7 +2112,6 @@ get.colabeled.cells <- function(coloc_table,
 
 
 
-
 #' Find segmentation files following the naming conventions of the denny lab given a channel name and a root slice directory
 #' @param slice_directory
 #' @param channel
@@ -2158,15 +2155,6 @@ find_all_subregions <- function(regions){
   }
   return(all_regions)
 }
-
-
-
-
-
-
-
-
-
 
 
 

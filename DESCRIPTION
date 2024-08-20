@@ -17,7 +17,7 @@ Authors@R: c(
        email ="ml3696@cumc.columbia.edu", 
        role = c("ctb"),
        comment = c(ORCID = "0000-0003-3000-1592")))
-Description:`SMARTR` (Simple multi-ensemble atlas registration and statistical testing in R)
+Description: `SMARTR` (Simple multi-ensemble atlas registration and statistical testing in R)
     This package allows for the user-friendly accomplishing of the analysis steps below:
     1. Setting up the pipeline by specifying experiment parameters, and save directories.
     2. The interactive registration process.
@@ -38,9 +38,9 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2
 Depends: 
-    R (>= 3.60),
+    R (>= 3.6.0),
     Hmisc (>= 4.5.0),
     dplyr (>= 1.1.0),
     ggplot2 (>= 3.3.5)
@@ -49,7 +49,7 @@ Imports:
     stringdist (>= 0.9.7),
     stringr (>= 1.4.0),
     igraph (>= 1.2.6),
-    ggraph (<= 2.1.0),
+    ggraph,
     tidygraph (>= 1.2.0),
     magrittr (>= 2.0.1), 
     tidyselect (>= 1.1.1),

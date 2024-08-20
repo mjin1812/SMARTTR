@@ -8,7 +8,7 @@ new_mouse <- function(data = list(slices = list(),
                       info = list(mouse_ID = 'set ID',
                                   sex = 'female',
                                   age = NULL,
-                                  cre_genotype = NULL,
+                                  genotype = NULL,
                                   reporter = NULL,
                                   strain = NULL,
                                   experiment = 'create experiment name',
@@ -34,7 +34,7 @@ validate_mouse <- function(m){
   valid_attributes <- c("mouse_ID",
                         "sex",
                         "age",
-                        "cre_genotype",
+                        "genotype",
                         "reporter",
                         "strain",
                         "experiment",
@@ -59,7 +59,7 @@ validate_mouse <- function(m){
 #' @param mouse_ID (str, default = 'set ID') e.g. '1_1'
 #' @param sex (str, default = "female")
 #' @param age (str, default = NULL)
-#' @param cre_genotype (str, default = NULL)
+#' @param genotype (str, default = NULL)
 #' @param reporter (str, default = NULL)
 #' @param strain (str, default = NULL) e.g. 'B6'
 #' @param experiment (str, default = NULL) e.g. 'sundowning'
@@ -96,7 +96,7 @@ validate_mouse <- function(m){
 mouse <- function(mouse_ID = 'set ID',
                   sex = 'female',
                   age = NULL,
-                  cre_genotype = NULL,
+                  genotype = NULL,
                   reporter = NULL,
                   strain = NULL,
                   experiment = NULL,
@@ -111,7 +111,7 @@ mouse <- function(mouse_ID = 'set ID',
   info = list(mouse_ID = mouse_ID,
               sex = sex ,
               age = age,
-              cre_genotype = cre_genotype,
+              genotype = genotype,
               reporter = reporter,
               strain = strain,
               experiment = experiment,

@@ -1057,9 +1057,6 @@ plot_cell_counts <- function(e,
 
 
 
-
-
-
 #' Plot normalized cell counts
 #' @description Plot the cell counts normalized by volume for a given channel
 #'
@@ -1143,14 +1140,14 @@ plot_normalized_counts <- function(e,
     for (g in 1:length(values)){
       if (is.null(channel_counts)){
         # filter by parameters
-        channel_counts <-  e$combined_normalized_counts[[channel]] %>%
+        channel_counts <-  e$combined_normalized_counts[[channel]] %>% dplyr::ungroup() %>%
           filter_df_by_char_params(by, values[[g]]) %>% dplyr::distinct() %>%
           dplyr::select(dplyr::all_of(c(by, "mouse_ID", "name", "acronym", "normalized.count.by.volume"))) %>%
           dplyr::group_by(across(all_of(c(by, "acronym", "name" )))) %>%
           dplyr::summarise(mean_normalized_counts = mean(normalized.count.by.volume),
                            sem = sd(normalized.count.by.volume, na.rm=TRUE)/sqrt(n()))
       } else {
-        to_bind <-  e$combined_normalized_counts[[channel]] %>%
+        to_bind <-  e$combined_normalized_counts[[channel]] %>% dplyr::ungroup() %>%
           filter_df_by_char_params(by, values[[g]]) %>% dplyr::distinct() %>%
           dplyr::select(dplyr::all_of(c(by, "mouse_ID", "name", "acronym", "normalized.count.by.volume"))) %>%
           dplyr::group_by(across(all_of(c(by, "acronym", "name" )))) %>%

@@ -98,7 +98,7 @@ a separate, in-depth article on our imaging and pre-processing approach,
 parameters, and segmentation process. We provide links to an example
 image to run though the pre-processing and segmentation. There is also a
 separate in-depth tutorial article for SMARTR using this example image.
-This page provides installation instrutions and a broad explanation of
+This page provides installation instructions and a broad explanation of
 the central package organization around data objects</p>
 <figure><img src="../reference/figures/3.acquisition_segmentation_preprocess_schematic.jpg" alt="Image" style="width: 650px; height: 400px;"><figcaption><em>Imaging, segmentation, and pre-processing pipeline</em>
 </figcaption></figure>
@@ -109,7 +109,8 @@ the central package organization around data objects</p>
 <div class="section level3">
 <h3 id="install-rstudio-and-r">1.1 Install RStudio and R<a class="anchor" aria-label="anchor" href="#install-rstudio-and-r"></a>
 </h3>
-<p>We recommend installing R version 3.6.</p>
+<p>We recommend installing R version 3.6. You can use R version 4.1+ if
+you only want access to analysis and visualization capabilities.</p>
 </div>
 <div class="section level3">
 <h3 id="install-wholebrain">1.2 Install <code>wholebrain</code><a class="anchor" aria-label="anchor" href="#install-wholebrain"></a>
@@ -125,24 +126,26 @@ functions may work.</p>
 <div class="section level3">
 <h3 id="install-smartr">1.3 Install <code>SMARTR</code><a class="anchor" aria-label="anchor" href="#install-smartr"></a>
 </h3>
-<p>Currently the pipeline package is on my github, but it is a private
-repository. Therefore to download it from github using the
-<code>devtools</code> package, we need to feed the
-<code>install_github()</code> function a personal access token to access
-the github API. There are also some dependencies on the tidyverse
-packages so we will install that too. Install the package with the code
-below:</p>
+<p>To to download the package from github using the
+<code>devtools</code> package, we need to use the
+<code>install_github()</code> function.There are also some dependencies
+on the tidyverse packages so we will install that too. Install the
+package with the code below:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Install from CRAN</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tidyverse"</span>)<span class="st">`</span></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="at"># Install ggpattern package (optional but useful package for plotting) </span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="at">devtools::install_github("coolbutuseless/ggpattern")</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="at"># Set the devtools install options for just 64-bit architecture. This is important.</span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="at">options(devtools.install.args = "--no-multiarch")   </span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="at"># Install package</span></span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="at">devtools::install_github("mjin1812/SMARTR@main")</span></span></code></pre></div>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="at"># If you intend on using wholebrain for mapping, run the code below.</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="at">require(remotes)</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="at">install_version("ggpraph", version = "2.1.0", repos = "http://cran.us.r-project.org")</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="at"># Install ggpattern package (optional but useful package for plotting) </span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="at">devtools::install_github("coolbutuseless/ggpattern")</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="at"># Set the devtools install options for just 64-bit architecture. This is important.</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="at">options(devtools.install.args = "--no-multiarch")   </span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="at"># Install package</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="at">devtools::install_github("mjin1812/SMARTR@main")</span></span></code></pre></div>
 <p>We can now load the package!</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load SMARTR</span></span>
