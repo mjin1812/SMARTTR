@@ -2485,7 +2485,6 @@ plot_mean_between_centrality <- function(e,
 
 
 
-
 #' Plot the degree distributions across regions
 #' @description
 #' Bar plot of degree per region in descending magnitude
@@ -2501,23 +2500,29 @@ plot_mean_between_centrality <- function(e,
 #' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
 #' @param colors (str, default = ) String vector of hexadecimal color codes corresponding to to each channel plotted.
 #' @param network (str, default = "AD") Which network to plot the degree distribution across regions
-#' @param title
+#' @param title (str, default = "")
+#' @param sort_super_region (bool, default = FALSE) Whether to divide into subfacets based on which parent region
+#' @param region_label_angle (int, default = 60) Angle of region labels.
+#' @param label_text_size (int, default = 12) Font size of region labels.
 #'  the experiment object output folder.
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples
 
 plot_degree_regions <- function(e,
-                                     channels = c("cfos", "eyfp"),
-                                     colors = c("red", "green"),
-                                     network = "AD",
-                                     title = "my_title",
-                                     height = 10,
-                                     width = 20,
-                                     ylim = c(0, 15),
-                                     image_ext = ".png",
-                                     print_plot = TRUE,
-                                     save_plot = TRUE){
+                                channels = c("cfos", "eyfp"),
+                                colors = c("red", "green"),
+                                network = "AD",
+                                title = "",
+                                height = 10,
+                                width = 20,
+                                ylim = c(0, 15),
+                                sort_super_region = FALSE,
+                                region_label_angle = 60,
+                                label_text_size = 12,
+                                image_ext = ".png",
+                                print_plot = TRUE,
+                                save_plot = TRUE){
 
   # Detect the OS and set quartz( as graphing function)
   if(get_os() != "osx"){
@@ -2525,12 +2530,22 @@ plot_degree_regions <- function(e,
   }
 
   theme.bar <-  ggplot2::theme_classic() +
-    theme(axis.text.x = element_text(hjust = 1, vjust = 0.5, angle = 90, size = 12),
-          axis.text.y = element_text(size = 20),
+    theme(axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size, color = "black"),
+          axis.text.y = element_text(color = "black", size = 20),
           plot.title = element_text(hjust = 0.5, size = 36),
           axis.title = element_text(size = 24),
           legend.text = element_text(size = 20),
-          legend.title = element_text(size = 24))
+          legend.title = element_text(size = 24),
+          strip.clip = "off",
+          strip.text.x = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
+          strip.placement = "outside",
+          strip.background = element_rect(color = "black",
+                                          fill = "lightblue"),
+          plot.margin = margin(1,1.5,0,1.5, "cm"),
+          plot.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.border = element_blank())
 
   # List to store the returned plot handles
   p_list <- vector(mode='list', length = length(channels))
@@ -2542,15 +2557,31 @@ plot_degree_regions <- function(e,
     n_groups <-  e$networks_summaries[[channel]]$networks_degree_distrib$group %>%
       unique() %>% length()
 
-    p <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(group == network) %>%
-      dplyr::arrange(dplyr::desc(degree)) %>%
-      dplyr::mutate(name = factor(name, levels = name)) %>%
-      ggplot2::ggplot(aes(name, degree)) +
-      ggplot2::geom_col(fill = colors[[k]], color = "black") +
-      xlab("Brain Region") + ylab("Degree") +
-      ylim(ylim) +
-      theme.bar
+    if (sort_super_region) {
+      df <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(group == network) %>%
+        dplyr::arrange(super.region,  dplyr::desc(degree)) %>%
+        dplyr::mutate(name = factor(name, levels = name))
 
+      p <- df %>%
+        ggplot2::ggplot(aes(name, degree)) +
+        ggplot2::geom_col(fill = colors[[k]], color = "black") +
+        facet_grid(~super.region, scales = "free_x", space = "free_x", switch = "x")  +
+        xlab("Brain Region") + ylab("Degree") +
+        ylim(ylim)  + theme.bar
+
+    } else {
+
+      df <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(group == network) %>%
+        dplyr::arrange(dplyr::desc(degree)) %>%
+        dplyr::mutate(name = factor(name, levels = name))
+
+      p <- df %>%
+        ggplot2::ggplot(aes(name, degree)) +
+        ggplot2::geom_col(fill = colors[[k]], color = "black") +
+        xlab("Brain Region") + ylab("Degree") +
+        ylim(ylim) +
+        theme.bar
+    }
 
     if (!is.null(title)){
       title <- paste(title)
@@ -2590,7 +2621,6 @@ plot_degree_regions <- function(e,
 #' Bar plot of betweenness per region in descending magnitude
 #'
 #' @param e experiment object
-#' @param network (str) Which network to plot the betweenness distribution across regions
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) Channels to plot
 #' @param height (int, default = 15) Height of the plot in inches.
 #' @param width (int, default = 20) Width of the plot in inches.
@@ -2600,20 +2630,27 @@ plot_degree_regions <- function(e,
 #'  the experiment object output folder.
 #' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
 #' @param colors (str, default = ) String vector of hexadecimal color codes corresponding to to each channel plotted.
-#' @param title (str, default = "my_title")
+#' @param network (str, default = "AD") Which network to plot the betweenness distribution across regions
+#' @param title (str, default = "")
+#' @param sort_super_region (bool, default = FALSE) Whether to divide into subfacets based on which parent region
+#' @param region_label_angle (int, default = 60) Angle of region labels.
+#' @param label_text_size (int, default = 12) Font size of region labels.
 #'  the experiment object output folder.
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples
 
 plot_betweenness_regions <- function(e,
-                                     network,
                                      channels = c("cfos", "eyfp"),
                                      colors = c("red", "green"),
-                                     title = "my_title",
+                                     network = "AD",
+                                     title = "",
                                      height = 10,
                                      width = 20,
-                                     ylim = c(0, 60),
+                                     ylim = c(0, 15),
+                                     sort_super_region = FALSE,
+                                     region_label_angle = 60,
+                                     label_text_size = 12,
                                      image_ext = ".png",
                                      print_plot = TRUE,
                                      save_plot = TRUE){
@@ -2624,12 +2661,22 @@ plot_betweenness_regions <- function(e,
   }
 
   theme.bar <-  ggplot2::theme_classic() +
-    theme(axis.text.x = element_text(hjust = 1, vjust = 0.5, angle = 90, size = 12),
-          axis.text.y = element_text(size = 20),
+    theme(axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size, color = "black"),
+          axis.text.y = element_text(color = "black", size = 20),
           plot.title = element_text(hjust = 0.5, size = 36),
           axis.title = element_text(size = 24),
           legend.text = element_text(size = 20),
-          legend.title = element_text(size = 24))
+          legend.title = element_text(size = 24),
+          strip.clip = "off",
+          strip.text.x = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
+          strip.placement = "outside",
+          strip.background = element_rect(color = "black",
+                                          fill = "lightblue"),
+          plot.margin = margin(1,1.5,0,1.5, "cm"),
+          plot.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.border = element_blank())
 
   # List to store the returned plot handles
   p_list <- vector(mode='list', length = length(channels))
@@ -2641,14 +2688,31 @@ plot_betweenness_regions <- function(e,
     n_groups <-  e$networks_summaries[[channel]]$networks_degree_distrib$group %>%
       unique() %>% length()
 
-    p <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(group == network) %>%
-      dplyr::arrange(dplyr::desc(btw)) %>%
-      dplyr::mutate(name = factor(name, levels = name)) %>%
-      ggplot2::ggplot(aes(name, btw)) +
-      ggplot2::geom_col(fill = colors[[k]], color = "black") +
-      xlab("Brain Region") + ylab("Betweenness") +
-      ylim(ylim) +
-      theme.bar
+    if (sort_super_region) {
+      df <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(group == network) %>%
+        dplyr::arrange(super.region,  dplyr::desc(btw)) %>%
+        dplyr::mutate(name = factor(name, levels = name))
+
+      p <- df %>%
+        ggplot2::ggplot(aes(name, btw)) +
+        ggplot2::geom_col(fill = colors[[k]], color = "black") +
+        facet_grid(~super.region, scales = "free_x", space = "free_x", switch = "x")  +
+        xlab("Brain Region") + ylab("Betweenness") +
+        ylim(ylim)  + theme.bar
+
+    } else {
+
+      df <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(group == network) %>%
+        dplyr::arrange(dplyr::desc(btw)) %>%
+        dplyr::mutate(name = factor(name, levels = name))
+
+      p <- df %>%
+        ggplot2::ggplot(aes(name, btw)) +
+        ggplot2::geom_col(fill = colors[[k]], color = "black") +
+        xlab("Brain Region") + ylab("Betweenness") +
+        ylim(ylim) +
+        theme.bar
+    }
 
     if (!is.null(title)){
       title <- paste(title)
