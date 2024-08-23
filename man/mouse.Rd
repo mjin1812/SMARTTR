@@ -8,7 +8,7 @@ mouse(
   mouse_ID = "set ID",
   sex = "female",
   age = NULL,
-  cre_genotype = NULL,
+  genotype = NULL,
   reporter = NULL,
   strain = NULL,
   experiment = NULL,
@@ -27,7 +27,7 @@ mouse(
 
 \item{age}{(str, default = NULL)}
 
-\item{cre_genotype}{(str, default = NULL)}
+\item{genotype}{(str, default = NULL)}
 
 \item{reporter}{(str, default = NULL)}
 

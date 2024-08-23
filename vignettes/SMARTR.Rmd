@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 
 `SMARTR` encapsulates the process of registration and performs downstream analysis. Prior to this, the imaging data must be pre-processed and cells are separately segmented in ImageJ/FIJI. We have a separate, in-depth article on our imaging and pre-processing approach, parameters, and segmentation process. We provide links to an example image to run though the pre-processing and segmentation. There is also a separate in-depth tutorial article for SMARTR using this example image.
-This page provides installation instrutions and a broad explanation of the central package organization around data objects
+This page provides installation instructions and a broad explanation of the central package organization around data objects
 
 <figure>
   <img src="../man/figures/3.acquisition_segmentation_preprocess_schematic.jpg" alt="Image" style="width: 650px; height: 400px;">
@@ -37,7 +37,7 @@ This page provides installation instrutions and a broad explanation of the centr
 
 ## 1.1 Install RStudio and R 
 
-We recommend installing R version 3.6.
+We recommend installing R version 3.6. You can use R version 4.1+ if you only want access to analysis and visualization capabilities.
 
 
 
@@ -49,11 +49,15 @@ If wholebrain is not installed, only the analysis and visualization functions ma
 
 ## 1.3 Install `SMARTR`
 
-Currently the pipeline package is on my github, but it is a private repository. Therefore to download it from github using the `devtools` package, we need to feed the `install_github()` function a personal access token to access the github API. There are also some dependencies on the tidyverse packages so we will install that too. Install the package with the code below:
+To to download the package from github using the `devtools` package, we need to use the `install_github()` function.There are also some dependencies on the tidyverse packages so we will install that too. Install the package with the code below:
 
 ```{r, eval = FALSE}
 # Install from CRAN
 install.packages("tidyverse")`
+
+# If you intend on using wholebrain for mapping, run the code below.
+require(remotes)
+install_version("ggpraph", version = "2.1.0", repos = "http://cran.us.r-project.org")
 
 # Install ggpattern package (optional but useful package for plotting) 
 devtools::install_github("coolbutuseless/ggpattern")

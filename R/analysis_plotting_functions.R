@@ -104,7 +104,14 @@ get_percent_colabel <-function(e, by, colabel_channel = "colabel",
   }
 
   if (save_table){
-      out_path <- file.path(e_info$output_path, paste0(make.names(colabel_channel),"_percentage_", channel, "_", indiv_or_avg, ".csv"))
+
+
+    # Create table directory if it doesn't already exists
+    output_dir <-  file.path(attr(e, "info")$output_path, "tables")
+    if(!dir.exists(output_dir)){
+      dir.create(output_dir)
+    }
+      out_path <- file.path(output_dir, paste0(make.names(colabel_channel),"_percentage_", channel, "_", indiv_or_avg, ".csv"))
       write.csv(master_counts, file = out_path)
       message(paste0("Saved ", colabel_channel, " count percentages at location: ", out_path))
   }
@@ -371,6 +378,89 @@ correlation_diff_permutation <- function(e,
   return(e)
 }
 
+
+
+#' Export the permutation results as a csv file. This automatically saves into the tables folder.
+#'
+#' @param e experiment object
+#' @param permutation_groups (str vec, default = "all") Default is to export all analyses run. Supply names of the specific analyses found under `e$permutation_p_matrix %>% names()` if you want to export specific groups.
+#' @param ontology (str, default = "allen") Set to "unified" for Kim Lab unified ontology
+#' @param filter_significant (bool, default = TRUE) If FALSE, this keeps all comparisons. Otherwise exports only the most different and significant permutations.
+#' @export
+export_permutation_results <- function(e,
+                                       permutation_groups = "all",
+                                       ontology = "allen",
+                                       filter_significant =  TRUE){
+
+
+
+  if (permutation_groups == "all") {
+    permutation_groups <- e$permutation_p_matrix %>% names()
+  } else{
+    # Check that permutation_groups is in the names vector for e$permutation_p_matrix
+    if (!all(permutation_groups %in% names(e$permutation_p_matrix))){
+      stop("The permutation groups you have supplied are not all in the experiment object. Please fix the names supplied or run the permutation analysis if you have not done so.")
+    }
+  }
+
+  for (pg in permutation_groups){
+
+    regions <- colnames(e$permutation_p_matrix[[pg]]$cfos$sig)
+
+    sig_df <- e$permutation_p_matrix[[pg]]$cfos$sig %>%
+      tibble::as_tibble(rownames="R1") %>%
+      dplyr::pivot_longer(cols = all_of(regions), names_to = "R2", values_to = "sig") %>%
+      drop_na()
+
+
+    pval_df <-e$permutation_p_matrix[[pg]]$cfos$p_val %>%
+      tibble::as_tibble(rownames="R1") %>%
+      dplyr::pivot_longer(cols = all_of(regions), names_to = "R2", values_to = "p_val") %>%
+      drop_na()
+
+
+    test_statistic <- e$permutation_p_matrix[[pg]]$cfos$test_statistic
+    test_statistic[upper.tri(test_statistic, diag = TRUE)] <- NA
+
+    test_statistic <- test_statistic %>%
+      tibble::as_tibble(rownames="R1") %>%
+      dplyr::pivot_longer(cols = all_of(regions), names_to = "R2", values_to = "test_statistic") %>%
+      drop_na()
+
+    permutation_results <- dplyr::left_join(test_statistic, pval_df, by = c("R1", "R2"), keep = FALSE) %>%
+      dplyr::left_join(sig_df, by = c("R1", "R2"), keep = FALSE)
+
+
+    if (ontology == "allen"){
+      permutation_results <- permutation_results %>% dplyr::mutate(name1 = name.from.acronym(R1),
+                                                                   name2 = name.from.acronym(R2),
+                                                                   .before = test_statistic)
+    } else (
+      permutation_results <- permutation_results %>% dplyr::mutate(name1 = name.from.acronym.custom(R1, ontology = ontology),
+                                                                   name2 = name.from.acronym.custom(R2, ontology = ontology),
+                                                                   .before = test_statistic)
+    )
+
+    if (filter_significant) {
+      permutation_results <- permutation_results %>% dplyr::filter(sig)
+    }
+
+    # Create table directory if it doesn't already exists
+    output_dir <-  file.path(attr(e, "info")$output_path, "tables")
+    if(!dir.exists(output_dir)){
+      dir.create(output_dir)
+    }
+
+    write.csv(permutation_results, file.path(output_dir, paste0("permutation_results", "_", pg, ".csv")), row.names = FALSE)
+  }
+
+}
+
+
+
+
+
+
 #' Create %>% graph objects for plotting different analysis subgroups.
 #'
 #' @param e experiment object
@@ -539,9 +629,6 @@ summarise_networks <- function(e,
     }
   }
 
-  # Get output path
-  outpath <- attr(e, "info")$output_path
-
   # Create summary tibble
   for (channel in channels){
     nodes_df_list <- list()
@@ -590,24 +677,29 @@ summarise_networks <- function(e,
       dplyr::group_by(group) %>% dplyr::arrange(group, dplyr::desc(efficiency)) %>%
       dplyr::mutate(name = factor(name, levels=name))
 
+    # Create table directory if it doesn't already exists
+    output_dir <-  file.path(attr(e, "info")$output_path, "tables")
+    if(!dir.exists(output_dir)){
+      dir.create(output_dir)
+    }
 
     if(save_stats){
-      write.csv(network_stats_df,  file.path(outpath, paste0("summary_networks_stats_", channel, ".csv")))
+      write.csv(network_stats_df,  file.path(output_dir, paste0("summary_networks_stats_", channel, ".csv")))
     }
 
     if(save_degree_distribution){
-      write.csv(degree_distribution,  file.path(outpath, paste0("networks_degree_distributions_", channel, ".csv")))
-      write.csv(degree_distribution_df,  file.path(outpath, paste0("networks_degree_distributions_summary_", channel, ".csv")))
+      write.csv(degree_distribution,  file.path(output_dir, paste0("networks_degree_distributions_", channel, ".csv")))
+      write.csv(degree_distribution_df,  file.path(output_dir, paste0("networks_degree_distributions_summary_", channel, ".csv")))
     }
 
     if(save_betweenness_distribution){
-      write.csv(betweenness_distribution,  file.path(outpath, paste0("networks_betweenness_distributions_", channel, ".csv")))
-      write.csv( betweenness_distribution_df,  file.path(outpath, paste0("networks_betweenness_distributions_summary_", channel, ".csv")))
+      write.csv(betweenness_distribution,  file.path(output_dir, paste0("networks_betweenness_distributions_", channel, ".csv")))
+      write.csv( betweenness_distribution_df,  file.path(output_dir, paste0("networks_betweenness_distributions_summary_", channel, ".csv")))
     }
 
     if(save_efficiency_distribution){
-      write.csv(efficiency_distribution,  file.path(outpath, paste0("networks_efficiency_distributions_", channel, ".csv")))
-      write.csv(efficiency_distribution_df,  file.path(outpath, paste0("networks_efficiency_distributions_summary_", channel, ".csv")))
+      write.csv(efficiency_distribution,  file.path(output_dir, paste0("networks_efficiency_distributions_", channel, ".csv")))
+      write.csv(efficiency_distribution_df,  file.path(output_dir, paste0("networks_efficiency_distributions_summary_", channel, ".csv")))
     }
 
     # Store the network summary data into channels
@@ -618,6 +710,174 @@ summarise_networks <- function(e,
   }
   return(e)
 }
+
+
+
+#' Create a joined network to visualize overlapping connections with the same outer joined node set.
+#'
+#' @param e experiment object
+#' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
+#' @param alpha (float, default = 0.05) The significance threshold for including brain regions in the network. if NULL or NA,
+#' this threshold is not applied.
+#' @param pearson_thresh (float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
+#' @param correlation_list_names (str vec) character vector of the two correlation lists used to include in a joined network
+#' @param export_overlapping_edges (bool, default  = TRUE) Whether to export the overlapping edges between the two networks as a csv into the `table` directory.
+#' @param anatomical.order (vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.
+#'
+#' @return e experiment object. This object now has a new added element called `networks.` This is a list storing a
+#' graph object per channel for each network analysis run. The name of each network (`network_name`) is the same as the `correlation_list_name`
+#' used to generate the network. This `network_name` is fed as a parameter into the
+#' [SMARTR::plot_network()] function.
+#' @export
+#' @examples e sundowning <- create_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
+#' @seealso [SMARTR::plot_networks()]
+
+create_joined_networks <- function(e,
+                                   correlation_list_names = c("male_agg", "female_non"),
+                                   channels = "cfos",
+                                   ontology = "unified",
+                                   alpha = 0.001,
+                                   pearson_thresh = 0.9,
+                                   anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"),
+                                   export_overlapping_edges = TRUE){
+
+  # List to store the networks
+  networks <- vector(mode = "list", length = length(channels))
+  nodes_joined <- vector(mode = "list")
+  edges_joined <- vector(mode = "list")
+  names(networks) <- channels
+
+  for (channel in channels){
+    for (correlation_list_name in correlation_list_names){
+      #__________________ Create Edge Tibble _____________
+      corr_df <-  e$correlation_list[[correlation_list_name]][[channel]] %>% purrr::map(tibble::as_tibble)
+      val_names <- names(corr_df)
+
+      for (k in 1:length(corr_df)){
+        corr_df[[k]] <- tibble::add_column(corr_df[[k]], row_acronym = names(corr_df[[k]]), .before = TRUE) %>%
+          tidyr::pivot_longer(!row_acronym, names_to = "col_acronym", values_to = val_names[k])
+      }
+
+      # Combined the correlation plots into one dataframe
+      df <- corr_df$r %>% dplyr::left_join(corr_df$n, by = c("row_acronym", "col_acronym")) %>%
+        dplyr::left_join(corr_df$P, by = c("row_acronym", "col_acronym")) %>%
+        dplyr::left_join(corr_df$sig, by = c("row_acronym", "col_acronym")) %>%
+        tidyr::drop_na()
+
+      # Edges dataframe
+      edges_joined[[correlation_list_name]] <- df %>% dplyr::mutate(sign = ifelse(r >= 0, "pos", "neg"),
+                                                                    weight = abs(r)) %>%
+        dplyr::rename(from = row_acronym,
+                      to = col_acronym,
+                      p.value = P) %>%
+        tibble::add_column(network = correlation_list_name)
+      # ___________Create Node tibble ________________
+
+
+      # Get unique common regions
+      acronyms <-  e$correlation_list[[correlation_list_name]][[channel]]$r %>% rownames()
+
+      # get the parent super region
+      super.region <- acronyms
+
+      if (tolower(ontology) == "allen"){
+        for (sup.region in anatomical.order){
+          super.region[super.region %in% SMARTR::get.sub.structure(sup.region)] <- sup.region
+        }
+      } else {
+        for (sup.region in anatomical.order){
+          super.region[super.region %in% SMARTR::get.sub.structure.custom(sup.region, ontology = ontology)] <- sup.region
+        }
+      }
+      nodes_joined[[correlation_list_name]] <- tibble::tibble(name = acronyms, super.region = super.region)
+    }
+
+    network1 <- tidygraph::tbl_graph(nodes = nodes_joined[[1]],
+                                     edges = edges_joined[[1]],
+                                     directed = FALSE)
+
+
+    network2 <- tidygraph::tbl_graph(nodes = nodes_joined[[2]],
+                                     edges = edges_joined[[2]],
+                                     directed = FALSE)
+
+
+
+    # Remove self-loops and parallel edges
+    network1 <- network1 %>%
+      tidygraph::convert(tidygraph::to_simple) %>%
+      tidygraph::activate(edges) %>%
+      mutate(r = purrr::map_dbl(.orig_data, ~ .x[1,]$r),
+             n = purrr::map_int(.orig_data, ~ .x[1,]$n),
+             p.value = purrr::map_dbl(.orig_data, ~ .x[1,]$p.value),
+             sig = purrr::map_lgl(.orig_data, ~ .x[1,]$sig),
+             sign = purrr::map_chr(.orig_data, ~ .x[1,]$sign),
+             weight = purrr::map_dbl(.orig_data, ~ .x[1,]$weight),
+             network = purrr::map_chr(.orig_data, ~ .x[1,]$network)) %>%
+      tidygraph::select(-.tidygraph_edge_index,  -.orig_data) %>%
+      tidygraph::activate(nodes) %>%
+      tidygraph::select(-.tidygraph_node_index)
+
+    network2 <- network2 %>%
+      tidygraph::convert(tidygraph::to_simple) %>%
+      tidygraph::activate(edges) %>%
+      mutate(r = purrr::map_dbl(.orig_data, ~ .x[1,]$r),
+             n = purrr::map_int(.orig_data, ~ .x[1,]$n),
+             p.value = purrr::map_dbl(.orig_data, ~ .x[1,]$p.value),
+             sig = purrr::map_lgl(.orig_data, ~ .x[1,]$sig),
+             sign = purrr::map_chr(.orig_data, ~ .x[1,]$sign),
+             weight = purrr::map_dbl(.orig_data, ~ .x[1,]$weight),
+             network = purrr::map_chr(.orig_data, ~ .x[1,]$network)) %>%
+      tidygraph::select(-.tidygraph_edge_index,  -.orig_data) %>%
+      tidygraph::activate(nodes) %>%
+      tidygraph::select(-.tidygraph_node_index)
+
+    network <- tidygraph::graph_join(network1, network2)
+
+    # filter by alpha
+    if(!is.na(alpha) && !is.null(alpha)){
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::filter(p.value < alpha)
+    }
+
+    # Filter by pearson correlation coefficient
+    if(!is.na(pearson_thresh) && !is.null(pearson_thresh)){
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::filter(weight > pearson_thresh)
+    }
+
+    network <- network %>% tidygraph::activate(nodes) %>%
+      dplyr::mutate(super.region = factor(super.region,levels = unique(super.region)),
+                    degree = tidygraph::centrality_degree(mode="all")) %>%
+      dplyr::filter(degree>0)
+
+    networks[[channel]] <- network
+
+    # Whether to export the list of overlapping edges
+    if (export_overlapping_edges) {
+      joined_network_name <- paste(correlation_list_names, collapse = "_")
+      agg$networks[[joined_network_name]][[channel]] %>% activate(nodes) %>% as_tibble() -> nodes_df
+      agg$networks[[joined_network_name]][[channel]] %>% activate(edges) %>% as_tibble() -> edges_df
+      edges_df <- edges_df %>% mutate(from = nodes_df$name[edges_df$from],
+                                      to =   nodes_df$name[edges_df$to])
+      edges_df_p1 <- edges_df %>% dplyr::filter(network == correlation_list_names[1])
+      edges_df_p2 <- edges_df %>% dplyr::filter(network == correlation_list_names[2])
+      mutual_edges <- edges_df_p1 %>% dplyr::inner_join(edges_df_p2, by = c("from", "to"), suffix = c(paste0(".", correlation_list_names[1]), paste0(".", correlation_list_names[2])))
+
+      # Create table directory if it doesn't already exists
+      output_dir <-  file.path(attr(e, "info")$output_path, "tables")
+      if(!dir.exists(output_dir)){
+        dir.create(output_dir)
+      }
+      file_path <- file.path(output_dir, paste0("joined_networks_mutual_edges_",joined_network_name, "_", channel,".csv"))
+      write.csv(mutual_edges, file = file_path)
+      message(paste0("Saved mutual edge list at: ", file_path))
+    }
+  }
+
+  e$networks[[paste(correlation_list_names, collapse = "_")]] <- networks
+  return(e)
+}
+
 
 
 ##_____________________ Plotting functions ___________________________
@@ -2028,7 +2288,7 @@ plot_degree_distributions <- function(e,
 #' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
 #' @param rev_x_scale (bool, default = FALSE) Reveres the scale of the categorical variables
 #'  the experiment object output folder.
-
+#' @param label_angle (int, default = 60)
 #' @param height (int, default = 10) Height of the plot in inches.
 #' @param width (int, default = 10) Width of the plot in inches.
 #' @param ylim (vec, default = c(0,10)) Axes limits of y-axis
@@ -2045,6 +2305,7 @@ plot_mean_degree <- function(e,
                              title = "my_title",
                              height = 10,
                              width = 10,
+                             label_angle = 60,
                              rev_x_scale = FALSE,
                              ylim = c(0, 70),
                              image_ext = ".png",
@@ -2060,6 +2321,7 @@ plot_mean_degree <- function(e,
     theme(text = element_text(size = 22),
           line = element_line(size = 1),
           plot.title = element_text(hjust = 0.5, size = 36),
+          axis.text.x = element_text(angle = label_angle, hjust = 1, color = "black"),
           axis.ticks.length = unit(5.5,"points"))
 
   # List to store the returned plot handles
@@ -2148,6 +2410,7 @@ plot_mean_degree <- function(e,
 #' @param width (int, default = 10) Width of the plot in inches.
 #' @param ylim (vec, default = c(0,10)) Axes limits of y-axis
 #' @param image_ext (default = ".png") image extension to the plot as.
+#' @param label_angle (int, default = 60)
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
 #' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
@@ -2165,6 +2428,7 @@ plot_mean_clust_coeff <- function(e,
                              title = "my_title",
                              height = 10,
                              width = 10,
+                             label_angle = 60,
                              rev_x_scale = FALSE,
                              ylim = c(0, 0.7),
                              image_ext = ".png",
@@ -2179,6 +2443,7 @@ plot_mean_clust_coeff <- function(e,
   theme.small.xh <- ggplot2::theme_classic() +
     theme(text = element_text(size = 22),
           line = element_line(size = 1),
+          axis.text.x = element_text(angle = label_angle, hjust = 1, color = "black"),
           plot.title = element_text(hjust = 0.5, size = 36),
           axis.ticks.length = unit(5.5,"points"))
 
@@ -2265,6 +2530,7 @@ plot_mean_clust_coeff <- function(e,
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) Channels to plot
 #' @param height (int, default = 10) Height of the plot in inches.
 #' @param width (int, default = 10) Width of the plot in inches.
+#' @param label_angle (int, default = 60)
 #' @param ylim (vec, default = c(0,10)) Axes limits of y-axis
 #' @param image_ext (default = ".png") image extension to the plot as.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
@@ -2284,6 +2550,7 @@ plot_mean_global_effic <- function(e,
                                   title = "my_title",
                                   height = 10,
                                   width = 10,
+                                  label_angle = 60,
                                   rev_x_scale = FALSE,
                                   ylim = c(0, 0.7),
                                   image_ext = ".png",
@@ -2298,6 +2565,7 @@ plot_mean_global_effic <- function(e,
   theme.small.xh <- ggplot2::theme_classic() +
     theme(text = element_text(size = 22),
           line = element_line(size = 1),
+          axis.text.x = element_text(angle = label_angle, hjust = 1, color = "black"),
           plot.title = element_text(hjust = 0.5, size = 36),
           axis.ticks.length = unit(5.5,"points"))
 
@@ -2381,6 +2649,7 @@ plot_mean_global_effic <- function(e,
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) Channels to plot
 #' @param height (int, default = 10) Height of the plot in inches.
 #' @param width (int, default = 10) Width of the plot in inches.
+#' @param label_angle (int, default = 60)
 #' @param ylim (vec, default = c(0,10)) Axes limits of y-axis
 #' @param image_ext (default = ".png") image extension to the plot as.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
@@ -2400,6 +2669,7 @@ plot_mean_between_centrality <- function(e,
                                    title = "my_title",
                                    height = 10,
                                    width = 10,
+                                   label_angle = 60,
                                    rev_x_scale = FALSE,
                                    ylim = c(0, 50),
                                    image_ext = ".png",
@@ -2414,6 +2684,7 @@ plot_mean_between_centrality <- function(e,
   theme.small.xh <- ggplot2::theme_classic() +
     theme(text = element_text(size = 22),
           line = element_line(size = 1),
+          axis.text.x = element_text(angle = label_angle, hjust = 1, color = "black"),
           plot.title = element_text(hjust = 0.5, size = 36),
           axis.ticks.length = unit(5.5,"points"))
 
@@ -2775,6 +3046,171 @@ sort_anatomical_order <- function(common_regions, ontology ="allen",
   return(common_regions)
 
   }
+
+
+#' Plot the networks stored in an experiment object
+#' @param e experiment object
+#' @param correlation_list_names (str vec) character vector of the two correlation lists used to include in a joined network, e.g., `correlation_list_names = c("male_agg", "female_non")`
+#' @param title (str, default = NULL) Title of network plot
+#' @param channels (str, default = c("cfos", "eyfp", "colabel"))
+#' @param height Height of the plot in inches.
+#' @param width width of the plot in inches.
+#' @param image_ext (default = ".png") image extension to the plot as.
+#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
+#'  the experiment object output folder.
+#' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.
+#'  the experiment object output folder.
+#' @param absolute_weight (bool, default = TRUE) Whether to plot absolute weights. If TRUE, the edge_colors and edge_colors_label should not contain values for positive and negative correlations.
+#' @param edge_color (str, default =  c(male_agg_pos = "Positive male", male_agg_neg = "Negative male", female_non_pos = "Positive female", female_non_neg = "Negative female")) Color of the network edges as a named vector.
+#' @param degree_scale_limit (vec, default = c(1,10)) Scale limit for degree size
+#' @param network_radius
+#' @param graph_theme (default = NULL) Add a [ggraph::theme()] to the network graph. If NULL, the default is taken.
+#' @param label_size (default = 5) Default font size for network region labels.
+#' @param label_offset (default = 0.15) Distance of label from nodes.
+#' @param region_legend (default = TRUE) Boolean determining whether or not to show the region legend categorizing subregions into their largest parent region. Only works well if the Allen ontology is used for the dataset.
+#' @param correlation_edge_width_limit
+#' Can also be a hexadecimal color code written as a string.
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
+#' @export
+#' @examples
+plot_joined_networks <- function(e,
+                                 correlation_list_names = c("male_agg", "female_non"),
+                                 title = NULL,
+                                 channels = "cfos",
+                                 absolute_weight = TRUE,
+                                 edge_colors = c(male_agg_pos =  "#06537f",
+                                                 male_agg_neg = "#526c7a",
+                                                 female_non_pos = "#C70039",
+                                                 female_non_neg = "#71585f"),
+                                 edge_color_labels = c(male_agg_pos = "Positive male",
+                                                       male_agg_neg = "Negative male",
+                                                       female_non_pos = "Positive female",
+                                                       female_non_neg = "Negative female"),
+                                 height = 15,
+                                 width = 15,
+                                 region_legend = TRUE,
+                                 degree_scale_limit = c(1,10),
+                                 correlation_edge_width_limit = c(0.8,1),
+                                 image_ext = ".png",
+                                 network_radius = 300,
+                                 print_plot = TRUE,
+                                 graph_theme = NULL,
+                                 reverse_plot_edge_order = FALSE,
+                                 transparent_edge_group1 = TRUE,
+                                 transparent_edge_group2 = FALSE,
+                                 label_size = 5,
+                                 label_offset = 0.15,
+                                 save_plot = TRUE){
+
+  # Detect the OS and set quartz( as graphing function)
+  if(get_os() != "osx"){
+    quartz <- X11
+  }
+
+  # List to store the returned plot handles
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
+
+  for (channel in channels){
+
+    joined_network_name <- paste(correlation_list_names, collapse = "_")
+    network <- e$networks[[joined_network_name]][[channel]]
+    p1 <-  correlation_list_names[1]
+    p2 <-  correlation_list_names[2]
+
+
+    # _______________ Plot the network ________________________________
+    if (is.null(graph_theme)){
+      graph_theme <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5,size = 28),
+                                                   legend.text = element_text(size = 15),
+                                                   legend.title = element_text(size = 15)
+      )
+
+    }
+
+    if (isTRUE(absolute_weight)) {
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(color = factor(network))
+    } else {
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(color=paste(network, sign, sep = "_"))
+    }
+
+    if (isTRUE(reverse_plot_edge_order)){
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(color = forcats::fct_rev(color))
+    }
+
+    if (isTRUE(transparent_edge_group1) &&  isTRUE(transparent_edge_group2)){
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = 0)
+    } else if (isFALSE(transparent_edge_group1) && isTRUE(transparent_edge_group2)){
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = if_else(network == p2, 0.0, 0.6))
+    } else if (isTRUE(transparent_edge_group1) && isFALSE(transparent_edge_group2)){
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = if_else(network == p1, 0.0, 0.6))
+    } else {
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = 0.6)
+    }
+
+
+    p <- ggraph::ggraph(network, layout = "linear", circular = TRUE) +
+      # ggraph::geom_edge_diagonal(aes(color = color, width = abs(weight)),
+      #                            edge_alpha = 0.6, n = 1000) +
+      ggraph::geom_edge_arc(aes(color = color, width = abs(weight), edge_alpha = edge_alpha),
+                            n = 1000) +
+      ggraph::geom_node_point(aes(size = degree,
+                                  color = super.region),
+                              show.legend = TRUE) +
+      ggraph::geom_node_text(aes(x = (sqrt(x^2+y^2)+label_offset)*cos(atan(y/x))*sign(x),
+                                 y = abs((sqrt(x^2+y^2)+label_offset)*sin(atan(y/x)))*sign(y),
+                                 angle = atan(y/x)*180/pi,
+                                 label = name),
+                             repel = FALSE, color = "grey25",
+                             size = label_size,
+                             show.legend = NA) +
+      ggraph::scale_edge_color_manual(values = edge_colors,
+                                      labels = edge_color_labels,
+                                      name = "Correlation",
+                                      guide = guide_legend(order = 1)) +
+      ggraph::scale_edge_width(limits=correlation_edge_width_limit,range = c(1,4),name = "Correlation Strength",
+                               guide = guide_legend(order = 3)) +
+      ggraph::scale_color_viridis(name = "Anatomical Region",
+                                  discrete = TRUE,
+                                  option = "D",
+                                  guide = guide_legend(override.aes = list(size=5), order=4)) +
+      ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=c(4,10),
+                          guide = guide_legend(order = 2)) +
+      ggplot2::coord_equal() + graph_theme
+
+    if (is.null(title)){
+      title <- paste(network_name, channel)
+    }
+    p <-  p + ggplot2::ggtitle(title)
+
+    if (print_plot){
+      quartz(width = width, height = height)
+      print(p)
+    }
+
+    if(save_plot){
+      # Plot the heatmap
+      quartz(width = width, height = height)
+      print(p)
+
+      # Create figure directory if it doesn't already exists
+      output_dir <-  file.path(attr(e, "info")$output_path, "figures")
+      if(!dir.exists(output_dir)){
+        dir.create(output_dir)
+      }
+      image_file <- file.path(output_dir, paste0("network_", joined_network_name, "_", channel, image_ext))
+      ggsave(filename = image_file,  width = width, height = height, units = "in")
+    }
+    # Store the plot handle
+    p_list[[channel]] <- p
+  }
+  return(p_list)
+}
+
+
+
+
+
 
 #' Generate array of null distribution of region pairwise correlation differences.
 #' @param df
