@@ -286,13 +286,13 @@ correlation_diff_permutation <- function(e,
       tidyr::pivot_wider(names_from = acronym, values_from = normalized.count.by.volume) %>%
       dplyr::mutate(corr_group = correlation_list_name_1) %>% dplyr::relocate(corr_group, .before = 2) %>%
       dplyr::ungroup() %>%
-      dplyr::select(-all_of(attr_group_1$group_by))
+      dplyr::select(-any_of(attr2match$mouse))
 
     df_channel_group_2  <- df_channel_group_2  %>%  dplyr::select(mouse_ID:acronym, normalized.count.by.volume) %>%
       tidyr::pivot_wider(names_from = acronym, values_from = normalized.count.by.volume) %>%
       dplyr::mutate(corr_group = correlation_list_name_2) %>% dplyr::relocate(corr_group, .before = 2) %>%
       dplyr::ungroup() %>%
-      dplyr::select(-all_of(attr_group_2$group_by))
+      dplyr::select(-any_of(attr2match$mouse))
 
     # Get common regions between each group
     common_regions_btwn_groups <- intersect(names(df_channel_group_1), names(df_channel_group_2))
@@ -319,11 +319,14 @@ correlation_diff_permutation <- function(e,
     test_statistic <- group_2_corr$r - group_1_corr$r
 
     # Get an array of distribution of correlation differences
+
+    suppressWarnings(
     test_statistic_distributions <- permute_corr_diff_distrib(df_channel_groups,
                                                          correlation_list_name_1 = correlation_list_name_1,
                                                          correlation_list_name_2 = correlation_list_name_2,
                                                          n_shuffle = n_shuffle,
                                                          seed = seed, ...)
+    )
 
     # message("dim before sort", dim(test_statistic_distributions))
     # For each pairwise distribution, sort the values
@@ -859,8 +862,8 @@ create_joined_networks <- function(e,
     # Whether to export the list of overlapping edges
     if (export_overlapping_edges) {
       joined_network_name <- paste(correlation_list_names, collapse = "_")
-      agg$networks[[joined_network_name]][[channel]] %>% activate(nodes) %>% as_tibble() -> nodes_df
-      agg$networks[[joined_network_name]][[channel]] %>% activate(edges) %>% as_tibble() -> edges_df
+      e$networks[[joined_network_name]][[channel]] %>% activate(nodes) %>% as_tibble() -> nodes_df
+      e$networks[[joined_network_name]][[channel]] %>% activate(edges) %>% as_tibble() -> edges_df
       edges_df <- edges_df %>% mutate(from = nodes_df$name[edges_df$from],
                                       to =   nodes_df$name[edges_df$to])
       edges_df_p1 <- edges_df %>% dplyr::filter(network == correlation_list_names[1])
