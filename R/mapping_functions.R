@@ -2011,13 +2011,12 @@ get.registered.areas.bu <- function(regions, registration, conversion.factor = 1
 
 
 #' Make a filter for the cfos or eyfp channel
-#'
+#' This is specific to filtering counts quantified and exported through our ImageJ scripts.
 #' @param data
 #' @param params
 #' @param ranges
-#'
 #' @return
-#'
+#' @export
 #' @examples
 make.filter <- function(data,
                         params = c("Vol..unit.","Moment1","Moment2","Moment3","Moment4","Sigma"),

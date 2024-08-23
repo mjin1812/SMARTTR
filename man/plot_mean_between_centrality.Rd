@@ -13,6 +13,7 @@ plot_mean_between_centrality(
   title = "my_title",
   height = 10,
   width = 10,
+  label_angle = 60,
   rev_x_scale = FALSE,
   ylim = c(0, 50),
   image_ext = ".png",
@@ -37,6 +38,8 @@ Warning: this will be applied to all channels. It's recommended to set the chann
 \item{height}{(int, default = 10) Height of the plot in inches.}
 
 \item{width}{(int, default = 10) Width of the plot in inches.}
+
+\item{label_angle}{(int, default = 60)}
 
 \item{rev_x_scale}{(bool, default = FALSE) Reveres the scale of the categorical variables
 the experiment object output folder.}

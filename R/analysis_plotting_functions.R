@@ -301,14 +301,15 @@ correlation_diff_permutation <- function(e,
     # common_regions_btwn_groups <- sort_anatomical_order(common_regions_btwn_groups)
 
     # Select the common regions in anatomical order across the two group dataframes
-    df_channel_group_1 <- df_channel_group_1 %>% dplyr::select(mouse_ID, corr_group, all_of(common_regions_btwn_groups))
-    df_channel_group_2 <- df_channel_group_2 %>% dplyr::select(mouse_ID, corr_group, all_of(common_regions_btwn_groups))
+    df_channel_group_1 <- df_channel_group_1 %>% dplyr::select(mouse_ID, corr_group, all_of(common_regions_btwn_groups)) %>% dplyr::mutate(mouse_ID = as.character(mouse_ID))
+
+    df_channel_group_2 <- df_channel_group_2 %>% dplyr::select(mouse_ID, corr_group, all_of(common_regions_btwn_groups)) %>% dplyr::mutate(mouse_ID = as.character(mouse_ID))
 
     # Bind group dfs together
     df_channel_groups <- dplyr::bind_rows(df_channel_group_1, df_channel_group_2)
 
-    df_channel_groups <- dplyr::bind_cols(df_channel_groups %>% dplyr::select(c(mouse_ID, corr_group)),
-                                          df_channel_groups %>% dplyr::select(dplyr::where(is.numeric)))
+    # df_channel_groups <- dplyr::bind_cols(df_channel_groups %>% dplyr::select(c(mouse_ID, corr_group)),
+    #                                       df_channel_groups %>% dplyr::select(dplyr::where(is.numeric)))
 
     # Get group region pairwise correlational differences
     group_1_corr <- df_channel_group_1 %>% dplyr::select(dplyr::where(is.numeric)) %>%
@@ -384,11 +385,13 @@ correlation_diff_permutation <- function(e,
 #'
 #' @param e experiment object
 #' @param permutation_groups (str vec, default = "all") Default is to export all analyses run. Supply names of the specific analyses found under `e$permutation_p_matrix %>% names()` if you want to export specific groups.
+#' @param channels (str, channels =  c("cfos", "eyfp", "colabel") The channels to process.
 #' @param ontology (str, default = "allen") Set to "unified" for Kim Lab unified ontology
 #' @param filter_significant (bool, default = TRUE) If FALSE, this keeps all comparisons. Otherwise exports only the most different and significant permutations.
 #' @export
 export_permutation_results <- function(e,
                                        permutation_groups = "all",
+                                       channels = c("cfos"),
                                        ontology = "allen",
                                        filter_significant =  TRUE){
 
@@ -403,57 +406,58 @@ export_permutation_results <- function(e,
     }
   }
 
-  for (pg in permutation_groups){
+  for (channel in channels) {
+    for (pg in permutation_groups){
 
-    regions <- colnames(e$permutation_p_matrix[[pg]]$cfos$sig)
+      regions <- colnames(e$permutation_p_matrix[[pg]][[channel]]$sig)
 
-    sig_df <- e$permutation_p_matrix[[pg]]$cfos$sig %>%
-      tibble::as_tibble(rownames="R1") %>%
-      dplyr::pivot_longer(cols = all_of(regions), names_to = "R2", values_to = "sig") %>%
-      drop_na()
-
-
-    pval_df <-e$permutation_p_matrix[[pg]]$cfos$p_val %>%
-      tibble::as_tibble(rownames="R1") %>%
-      dplyr::pivot_longer(cols = all_of(regions), names_to = "R2", values_to = "p_val") %>%
-      drop_na()
+      sig_df <- e$permutation_p_matrix[[pg]][[channel]]$sig %>%
+        tibble::as_tibble(rownames="R1") %>%
+        tidyr::pivot_longer(cols = all_of(regions), names_to = "R2", values_to = "sig") %>%
+        drop_na()
 
 
-    test_statistic <- e$permutation_p_matrix[[pg]]$cfos$test_statistic
-    test_statistic[upper.tri(test_statistic, diag = TRUE)] <- NA
-
-    test_statistic <- test_statistic %>%
-      tibble::as_tibble(rownames="R1") %>%
-      dplyr::pivot_longer(cols = all_of(regions), names_to = "R2", values_to = "test_statistic") %>%
-      drop_na()
-
-    permutation_results <- dplyr::left_join(test_statistic, pval_df, by = c("R1", "R2"), keep = FALSE) %>%
-      dplyr::left_join(sig_df, by = c("R1", "R2"), keep = FALSE)
+      pval_df <-e$permutation_p_matrix[[pg]][[channel]]$p_val %>%
+        tibble::as_tibble(rownames="R1") %>%
+        tidyr::pivot_longer(cols = all_of(regions), names_to = "R2", values_to = "p_val") %>%
+        drop_na()
 
 
-    if (ontology == "allen"){
-      permutation_results <- permutation_results %>% dplyr::mutate(name1 = name.from.acronym(R1),
-                                                                   name2 = name.from.acronym(R2),
-                                                                   .before = test_statistic)
-    } else (
-      permutation_results <- permutation_results %>% dplyr::mutate(name1 = name.from.acronym.custom(R1, ontology = ontology),
-                                                                   name2 = name.from.acronym.custom(R2, ontology = ontology),
-                                                                   .before = test_statistic)
-    )
+      test_statistic <- e$permutation_p_matrix[[pg]][[channel]]$test_statistic
+      test_statistic[upper.tri(test_statistic, diag = TRUE)] <- NA
 
-    if (filter_significant) {
-      permutation_results <- permutation_results %>% dplyr::filter(sig)
+      test_statistic <- test_statistic %>%
+        tibble::as_tibble(rownames="R1") %>%
+        tidyr::pivot_longer(cols = all_of(regions), names_to = "R2", values_to = "test_statistic") %>%
+        drop_na()
+
+      permutation_results <- dplyr::left_join(test_statistic, pval_df, by = c("R1", "R2"), keep = FALSE) %>%
+        dplyr::left_join(sig_df, by = c("R1", "R2"), keep = FALSE)
+
+
+      if (ontology == "allen"){
+        permutation_results <- permutation_results %>% dplyr::mutate(name1 = name.from.acronym(R1),
+                                                                     name2 = name.from.acronym(R2),
+                                                                     .before = test_statistic)
+      } else (
+        permutation_results <- permutation_results %>% dplyr::mutate(name1 = name.from.acronym.custom(R1, ontology = ontology),
+                                                                     name2 = name.from.acronym.custom(R2, ontology = ontology),
+                                                                     .before = test_statistic)
+      )
+
+      if (filter_significant) {
+        permutation_results <- permutation_results %>% dplyr::filter(sig)
+      }
+
+      # Create table directory if it doesn't already exists
+      output_dir <-  file.path(attr(e, "info")$output_path, "tables")
+      if(!dir.exists(output_dir)){
+        dir.create(output_dir)
+      }
+
+      write.csv(permutation_results, file.path(output_dir, paste0("permutation_results", "_", pg, "_", channel, ".csv")), row.names = FALSE)
     }
-
-    # Create table directory if it doesn't already exists
-    output_dir <-  file.path(attr(e, "info")$output_path, "tables")
-    if(!dir.exists(output_dir)){
-      dir.create(output_dir)
-    }
-
-    write.csv(permutation_results, file.path(output_dir, paste0("permutation_results", "_", pg, ".csv")), row.names = FALSE)
   }
-
 }
 
 

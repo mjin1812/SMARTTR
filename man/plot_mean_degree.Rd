@@ -13,6 +13,7 @@ plot_mean_degree(
   title = "my_title",
   height = 10,
   width = 10,
+  label_angle = 60,
   rev_x_scale = FALSE,
   ylim = c(0, 70),
   image_ext = ".png",
@@ -38,6 +39,8 @@ These are the same network names used in the function \code{\link[=summarise_net
 \item{height}{(int, default = 10) Height of the plot in inches.}
 
 \item{width}{(int, default = 10) Width of the plot in inches.}
+
+\item{label_angle}{(int, default = 60)}
 
 \item{rev_x_scale}{(bool, default = FALSE) Reveres the scale of the categorical variables
 the experiment object output folder.}

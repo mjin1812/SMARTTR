@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">SMARTR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -101,6 +101,11 @@ the hypothalamus are represented, the HY should not be included in the list.</dd
         <dd>This function performs a permutation analysis to compare the region pairwise correlation coefficients between two different analysis groups.</dd>
       </dl><dl><dt>
           
+          <code><a href="create_joined_networks.html">create_joined_networks()</a></code> 
+        </dt>
+        <dd>Create a joined network to visualize overlapping connections with the same outer joined node set.</dd>
+      </dl><dl><dt>
+          
           <code><a href="create_networks.html">create_networks()</a></code> 
         </dt>
         <dd>Create %&gt;% graph objects for plotting different analysis subgroups.</dd>
@@ -126,6 +131,11 @@ This function also automatically keeps only the common regions that are found ac
           <code><a href="experiment.html">experiment()</a></code> 
         </dt>
         <dd>Create an experiment object</dd>
+      </dl><dl><dt>
+          
+          <code><a href="export_permutation_results.html">export_permutation_results()</a></code> 
+        </dt>
+        <dd>Export the permutation results as a csv file. This automatically saves into the tables folder.</dd>
       </dl><dl><dt>
           
           <code><a href="filter.html">filter</a></code> 
@@ -269,9 +279,6 @@ make.filter(
 )
 
 
-ranges
-
-
 
 
 
@@ -394,6 +401,11 @@ set it to the <code>color_mapping</code> parameter and set the <code>pattern_map
           <code><a href="plot_degree_regions.html">plot_degree_regions()</a></code> 
         </dt>
         <dd>Plot the degree distributions across regions</dd>
+      </dl><dl><dt>
+          
+          <code><a href="plot_joined_networks.html">plot_joined_networks()</a></code> 
+        </dt>
+        <dd>Plot the networks stored in an experiment object</dd>
       </dl><dl><dt>
           
           <code><a href="plot_mean_between_centrality.html">plot_mean_between_centrality()</a></code> 

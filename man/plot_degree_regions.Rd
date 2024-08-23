@@ -9,10 +9,13 @@ plot_degree_regions(
   channels = c("cfos", "eyfp"),
   colors = c("red", "green"),
   network = "AD",
-  title = "my_title",
+  title = "",
   height = 10,
   width = 20,
   ylim = c(0, 15),
+  sort_super_region = FALSE,
+  region_label_angle = 60,
+  label_text_size = 12,
   image_ext = ".png",
   print_plot = TRUE,
   save_plot = TRUE
@@ -27,13 +30,20 @@ plot_degree_regions(
 
 \item{network}{(str, default = "AD") Which network to plot the degree distribution across regions}
 
-\item{title}{the experiment object output folder.}
+\item{title}{(str, default = "")}
 
 \item{height}{(int, default = 15) Height of the plot in inches.}
 
 \item{width}{(int, default = 20) Width of the plot in inches.}
 
 \item{ylim}{(vec, default = c(0,15))axes limits of y-axis}
+
+\item{sort_super_region}{(bool, default = FALSE) Whether to divide into subfacets based on which parent region}
+
+\item{region_label_angle}{(int, default = 60) Angle of region labels.}
+
+\item{label_text_size}{(int, default = 12) Font size of region labels.
+the experiment object output folder.}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 

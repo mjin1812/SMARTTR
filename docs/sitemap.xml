@@ -61,6 +61,9 @@
     <loc>/reference/correlation_diff_permutation.html</loc>
   </url>
   <url>
+    <loc>/reference/create_joined_networks.html</loc>
+  </url>
+  <url>
     <loc>/reference/create_networks.html</loc>
   </url>
   <url>
@@ -74,6 +77,9 @@
   </url>
   <url>
     <loc>/reference/experiment.html</loc>
+  </url>
+  <url>
+    <loc>/reference/export_permutation_results.html</loc>
   </url>
   <url>
     <loc>/reference/filter.html</loc>
@@ -212,6 +218,9 @@
   </url>
   <url>
     <loc>/reference/plot_degree_regions.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_joined_networks.html</loc>
   </url>
   <url>
     <loc>/reference/plot_mean_between_centrality.html</loc>
