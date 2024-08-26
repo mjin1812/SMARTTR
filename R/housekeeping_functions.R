@@ -545,6 +545,37 @@ get.sub.structure <- function (x)
 
 
 
+
+#' Updated function to return character vector of the super region acronyms after inputting a character vector of acronyms
+#'
+#' @param acronym (str vec) character vector of acronyms. Cannot be a factor vector.
+#' @param anatomical.order (default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get.super.regions <- function(acronym, anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU",
+                                                            "TH", "HY", "MB", "HB", "CB"), ontology = "allen"){
+  # get the parent super region
+  super.region <- acronym %>% as.character()
+
+  if (tolower(ontology) == "allen"){
+    for (sup.region in anatomical.order){
+      super.region[super.region %in% SMARTR::get.sub.structure(sup.region)] <- sup.region
+    }
+  } else {
+    for (sup.region in anatomical.order){
+      super.region[super.region %in% SMARTR::get.sub.structure.custom(sup.region, ontology = ontology)] <- sup.region
+    }
+  }
+  return(super.region)
+}
+
+
+
+
 #' Get parent region acronyms
 #' @description Function to get the acronym of parent regions in the ontology
 #' @param x (str) Regional acronym
