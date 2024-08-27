@@ -12,13 +12,24 @@ plot_correlation_heatmaps(
   sig_color = "yellow",
   sig_nudge_y = -0.7,
   sig_size = 7,
+  ontology = "allen",
+  anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB",
+    "HB", "CB"),
   print_plot = TRUE,
   save_plot = TRUE,
   image_ext = ".png",
   plot_title = NULL,
   height = 10,
   width = 10,
-  theme.hm = NULL
+  theme.hm = ggplot2::theme(axis.text.x = element_text(hjust = 1, vjust = 0.5, angle =
+    90, size = 8), axis.text.y = element_text(vjust = 0.5, size = 8), plot.title =
+    element_text(hjust = 0.5, size = 36), axis.title = element_text(size = 18),
+    legend.text = element_text(size = 22), legend.key.height = unit(100, "points"),
+    legend.title = element_text(size = 22), panel.spacing = unit(0.2, "lines"),
+    strip.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, size = 10),
+    strip.text.y = element_text(angle = 270,      hjust = 0.5, vjust = 0.5, size = 10),
+    strip.placement = "outside", strip.background = element_rect(color = "black", fill =
+    "lightblue"))
 )
 }
 \arguments{
@@ -37,6 +48,10 @@ input compatible with ggplot2 plotting functions.}
 
 \item{sig_size}{(default = 7) Point size for significance symbol.}
 
+\item{ontology}{(str, default = "allen") Region ontology to use. options = "allen" or "unified"}
+
+\item{anatomical.order}{(default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order}
+
 \item{print_plot}{(bool, default = TRUE) Print the plot as graphics windows.}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
@@ -50,7 +65,7 @@ the experiment object output folder.}
 
 \item{width}{(int) Width of the plot in inches.}
 
-\item{theme.hm}{(default = NULL) Option to use custom ggplot2 theme if the user wants}
+\item{theme.hm}{Option to use custom ggplot2 theme if the user wants. See default values as example.}
 }
 \value{
 p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
@@ -59,7 +74,7 @@ p_list A list the same length as the number of channels, with each element conta
 Plot correlation heatmaps
 }
 \examples{
-plot_correlation_heatmaps(e, correlation_list_name = "female_AD") # No return value
+plot_correlation_heatmaps(e, correlation_list_name = "female_AD")
 }
 \seealso{
 \code{\link[=get_correlations]{get_correlations()}}

@@ -12,3 +12,4 @@
 * New function `export_permutation_results` reformats permutation results and saves it nicely for users.
 * Tables are now saved into an autocreated `tables` folder in the output directory for organization.
 * Added `create_joined_networks` and `plot_joined_networks` as as capability to visualize the overlapping edges in two networks with outer joined nodes. The capability to export a list of overlapping edges between the joined network is included as a parameter in `create_joined_networks`. See the documentation for more details.
+* Altered `plot_correlation_heatmaps() function to automatically plot parent regions as subfacets`

@@ -64,7 +64,7 @@
 <span>  <span class="va">by</span>,</span>
 <span>  <span class="va">values</span>,</span>
 <span>  channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cfos"</span>, <span class="st">"eyfp"</span>, <span class="st">"colabel"</span><span class="op">)</span>,</span>
-<span>  p_adjust_method <span class="op">=</span> <span class="st">"BH"</span>,</span>
+<span>  p_adjust_method <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  ontology <span class="op">=</span> <span class="st">"allen"</span>,</span>
 <span>  anatomical.order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Isocortex"</span>, <span class="st">"OLF"</span>, <span class="st">"HPF"</span>, <span class="st">"CTXsp"</span>, <span class="st">"CNU"</span>, <span class="st">"TH"</span>, <span class="st">"HY"</span>, <span class="st">"MB"</span>,</span>
@@ -93,7 +93,7 @@ e.g.values = c("female", "AD").</p></dd>
 
 
 <dt>p_adjust_method</dt>
-<dd><p>(bool or str, default = "BH") Benjamini-Hochberg method is recommended.
+<dd><p>(bool or str, default = "none") This parameter is fed into the p.adjust function. Options: c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr", "none")
 Apply the named method to control for the inflated false discovery rate or family wise error rate (FWER). Set to FALSE or "none"
 to keep "raw" p values. See also <code><a href="https://rdrr.io/r/stats/p.adjust.html" class="external-link">stats::p.adjust()</a></code> for the correction options.</p></dd>
 

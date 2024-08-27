@@ -9,7 +9,7 @@ get_correlations(
   by,
   values,
   channels = c("cfos", "eyfp", "colabel"),
-  p_adjust_method = "BH",
+  p_adjust_method = "none",
   alpha = 0.05,
   ontology = "allen",
   anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB",
@@ -27,7 +27,7 @@ e.g.values = c("female", "AD").}
 
 \item{channels}{(str, channels =  c("cfos", "eyfp", "colabel") The channels to process.}
 
-\item{p_adjust_method}{(bool or str, default = "BH") Benjamini-Hochberg method is recommended.
+\item{p_adjust_method}{(bool or str, default = "none") This parameter is fed into the p.adjust function. Options: c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr", "none")
 Apply the named method to control for the inflated false discovery rate or family wise error rate (FWER). Set to FALSE or "none"
 to keep "raw" p values. See also \code{\link[stats:p.adjust]{stats::p.adjust()}} for the correction options.}
 

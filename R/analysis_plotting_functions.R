@@ -129,7 +129,7 @@ get_percent_colabel <-function(e, by, colabel_channel = "colabel",
 #' @param values (str) The respective values of the attributes entered for the `by` parameter to generate a specific analysis group,
 #' e.g.values = c("female", "AD").
 #' @param channels (str, channels =  c("cfos", "eyfp", "colabel") The channels to process.
-#' @param p_adjust_method (bool or str, default = "BH") Benjamini-Hochberg method is recommended.
+#' @param p_adjust_method (bool or str, default = "none") This parameter is fed into the p.adjust function. Options: c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr", "none")
 #'  Apply the named method to control for the inflated false discovery rate or family wise error rate (FWER). Set to FALSE or "none"
 #'  to keep "raw" p values. See also [stats::p.adjust()] for the correction options.
 #' @param region_order (list, default = NULL)  optional list with the first element named "acronym" supplying a vector as region acronyms and the second element named
@@ -148,7 +148,7 @@ get_percent_colabel <-function(e, by, colabel_channel = "colabel",
 #' @seealso [Hmisc::rcorr()]
 get_correlations <- function(e, by, values,
                              channels = c("cfos", "eyfp", "colabel"),
-                             p_adjust_method = "BH",
+                             p_adjust_method = "none",
                              alpha = 0.05,
                              ontology = "allen",
                              anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"),
@@ -167,19 +167,16 @@ get_correlations <- function(e, by, values,
       tidyr::pivot_wider(names_from = acronym, values_from = normalized.count.by.volume, values_fill = NA)
 
     # Rearrange the correlations to be in "anatomical order"
-    common.regions <-  df_channel %>% dplyr::ungroup() %>% dplyr::select(-all_of(c('mouse_ID', by))) %>% names()
+    common.regions <-  df_channel %>% dplyr::ungroup() %>% dplyr::select(-any_of(c('mouse_ID', attr2match$mouse))) %>% names()
 
     if (is.null(region_order)){
       if (tolower(ontology) == "allen"){
-        # anatomical.order <- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
-
         common.regions.ordered <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure) %>%
           purrr::map(intersect, y=common.regions) %>% unlist()
       } else {
         # anatomical.order <- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
         common.regions.ordered <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure.custom, ontology = ontology) %>%
           purrr::map(intersect, y=common.regions) %>% unlist()
-
       }
       } else if (is.list(region_order)){
       common.regions.ordered <- region_order$acronym[region_order$order]
@@ -1591,13 +1588,15 @@ plot_normalized_counts <- function(e,
 #' @param height (int) Height of the plot in inches.
 #' @param sig_color (str, default = "yellow") Color of the significance symbol in R
 #' @param width (int) Width of the plot in inches.
-#' @param theme.hm (default = NULL) Option to use custom ggplot2 theme if the user wants
+#' @param theme.hm Option to use custom ggplot2 theme if the user wants. See default values as example.
 #' @param sig_size (default = 7) Point size for significance symbol.
 #' @param sig_nudge_y (default = -0.7) Relative amount to nudge the significance symbols in the y direction to center over each square.
+#' @param anatomical.order (default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #'
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
-#' @examples plot_correlation_heatmaps(e, correlation_list_name = "female_AD") # No return value
+#' @examples plot_correlation_heatmaps(e, correlation_list_name = "female_AD")
 #' @seealso [SMARTR::get_correlations()]
 
 plot_correlation_heatmaps <- function(e, correlation_list_name,
@@ -1606,9 +1605,23 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
                                       sig_color = "yellow",
                                       sig_nudge_y = -0.7,
                                       sig_size = 7,
+                                      ontology = "allen",
+                                      anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU",
+                                                           "TH", "HY", "MB", "HB", "CB"),
                                       print_plot = TRUE, save_plot = TRUE, image_ext = ".png",
                                       plot_title = NULL, height = 10, width = 10,
-                                      theme.hm = NULL
+                                      theme.hm = ggplot2::theme(axis.text.x = element_text(hjust = 1, vjust = 0.5, angle = 90, size = 8),
+                                                                axis.text.y = element_text(vjust = 0.5, size = 8),
+                                                                plot.title = element_text(hjust = 0.5, size = 36),
+                                                                axis.title = element_text(size = 18),
+                                                                legend.text = element_text(size = 22),
+                                                                legend.key.height = unit(100, "points"),
+                                                                legend.title = element_text(size = 22),
+                                                                panel.spacing = unit(0.2, "lines"),
+                                                                strip.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, size = 10),
+                                                                strip.text.y = element_text(angle = 270,  hjust = 0.5, vjust = 0.5, size = 10),
+                                                                strip.placement = "outside",
+                                                                strip.background = element_rect(color = "black", fill = "lightblue"))
                                       ){
 
   # Detect the OS and set quartz (as graphing function)
@@ -1630,20 +1643,6 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
     cl_attr$values <- stringr::str_to_title(cl_attr$values)
     plot_title <- paste(cl_attr$value, collapse = " ")
   }
-
-  # Create plotting theme for the heatmap
-  if (is.null(theme.hm)){
-    theme.hm <- ggplot2::theme(axis.text.x = element_text(hjust = 1, vjust = 0.5, angle = 90, size = 8),
-                               axis.text.y = element_text(vjust = 0.5, size = 8),
-                               plot.title = element_text(hjust = 0.5, size = 36),
-                               axis.title = element_text(size = 18),
-                               legend.text = element_text(size = 22),
-                               legend.key.height = unit(100, "points"),
-                               legend.title = element_text(size = 22))
-
-
-  }
-
 
   # List to store the returned plot handles
   p_list <- vector(mode='list', length = length(channels))
@@ -1667,16 +1666,28 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
      dplyr::left_join(corr_df$sig, by = c("row_acronym", "col_acronym")) %>%
      dplyr::mutate(sig_text = dplyr::if_else(sig == TRUE, "*", ""))
 
+   # Get row and column parent super regions
+  df <- df %>% dplyr::mutate(row_parent = get.super.regions(row_acronym, anatomical.order = anatomical.order, ontology = ontology), .before  = row_acronym) %>%
+    dplyr::mutate(row_parent = factor(row_parent, levels = anatomical.order))
+  df <- df %>% dplyr::mutate(col_parent = get.super.regions(col_acronym, anatomical.order = anatomical.order, ontology = ontology), .before  = row_acronym) %>%
+    dplyr::mutate(col_parent = factor(col_parent, levels = rev(anatomical.order)))
+
+
   # Generate a correlation heatmap in anatomical order
+  n_facet <- df$row_parent %>% unique() %>% length()
   p <-  ggplot(df, aes(row_acronym, col_acronym, fill = r)) +
-        geom_tile() +
-        # geom_raster()+
+        facet_grid(col_parent ~ row_parent,
+                   space = "free",
+                   margins = FALSE,
+                   scales = "free") +
+          geom_tile() +
         geom_text(aes(label = sig_text), size=sig_size, position = position_nudge(y = sig_nudge_y), color = sig_color) +
         scale_fill_gradient2(low = "#4f4f4f",mid = "#ffffff", high = colors[[channel]],
                          aesthetics = c("color","fill"), na.value = "grey50",
-                         limits=c(-1, 1))+
+                         limits=c(-1, 1)) +
         labs(title = plot_title, x = "Brain Region", y = "Brain Region") +
     theme.hm
+
 
   if (print_plot){
     quartz()
@@ -1693,14 +1704,13 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
     if(!dir.exists(output_dir)){
       dir.create(output_dir)
     }
-    image_file <- file.path(output_dir, paste0("heatmap_", str_replace(plot_title, " ", "_"), "_", channel, image_ext))
+    image_file <- file.path(output_dir, paste0("heatmap_", stringr::str_replace(plot_title, " ", "_"), "_", channel, image_ext))
     ggsave(filename = image_file,  width = width, height = height, units = "in")
   }
     # Store the plot handle
     p_list[[channel]] <- p
   }
   return(p_list)
-
 }
 
 
