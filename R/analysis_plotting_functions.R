@@ -521,8 +521,6 @@ create_networks <- function(e,
              p.value = P)
 
     # ___________Create Node tibble ________________
-
-
     # Get unique common regions
     acronyms <-  e$correlation_list[[correlation_list_name]][[channel]]$r %>% rownames()
 
@@ -578,7 +576,8 @@ create_networks <- function(e,
       dplyr::mutate(super.region = factor(super.region,levels = unique(super.region)),
                     degree = tidygraph::centrality_degree(),
                     triangles = igraph::count_triangles(.),
-                    clust.coef = ifelse(degree < 2, 0 , 2*triangles/(degree*(degree - 1)))) %>%
+                    # clust.coef = ifelse(degree < 2, 0 , 2*triangles/(degree*(degree - 1))),
+                    clust.coef = igraph::transitivity(., type = "local", isolates = "zero")) %>%
       dplyr::filter(degree > 0)
 
     # Add distance, efficiency, and btw metrics
@@ -588,7 +587,7 @@ create_networks <- function(e,
     network <- network %>%
       dplyr::mutate(avg.dist = rowSums(d, na.rm = TRUE)/(n()-1),
              efficiency = rowSums(d^(-1),na.rm = TRUE)/(n()-1),
-             btw = tidygraph::centrality_betweenness(weights = rep(1,nrow(tidygraph::.E())),
+             btw = tidygraph::centrality_betweenness(weights = NULL,
                                           directed = FALSE),
              group = as.factor(tidygraph::group_walktrap()))
     networks[[channel]] <- network
@@ -603,7 +602,7 @@ create_networks <- function(e,
 #' @param e experiment object
 #' @param network_names (str) The names of the networks to generate summary tables for, e.g. network_names = c("female_AD", "female_control")
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
-#' @param save_stats (bool, default = TRUE) Save the summary stats as a csv file in the output folder
+#' @param save_stats (bool, default = TRUE) Save the summary stats as a csv file in the output folder. Note that the clustering calculated is an average of the local vertex clustering.
 #' @param save_degree_distribution (bool, default = TRUE) Save the network degree distributions (frequencies of each degree) across each comparison group as a csv file.
 #' @param save_betweenness_distribution (bool, default = TRUE) Save the betweenness distribution and summary as a csv.
 #' @param save_efficiency_distribution (bool, default = TRUE) Save the efficiency distribution and summary as a csv.
@@ -882,6 +881,92 @@ create_joined_networks <- function(e,
   return(e)
 }
 
+#' Implement rewiring algorithms to current empirical networks to randomize certain network properties, while
+#' keeping other characterisitics constant (such as preserved degree sequence). These null networks can them be used to compare
+#' against and normalize the empirical networks.
+#'
+#' Note that this essentially erases edge metrics and treats networks like binary graphs. Edge weights are not used in calculating
+#' network topology metrics.
+#'
+#' @param e experiment object
+#' @param network_name (str) Name of the network
+#' @param channels (str)  Vector of channels to process
+#' @param method (str, default = "ms") "ms" implements Maslov-Sneppen rewiring approach (annuls all network properties except for network size, connection density, and degree distribution).
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
+#' @param n_rewires (int, default = 10000) The number of rewires for randomization for "ms" rewiring implementation. Recommended to be the larger of either 10,000 or 10*No. edges in a graph.
+#' @param n_networks (int, default = 100) The number of random networks to create
+#' @param seed (int, default = 5) Random seed for future replication.
+#' @param return_graphs (logical, default = FALSE) if TRUE, returns a list organized by channel containing a sublist, with each element containing a reqires tidygraph object.
+#' @return Summary table of rewired network properties of all nodesm showing the average of all randomized network properties generated.
+#' @export
+#'
+#' @examples
+rewire_network <- function(e,
+                           network_name,
+                           channels = "cfos",
+                           method = "ms",
+                           ontology = "unified",
+                           n_rewires = 10000,
+                           n_networks = 100,
+                           return_graphs = FALSE,
+                           seed = 5){
+
+  # null_graphs <- vector(mode = "list", length = length(channels))
+  null_nodes <- vector(mode = "list", length = length(channels))
+  names(null_nodes) <- names(channels)
+
+  if (return_graphs){
+    null_graphs <- vector(mode = "list", length = length(channels))
+    names(null_graphs) <- names(channels)
+  }
+
+  set.seed(seed)
+
+  # Network check
+  if (is.null(e$networks[[network_name]])){
+    stop("The network_name you provided does not exist. Please run create_networks() before implementing this function.")
+  }
+
+  for (channel in channels) {
+    #  Channel check
+    if (is.null(e$networks[[network_name]][[channel]])){
+      stop("The network for this channel does not exist. Please run create_networks() before implementing this function")
+    }
+
+    if (method == "ms") {
+      g <- e$networks[[network_name]][[channel]] %>% maslov_sneppen_rewire(n_rewires = n_rewires)
+      g <- g %>% activate(nodes) %>% dplyr::mutate(iter = 1) %>% dplyr::select(-group)
+      null_nodes[[channel]] <- g %>% dplyr::as_tibble()
+
+      if (return_graphs){
+        graph_list <- vector(mode = "list", length = n_networks)
+        graph_list[[1]] <- g
+      }
+
+      for (i in 2:n_networks){
+        g <- e$networks[[network_name]][[channel]] %>% maslov_sneppen_rewire(n_rewires = n_rewires)
+        g <- g %>% activate(nodes) %>% dplyr::mutate(iter = i) %>% dplyr::select(-group)
+        null_node <- g  %>% dplyr::as_tibble()
+        null_nodes[[channel]] <- bind_rows(null_nodes[[channel]], null_node)
+
+        if (return_graphs){
+          graph_list[[i]] <- g
+        }
+      }
+    }
+    if (return_graphs) {
+      null_graphs[[channel]] <- graph_list
+    }
+  }
+
+  if (return_graphs){
+    return(null_graphs)
+  } else{
+    return(null_nodes)
+  }
+}
+
+
 
 
 ##_____________________ Plotting functions ___________________________
@@ -910,7 +995,8 @@ plot_percent_colabel <- function(e,
                                  color_mapping = "sex",
                                  colors = c("#952899", "#358a9c"),
                                  pattern_mapping = NULL,
-                                 patterns = c("gray100", 'hs_fdiagonal', "hs_horizontal", "gray90", "hs_vertical"),
+                                 patterns = c("gray100", 'hs_fdiagonal', "hs_horizontal
+                                              ", "gray90", "hs_vertical"),
                                  error_bar = "sem",
                                  ylim = c(0, 100),
                                  plot_individual = TRUE,
@@ -3227,6 +3313,38 @@ plot_joined_networks <- function(e,
 
 
 
+
+#' Internal algorithm for maslov-sneppen rewiring
+#' This algorithm is not appropriate if you would like to take weights into account
+#' See Maslov & Sneppen (2002)"Specificity and stability in topology of protein networks"
+#' @param network tidygraph graph object
+#' @param n_rewires number of rewires.
+#' @return a tidygraph graph
+#' @export
+#' @examples
+maslov_sneppen_rewire <- function(network, n_rewires = 10000){
+
+  g <- network %>%
+    igraph::rewire(igraph::keeping_degseq(loops = FALSE, niter = n_rewires)) %>%
+    tidygraph::as_tbl_graph()
+  g <-  g %>% tidygraph::activate(edges) %>% dplyr::select(c(from, to))
+  # Recalculate the nodal metrics
+  g <- g %>% tidygraph::activate(nodes) %>% dplyr::mutate(degree = tidygraph::centrality_degree(),
+                                                          triangles = igraph::count_triangles(.),
+                                                          clust.coef = igraph::transitivity(., type = "local", isolates = "zero"))
+
+  # Add distance, efficiency, and btw metrics
+  d <- igraph::distances(g, weights = NA)
+  d[which(!is.finite(d))] <- NA
+  diag(d) <- NA
+  g <- g %>%
+    dplyr::mutate(avg.dist = rowSums(d, na.rm = TRUE)/(n()-1),
+                  efficiency = rowSums(d^(-1),na.rm = TRUE)/(n()-1),
+                  btw = tidygraph::centrality_betweenness(weights = NULL,
+                                                          directed = FALSE))
+  return(g)
+
+}
 
 
 #' Generate array of null distribution of region pairwise correlation differences.

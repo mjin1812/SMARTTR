@@ -22,7 +22,7 @@ summarise_networks(
 
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel")) The channels to process.}
 
-\item{save_stats}{(bool, default = TRUE) Save the summary stats as a csv file in the output folder}
+\item{save_stats}{(bool, default = TRUE) Save the summary stats as a csv file in the output folder. Note that the clustering calculated is an average of the local vertex clustering.}
 
 \item{save_degree_distribution}{(bool, default = TRUE) Save the network degree distributions (frequencies of each degree) across each comparison group as a csv file.}
 
