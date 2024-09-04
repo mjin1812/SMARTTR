@@ -858,8 +858,8 @@ create_joined_networks <- function(e,
     # Whether to export the list of overlapping edges
     if (export_overlapping_edges) {
       joined_network_name <- paste(correlation_list_names, collapse = "_")
-      e$networks[[joined_network_name]][[channel]] %>% activate(nodes) %>% as_tibble() -> nodes_df
-      e$networks[[joined_network_name]][[channel]] %>% activate(edges) %>% as_tibble() -> edges_df
+      networks[[channel]]%>% tidygraph::activate(nodes) %>% as_tibble() -> nodes_df
+      networks[[channel]] %>% tidygraph::activate(edges) %>% as_tibble() -> edges_df
       edges_df <- edges_df %>% mutate(from = nodes_df$name[edges_df$from],
                                       to =   nodes_df$name[edges_df$to])
       edges_df_p1 <- edges_df %>% dplyr::filter(network == correlation_list_names[1])
@@ -1431,12 +1431,13 @@ plot_cell_counts <- function(e,
 #' @param label_text_size  (int, default = 8) Size of the text element for the region labels.
 #' @param image_ext (default = ".png") image extension to the plot as.
 #' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
-#' @param legend.position
+#' @param reverse_colors (bool, default = FALSE) Whether to reverse the color order. This may depend on the order in which you entered the `colors` parameter
 #' @param facet_background_color (default = NULL) Set to a hexadecimal string, e.g."#FFFFFF", when you want to shade the background of the graph. Defaults to no background when NULL.
 #' @param anatomical.order (default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order
-#' @param legend.justification
-#' @param legend.position.inside
-#' @param legend.direction
+#' @param legend.position (default = "inside")
+#' @param legend.justification (default = c(0, 0))
+#' @param legend.position.inside (default = c(0.05, 0.6))
+#' @param legend.direction (c("vertical", "horizontal"))
 
 #' The exact acronyms used will be ontology dependent so make sure that these match the `ontology` parameter
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
@@ -1467,6 +1468,7 @@ plot_normalized_counts <- function(e,
                                    print_plot = TRUE,
                                    save_plot = TRUE,
                                    flip_axis = FALSE,
+                                   reverse_colors = FALSE,
                                    legend.justification = c(0, 0),
                                    legend.position = "inside",
                                    legend.position.inside = c(0.05, 0.6),
@@ -1554,7 +1556,11 @@ plot_normalized_counts <- function(e,
     eval((parse(text=text)))
 
     # plot normalized cell counts, grouped by specified groups and ordered by parent region
-    channel_counts$unique_groups <- factor(channel_counts$unique_groups, levels = rev(labels))
+    if (reverse_colors){
+      channel_counts$unique_groups <- factor(channel_counts$unique_groups, levels = rev(labels))
+    } else{
+      channel_counts$unique_groups <- factor(channel_counts$unique_groups, levels = labels)
+    }
 
     if (flip_axis) {
       p <- channel_counts %>%
@@ -1757,6 +1763,7 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
     dplyr::mutate(row_parent = factor(row_parent, levels = anatomical.order))
   df <- df %>% dplyr::mutate(col_parent = get.super.regions(col_acronym, anatomical.order = anatomical.order, ontology = ontology), .before  = row_acronym) %>%
     dplyr::mutate(col_parent = factor(col_parent, levels = rev(anatomical.order)))
+  # df <- df %>% dplyr::mutate(sig_text = ifelse(is.finite(sig_text), sig_text, ""))
 
 
   # Generate a correlation heatmap in anatomical order
@@ -1766,14 +1773,13 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
                    space = "free",
                    margins = FALSE,
                    scales = "free") +
-          geom_tile() +
+        geom_tile() +
         geom_text(aes(label = sig_text), size=sig_size, position = position_nudge(y = sig_nudge_y), color = sig_color) +
         scale_fill_gradient2(low = "#4f4f4f",mid = "#ffffff", high = colors[[channel]],
                          aesthetics = c("color","fill"), na.value = "grey50",
                          limits=c(-1, 1)) +
         labs(title = plot_title, x = "Brain Region", y = "Brain Region") +
     theme.hm
-
 
   if (print_plot){
     quartz()
@@ -1929,8 +1935,10 @@ volcano_plot <- function(e,
         dir.create(output_dir)
       }
 
+      title <- str_replace(title, "[\\/:*?\"<>|]", "_") %>%  str_replace(., " ", "_")
       image_file <- file.path(output_dir,
-                              paste0("volcano_plot_", str_replace(title, " ", "_"), "_", channels[k], image_ext))
+                              paste0("volcano_plot_", title, "_", channels[k], image_ext))
+      print(image_file)
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
 
