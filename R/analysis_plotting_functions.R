@@ -474,7 +474,9 @@ export_permutation_results <- function(e,
 #' this threshold is not applied.
 #' @param pearson_thresh (float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out
 #' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
+#' @param filter_isolates (logical, default = FALSE) Whether to filter out the number of isolated (zero degree) nodes from the network. Default is to retain them.
 #' @param anatomical.order (vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.
+#'
 #' @return e experiment object. This object now has a new added element called `networks.` This is a list storing a
 #' graph object per channel for each network analysis run.
 #' The name of each network (`network_name`) is the same as the `correlation_list_name`
@@ -490,7 +492,8 @@ create_networks <- function(e,
                             alpha = 0.05,
                             ontology = "allen",
                             anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"),
-                            pearson_thresh = 0.8){
+                            pearson_thresh = 0.8,
+                            filter_isolates = FALSE){
 
   # List to store the networks
   networks <- vector(mode = "list", length = length(channels))
@@ -542,6 +545,7 @@ create_networks <- function(e,
     # color <- wholebrain::color.from.acronym(super.region)
     # nodes <- tibble::tibble(name = acronyms, super.region = super.region, color = color)
     nodes <- tibble::tibble(name = acronyms, super.region = super.region)
+    # print(dim(nodes))
 
     # _____________ Create the network ________________
     network <- tidygraph::tbl_graph(nodes = nodes,
@@ -562,6 +566,7 @@ create_networks <- function(e,
       activate(nodes) %>%
       tidygraph::select(-.tidygraph_node_index)
 
+    # print(igraph::gorder(network))
     # filter by alpha
     if(!is.na(alpha) && !is.null(alpha)){
       network <- network %>% activate(edges) %>% dplyr::filter(p.value < alpha)
@@ -577,8 +582,12 @@ create_networks <- function(e,
                     degree = tidygraph::centrality_degree(),
                     triangles = igraph::count_triangles(.),
                     # clust.coef = ifelse(degree < 2, 0 , 2*triangles/(degree*(degree - 1))),
-                    clust.coef = igraph::transitivity(., type = "local", isolates = "zero")) %>%
-      dplyr::filter(degree > 0)
+                    clust.coef = igraph::transitivity(., type = "local", isolates = "zero"))
+    if (filter_isolates){
+      network <- network %>% activate(nodes) %>%
+        dplyr::filter(degree > 0)
+      # print(igraph::gorder(network))
+    }
 
     # Add distance, efficiency, and btw metrics
     d <- igraph::distances(network, weights = NA)
@@ -727,6 +736,9 @@ summarise_networks <- function(e,
 #' @param correlation_list_names (str vec) character vector of the two correlation lists used to include in a joined network
 #' @param export_overlapping_edges (bool, default  = TRUE) Whether to export the overlapping edges between the two networks as a csv into the `table` directory.
 #' @param anatomical.order (vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.
+#' @param alpha2 (NULL) If not NULL, this gives the option of filtering the second network by a different alpha from the first. The `alpha` parameter will then be used as the threshold for network 1.
+#' @param pearson_thresh2 (NULL) If not NULL, this gives the option of filtering the second network by a different pearson threshold from the first network.
+#' The `pearson_thresh` parameter will then be used as the threshold for network 1.
 #'
 #' @return e experiment object. This object now has a new added element called `networks.` This is a list storing a
 #' graph object per channel for each network analysis run. The name of each network (`network_name`) is the same as the `correlation_list_name`
@@ -742,6 +754,8 @@ create_joined_networks <- function(e,
                                    ontology = "unified",
                                    alpha = 0.001,
                                    pearson_thresh = 0.9,
+                                   alpha2 = NULL,
+                                   pearson_thresh2 = NULL,
                                    anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"),
                                    export_overlapping_edges = TRUE){
 
@@ -836,17 +850,29 @@ create_joined_networks <- function(e,
       tidygraph::activate(nodes) %>%
       tidygraph::select(-.tidygraph_node_index)
 
-    network <- tidygraph::graph_join(network1, network2)
+
 
     # filter by alpha
     if(!is.na(alpha) && !is.null(alpha)){
-      network <- network %>% tidygraph::activate(edges) %>% dplyr::filter(p.value < alpha)
+      network1 <- network1 %>% tidygraph::activate(edges) %>% dplyr::filter(p.value < alpha)
+      if(!is.na(alpha2) && !is.null(alpha2)){
+        network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(p.value < alpha2)
+      } else{
+        network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(p.value < alpha)
+      }
     }
 
     # Filter by pearson correlation coefficient
     if(!is.na(pearson_thresh) && !is.null(pearson_thresh)){
-      network <- network %>% tidygraph::activate(edges) %>% dplyr::filter(weight > pearson_thresh)
+      network1 <- network1 %>% tidygraph::activate(edges) %>% dplyr::filter(weight > pearson_thresh)
+      if (!is.na(pearson_thresh2) && !is.null(pearson_thresh2)){
+        network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(weight > pearson_thresh2)
+      } else {
+        network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(weight > pearson_thresh)
+      }
     }
+
+    network <- tidygraph::graph_join(network1, network2)
 
     network <- network %>% tidygraph::activate(nodes) %>%
       dplyr::mutate(super.region = factor(super.region,levels = unique(super.region)),
@@ -3206,7 +3232,6 @@ plot_joined_networks <- function(e,
                                  network_radius = 300,
                                  print_plot = TRUE,
                                  graph_theme = NULL,
-                                 reverse_plot_edge_order = FALSE,
                                  transparent_edge_group1 = TRUE,
                                  transparent_edge_group2 = FALSE,
                                  label_size = 5,
@@ -3242,12 +3267,9 @@ plot_joined_networks <- function(e,
     if (isTRUE(absolute_weight)) {
       network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(color = factor(network))
     } else {
-      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(color=paste(network, sign, sep = "_"))
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(color = paste(network, sign, sep = "_"))
     }
 
-    if (isTRUE(reverse_plot_edge_order)){
-      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(color = forcats::fct_rev(color))
-    }
 
     if (isTRUE(transparent_edge_group1) &&  isTRUE(transparent_edge_group2)){
       network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = 0)
@@ -3299,8 +3321,10 @@ plot_joined_networks <- function(e,
       print(p)
     }
 
+    # Store the plot handle
+    p_list[[channel]] <- p
+
     if(save_plot){
-      # Plot the heatmap
       quartz(width = width, height = height)
       print(p)
 
@@ -3312,8 +3336,6 @@ plot_joined_networks <- function(e,
       image_file <- file.path(output_dir, paste0("network_", joined_network_name, "_", channel, image_ext))
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
-    # Store the plot handle
-    p_list[[channel]] <- p
   }
   return(p_list)
 }
