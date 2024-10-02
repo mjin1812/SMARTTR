@@ -172,6 +172,9 @@
     <loc>/reference/map_cells_to_atlas.html</loc>
   </url>
   <url>
+    <loc>/reference/maslov_sneppen_rewire.html</loc>
+  </url>
+  <url>
     <loc>/reference/mouse.html</loc>
   </url>
   <url>
@@ -263,6 +266,9 @@
   </url>
   <url>
     <loc>/reference/reset_mouse_root.html</loc>
+  </url>
+  <url>
+    <loc>/reference/rewire_network.html</loc>
   </url>
   <url>
     <loc>/reference/rois_intersect_region_list.html</loc>

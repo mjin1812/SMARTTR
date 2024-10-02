@@ -1433,9 +1433,9 @@ plot_cell_counts <- function(e,
 
 
 
+
 #' Plot normalized cell counts
 #' @description Plot the cell counts normalized by volume for a given channel
-#'
 #' @param e experiment object
 #' @param channels (str, default = c("cfos", "eyfp", "colabel"))
 #' @param by (str) Attribute names to group by, e.g. c("sex", "group")
@@ -1444,28 +1444,28 @@ plot_cell_counts <- function(e,
 #' uniquely colored bar.
 #' e.g.values = c("female", "AD").
 #' @param colors (str, default = c("white", "lightblue")) Hexadecimal codes corresponding to the groups (respectively) to plot. The length of this vector should be the length of the list.
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #' @param title (str, default = NULL) An optional title for the plot
+#' @param unit_label (str, default = bquote('Cell counts '('cells/mm'^3))) Default unit label for the graphs
+#' @param anatomical.order (default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order
 #' @param height height of the plot in inches.
 #' @param width width of the plot in inches.
+#' @param region_label_angle (int, default = 50) Angle of the region label.
+#' @param label_text_size  (int, default = 8) Size of the text element for the region labels.
 #' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of
 #'  the experiment object output folder.
-#' @param limits (c(0,100000)) Range of the normalized cell counts.
 #' @param flip_axis plot cell counts on x-axis rather than y-axis.
-#' @param unit_label (str, default = bquote('Cell counts '('cells/mm'^3))) Default unit label for the graphs
-#' @param region_label_angle (int, default = 50) Angle of the region label.
-#' @param label_text_size  (int, default = 8) Size of the text element for the region labels.
-#' @param image_ext (default = ".png") image extension to the plot as.
-#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #' @param reverse_colors (bool, default = FALSE) Whether to reverse the color order. This may depend on the order in which you entered the `colors` parameter
-#' @param facet_background_color (default = NULL) Set to a hexadecimal string, e.g."#FFFFFF", when you want to shade the background of the graph. Defaults to no background when NULL.
-#' @param anatomical.order (default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order
 #' @param legend.position (default = "inside")
 #' @param legend.justification (default = c(0, 0))
 #' @param legend.position.inside (default = c(0.05, 0.6))
 #' @param legend.direction (c("vertical", "horizontal"))
-
-#' The exact acronyms used will be ontology dependent so make sure that these match the `ontology` parameter
+#' @param limits (c(0,100000)) Range of the normalized cell counts.
+#' @param facet_background_color (default = NULL) Set to a hexadecimal string, e.g."#FFFFFF", when you want to shade the background of the graph. Defaults to no background when NULL.
+#' @param strip_background_color (default = "lightblue") Color of background srip delineating major anatomical parent regions. Set to color name or to hexadecimal code.
+#' @param image_ext (default = ".png") image extension to the plot as.
+#'
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @example
@@ -1501,6 +1501,7 @@ plot_normalized_counts <- function(e,
                                    legend.direction = "vertical",
                                    limits = c(0, 100000),
                                    facet_background_color =  NULL,
+                                   strip_background_color =  "lightblue",
                                    image_ext = ".pdf"){
   # check os and set graphics window
   if (get_os() != "osx") {
@@ -1609,21 +1610,21 @@ plot_normalized_counts <- function(e,
         theme(plot.background = element_blank(),
               panel.grid.major = element_blank(),
               panel.grid.minor = element_blank(),
-              panel.border = element_blank()) +
-        theme(axis.line = element_line(color = 'black')) +
-        theme(legend.justification = legend.justification,
+              panel.border = element_blank(),
+              axis.line = element_line(color = 'black'),
+              legend.justification = legend.justification,
               legend.position = legend.position,
               legend.position.inside = legend.position.inside,
-              legend.direction = legend.direction) +
-        theme(axis.text.y = element_text(angle = region_label_angle,
+              legend.direction = legend.direction,
+              axis.text.y = element_text(angle = region_label_angle,
                                          hjust = 1,
                                          size = label_text_size,
                                          color = "black"),
-              axis.text.x = element_text(color = "black")) +
-        theme(strip.text.y = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
+              axis.text.x = element_text(color = "black"),
+              strip.text.y = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
               strip.placement = "outside",
               strip.background = element_rect(color = "black",
-                                              fill = "lightblue"),
+                                              fill =  strip_background_color),
               strip.switch.pad.grid = unit(0.1, "in"))
     } else if (isFALSE(flip_axis)) {
       p <- channel_counts %>%
@@ -1648,19 +1649,19 @@ plot_normalized_counts <- function(e,
           plot.background = element_blank(),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
-          panel.border = element_blank()) +
-        theme(axis.line = element_line(color = 'black')) +
-        theme(legend.justification = legend.justification,
-              legend.position = legend.position,
-              legend.position.inside = legend.position.inside,
-              legend.direction = legend.direction) +
-        theme(axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size, color = "black"),
-              axis.text.y = element_text(color = "black")) +
-        theme(strip.text.x = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
-              strip.placement = "outside",
-              strip.background = element_rect(color = "black",
-                                              fill = "lightblue")) +
-        theme(plot.margin = margin(1,1.5,0,1.5, "cm"))
+          panel.border = element_blank(),
+          axis.line = element_line(color = 'black'),
+          legend.justification = legend.justification,
+          legend.position = legend.position,
+          legend.position.inside = legend.position.inside,
+          legend.direction = legend.direction,
+          axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size, color = "black"),
+          axis.text.y = element_text(color = "black"),
+          strip.text.x = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
+          strip.placement = "outside",
+          strip.background = element_rect(color = "black",
+                                              fill =  strip_background_color),
+          plot.margin = margin(1,1.5,0,1.5, "cm"))
     }
 
     if(!is.null(facet_background_color)){

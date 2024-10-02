@@ -23,7 +23,6 @@ plot_joined_networks(
   network_radius = 300,
   print_plot = TRUE,
   graph_theme = NULL,
-  reverse_plot_edge_order = FALSE,
   transparent_edge_group1 = TRUE,
   transparent_edge_group2 = FALSE,
   label_size = 5,

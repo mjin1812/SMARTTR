@@ -320,6 +320,13 @@ names(simplified_counts) &lt;- names(normalized_counts)</dd>
         <dd>map_cells_to_atlas (generic function)</dd>
       </dl><dl><dt>
           
+          <code><a href="maslov_sneppen_rewire.html">maslov_sneppen_rewire()</a></code> 
+        </dt>
+        <dd>Internal algorithm for maslov-sneppen rewiring
+This algorithm is not appropriate if you would like to take weights into account
+See Maslov &amp; Sneppen (2002)"Specificity and stability in topology of protein networks"</dd>
+      </dl><dl><dt>
+          
           <code><a href="mouse.html">mouse()</a></code> 
         </dt>
         <dd>Create a mouse object</dd>
@@ -480,6 +487,13 @@ set it to the <code>color_mapping</code> parameter and set the <code>pattern_map
           <code><a href="reset_mouse_root.html">reset_mouse_root()</a></code> 
         </dt>
         <dd>Reset the root path for the folder containing the registration and segmentation data.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="rewire_network.html">rewire_network()</a></code> 
+        </dt>
+        <dd>Implement rewiring algorithms to current empirical networks to randomize certain network properties, while
+keeping other characterisitics constant (such as preserved degree sequence). These null networks can them be used to compare
+against and normalize the empirical networks.</dd>
       </dl><dl><dt>
           
           <code><a href="rois_intersect_region_list.html">rois_intersect_region_list()</a></code> 

@@ -23,12 +23,14 @@ plot_normalized_counts(
   print_plot = TRUE,
   save_plot = TRUE,
   flip_axis = FALSE,
+  reverse_colors = FALSE,
   legend.justification = c(0, 0),
   legend.position = "inside",
   legend.position.inside = c(0.05, 0.6),
   legend.direction = "vertical",
   limits = c(0, 1e+05),
   facet_background_color = NULL,
+  strip_background_color = "lightblue",
   image_ext = ".pdf"
 )
 }
@@ -69,11 +71,21 @@ the experiment object output folder.}
 
 \item{flip_axis}{plot cell counts on x-axis rather than y-axis.}
 
-\item{legend.direction}{The exact acronyms used will be ontology dependent so make sure that these match the \code{ontology} parameter}
+\item{reverse_colors}{(bool, default = FALSE) Whether to reverse the color order. This may depend on the order in which you entered the \code{colors} parameter}
+
+\item{legend.justification}{(default = c(0, 0))}
+
+\item{legend.position}{(default = "inside")}
+
+\item{legend.position.inside}{(default = c(0.05, 0.6))}
+
+\item{legend.direction}{(c("vertical", "horizontal"))}
 
 \item{limits}{(c(0,100000)) Range of the normalized cell counts.}
 
 \item{facet_background_color}{(default = NULL) Set to a hexadecimal string, e.g."#FFFFFF", when you want to shade the background of the graph. Defaults to no background when NULL.}
+
+\item{strip_background_color}{(default = "lightblue") Color of background srip delineating major anatomical parent regions. Set to color name or to hexadecimal code.}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 }

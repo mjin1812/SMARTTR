@@ -12,7 +12,8 @@ create_networks(
   ontology = "allen",
   anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB",
     "HB", "CB"),
-  pearson_thresh = 0.8
+  pearson_thresh = 0.8,
+  filter_isolates = FALSE
 )
 }
 \arguments{
@@ -30,6 +31,8 @@ this threshold is not applied.}
 \item{anatomical.order}{(vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.}
 
 \item{pearson_thresh}{(float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out}
+
+\item{filter_isolates}{(logical, default = FALSE) Whether to filter out the number of isolated (zero degree) nodes from the network. Default is to retain them.}
 }
 \value{
 e experiment object. This object now has a new added element called \code{networks.} This is a list storing a

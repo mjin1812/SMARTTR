@@ -11,6 +11,8 @@ create_joined_networks(
   ontology = "unified",
   alpha = 0.001,
   pearson_thresh = 0.9,
+  alpha2 = NULL,
+  pearson_thresh2 = NULL,
   anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB",
     "HB", "CB"),
   export_overlapping_edges = TRUE
@@ -29,6 +31,11 @@ create_joined_networks(
 this threshold is not applied.}
 
 \item{pearson_thresh}{(float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out}
+
+\item{alpha2}{(NULL) If not NULL, this gives the option of filtering the second network by a different alpha from the first. The \code{alpha} parameter will then be used as the threshold for network 1.}
+
+\item{pearson_thresh2}{(NULL) If not NULL, this gives the option of filtering the second network by a different pearson threshold from the first network.
+The \code{pearson_thresh} parameter will then be used as the threshold for network 1.}
 
 \item{anatomical.order}{(vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.}
 
