@@ -15,12 +15,14 @@ plot_networks(
   edge_type = "arc",
   region_legend = TRUE,
   degree_scale_limit = c(1, 10),
+  anatomical.colors = NULL,
   correlation_edge_width_limit = c(0.8, 1),
   image_ext = ".png",
-  network_radius = 300,
   print_plot = TRUE,
   graph_theme = NULL,
   label_size = 5,
+  edge_thickness_range = c(1, 5),
+  node_size_range = c(1, 8),
   label_offset = 0.15,
   save_plot = TRUE
 )
@@ -60,6 +62,9 @@ the experiment object output folder.}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}
+
+\item{anatomical.color}{(vec, NULL) Custom colors for the super region legend. (e.g., c(Isocortex = "#5571a9", OLF = "#64bdc4", HPF = "#d2875b",
+CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960",  MB = "#d796c8", HB = "#646464")). NULL results in viridis.}
 }
 \value{
 p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.

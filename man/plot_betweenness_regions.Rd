@@ -13,12 +13,14 @@ plot_betweenness_regions(
   height = 10,
   width = 20,
   ylim = c(0, 15),
+  filter_isolates = TRUE,
   sort_super_region = FALSE,
   region_label_angle = 60,
   label_text_size = 12,
   image_ext = ".png",
   print_plot = TRUE,
-  save_plot = TRUE
+  save_plot = TRUE,
+  theme.bar = NULL
 )
 }
 \arguments{
@@ -38,18 +40,22 @@ plot_betweenness_regions(
 
 \item{ylim}{(vec, default = c(0,15))axes limits of y-axis}
 
+\item{filter_isolates}{(default = TRUE) Avoid plotting isolated nodes (zero value)}
+
 \item{sort_super_region}{(bool, default = FALSE) Whether to divide into subfacets based on which parent region}
 
 \item{region_label_angle}{(int, default = 60) Angle of region labels.}
 
-\item{label_text_size}{(int, default = 12) Font size of region labels.
-the experiment object output folder.}
+\item{label_text_size}{(int, default = 12) Font size of region labels.}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 
 \item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.s}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
+the experiment object output folder.}
+
+\item{theme.bar}{User option to use their own ggplot theme
 the experiment object output folder.}
 }
 \value{

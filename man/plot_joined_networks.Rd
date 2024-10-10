@@ -20,13 +20,15 @@ plot_joined_networks(
   degree_scale_limit = c(1, 10),
   correlation_edge_width_limit = c(0.8, 1),
   image_ext = ".png",
-  network_radius = 300,
   print_plot = TRUE,
   graph_theme = NULL,
   transparent_edge_group1 = TRUE,
   transparent_edge_group2 = FALSE,
   label_size = 5,
   label_offset = 0.15,
+  edge_thickness_range = c(1, 5),
+  node_size_range = c(1, 8),
+  anatomical.colors = NULL,
   save_plot = TRUE
 )
 }

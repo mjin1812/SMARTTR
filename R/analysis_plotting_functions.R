@@ -2174,7 +2174,8 @@ parallel_coordinate_plot <- function(e,
 #'  the experiment object output folder.
 #' @param edge_color (str, default = "firebrick") Color of the network edges.
 #' @param degree_scale_limit (vec, default = c(1,10)) Scale limit for degree size
-#' @param network_radius
+#' @param anatomical.color (vec, NULL) Custom colors for the super region legend. (e.g., c(Isocortex = "#5571a9", OLF = "#64bdc4", HPF = "#d2875b",
+#' CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960",  MB = "#d796c8", HB = "#646464")). NULL results in viridis.
 #' @param graph_theme (default = NULL) Add a [ggraph::theme()] to the network graph. If NULL, the default is taken.
 #' @param label_size (default = 5) Default font size for network region labels.
 #' @param label_offset (default = 0.15) Distance of label from nodes.
@@ -2195,12 +2196,14 @@ plot_networks <- function(e,
                           edge_type = "arc",
                           region_legend = TRUE,
                           degree_scale_limit = c(1,10),
+                          anatomical.colors = NULL,
                           correlation_edge_width_limit = c(0.8,1),
                           image_ext = ".png",
-                          network_radius = 300,
                           print_plot = TRUE,
                           graph_theme = NULL,
                           label_size = 5,
+                          edge_thickness_range = c(1,5),
+                          node_size_range = c(1, 8),
                           label_offset = 0.15,
                           save_plot = TRUE){
 
@@ -2252,15 +2255,26 @@ plot_networks <- function(e,
                                       guide = guide_legend(order = 1)) +
 
 
-      ggraph::scale_edge_width(limits=correlation_edge_width_limit,range = c(1,3),name = "Correlation Strength",
-                       guide = guide_legend(order = 3)) +
-      ggraph::scale_color_viridis(name = "Anatomical Region",
-                                  discrete = TRUE,
-                                  option = "D",
-                                  guide = guide_legend(override.aes = list(size=5), order=4)) +
-      ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=c(4,10),
-                 guide = guide_legend(order = 2)) +
-      ggplot2::coord_equal() + graph_theme
+      ggraph::scale_edge_width(limits=correlation_edge_width_limit,range = edge_thickness_range, name = "Correlation Strength",
+                       guide = guide_legend(order = 3))
+
+   if (is.null(anatomical.colors)){
+     p <- p + ggraph::scale_color_viridis(name = "Anatomical Region",
+                                          discrete = TRUE,
+                                          option = "D",
+                                          guide = guide_legend(override.aes = list(size=max(node_size_range)), order=4)) +
+       ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=node_size_range,
+                           guide = guide_legend(order = 2)) +
+       ggplot2::coord_equal() + graph_theme
+
+   } else{
+     p <- p + ggplot2::scale_color_manual(name = "Anatomical Region",
+                                          values = anatomical.colors,
+                                          guide = guide_legend(override.aes = list(size=max(node_size_range)), order=4)) +
+       ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=node_size_range,
+                           guide = guide_legend(order = 2)) +
+       ggplot2::coord_equal() + graph_theme
+   }
 
     if (is.null(title)){
       title <- paste(network_name, channel)
@@ -2909,10 +2923,12 @@ plot_mean_between_centrality <- function(e,
 #' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
 #' @param colors (str, default = ) String vector of hexadecimal color codes corresponding to to each channel plotted.
 #' @param network (str, default = "AD") Which network to plot the degree distribution across regions
+#' @param filter_isolates (default = TRUE) Avoid plotting isolated nodes (zero value)
 #' @param title (str, default = "")
 #' @param sort_super_region (bool, default = FALSE) Whether to divide into subfacets based on which parent region
 #' @param region_label_angle (int, default = 60) Angle of region labels.
 #' @param label_text_size (int, default = 12) Font size of region labels.
+#' @param theme.bar User option to use their own ggplot theme
 #'  the experiment object output folder.
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
@@ -2929,32 +2945,37 @@ plot_degree_regions <- function(e,
                                 sort_super_region = FALSE,
                                 region_label_angle = 60,
                                 label_text_size = 12,
+                                filter_isolates = TRUE,
                                 image_ext = ".png",
                                 print_plot = TRUE,
-                                save_plot = TRUE){
+                                save_plot = TRUE,
+                                theme.bar = NULL){
 
   # Detect the OS and set quartz( as graphing function)
   if(get_os() != "osx"){
     quartz <- X11
   }
 
-  theme.bar <-  ggplot2::theme_classic() +
-    theme(axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size, color = "black"),
-          axis.text.y = element_text(color = "black", size = 20),
-          plot.title = element_text(hjust = 0.5, size = 36),
-          axis.title = element_text(size = 24),
-          legend.text = element_text(size = 20),
-          legend.title = element_text(size = 24),
-          strip.clip = "off",
-          strip.text.x = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
-          strip.placement = "outside",
-          strip.background = element_rect(color = "black",
-                                          fill = "lightblue"),
-          plot.margin = margin(1,1.5,0,1.5, "cm"),
-          plot.background = element_blank(),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-          panel.border = element_blank())
+
+  if (is.null(theme.bar)){
+    theme.bar <-  ggplot2::theme_classic() +
+      theme(axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size, color = "black"),
+            axis.text.y = element_text(color = "black", size = 20),
+            plot.title = element_text(hjust = 0.5, size = 36),
+            axis.title = element_text(size = 24),
+            legend.text = element_text(size = 20),
+            legend.title = element_text(size = 24),
+            strip.clip = "off",
+            strip.text.x = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
+            strip.placement = "outside",
+            strip.background = element_rect(color = "black",
+                                            fill = "lightblue"),
+            plot.margin = margin(1,1.5,0,1.5, "cm"),
+            plot.background = element_blank(),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            panel.border = element_blank())
+  }
 
   # List to store the returned plot handles
   p_list <- vector(mode='list', length = length(channels))
@@ -2971,6 +2992,10 @@ plot_degree_regions <- function(e,
         dplyr::arrange(super.region,  dplyr::desc(degree)) %>%
         dplyr::mutate(name = factor(name, levels = name))
 
+      if (isTRUE(filter_isolates)){
+        df <- df %>% dplyr::filter(degree > 0)
+      }
+
       p <- df %>%
         ggplot2::ggplot(aes(name, degree)) +
         ggplot2::geom_col(fill = colors[[k]], color = "black") +
@@ -2979,10 +3004,13 @@ plot_degree_regions <- function(e,
         ylim(ylim)  + theme.bar
 
     } else {
-
       df <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(group == network) %>%
         dplyr::arrange(dplyr::desc(degree)) %>%
         dplyr::mutate(name = factor(name, levels = name))
+
+      if (isTRUE(filter_isolates)){
+        df <- df %>% dplyr::filter(degree > 0)
+      }
 
       p <- df %>%
         ggplot2::ggplot(aes(name, degree)) +
@@ -3044,6 +3072,8 @@ plot_degree_regions <- function(e,
 #' @param sort_super_region (bool, default = FALSE) Whether to divide into subfacets based on which parent region
 #' @param region_label_angle (int, default = 60) Angle of region labels.
 #' @param label_text_size (int, default = 12) Font size of region labels.
+#' @param filter_isolates (default = TRUE) Avoid plotting isolated nodes (zero value)
+#' @param theme.bar User option to use their own ggplot theme
 #'  the experiment object output folder.
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
@@ -3057,35 +3087,39 @@ plot_betweenness_regions <- function(e,
                                      height = 10,
                                      width = 20,
                                      ylim = c(0, 15),
+                                     filter_isolates = TRUE,
                                      sort_super_region = FALSE,
                                      region_label_angle = 60,
                                      label_text_size = 12,
                                      image_ext = ".png",
                                      print_plot = TRUE,
-                                     save_plot = TRUE){
+                                     save_plot = TRUE,
+                                     theme.bar = NULL){
 
   # Detect the OS and set quartz( as graphing function)
   if(get_os() != "osx"){
     quartz <- X11
   }
 
-  theme.bar <-  ggplot2::theme_classic() +
-    theme(axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size, color = "black"),
-          axis.text.y = element_text(color = "black", size = 20),
-          plot.title = element_text(hjust = 0.5, size = 36),
-          axis.title = element_text(size = 24),
-          legend.text = element_text(size = 20),
-          legend.title = element_text(size = 24),
-          strip.clip = "off",
-          strip.text.x = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
-          strip.placement = "outside",
-          strip.background = element_rect(color = "black",
-                                          fill = "lightblue"),
-          plot.margin = margin(1,1.5,0,1.5, "cm"),
-          plot.background = element_blank(),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-          panel.border = element_blank())
+  if (is.null(theme.bar)){
+    theme.bar <-  ggplot2::theme_classic() +
+      theme(axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size, color = "black"),
+            axis.text.y = element_text(color = "black", size = 20),
+            plot.title = element_text(hjust = 0.5, size = 36),
+            axis.title = element_text(size = 24),
+            legend.text = element_text(size = 20),
+            legend.title = element_text(size = 24),
+            strip.clip = "off",
+            strip.text.x = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
+            strip.placement = "outside",
+            strip.background = element_rect(color = "black",
+                                            fill = "lightblue"),
+            plot.margin = margin(1,1.5,0,1.5, "cm"),
+            plot.background = element_blank(),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            panel.border = element_blank())
+  }
 
   # List to store the returned plot handles
   p_list <- vector(mode='list', length = length(channels))
@@ -3102,6 +3136,10 @@ plot_betweenness_regions <- function(e,
         dplyr::arrange(super.region,  dplyr::desc(btw)) %>%
         dplyr::mutate(name = factor(name, levels = name))
 
+      if (isTRUE(filter_isolates)){
+        df <- df %>% dplyr::filter(degree > 0)
+      }
+
       p <- df %>%
         ggplot2::ggplot(aes(name, btw)) +
         ggplot2::geom_col(fill = colors[[k]], color = "black") +
@@ -3114,6 +3152,10 @@ plot_betweenness_regions <- function(e,
       df <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(group == network) %>%
         dplyr::arrange(dplyr::desc(btw)) %>%
         dplyr::mutate(name = factor(name, levels = name))
+
+      if (isTRUE(filter_isolates)){
+        df <- df %>% dplyr::filter(degree > 0)
+      }
 
       p <- df %>%
         ggplot2::ggplot(aes(name, btw)) +
@@ -3201,7 +3243,6 @@ sort_anatomical_order <- function(common_regions, ontology ="allen",
 #' @param absolute_weight (bool, default = TRUE) Whether to plot absolute weights. If TRUE, the edge_colors and edge_colors_label should not contain values for positive and negative correlations.
 #' @param edge_color (str, default =  c(male_agg_pos = "Positive male", male_agg_neg = "Negative male", female_non_pos = "Positive female", female_non_neg = "Negative female")) Color of the network edges as a named vector.
 #' @param degree_scale_limit (vec, default = c(1,10)) Scale limit for degree size
-#' @param network_radius
 #' @param graph_theme (default = NULL) Add a [ggraph::theme()] to the network graph. If NULL, the default is taken.
 #' @param label_size (default = 5) Default font size for network region labels.
 #' @param label_offset (default = 0.15) Distance of label from nodes.
@@ -3230,13 +3271,15 @@ plot_joined_networks <- function(e,
                                  degree_scale_limit = c(1,10),
                                  correlation_edge_width_limit = c(0.8,1),
                                  image_ext = ".png",
-                                 network_radius = 300,
                                  print_plot = TRUE,
                                  graph_theme = NULL,
                                  transparent_edge_group1 = TRUE,
                                  transparent_edge_group2 = FALSE,
                                  label_size = 5,
                                  label_offset = 0.15,
+                                 edge_thickness_range = c(1,5),
+                                 node_size_range = c(1, 8),
+                                 anatomical.colors = NULL,
                                  save_plot = TRUE){
 
   # Detect the OS and set quartz( as graphing function)
@@ -3302,15 +3345,28 @@ plot_joined_networks <- function(e,
                                       labels = edge_color_labels,
                                       name = "Correlation",
                                       guide = guide_legend(order = 1)) +
-      ggraph::scale_edge_width(limits=correlation_edge_width_limit,range = c(1,4),name = "Correlation Strength",
-                               guide = guide_legend(order = 3)) +
-      ggraph::scale_color_viridis(name = "Anatomical Region",
-                                  discrete = TRUE,
-                                  option = "D",
-                                  guide = guide_legend(override.aes = list(size=5), order=4)) +
-      ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=c(4,10),
-                          guide = guide_legend(order = 2)) +
-      ggplot2::coord_equal() + graph_theme
+      ggraph::scale_edge_width(limits=correlation_edge_width_limit,range = edge_thickness_range, name = "Correlation Strength",
+                               guide = guide_legend(order = 3))
+
+    if (is.null(anatomical.colors)){
+        p <- p + ggraph::scale_color_viridis(name = "Anatomical Region",
+                                    discrete = TRUE,
+                                    option = "D",
+                                    guide = guide_legend(override.aes = list(size=max(node_size_range)), order=4)) +
+        ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=node_size_range,
+                            guide = guide_legend(order = 2)) +
+        ggplot2::coord_equal() + graph_theme
+
+    } else{
+      p <- p + ggplot2::scale_color_manual(name = "Anatomical Region",
+                                  values = anatomical.colors,
+                                  guide = guide_legend(override.aes = list(size=max(node_size_range)), order=4)) +
+        ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=node_size_range,
+                            guide = guide_legend(order = 2)) +
+        ggplot2::coord_equal() + graph_theme
+    }
+
+
 
     if (is.null(title)){
       title <- paste(network_name, channel)
