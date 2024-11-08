@@ -11,8 +11,10 @@ create_joined_networks(
   ontology = "unified",
   alpha = 0.001,
   pearson_thresh = 0.9,
+  proportional_thresh = NULL,
   alpha2 = NULL,
   pearson_thresh2 = NULL,
+  proportional_thresh2 = NULL,
   anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB",
     "HB", "CB"),
   export_overlapping_edges = TRUE
@@ -32,10 +34,14 @@ this threshold is not applied.}
 
 \item{pearson_thresh}{(float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out}
 
+\item{proportional_thresh}{(float, default = NULL) Takes precedent over the \code{alpha} and the \code{pearson_thresh} parameters. Input the desired edge proportion (i.e., edge density) as your desired sparsity constraint.}
+
 \item{alpha2}{(NULL) If not NULL, this gives the option of filtering the second network by a different alpha from the first. The \code{alpha} parameter will then be used as the threshold for network 1.}
 
 \item{pearson_thresh2}{(NULL) If not NULL, this gives the option of filtering the second network by a different pearson threshold from the first network.
 The \code{pearson_thresh} parameter will then be used as the threshold for network 1.}
+
+\item{proportional_thresh2}{(NULL) If not NULL, this gives the option of filtering the second network by a different proportional threshold from the first.}
 
 \item{anatomical.order}{(vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.}
 
@@ -51,7 +57,9 @@ used to generate the network. This \code{network_name} is fed as a parameter int
 Create a joined network to visualize overlapping connections with the same outer joined node set.
 }
 \examples{
+\dontrun{
 e sundowning <- create_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
+}
 }
 \seealso{
 \code{\link[=plot_networks]{plot_networks()}}

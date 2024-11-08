@@ -455,6 +455,9 @@ export_permutation_results <- function(e,
         dir.create(output_dir)
       }
 
+      if (filter_significant) {
+      write.csv(permutation_results, file.path(output_dir, paste0("permutation_results", "_", pg, "_", channel, "_significant.csv")), row.names = FALSE)
+      }
       write.csv(permutation_results, file.path(output_dir, paste0("permutation_results", "_", pg, "_", channel, ".csv")), row.names = FALSE)
     }
   }
@@ -470,13 +473,13 @@ export_permutation_results <- function(e,
 #' @param e experiment object
 #' @param correlation_list_name (str) Name of the correlation list object used to generate the networks.
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
+#' @param proportional_thresh (float, default = NULL) Takes precedent over the `alph`a and the `pearson_thresh` parameters. Input the desired edge proportion (i.e., edge density) as your desired sparsity constraint.
 #' @param alpha (float, default = 0.05) The significance threshold for including brain regions in the network. if NULL or NA,
 #' this threshold is not applied.
 #' @param pearson_thresh (float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out
 #' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #' @param filter_isolates (logical, default = FALSE) Whether to filter out the number of isolated (zero degree) nodes from the network. Default is to retain them.
 #' @param anatomical.order (vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.
-#'
 #' @return e experiment object. This object now has a new added element called `networks.` This is a list storing a
 #' graph object per channel for each network analysis run.
 #' The name of each network (`network_name`) is the same as the `correlation_list_name`
@@ -489,10 +492,11 @@ export_permutation_results <- function(e,
 create_networks <- function(e,
                             correlation_list_name,
                             channels = c("cfos", "eyfp", "colabel"),
+                            proportional_thresh = NULL,
                             alpha = 0.05,
+                            pearson_thresh = 0.8,
                             ontology = "allen",
                             anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"),
-                            pearson_thresh = 0.8,
                             filter_isolates = FALSE){
 
   # List to store the networks
@@ -567,15 +571,28 @@ create_networks <- function(e,
       tidygraph::select(-.tidygraph_node_index)
 
     # print(igraph::gorder(network))
-    # filter by alpha
-    if(!is.na(alpha) && !is.null(alpha)){
-      network <- network %>% activate(edges) %>% dplyr::filter(p.value < alpha)
-    }
 
-    # Filter by pearson correlation coefficient
-    if(!is.na(pearson_thresh) && !is.null(pearson_thresh)){
-      network <- network %>% activate(edges) %>% dplyr::filter(weight > pearson_thresh)
+
+    ######### check that proportional thresholding is null or NA. If proportional thresholding has a value, then that takes precedent over alpha or pearson thresholding
+
+    if (!is.na(proportional_thresh) && !is.null(proportional_thresh)){
+      edges <- network %>% activate(edges) %>% dplyr::arrange(dplyr::desc(weight)) %>% dplyr::as_tibble()
+      row <- round(igraph::gsize(network)*proportional_thresh)
+      pearson_thresh <- edges$weight[[row]]
+      network <- network %>% activate(edges) %>% dplyr::filter(weight >= pearson_thresh)
+
+    } else{
+      # filter by alpha
+      if(!is.na(alpha) && !is.null(alpha)){
+        network <- network %>% activate(edges) %>% dplyr::filter(p.value < alpha)
+      }
+
+      # Filter by pearson correlation coefficient
+      if(!is.na(pearson_thresh) && !is.null(pearson_thresh)){
+        network <- network %>% activate(edges) %>% dplyr::filter(weight > pearson_thresh)
+      }
     }
+    ###############
 
     network <- network %>% activate(nodes) %>%
       dplyr::mutate(super.region = factor(super.region,levels = unique(super.region)),
@@ -659,7 +676,7 @@ summarise_networks <- function(e,
       dplyr::summarise_if(is.numeric,list(~mean(.),~sd(.), ~sem(.))) %>%
       dplyr::left_join(nodes_df %>% dplyr::group_by(group) %>% dplyr::summarise(n.nodes = n())) %>%
       dplyr::left_join(edges_df %>% dplyr::group_by(group) %>% dplyr::summarise(n.edges = n())) %>%
-      dplyr::mutate(edge.density = n.edges/(2*n.nodes*(n.nodes-1))) %>%
+      dplyr::mutate(edge.density = n.edges/(n.nodes*(n.nodes-1)/2)) %>%
       dplyr::rename_all(stringr::str_replace,pattern = "_",replacement=".")
 
     #make table of degree frequency (useful for plotting degree histogram outside of R)
@@ -729,6 +746,7 @@ summarise_networks <- function(e,
 #'
 #' @param e experiment object
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
+#' @param proportional_thresh (float, default = NULL) Takes precedent over the `alpha` and the `pearson_thresh` parameters. Input the desired edge proportion (i.e., edge density) as your desired sparsity constraint.
 #' @param alpha (float, default = 0.05) The significance threshold for including brain regions in the network. if NULL or NA,
 #' this threshold is not applied.
 #' @param pearson_thresh (float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out
@@ -736,16 +754,20 @@ summarise_networks <- function(e,
 #' @param correlation_list_names (str vec) character vector of the two correlation lists used to include in a joined network
 #' @param export_overlapping_edges (bool, default  = TRUE) Whether to export the overlapping edges between the two networks as a csv into the `table` directory.
 #' @param anatomical.order (vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.
+#' @param proportional_thresh2 (NULL) If not NULL, this gives the option of filtering the second network by a different proportional threshold from the first.
 #' @param alpha2 (NULL) If not NULL, this gives the option of filtering the second network by a different alpha from the first. The `alpha` parameter will then be used as the threshold for network 1.
 #' @param pearson_thresh2 (NULL) If not NULL, this gives the option of filtering the second network by a different pearson threshold from the first network.
 #' The `pearson_thresh` parameter will then be used as the threshold for network 1.
-#'
+
 #' @return e experiment object. This object now has a new added element called `networks.` This is a list storing a
 #' graph object per channel for each network analysis run. The name of each network (`network_name`) is the same as the `correlation_list_name`
 #' used to generate the network. This `network_name` is fed as a parameter into the
 #' [SMARTR::plot_network()] function.
 #' @export
-#' @examples e sundowning <- create_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
+#' @examples
+#' \dontrun{
+#' e sundowning <- create_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
+#' }
 #' @seealso [SMARTR::plot_networks()]
 
 create_joined_networks <- function(e,
@@ -754,8 +776,10 @@ create_joined_networks <- function(e,
                                    ontology = "unified",
                                    alpha = 0.001,
                                    pearson_thresh = 0.9,
+                                   proportional_thresh = NULL,
                                    alpha2 = NULL,
                                    pearson_thresh2 = NULL,
+                                   proportional_thresh2 = NULL,
                                    anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"),
                                    export_overlapping_edges = TRUE){
 
@@ -850,25 +874,42 @@ create_joined_networks <- function(e,
       tidygraph::activate(nodes) %>%
       tidygraph::select(-.tidygraph_node_index)
 
-
-
-    # filter by alpha
-    if(!is.na(alpha) && !is.null(alpha)){
-      network1 <- network1 %>% tidygraph::activate(edges) %>% dplyr::filter(p.value < alpha)
-      if(!is.na(alpha2) && !is.null(alpha2)){
-        network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(p.value < alpha2)
+    ######### check that proportional thresholding is null or NA. If proportional thresholding has a value, then that takes precedent over alpha or pearson thresholding
+    if (!is.na(proportional_thresh) && !is.null(proportional_thresh)){
+      edges <- network1 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(weight)) %>% dplyr::as_tibble()
+      row <- round(igraph::gsize(network1)*proportional_thresh)
+      pearson_thresh <- edges$weight[[row]]
+      network1 <- network1 %>% activate(edges) %>% dplyr::filter(weight >= pearson_thresh)
+      if (!is.na(proportional_thresh2) && !is.null(proportional_thresh2)){
+        edges <- network2 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(weight)) %>% dplyr::as_tibble()
+        row <- round(igraph::gsize(network2)*proportional_thresh2)
+        pearson_thresh <- edges$weight[[row]]
+        network2 <- network2 %>% activate(edges) %>% dplyr::filter(weight >= pearson_thresh)
       } else{
-        network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(p.value < alpha)
+        edges <- network2 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(weight)) %>% dplyr::as_tibble()
+        row <- round(igraph::gsize(network2)*proportional_thresh)
+        pearson_thresh <- edges$weight[[row]]
+        network2 <- network2 %>% activate(edges) %>% dplyr::filter(weight >= pearson_thresh)
       }
-    }
+    } else{
+      # filter by alpha
+      if(!is.na(alpha) && !is.null(alpha)){
+        network1 <- network1 %>% tidygraph::activate(edges) %>% dplyr::filter(p.value < alpha)
+        if(!is.na(alpha2) && !is.null(alpha2)){
+          network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(p.value < alpha2)
+        } else{
+          network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(p.value < alpha)
+        }
+      }
 
-    # Filter by pearson correlation coefficient
-    if(!is.na(pearson_thresh) && !is.null(pearson_thresh)){
-      network1 <- network1 %>% tidygraph::activate(edges) %>% dplyr::filter(weight > pearson_thresh)
-      if (!is.na(pearson_thresh2) && !is.null(pearson_thresh2)){
-        network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(weight > pearson_thresh2)
-      } else {
-        network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(weight > pearson_thresh)
+      # Filter by pearson correlation coefficient
+      if(!is.na(pearson_thresh) && !is.null(pearson_thresh)){
+        network1 <- network1 %>% tidygraph::activate(edges) %>% dplyr::filter(weight > pearson_thresh)
+        if (!is.na(pearson_thresh2) && !is.null(pearson_thresh2)){
+          network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(weight > pearson_thresh2)
+        } else {
+          network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(weight > pearson_thresh)
+        }
       }
     }
 
@@ -922,11 +963,16 @@ create_joined_networks <- function(e,
 #' @param n_rewires (int, default = 10000) The number of rewires for randomization for "ms" rewiring implementation. Recommended to be the larger of either 10,000 or 10*No. edges in a graph.
 #' @param n_networks (int, default = 100) The number of random networks to create
 #' @param seed (int, default = 5) Random seed for future replication.
-#' @param return_graphs (logical, default = FALSE) if TRUE, returns a list organized by channel containing a sublist, with each element containing a reqires tidygraph object.
-#' @return Summary table of rewired network properties of all nodesm showing the average of all randomized network properties generated.
+#' @param return_graphs (logical, default = FALSE) if TRUE, returns a list organized by channel containing a sublist, with each element containing a tidygraph object. This must be FALSE if you want to run
+#' you want to summarize the null network statistics with [SMARTR::summarize_null_networks()]
+#' @return Summary table of rewired network properties of all nodes showing the average of all randomized network properties generated.
 #' @export
 #'
 #' @examples
+#'
+#'
+#'
+#'
 rewire_network <- function(e,
                            network_name,
                            channels = "cfos",
@@ -990,6 +1036,70 @@ rewire_network <- function(e,
   } else{
     return(null_nodes)
   }
+}
+
+
+
+#' Summarize the parameters of the rewired null networks generated by [SMARTR::rewire_network()]
+#'
+#' @param null_nodes_p1 Summary table of rewired network properties of all nodes from [SMARTR::rewire_network()] for the first network to compare.
+#' @param null_nodes_p2 Summary table of rewired network properties of all nodes from [SMARTR::rewire_network()] for the second network to compare
+#' @param network_name_1 (str) Name of the network
+#' @param network_name_2 (str) Name of the network
+#' @param channel (str)   channel to process
+#'
+#' @return a list of length 2. The first element is named `global_summary` and contains a table of global summary statistics.
+#' The second element is named `node_summary`, and contained per node statistics averaged from multiple null networks.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' null_nodes_p1 <- rewire_network(anesthesia,
+#'                                 channels = "cfos",
+#'                                 network_name = "Ctrl",
+#'                                 n_rewires = igraph::gsize(anesthesia$networks$Ctrl$cfos)*100,  # no. edge rewires = no. edges in the graph x 100
+#'                                 return_graphs = FALSE)
+#' }
+summarize_null_networks <- function(null_nodes_p1,
+                                    null_nodes_p2,
+                                    network_name_1 = p[[1]],
+                                    network_name_2 = p[[2]],
+                                    channel = "cfos"){
+
+  summaries <- vector(mode="list", length = 2)
+  names(summaries) <- c("node_summary", "global_summary")
+
+  null_node_p1_summary <- null_nodes_p1[[channel]] %>% dplyr::group_by(name, super.region) %>%
+    summarise(null_degree = mean(degree, na.rm = TRUE),
+              null_triangles = mean(triangles, na.rm = TRUE),
+              null_clust.coef = mean(clust.coef, na.rm = TRUE),
+              null_dist = mean(avg.dist, na.rm = TRUE),
+              null_efficiency = mean(efficiency, na.rm = TRUE),
+              null_btw = mean(btw, na.rm = TRUE)) %>%
+    dplyr::mutate(group = network_name_1, .before = null_degree)
+
+
+  null_node_p2_summary <- null_nodes_p2[[channel]] %>% dplyr::group_by(name, super.region) %>%
+    summarise(null_degree = mean(degree, na.rm = TRUE),
+              null_triangles = mean(triangles, na.rm = TRUE),
+              null_clust.coef = mean(clust.coef, na.rm = TRUE),
+              null_dist = mean(avg.dist, na.rm = TRUE),
+              null_efficiency = mean(efficiency, na.rm = TRUE),
+              null_btw = mean(btw, na.rm = TRUE)) %>%
+    dplyr::mutate(group = network_name_2, .before = null_degree)
+
+  null_node_summary <- null_node_p1_summary  %>% dplyr::bind_rows(null_node_p2_summary)
+
+  # Global level summary
+
+  ## Global level normalization
+  null_global_summary <- null_node_summary %>% dplyr::ungroup() %>%  dplyr::group_by(group) %>%
+    dplyr::summarise_if(is.numeric,list(~mean(.),~sd(.), ~sem(.)))
+
+  summaries[["node_summary"]] <- null_node_summary
+  summaries[["global_summary"]] <- null_global_summary
+
+  return(summaries)
 }
 
 

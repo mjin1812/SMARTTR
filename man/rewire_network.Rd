@@ -33,14 +33,21 @@ rewire_network(
 
 \item{n_networks}{(int, default = 100) The number of random networks to create}
 
-\item{return_graphs}{(logical, default = FALSE) if TRUE, returns a list organized by channel containing a sublist, with each element containing a reqires tidygraph object.}
+\item{return_graphs}{(logical, default = FALSE) if TRUE, returns a list organized by channel containing a sublist, with each element containing a tidygraph object. This must be FALSE if you want to run
+you want to summarize the null network statistics with \code{\link[=summarize_null_networks]{summarize_null_networks()}}}
 
 \item{seed}{(int, default = 5) Random seed for future replication.}
 }
 \value{
-Summary table of rewired network properties of all nodesm showing the average of all randomized network properties generated.
+Summary table of rewired network properties of all nodes showing the average of all randomized network properties generated.
 }
 \description{
 Note that this essentially erases edge metrics and treats networks like binary graphs. Edge weights are not used in calculating
 network topology metrics.
+}
+\examples{
+
+
+
+
 }

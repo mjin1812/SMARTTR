@@ -8,11 +8,12 @@ create_networks(
   e,
   correlation_list_name,
   channels = c("cfos", "eyfp", "colabel"),
+  proportional_thresh = NULL,
   alpha = 0.05,
+  pearson_thresh = 0.8,
   ontology = "allen",
   anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB",
     "HB", "CB"),
-  pearson_thresh = 0.8,
   filter_isolates = FALSE
 )
 }
@@ -23,14 +24,16 @@ create_networks(
 
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel")) The channels to process.}
 
+\item{proportional_thresh}{(float, default = NULL) Takes precedent over the \code{alph}a and the \code{pearson_thresh} parameters. Input the desired edge proportion (i.e., edge density) as your desired sparsity constraint.}
+
 \item{alpha}{(float, default = 0.05) The significance threshold for including brain regions in the network. if NULL or NA,
 this threshold is not applied.}
+
+\item{pearson_thresh}{(float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out}
 
 \item{ontology}{(str, default = "allen") Region ontology to use. options = "allen" or "unified"}
 
 \item{anatomical.order}{(vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.}
-
-\item{pearson_thresh}{(float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out}
 
 \item{filter_isolates}{(logical, default = FALSE) Whether to filter out the number of isolated (zero degree) nodes from the network. Default is to retain them.}
 }
