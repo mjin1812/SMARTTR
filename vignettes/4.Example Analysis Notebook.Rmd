@@ -26,9 +26,6 @@ library(tidyverse)
 
 # Install rstatix if it is not installed already
 library(rstatix) 
-
-# Re-routing the quartz function call for Macs to the X11 graphics call for windows/linux setups
-quartz <- x11
 ```
 
 
@@ -37,11 +34,11 @@ Load the experiment object
 ```{r}
 # Load the experiment data 
 # Change to point to the experiment object downloaded
-load("V:\\Michelle_Jin\\Wholebrain pipeline\\LH_analysis\\learned_helplessness_experiment.RDATA")
+load("P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\LH_analysis\\learned_helplessness_experiment.RDATA")
 
 # Change where the analysis folder is stored in the experiment object
 # Edit the path below to point your own folder location
-attr(lh, "info")$output_path <- "V:\\Michelle_Jin\\Wholebrain pipeline\\LH_analysis" 
+attr(lh, "info")$output_path <- "P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\LH_analysis" 
 
 # print the experiment object to see what attributes are available
 print(lh)

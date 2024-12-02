@@ -12,6 +12,7 @@ get_correlations(
   p_adjust_method = "none",
   alpha = 0.05,
   ontology = "allen",
+  method = "pearson",
   anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB",
     "HB", "CB"),
   region_order = NULL
@@ -35,8 +36,8 @@ to keep "raw" p values. See also \code{\link[stats:p.adjust]{stats::p.adjust()}}
 
 \item{ontology}{(str, default = "allen") Region ontology to use. options = "allen" or "unified"}
 
-\item{anatomical.order}{(vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that sorts all subregions in the dataset for grouped
-positioning in the correlation matrix. Supercedes \code{region_order} parameter.}
+\item{method}{(str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute. Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements,
+using midranks for ties. See also \code{\link[hmisc:rcorr]{hmisc::rcorr()}}}
 
 \item{region_order}{(list, default = NULL)  optional list with the first element named "acronym" supplying a vector as region acronyms and the second element named
 "order"  supplying an vector of integers determining numerical order, e.g. 1, 1, 2, 2.}

@@ -4,12 +4,12 @@ output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Tutorial}
+  %\VignetteIndexEntry{2. Mapping Tutorial}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, include = FALSE, eval=TRUE}
 options(width = 300, rmarkdown.html_vignette.check_title = FALSE)
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -110,7 +110,7 @@ mouse_733 <- mouse(mouse_ID = "733",
                    experiment = "learned helplessness",
                    group = "context",   # Flexible attribute to encapsulate different experimental conditions, e.g. genotype, behavior conditions, that doesn't fit into other categories.
                    cohort = "group_A",
-                   output_path = "V:/Michelle_Jin/Wholebrain pipeline/733")   # replace the output path with the path to your specific mouse folder
+                   output_path = "P:/DENNYLABV/Michelle_Jin/Wholebrain pipeline/733")   # replace the output path with the path to your specific mouse folder
             
 
 print(mouse_733)
@@ -167,7 +167,7 @@ s <- slice(slice_ID = "1_4",
            hemisphere = NULL,          # "left", "right" or NULL (both sides). This is necessary if you are only processing one hemisphere due to hemisphere separation, tears, etc.
            channels = c('cfos', 'eyfp', 'colabel'),  # Channels to process
            # registration_path = 'V:/Michelle_Jin/Wholebrain pipeline/733/733_1_4/MAX_733_1_4.tif'# Path to the registration image. Replace with your specific path
-           registration_path = 'V:\\Michelle_Jin\\Wholebrain pipeline\\733\\733_1_4_fully_processed/MAX_733_1_4.tif'# Path to the registration image. Replace with your specific path
+           registration_path = 'P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\733\\733_1_4_fully_processed/MAX_733_1_4.tif'# Path to the registration image. Replace with your specific path
           )  
 
 # Let's check the data stored correctly with print()
@@ -549,7 +549,7 @@ For now we will load a saved example experiment object named `lh` that already c
 
 ```{r, eval = TRUE}
 # Load the presaved data
-load("V:\\Michelle_Jin\\Wholebrain pipeline\\LH_analysis\\learned_helplessness_experiment.RDATA")
+load("P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\LH_analysis\\learned_helplessness_experiment.RDATA")
 
 # Print the names of the mice stores in the learned helplessness experiment object
 print(names(lh$mice))
@@ -574,7 +574,7 @@ The quality of the segmentation data may depend on many factors including immuno
 The function `find_outlier_counts()` will first organize counts into sub analysis groups stratified based on the `by` parameter. Then the mean cell counts for each analysis group and their standard deviation are calculated. If any regions counts for a mouse exceed greater than `n_sd` (default = 2) for their analysis group, the region and mouse will be marked as an outlier. If `log = TRUE` then, the output is stored in a csv file with the file stem `region_count_outliers_[channel]`. This may be helpful to look back at the raw data and examine whether the segmentation algorithm is doing a good job around these regions for a given mouse. 
 
 
-```{r, eval = TRUE}
+```{r, eval = FALSE}
 lh <- find_outlier_counts(lh, by = c('groups', 'sex', 'age'), n_sd = 2, remove = TRUE, log = TRUE)
 ```
 
@@ -583,7 +583,7 @@ lh <- find_outlier_counts(lh, by = c('groups', 'sex', 'age'), n_sd = 2, remove =
 
 If you want to check that each analysis subgroup has a minimum n represented per brain region, you can use the function `enough_mice_per_group()`. This function contains `by` parameter as well. Additionally, This function also automatically keeps only the common regions that are found across all comparison groups.
 
-```{r, eval = TRUE}
+```{r, eval = FALSE}
 lh <- enough_mice_per_group(lh, by = "group", min_n = 4, remove = TRUE, log = TRUE)
 ```
 

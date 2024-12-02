@@ -20,5 +20,12 @@ Finally, SMARTR provides a set of built-in analysis and visualization functions 
 
 Check out the [Get Started](./articles/SMARTR.html) page for installation instructions! 
 
+## Publication citation
+
+Use of the SMARTR package has been published on eLife as a [reviewed preprint](https://doi.org/10.7554/eLife.101327.1). If you are using SMARTR for academic purposes, please use the following citation:
+
+|   Jin Michelle, Ogundare Simon O, Lanio Marcos, Sorid Sophia, Whye Alicia R, Leal Santos Sofia, Franceschini Alessandra, Denny Christine A (2024) **A SMARTR workflow for multi-ensemble atlas mapping and brain-wide network analysis** _eLife_ **13**:RP101327
+
+
 ## Contact
 Answers to common questions may be found in the FAQ page. Please look there first to troubleshoot any issues. If questions are not otherwise answered through the FAQ or through the tutorial, feel free to contact me at [mj2947@cumc.columbia.edu](mailto:mj2947@cumc.columbia.edu) for further clarification.

@@ -4,7 +4,7 @@
 \alias{try_correlate}
 \title{Try to correlate}
 \usage{
-try_correlate(df_channel)
+try_correlate(df_channel, type = "pearson")
 }
 \arguments{
 \item{df_channel}{}

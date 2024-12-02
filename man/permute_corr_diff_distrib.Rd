@@ -10,11 +10,15 @@ permute_corr_diff_distrib(
   correlation_list_name_2,
   n_shuffle = n_shuffle,
   seed = 5,
+  method = "pearson",
   ...
 )
 }
 \arguments{
 \item{seed}{random seed for replication}
+
+\item{method}{(str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute.
+Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements, using midranks for ties. See also \code{\link[hmisc:rcorr]{hmisc::rcorr()}}}
 }
 \value{
 

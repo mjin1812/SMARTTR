@@ -10,6 +10,7 @@ correlation_diff_permutation(
   correlation_list_name_2,
   channels = c("cfos", "eyfp", "colabel"),
   n_shuffle = 1000,
+  method = "pearson",
   seed = 5,
   p_adjust_method = "BH",
   alpha = 0.05,
@@ -26,6 +27,9 @@ correlation_diff_permutation(
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel")) The channels to process.}
 
 \item{n_shuffle}{(int, default = 1000) The number of permutation shuffles.}
+
+\item{method}{(str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute.
+Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements, using midranks for ties. See also \code{\link[hmisc:rcorr]{hmisc::rcorr()}}}
 
 \item{seed}{(int, default = 5) Random seed for future replication.}
 

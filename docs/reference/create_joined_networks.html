@@ -66,8 +66,10 @@
 <span>  ontology <span class="op">=</span> <span class="st">"unified"</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.001</span>,</span>
 <span>  pearson_thresh <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  proportional_thresh <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  alpha2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pearson_thresh2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  proportional_thresh2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  anatomical.order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Isocortex"</span>, <span class="st">"OLF"</span>, <span class="st">"HPF"</span>, <span class="st">"CTXsp"</span>, <span class="st">"CNU"</span>, <span class="st">"TH"</span>, <span class="st">"HY"</span>, <span class="st">"MB"</span>,</span>
 <span>    <span class="st">"HB"</span>, <span class="st">"CB"</span><span class="op">)</span>,</span>
 <span>  export_overlapping_edges <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -101,6 +103,10 @@ this threshold is not applied.</p></dd>
 <dd><p>(float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out</p></dd>
 
 
+<dt>proportional_thresh</dt>
+<dd><p>(float, default = NULL) Takes precedent over the <code>alpha</code> and the <code>pearson_thresh</code> parameters. Input the desired edge proportion (i.e., edge density) as your desired sparsity constraint.</p></dd>
+
+
 <dt>alpha2</dt>
 <dd><p>(NULL) If not NULL, this gives the option of filtering the second network by a different alpha from the first. The <code>alpha</code> parameter will then be used as the threshold for network 1.</p></dd>
 
@@ -108,6 +114,10 @@ this threshold is not applied.</p></dd>
 <dt>pearson_thresh2</dt>
 <dd><p>(NULL) If not NULL, this gives the option of filtering the second network by a different pearson threshold from the first network.
 The <code>pearson_thresh</code> parameter will then be used as the threshold for network 1.</p></dd>
+
+
+<dt>proportional_thresh2</dt>
+<dd><p>(NULL) If not NULL, this gives the option of filtering the second network by a different proportional threshold from the first.</p></dd>
 
 
 <dt>anatomical.order</dt>

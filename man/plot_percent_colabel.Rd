@@ -34,6 +34,16 @@ plot_percent_colabel(
 
 \item{channel}{(str, default = "eyfp") The channel used as denominator in fraction counts.}
 
+\item{rois}{character vector of region acronyms, e.g. c("AAA", "DG)}
+
+\item{color_mapping}{(str, default = "sex") The name of the categorical variable (e.g., "sex", "age", etc.) to map to the color aesthetic of the bar plot.}
+
+\item{colors}{(str) character vector of the color values desired for the groups.}
+
+\item{pattern_mapping}{(str, default = "sex") The name of the categorical variable (e.g., "sex", "age", etc.) to map to the pattern aesthetic of the bar plot.}
+
+\item{patterns}{(str, default = c("gray100", 'hs_fdiagonal', "hs_horizontal", "gray90", "hs_vertical"), Pattern types to define subgroups.}
+
 \item{error_bar}{(str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.}
 }
 \value{

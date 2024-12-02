@@ -60,6 +60,8 @@ Suggests:
     wholebrain (>= 0.1.1),
     ggpattern (>= 0.2.0),
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
+Additional_repositories: https://github.com/mjin1812/SMART, https://github.com/tractatus/wholebrain, https://trevorldavis.com/R/ggpattern/dev/
 Config/testthat/edition: 3
 VignetteBuilder: knitr

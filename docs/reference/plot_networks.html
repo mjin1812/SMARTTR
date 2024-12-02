@@ -70,12 +70,14 @@
 <span>  edge_type <span class="op">=</span> <span class="st">"arc"</span>,</span>
 <span>  region_legend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  degree_scale_limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<span>  anatomical.colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  correlation_edge_width_limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  image_ext <span class="op">=</span> <span class="st">".png"</span>,</span>
-<span>  network_radius <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  print_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  graph_theme <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_size <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  edge_thickness_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span>,</span>
+<span>  node_size_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">8</span><span class="op">)</span>,</span>
 <span>  label_offset <span class="op">=</span> <span class="fl">0.15</span>,</span>
 <span>  save_plot <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -148,6 +150,11 @@ the experiment object output folder.</p></dd>
 <dt>save_plot</dt>
 <dd><p>(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.</p></dd>
+
+
+<dt>anatomical.color</dt>
+<dd><p>(vec, NULL) Custom colors for the super region legend. (e.g., c(Isocortex = "#5571a9", OLF = "#64bdc4", HPF = "#d2875b",
+CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960",  MB = "#d796c8", HB = "#646464")). NULL results in viridis.</p></dd>
 
 </dl></div>
     <div class="section level2">

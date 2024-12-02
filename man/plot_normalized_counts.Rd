@@ -95,3 +95,7 @@ p_list A list the same length as the number of channels, with each element conta
 \description{
 Plot the cell counts normalized by volume for a given channel
 }
+\examples{
+p_list <- plot_normalized_counts(e, channels = "cfos", by = c("sex", "group"), values = list(c("female", "non"), c("female", "agg")), colors = c("white", "lightblue"))
+
+}

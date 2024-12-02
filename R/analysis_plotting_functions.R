@@ -135,10 +135,9 @@ get_percent_colabel <-function(e, by, colabel_channel = "colabel",
 #' @param region_order (list, default = NULL)  optional list with the first element named "acronym" supplying a vector as region acronyms and the second element named
 #' "order"  supplying an vector of integers determining numerical order, e.g. 1, 1, 2, 2.
 #' @param alpha (num, default = 0.05) The alpha level for significance applied AFTER p-adjustment.
-#' @param anatomical.order (vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that sorts all subregions in the dataset for grouped
-#' positioning in the correlation matrix. Supercedes `region_order` parameter.
 #' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
-#'
+#' @param method (str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute. Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements,
+#' using midranks for ties. See also [hmisc::rcorr()]
 #' @return e experiment object. The experiment object now has a named `correlation_list` object stored in it.
 #' The name of the correlation object is the concatenation of the variable values separated by a "_".
 #' This name allows for unambiguous identification of different analysis subgroups in the future.
@@ -151,6 +150,7 @@ get_correlations <- function(e, by, values,
                              p_adjust_method = "none",
                              alpha = 0.05,
                              ontology = "allen",
+                             method = "pearson",
                              anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"),
                              region_order = NULL){
   corr_list <- list()
@@ -193,7 +193,7 @@ get_correlations <- function(e, by, values,
     # n <- colSums(!is.na(df_channel)) %>% min()
 
     # Try-catch statement
-    df_corr <-  try_correlate(df_channel)
+    df_corr <-  try_correlate(df_channel, type = method)
 
     if (!isFALSE(p_adjust_method)){
       lowertri <- df_corr$P %>%  lower.tri(diag = FALSE)
@@ -232,6 +232,8 @@ get_correlations <- function(e, by, values,
 #' @param correlation_list_name_2 (str) The name of the correlation list object used as the second group for comparison.
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
 #' @param n_shuffle (int, default = 1000) The number of permutation shuffles.
+#' @param method (str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute.
+#' Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements, using midranks for ties. See also [hmisc::rcorr()]
 #' @param seed (int, default = 5) Random seed for future replication.
 #' @param p_adjust_method (bool or str, default = "BH") Benjamini-Hochberg method is recommended.
 #'  Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE or "none"
@@ -257,6 +259,7 @@ correlation_diff_permutation <- function(e,
                                          correlation_list_name_2,
                                          channels = c("cfos", "eyfp", "colabel"),
                                          n_shuffle = 1000,
+                                         method = "pearson",
                                          seed = 5,
                                          p_adjust_method = "BH",
                                          alpha = 0.05,
@@ -310,9 +313,9 @@ correlation_diff_permutation <- function(e,
 
     # Get group region pairwise correlational differences
     group_1_corr <- df_channel_group_1 %>% dplyr::select(dplyr::where(is.numeric)) %>%
-      as.matrix() %>% try_correlate()
+      as.matrix() %>% try_correlate(type = method)
     group_2_corr <- df_channel_group_2 %>%  dplyr::select(dplyr::where(is.numeric)) %>%
-      as.matrix() %>% try_correlate()
+      as.matrix() %>% try_correlate(type = method)
     test_statistic <- group_2_corr$r - group_1_corr$r
 
     # Get an array of distribution of correlation differences
@@ -322,7 +325,7 @@ correlation_diff_permutation <- function(e,
                                                          correlation_list_name_1 = correlation_list_name_1,
                                                          correlation_list_name_2 = correlation_list_name_2,
                                                          n_shuffle = n_shuffle,
-                                                         seed = seed, ...)
+                                                         seed = seed, method = method, ...)
     )
 
     # message("dim before sort", dim(test_statistic_distributions))
@@ -414,13 +417,13 @@ export_permutation_results <- function(e,
       sig_df <- e$permutation_p_matrix[[pg]][[channel]]$sig %>%
         tibble::as_tibble(rownames="R1") %>%
         tidyr::pivot_longer(cols = all_of(regions), names_to = "R2", values_to = "sig") %>%
-        drop_na()
+        tidyr::drop_na()
 
 
       pval_df <-e$permutation_p_matrix[[pg]][[channel]]$p_val %>%
         tibble::as_tibble(rownames="R1") %>%
         tidyr::pivot_longer(cols = all_of(regions), names_to = "R2", values_to = "p_val") %>%
-        drop_na()
+        tidyr::drop_na()
 
 
       test_statistic <- e$permutation_p_matrix[[pg]][[channel]]$test_statistic
@@ -429,7 +432,7 @@ export_permutation_results <- function(e,
       test_statistic <- test_statistic %>%
         tibble::as_tibble(rownames="R1") %>%
         tidyr::pivot_longer(cols = all_of(regions), names_to = "R2", values_to = "test_statistic") %>%
-        drop_na()
+        tidyr::drop_na()
 
       permutation_results <- dplyr::left_join(test_statistic, pval_df, by = c("R1", "R2"), keep = FALSE) %>%
         dplyr::left_join(sig_df, by = c("R1", "R2"), keep = FALSE)
@@ -1115,11 +1118,11 @@ summarize_null_networks <- function(null_nodes_p1,
 #'
 #' @param e experiment object
 #' @param channel (str, default = "eyfp") The channel used as denominator in fraction counts.
-#' @param rois
-#' @param color_mapping
-#' @param colors
-#' @param pattern_mapping
-#' @param patterns
+#' @param rois character vector of region acronyms, e.g. c("AAA", "DG)
+#' @param color_mapping (str, default = "sex") The name of the categorical variable (e.g., "sex", "age", etc.) to map to the color aesthetic of the bar plot.
+#' @param colors (str) character vector of the color values desired for the groups.
+#' @param pattern_mapping (str, default = "sex") The name of the categorical variable (e.g., "sex", "age", etc.) to map to the pattern aesthetic of the bar plot.
+#' @param patterns (str, default = c("gray100", 'hs_fdiagonal', "hs_horizontal", "gray90", "hs_vertical"), Pattern types to define subgroups.
 #' @param error_bar (str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.
 #' @return p Plot handle to the figure
 #' @export
@@ -1578,7 +1581,7 @@ plot_cell_counts <- function(e,
 #'
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
-#' @example
+#' @examples
 #' p_list <- plot_normalized_counts(e, channels = "cfos", by = c("sex", "group"), values = list(c("female", "non"), c("female", "agg")), colors = c("white", "lightblue"))
 #'
 plot_normalized_counts <- function(e,
@@ -2112,7 +2115,7 @@ volcano_plot <- function(e,
 #'
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
-#' @example
+#' @examples
 parallel_coordinate_plot <- function(e,
                                      permutation_comparison = "AD_vs_control",
                                      channels = c("cfos", "eyfp", "colabel"),
@@ -3550,12 +3553,14 @@ maslov_sneppen_rewire <- function(network, n_rewires = 10000){
 #' @param correlation_list_name_2
 #' @param n_shuffle
 #' @param seed random seed for replication
+#' @param method (str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute.
+#' Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements, using midranks for ties. See also [hmisc::rcorr()]
 #' @param ...
 #' @return
 #'
 #' @examples
 permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_list_name_2,
-                                      n_shuffle = n_shuffle, seed = 5, ...){
+                                      n_shuffle = n_shuffle, seed = 5, method = "pearson", ...){
 
 
   # Set the random seed
@@ -3600,8 +3605,8 @@ permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_l
     correlations_list <- vector(mode = "list", length = 2)
     names(correlations_list) <- c(correlation_list_name_1, correlation_list_name_2)
 
-    correlations_list[[correlation_list_name_1]] <- matrix_list[[correlation_list_name_1]][,-1] %>% try_correlate()
-    correlations_list[[correlation_list_name_2]] <- matrix_list[[correlation_list_name_2]][,-1] %>% try_correlate()
+    correlations_list[[correlation_list_name_1]] <- matrix_list[[correlation_list_name_1]][,-1] %>% try_correlate(type = method)
+    correlations_list[[correlation_list_name_2]] <- matrix_list[[correlation_list_name_2]][,-1] %>% try_correlate(type = method)
 
     # subtract R coefficient differences
     corr_diff_matrix[,,n] <- correlations_list[[correlation_list_name_2]]$r - correlations_list[[correlation_list_name_1]]$r
@@ -3657,10 +3662,10 @@ sem <- function(x){
 #' @return
 #'
 #' @examples
-try_correlate <- function(df_channel){
+try_correlate <- function(df_channel, type = "pearson"){
   tryCatch({
     # Code that may throw an error
-    df_corr <- df_channel %>% Hmisc::rcorr()
+    df_corr <- df_channel %>% Hmisc::rcorr(type = type)
     return(df_corr)
   },
   error = function(err) {
@@ -3681,7 +3686,7 @@ try_correlate <- function(df_channel){
     for(r1 in 1:shape[2]){
       for(r2 in 1:r1){
         df_corr$n[r1,r2] <- sum(df_channel[,r1] & df_channel[,r2], na.rm = TRUE)
-        ct <- cor.test(df_channel[,r1], df_channel[,r2])
+        ct <- cor.test(df_channel[,r1], df_channel[,r2], method = type, exact = FALSE)
         df_corr$P[r1,r2] <- ct$p.value
         df_corr$r[r1,r2] <- ct$estimate
       }
