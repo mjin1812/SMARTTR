@@ -228,12 +228,47 @@ add_mouse <- function(e, m, replace = FALSE){
 
 
 
-#' Reset the root path for the folder containing the registration and segmentation data.
+#' Import externally mapped datasets into an experiment
 #'
+#' @description This function takes an experiment object and imports externally mapped datasets.
+#'
+#' @param e experiment object
+#' @param normalized_count_paths (str vec, default = NULL, optional) For importing external datasets ONLY.
+#' A character vector, with each element being a path to the respective .csv or .xlsx file in the same order as the `channels` attribute.
+#' Must have the same order and length as the `channels` parameter.
+#' You can add channels as names to the vector elements to avoid ambiguity and ensure correct importation for the right channel.
+#' @param ... additional parameters to pass to either the [readr::read_csv()] function or [readxl::read_excel()]
+#'
+#' @return e an experiment object with the imported dataset
+#'
+#'
+import_mapped_datasets <- function(e, normalized_count_paths, ...){
+  exp_attr <- attr(e,"info")
+  exp_attr$channels
+  if(is.null(names(normalized_count_paths))){
+    names(normalized_count_paths)  <- exp_attr$channels
+  } else {
+    # channel check
+    if (!all(names(normalized_count_paths) %in%  exp_attr$channels)){
+      stop("The names for the channels you provided in `normalized_count_paths` does not match the `channels`
+           attribute of your experiment object. Please check for case differences!")
+    }
+  }
+  combined_normalized_counts <- vector(mode = "list", length = length(names(normalized_count_paths)))
+  names(combined_normalized_counts) <- names(normalized_count_paths)
+  for (channel in names(normalized_count_paths)){
+    combined_normalized_counts[[channel]] <- read_check_file(normalized_count_paths[[channel]], , ...) %>%
+       dplyr::mutate(across(counts:normalized.count.by.volume, as.numeric)) %>%
+      dplyr::mutate(across(!counts:normalized.count.by.volume, as.character))
+  }
+  e$combined_normalized_counts <- combined_normalized_counts
+  return(e)
+}
+
+#' Reset the root path for the folder containing the registration and segmentation data.
 #' @description This function takes a mouse object and also a `input_path` as the root folder for that mouse.
 #' It then adjusts all the paths for the registration and segmentation data read to be relative to the root folder.
 #' This function is especially useful if you have changed the computers you are analyzing and drive mappings may be different.
-#'
 #' @param m mouse object
 #' @param input_path (default = NULL) Reset the root directory of the mouse object.
 #' @param print (bool, default = TRUE) Print the changes in the console.
@@ -316,6 +351,32 @@ match_m_attr <- function(attribs){
     matched <- c(matched, attr2match$mouse[stringdist::amatch(attr, attr2match$mouse, maxDist=Inf)])
   }
   return(matched)
+}
+
+
+#' Read a csv or excel file as a tibble. Checks first that the file exists, and that it is a csv or xlsx format.
+#'
+#' @param x A file path
+#' @param ... additional parameters to pass to either the [readr::read_csv] function or [readxl::read_excel]
+#' @return tibble dataframe
+#' @export
+#'
+#' @examples
+read_check_file <- function(x, ...) {
+  # Check if file exists at path
+  if (!file.exists(x)){
+    stop("File does not exist at the expected location")
+  }
+  # Check file type
+  ext <- tools::file_ext(x)
+  file.read <- switch(ext,
+         csv = ,
+         .csv = readr::read_csv,
+         xlsx = ,
+         .xlsx = readxl::read_excel,
+         stop("Invalid file type. `csv` or `xlsx` are allowed")
+  )
+  return(file.read(x, ...))
 }
 
 
