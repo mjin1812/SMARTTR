@@ -168,7 +168,7 @@ enough_mice_per_group <- function(e, by = c("group", "sex"), min_n = 5, remove =
 
 #' Checks the acronyms and full length region names to match with internally stored ontology
 #'
-#' Run this as a quality check after importing an external dataset uising [SMARTR::import_mapped_datasets()]. This goes through
+#' Run this as a quality check after importing an external dataset using [SMARTR::import_mapped_datasets()]. This goes through
 #' all dataframes for all channels imported and replaces any non-matching acronyms and region names with those as they are exactly coded in SMARTR.
 #'
 #' Note: Processing times scales with the size of your dataset so it
@@ -201,6 +201,127 @@ check_ontology_coding <- function(e, ontology = "allen"){
    return(e)
 }
 
+#' Filters to chosen base parent regions and all child subregions
+#'
+#' @param e experiment object
+#' @param base_regions (default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CBL"))
+#' Region acronyms of base parent regions (and all subregions) to include for analysis
+#' @param ontology (str, default = "allen") Options = "allen" or "unified".
+#' @param channels (str, default = NULL) NULL option processes all channels. `channels = c("cfos", "eyfp")` specifies exact channels.
+#' @return e experiment object
+#' @export
+
+filter_regions <- function(e,
+                           base_regions = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CBL"),
+                           ontology = "allen",
+                           channels = NULL){
+  if (is.null(channels)){
+    channels <- names(e$combined_normalized_counts)
+  } else if (!all(channels %in% names(e$combined_normalized_counts))){
+    stop("One or more of your channels specified is not valid. ")
+  }
+
+  if (ontology == "allen"){
+    regions_ordered <- base_regions %>%
+      purrr::map(SMARTR::get.sub.structure) %>%
+      unlist()
+  } else if (ontology == "unified"){
+    regions_ordered <- base_regions %>%
+      purrr::map(SMARTR::get.sub.structure.custom, ontology = ontology) %>%
+      unlist()
+  }
+  regions_ordered <- c(regions_ordered, base_regions)
+  for (channel in channels){
+    # Filter dataset so only subregions under the baselevel regions are included.
+    e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]]  %>%
+       dplyr::filter(acronym %in% regions_ordered)
+  }
+  return(e)
+}
+
+
+#' Exclude redundant regions
+#'
+#' Your dataset may contain redundant information because it includes counts at different "ontological" resolutions.
+#' SMARTR initially operates at the highest "resolution" and later on, can fold sub-regions into parent regions later.
+#' Therefore redundant counts from parent regions should be removed from datasets using this function prior to analysis and plotting functions.
+#'
+#' To check and see redundant regions contained in a list of acronyms, see the function [SMARTR::check_redundant_parents()].
+#' @param e exoeriment object
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
+#' @param channels (str, default = NULL) NULL option processes all channels. `channels = c("cfos", "eyfp")` specifies exact channels.
+#' @return e experiment object
+#' @export
+exclude_redundant_regions <- function(e, ontology = "allen", channels = NULL){
+  if (is.null(channels)){
+    channels <- names(e$combined_normalized_counts)
+  } else if (!all(channels %in% names(e$combined_normalized_counts))){
+    stop("One or more of your channels specified is not valid. ")
+  }
+
+  for (channel in channels){
+    # Exclude redundant parent regions
+    # acronyms <- df$acronym %>% unique()
+    acronyms <- e$combined_normalized_counts[[channel]]$acronym %>% unique()
+    redundant_regions <- check_redundant_parents(acronyms, ontology = ontology)
+    e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]] %>%
+      dplyr::filter(acronym %in% redundant_regions$unique_acronyms)
+  }
+  return(e)
+}
+
+#' Excluded user chosen regions by entering acronyms
+#' @param e experiment object
+#' @param acronyms (str, default = "fiber_tracts") vector of region/structure acronyms to exclude from the datasets, e.g. c("CBL", "sox", "3V")
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
+#' @param channels (str, default = NULL) NULL option processes all channels. `channels = c("cfos", "eyfp")` specifies exact channels.
+#'
+#' @return
+#' @export e experiment object
+
+exclude_by_acronym <- function(e, acronyms = "fiber_tracts", ontology = "allen", channels = NULL){
+  if (is.null(channels)){
+    channels <- names(e$combined_normalized_counts)
+  } else if (!all(channels %in% names(e$combined_normalized_counts))){
+    stop("One or more of your channels specified is not valid. ")
+  }
+
+  for (channel in channels){
+    for (k in acronyms){
+      if (ontology == "allen"){
+        all_exclusion_sub <- c(k, get.sub.structure(k))
+      } else {
+        all_exclusion_sub <- c(k, get.sub.structure.custom(k, ontology = ontology))
+      }
+      e$combined_normalized_counts[[channel]]  <- e$combined_normalized_counts[[channel]] %>% dplyr::filter(!acronym %in%  all_exclusion_sub)
+    }
+  }
+  return(e)
+}
+
+
+#' Excluded user chosen regions by keywords found in long-form name
+#'
+#' @param e experiment object
+#' @param keywords (str) vector of region/structure keywords to match and exclude from the datasets, e.g. c("nerve", "tract")
+#' @param channels (str, default = NULL) NULL option processes all channels. `channels = c("cfos", "eyfp")` specifies exact channels.
+#'
+#' @return
+#' @export e experiment object
+exclude_by_keyword <- function(e, keywords, channels = NULL){
+  if (is.null(channels)){
+    channels <- names(e$combined_normalized_counts)
+  } else if (!all(channels %in% names(e$combined_normalized_counts))){
+    stop("One or more of your channels specified is not valid. ")
+  }
+
+  for (channel in channels){
+    for (k in keywords){
+      e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]][!e$combined_normalized_counts[[channel]]$name %>% grepl(k, .), ]
+    }
+  }
+  return(e)
+}
 
 
 

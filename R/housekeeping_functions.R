@@ -241,7 +241,6 @@ add_mouse <- function(e, m, replace = FALSE){
 #'
 #' @return e an experiment object with the imported dataset
 #' @export
-#' @usage e <- check_ontology_coding(e, ontology = "unified")
 #'
 import_mapped_datasets <- function(e, normalized_count_paths, ...){
   exp_attr <- attr(e,"info")
@@ -249,7 +248,6 @@ import_mapped_datasets <- function(e, normalized_count_paths, ...){
   if(is.null(names(normalized_count_paths))){
     names(normalized_count_paths)  <- exp_attr$channels
   } else {
-    # channel check
     if (!all(names(normalized_count_paths) %in%  exp_attr$channels)){
       stop("The names for the channels you provided in `normalized_count_paths` does not match the `channels`
            attribute of your experiment object. Please check for case differences!")
@@ -265,6 +263,15 @@ import_mapped_datasets <- function(e, normalized_count_paths, ...){
   e$combined_normalized_counts <- combined_normalized_counts
   return(e)
 }
+
+
+
+
+
+
+
+
+
 
 #' Reset the root path for the folder containing the registration and segmentation data.
 #' @description This function takes a mouse object and also a `input_path` as the root folder for that mouse.

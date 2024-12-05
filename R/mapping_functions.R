@@ -1623,20 +1623,14 @@ normalize_cell_counts <- function(m,
     aggregate_volumes <- aggregate_volumes %>% dplyr::filter(!acronym %in% all_hipp_subregions) %>% dplyr::bind_rows(hipp_split_volumes) %>% dplyr::arrange(desc(AP), acronym, right.hemisphere)
   }
 
-
-
   ## Get a tally of cells per region
   normalized_counts <-vector(mode = "list", length = length(m$cell_table))
   names(normalized_counts) <- names(m$cell_table)
-  ## Get a tally of cells per region
   counts_per_slice <-vector(mode = "list", length = length(m$cell_table))
   names(counts_per_slice) <- names(m$cell_table)
 
-
   mismatched_regions <-vector(mode = "list", length = length(m$cell_table))
   names(mismatched_regions) <- names(m$cell_table)
-
-
 
   for (channel in names(normalized_counts)){
 

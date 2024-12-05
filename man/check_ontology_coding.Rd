@@ -15,7 +15,7 @@ check_ontology_coding(e, ontology = "allen")
 e experiment object
 }
 \description{
-Run this as a quality check after importing an external dataset uising \code{\link[=import_mapped_datasets]{import_mapped_datasets()}}. This goes through
+Run this as a quality check after importing an external dataset using \code{\link[=import_mapped_datasets]{import_mapped_datasets()}}. This goes through
 all dataframes for all channels imported and replaces any non-matching acronyms and region names with those as they are exactly coded in SMARTR.
 }
 \details{
