@@ -4,7 +4,7 @@
 \alias{import_mapped_datasets}
 \title{Import externally mapped datasets into an experiment}
 \usage{
-import_mapped_datasets(e, normalized_count_paths, ...)
+e <- check_ontology_coding(e, ontology = "unified")
 }
 \arguments{
 \item{e}{experiment object}

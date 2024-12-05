@@ -240,7 +240,8 @@ add_mouse <- function(e, m, replace = FALSE){
 #' @param ... additional parameters to pass to either the [readr::read_csv()] function or [readxl::read_excel()]
 #'
 #' @return e an experiment object with the imported dataset
-#'
+#' @export
+#' @usage e <- check_ontology_coding(e, ontology = "unified")
 #'
 import_mapped_datasets <- function(e, normalized_count_paths, ...){
   exp_attr <- attr(e,"info")
