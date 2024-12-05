@@ -383,7 +383,6 @@ correlation_diff_permutation <- function(e,
 }
 
 
-
 #' Export the permutation results as a csv file. This automatically saves into the tables folder.
 #'
 #' @param e experiment object
@@ -1549,6 +1548,7 @@ plot_cell_counts <- function(e,
 
 #' Plot normalized cell counts
 #' @description Plot the cell counts normalized by volume for a given channel
+#'
 #' @param e experiment object
 #' @param channels (str, default = c("cfos", "eyfp", "colabel"))
 #' @param by (str) Attribute names to group by, e.g. c("sex", "group")
@@ -1576,8 +1576,9 @@ plot_cell_counts <- function(e,
 #' @param legend.direction (c("vertical", "horizontal"))
 #' @param limits (c(0,100000)) Range of the normalized cell counts.
 #' @param facet_background_color (default = NULL) Set to a hexadecimal string, e.g."#FFFFFF", when you want to shade the background of the graph. Defaults to no background when NULL.
-#' @param strip_background_color (default = "lightblue") Color of background srip delineating major anatomical parent regions. Set to color name or to hexadecimal code.
 #' @param image_ext (default = ".png") image extension to the plot as.
+#' @param strip_background_colors (default = "lightblue) Enter custom codes to control the strip background colors, e.g. c(Isocortex = "#5571a9", OLF = "#64bdc4",
+#' HPF = "#d2875b", CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960",  MB = "#d796c8", HB = "#646464")
 #'
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
@@ -1585,37 +1586,37 @@ plot_cell_counts <- function(e,
 #' p_list <- plot_normalized_counts(e, channels = "cfos", by = c("sex", "group"), values = list(c("female", "non"), c("female", "agg")), colors = c("white", "lightblue"))
 #'
 plot_normalized_counts <- function(e,
-                                   channels = c("cfos", "eyfp", "colabel"),
-                                   by = c("sex", "group"),
-                                   values = list(c("female", "non"),
-                                                 c("female", "agg"),
-                                                 c("female", "control"),
-                                                 c("male", "agg"),
-                                                 c("male", "control")),
-                                   # groups = c("Context", "Shock"),
-                                   colors = c("white", "lightblue", "black", "red", "green"),
-                                   ontology = "allen",
-                                   # regions_to_remove = c("CTX", "grey", "MB", "TH", "HY"),
-                                   title = NULL,
-                                   unit_label = bquote('Cell counts '('cells/mm'^3)),
-                                   anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU",
+                                    channels = c("cfos", "eyfp", "colabel"),
+                                    by = c("sex", "group"),
+                                    values = list(c("female", "non"),
+                                                  c("female", "agg"),
+                                                  c("female", "control"),
+                                                  c("male", "agg"),
+                                                  c("male", "control")),
+                                    colors = c("white", "lightblue", "black", "red", "green"),
+                                    ontology = "allen",
+                                    title = NULL,
+                                    unit_label = bquote('Cell counts '('cells/mm'^3)),
+                                    anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU",
                                                          "TH", "HY", "MB", "HB", "CB"),
-                                   height = 7,
-                                   width = 20,
-                                   region_label_angle = 50,
-                                   label_text_size = 8,
-                                   print_plot = TRUE,
-                                   save_plot = TRUE,
-                                   flip_axis = FALSE,
-                                   reverse_colors = FALSE,
-                                   legend.justification = c(0, 0),
-                                   legend.position = "inside",
-                                   legend.position.inside = c(0.05, 0.6),
-                                   legend.direction = "vertical",
-                                   limits = c(0, 100000),
-                                   facet_background_color =  NULL,
-                                   strip_background_color =  "lightblue",
-                                   image_ext = ".pdf"){
+                                    height = 7,
+                                    width = 20,
+                                    region_label_angle = 50,
+                                    label_text_size = 8,
+                                    print_plot = TRUE,
+                                    save_plot = TRUE,
+                                    flip_axis = FALSE,
+                                    reverse_colors = FALSE,
+                                    legend.justification = c(0, 0),
+                                    legend.position = "inside",
+                                    legend.position.inside = c(0.05, 0.6),
+                                    legend.direction = "vertical",
+                                    limits = c(0, 100000),
+                                    facet_background_color =  NULL,
+                                    strip_background_colors =  c(Isocortex = "#5571a9", OLF = "#64bdc4", HPF = "#d2875b",
+                                                                 CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af",
+                                                                 HY = "#8e7960",  MB = "#d796c8", HB = "#646464"),
+                                    image_ext = ".pdf"){
   # check os and set graphics window
   if (get_os() != "osx") {
     quartz <- X11
@@ -1623,6 +1624,19 @@ plot_normalized_counts <- function(e,
   # create plot list containing number of plots equal to the number of channels
   p_list <- vector(mode = 'list', length = length(channels))
   labels <- purrr::map(values, function(x){paste(x, collapse = "_")}) %>% unlist()
+
+  if (length(strip_background_colors) > 1){
+    if (!requireNamespace("ggh4x", quietly = TRUE)) {
+      message("Package \"ggh4x\" is needed to plot more than 1 strip background color. Installing it now.",
+              call. = FALSE)
+      install.packages('ggh4x')
+    }
+    ## organizing strip background colors
+    background_x <- vector(mode = "list", length = length(strip_background_colors))
+    for (c in 1:length(strip_background_colors)){
+      background_x[[c]] <- element_rect(fill = strip_background_colors[[c]], color = "black")
+    }
+  }
 
   names(p_list) <- channels
   for (k in 1:length(channels)) {
@@ -1649,17 +1663,6 @@ plot_normalized_counts <- function(e,
       }
     }
 
-    # # Filter regions meeting minimum n of both groups
-    # region_counts <- channel_counts %>% group_by(acronym, name) %>% summarize(n = sum(!is.na(sem))) %>%
-    #   filter(n == length(values))
-    # channel_counts <- channel_counts %>% filter(acronym %in% region_counts$acronym)
-
-    # if (!(isFALSE(regions_to_remove) || is.null(regions_to_remove) || is.na(regions_to_remove))){
-    #   # remove parent regions (if any are specified) containing residual counts which are better represented in subregions
-    #   channel_counts <- channel_counts[-c(which(channel_counts$acronym %in% regions_to_remove)),]
-    #   # gather parent regions and assign these regions to subregions containing counts
-    # }
-
     if (tolower(ontology) == "allen") {
       regions.ordered <- anatomical.order %>%
         purrr::map(SMARTR::get.sub.structure) %>%
@@ -1674,18 +1677,16 @@ plot_normalized_counts <- function(e,
     channel_counts$name <- factor(channel_counts$name, levels = common.regions.ordered)
 
     if (tolower(ontology) == "allen") {
-    channel_counts <- channel_counts %>%
-      mutate(parent = get.sup.structure(acronym, matching.string = anatomical.order)) %>%
-      na.omit()
-    channel_counts$parent <- factor(channel_counts$parent, levels = anatomical.order)
+      channel_counts <- channel_counts %>%
+        mutate(parent = get.sup.structure(acronym, matching.string = anatomical.order)) %>%
+        na.omit()
+      channel_counts$parent <- factor(channel_counts$parent, levels = anatomical.order)
     } else {
       channel_counts <- channel_counts %>%
         mutate(parent = get.sup.structure.custom(acronym, ontology = ontology, matching.string = anatomical.order)) %>%
         na.omit()
       channel_counts$parent <- factor(channel_counts$parent, levels = anatomical.order)
     }
-
-
     # Annoying work around for the dynamic references of column names with a string vector
     dynamic_ref <-  rep(".data[[by[[1]]]]", times = length(by))
     for (b in 1:length(by)){
@@ -1702,6 +1703,24 @@ plot_normalized_counts <- function(e,
       channel_counts$unique_groups <- factor(channel_counts$unique_groups, levels = labels)
     }
 
+    plot_theme <- theme(plot.background = element_blank(),
+                         panel.grid.major = element_blank(),
+                         panel.grid.minor = element_blank(),
+                         panel.border = element_blank(),
+                         axis.line = element_line(color = 'black'),
+                         legend.justification = legend.justification,
+                         legend.position = legend.position,
+                         legend.position.inside = legend.position.inside,
+                         legend.direction = legend.direction,
+                         axis.text.y = element_text(angle = region_label_angle,
+                                                    hjust = 1,
+                                                    size = label_text_size,
+                                                    color = "black"),
+                         axis.text.x = element_text(color = "black"),
+                         strip.text.y = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
+                         strip.placement = "outside",
+                         strip.switch.pad.grid = unit(0.1, "in"))
+
     if (flip_axis) {
       p <- channel_counts %>%
         ggplot(aes(x = mean_normalized_counts, y = name,
@@ -1717,28 +1736,14 @@ plot_normalized_counts <- function(e,
              y = "",
              fill = "Group") +
         scale_x_continuous(expand = c(0,0), limits = limits) +
-        scale_fill_manual(values=c(colors)) +
-        facet_grid(parent~., scales = "free", space = "free_y", switch = "y") +
-        theme_bw() +
-        theme(plot.background = element_blank(),
-              panel.grid.major = element_blank(),
-              panel.grid.minor = element_blank(),
-              panel.border = element_blank(),
-              axis.line = element_line(color = 'black'),
-              legend.justification = legend.justification,
-              legend.position = legend.position,
-              legend.position.inside = legend.position.inside,
-              legend.direction = legend.direction,
-              axis.text.y = element_text(angle = region_label_angle,
-                                         hjust = 1,
-                                         size = label_text_size,
-                                         color = "black"),
-              axis.text.x = element_text(color = "black"),
-              strip.text.y = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
-              strip.placement = "outside",
-              strip.background = element_rect(color = "black",
-                                              fill =  strip_background_color),
-              strip.switch.pad.grid = unit(0.1, "in"))
+        scale_fill_manual(values=c(colors))
+      if (length(strip_background_colors) > 1) {
+        p <- p +  ggh4x::facet_grid2(parent~., scales = "free", space = "free_y", switch = "y",
+                                     strip = ggh4x::strip_themed(background_y = background_x)) + plot_theme
+      } else {
+        p <- p + theme(strip.background = element_rect(color = "black",
+                                                       fill =  strip_background_color),) + plot_theme
+      }
     } else if (isFALSE(flip_axis)) {
       p <- channel_counts %>%
         ggplot(aes(y = mean_normalized_counts, x = name,
@@ -1755,31 +1760,18 @@ plot_normalized_counts <- function(e,
              fill = "Group") +
         scale_y_continuous(expand = c(0,0), limits = limits) +
         scale_fill_manual(values=colors, labels = labels) +
-
-        facet_grid(~parent, scales = "free_x", space = "free_x", switch = "x") +
-        theme_bw() +
-        theme(
-          plot.background = element_blank(),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-          panel.border = element_blank(),
-          axis.line = element_line(color = 'black'),
-          legend.justification = legend.justification,
-          legend.position = legend.position,
-          legend.position.inside = legend.position.inside,
-          legend.direction = legend.direction,
-          axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size, color = "black"),
-          axis.text.y = element_text(color = "black"),
-          strip.text.x = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
-          strip.placement = "outside",
-          strip.background = element_rect(color = "black",
-                                              fill =  strip_background_color),
-          plot.margin = margin(1,1.5,0,1.5, "cm"))
+        if (length(strip_background_colors) > 1) {
+          p <- p +  ggh4x::facet_grid2(parent~., scales = "free", space = "free_y", switch = "y",
+                                       strip = ggh4x::strip_themed(background_y = background_x)) + plot_theme
+        } else {
+          p <- p + theme(strip.background = element_rect(color = "black",
+                                                         fill =  strip_background_color),) + plot_theme
+        }
     }
 
     if(!is.null(facet_background_color)){
       p <- p +
-      theme(panel.background = element_rect(fill = facet_background_color, color = "black"))
+        theme(panel.background = element_rect(fill = facet_background_color, color = "black"))
     }
 
     if (print_plot) {
@@ -1788,22 +1780,19 @@ plot_normalized_counts <- function(e,
     }
 
     if (save_plot) {
-      # create figures directory if not already created
       output_dir <-  file.path(attr(e, "info")$output_path, "figures")
       if(!dir.exists(output_dir)){
         dir.create(output_dir)
       }
-
-      # save in figures
       ggsave(p, filename = paste0(channels[k], "_normalized_counts", image_ext),
              path = file.path(attr(e, 'info')$output_path, "figures"), width = width, height = height, limitsize = FALSE)
-
-
     }
     p_list[[channels[k]]] <- p
   }
   return(p_list)
 }
+
+
 
 #' Plot correlation heatmaps
 #'

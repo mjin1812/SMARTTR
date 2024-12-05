@@ -276,8 +276,8 @@ exclude_redundant_regions <- function(e, ontology = "allen", channels = NULL){
 #' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #' @param channels (str, default = NULL) NULL option processes all channels. `channels = c("cfos", "eyfp")` specifies exact channels.
 #'
-#' @return
-#' @export e experiment object
+#' @return e experiment object
+#' @export
 
 exclude_by_acronym <- function(e, acronyms = "fiber_tracts", ontology = "allen", channels = NULL){
   if (is.null(channels)){
@@ -299,15 +299,14 @@ exclude_by_acronym <- function(e, acronyms = "fiber_tracts", ontology = "allen",
   return(e)
 }
 
-
 #' Excluded user chosen regions by keywords found in long-form name
 #'
 #' @param e experiment object
 #' @param keywords (str) vector of region/structure keywords to match and exclude from the datasets, e.g. c("nerve", "tract")
 #' @param channels (str, default = NULL) NULL option processes all channels. `channels = c("cfos", "eyfp")` specifies exact channels.
 #'
-#' @return
-#' @export e experiment object
+#' @returne e experiment object
+#' @export
 exclude_by_keyword <- function(e, keywords, channels = NULL){
   if (is.null(channels)){
     channels <- names(e$combined_normalized_counts)
@@ -322,8 +321,6 @@ exclude_by_keyword <- function(e, keywords, channels = NULL){
   }
   return(e)
 }
-
-
 
 #_______________ Internal functions _______________
 

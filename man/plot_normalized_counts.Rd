@@ -30,7 +30,9 @@ plot_normalized_counts(
   legend.direction = "vertical",
   limits = c(0, 1e+05),
   facet_background_color = NULL,
-  strip_background_color = "lightblue",
+  strip_background_colors = c(Isocortex = "#5571a9", OLF = "#64bdc4", HPF = "#d2875b",
+    CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960", MB = "#d796c8",
+    HB = "#646464"),
   image_ext = ".pdf"
 )
 }
@@ -85,7 +87,8 @@ the experiment object output folder.}
 
 \item{facet_background_color}{(default = NULL) Set to a hexadecimal string, e.g."#FFFFFF", when you want to shade the background of the graph. Defaults to no background when NULL.}
 
-\item{strip_background_color}{(default = "lightblue") Color of background srip delineating major anatomical parent regions. Set to color name or to hexadecimal code.}
+\item{strip_background_colors}{(default = "lightblue) Enter custom codes to control the strip background colors, e.g. c(Isocortex = "#5571a9", OLF = "#64bdc4",
+HPF = "#d2875b", CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960",  MB = "#d796c8", HB = "#646464")}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 }

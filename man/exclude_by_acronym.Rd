@@ -21,7 +21,7 @@ exclude_by_acronym(
 \item{channels}{(str, default = NULL) NULL option processes all channels. \code{channels = c("cfos", "eyfp")} specifies exact channels.}
 }
 \value{
-
+e experiment object
 }
 \description{
 Excluded user chosen regions by entering acronyms
