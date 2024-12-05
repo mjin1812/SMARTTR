@@ -171,6 +171,9 @@ enough_mice_per_group <- function(e, by = c("group", "sex"), min_n = 5, remove =
 #' Run this as a quality check after importing an external dataset uising [SMARTR::import_mapped_datasets()]. This goes through
 #' all dataframes for all channels imported and replaces any non-matching acronyms and region names with those as they are exactly coded in SMARTR.
 #'
+#' Note: Processing times scales with the size of your dataset so it
+#' may take a few minutes if your dataset is large...
+#'
 #' @param e experiment object
 #' @param ontology (str, default = "allen") Region ontology to check against. Options = "allen" or "unified"
 #' @return e experiment object
@@ -186,11 +189,11 @@ check_ontology_coding <- function(e, ontology = "allen"){
                 unified = ,
                 Unified = SMARTR::ontology.unified,
                 stop("Invalid ontology option. Please enter `allen` or `unified`"))
-  print("test")
 
   for (channel in channels){
-    print(channel)
-    indices <- stringdist::amatch(e$combined_normalized_counts[[channel]]$name, ont$name, maxDist=Inf)
+    message(paste0("Checking ", channel, " channel..."))
+    df <- e$combined_normalized_counts[[channel]]
+    indices <- stringdist::amatch(df$name, ont$name, maxDist=Inf)
     e$combined_normalized_counts[[channel]]$acronym <- ont$acronym[indices]
     e$combined_normalized_counts[[channel]]$name <- ont$name[indices]
     message(paste0("Finished checking ", channel, " channel."))

@@ -18,6 +18,10 @@ e experiment object
 Run this as a quality check after importing an external dataset uising \code{\link[=import_mapped_datasets]{import_mapped_datasets()}}. This goes through
 all dataframes for all channels imported and replaces any non-matching acronyms and region names with those as they are exactly coded in SMARTR.
 }
+\details{
+Note: Processing times scales with the size of your dataset so it
+may take a few minutes if your dataset is large...
+}
 \examples{
 e <- check_ontology_coding(e, "allen")
 }
