@@ -1800,11 +1800,6 @@ normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
 }
 
 
-
-
-
-
-
 #' @title Simplify the combined cell count table
 #' @description This function is designed to offer flexible simplification of mapped cells counts. This can be applied after running
 #'  [SMARTR::combine_norm_cell_counts()]. However, if mapping is being conducted using the SMARTR package, we recommend simplifying mapped counts earlier, at the level of mouse objects using [SMARTR::normalize_cell_counts()]

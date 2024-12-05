@@ -21,7 +21,6 @@
 #' @param log (bool, TRUE) Save the regions that don't have enough n into a .csv file in the output folder.
 #'
 #' @return
-#' @export
 #'
 #' @examples
 detect_single_slice_regions <- function(m, remove = FALSE, log = TRUE){
@@ -165,6 +164,41 @@ enough_mice_per_group <- function(e, by = c("group", "sex"), min_n = 5, remove =
 
   return(e)
 }
+
+
+#' Checks the acronyms and full length region names to match with internally stored ontology
+#'
+#' Run this as a quality check after importing an external dataset uising [SMARTR::import_mapped_datasets()]. This goes through
+#' all dataframes for all channels imported and replaces any non-matching acronyms and region names with those as they are exactly coded in SMARTR.
+#'
+#' @param e experiment object
+#' @param ontology (str, default = "allen") Region ontology to check against. Options = "allen" or "unified"
+#' @return e experiment object
+#' @export
+#' @examples e <- check_ontology_coding(e, "allen")
+check_ontology_coding <- function(e, ontology = "allen"){
+
+  channels <- names(e$combined_normalized_counts)
+
+  ont <- switch(ontology,
+                allen = ,
+                Allen = SMARTR::ontology,
+                unified = ,
+                Unified = SMARTR::ontology.unified,
+                stop("Invalid ontology option. Please enter `allen` or `unified`"))
+  print("test")
+
+  for (channel in channels){
+    print(channel)
+    indices <- stringdist::amatch(e$combined_normalized_counts[[channel]]$name, ont$name, maxDist=Inf)
+    e$combined_normalized_counts[[channel]]$acronym <- ont$acronym[indices]
+    e$combined_normalized_counts[[channel]]$name <- ont$name[indices]
+    message(paste0("Finished checking ", channel, " channel."))
+  }
+   return(e)
+}
+
+
 
 
 #_______________ Internal functions _______________
