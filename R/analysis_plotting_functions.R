@@ -3499,10 +3499,6 @@ plot_joined_networks <- function(e,
   return(p_list)
 }
 
-
-
-
-
 #' Internal algorithm for maslov-sneppen rewiring
 #' This algorithm is not appropriate if you would like to take weights into account
 #' See Maslov & Sneppen (2002)"Specificity and stability in topology of protein networks"
