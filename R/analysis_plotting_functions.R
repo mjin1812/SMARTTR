@@ -2063,7 +2063,7 @@ volcano_plot <- function(e,
         dir.create(output_dir)
       }
 
-      title <- str_replace(title, "[\\/:*?\"<>|]", "_") %>%  str_replace(., " ", "_")
+      title <- stringr::str_replace(title, "[\\/:*?\"<>|]", "_") %>%  stringr::str_replace(., " ", "_")
       image_file <- file.path(output_dir,
                               paste0("volcano_plot_", title, "_", channels[k], image_ext))
       print(image_file)
