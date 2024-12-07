@@ -18,21 +18,24 @@ plot_normalized_counts(
     "CB"),
   height = 7,
   width = 20,
-  region_label_angle = 50,
-  label_text_size = 8,
   print_plot = TRUE,
   save_plot = TRUE,
   flip_axis = FALSE,
   reverse_colors = FALSE,
-  legend.justification = c(0, 0),
-  legend.position = "inside",
-  legend.position.inside = c(0.05, 0.6),
-  legend.direction = "vertical",
   limits = c(0, 1e+05),
   facet_background_color = NULL,
   strip_background_colors = c(Isocortex = "#5571a9", OLF = "#64bdc4", HPF = "#d2875b",
     CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960", MB = "#d796c8",
     HB = "#646464"),
+  plot_theme = ggplot2::theme(plot.background = element_blank(), panel.grid.major =
+    element_blank(), panel.grid.minor = element_blank(), panel.border = element_blank(),
+    axis.line = element_line(color = "black"), legend.justification = c(0, 0),
+    legend.position = "inside", legend.position.inside = c(0.05, 0.6), legend.direction =
+    "vertical", axis.text.y = element_text(angle = 50, hjust = 1, size = 8, color =
+    "black"), axis.text.x = element_text(color = "black"), strip.text.y =
+    element_text(angle = 0, margin = ggplot2::margin(t = 5, 
+     r = 5, b = 5, l = 5,
+    unit = "pt")), strip.placement = "outside", strip.switch.pad.grid = unit(0.1, "in")),
   image_ext = ".pdf"
 )
 }
@@ -62,10 +65,6 @@ e.g.values = c("female", "AD").}
 
 \item{width}{width of the plot in inches.}
 
-\item{region_label_angle}{(int, default = 50) Angle of the region label.}
-
-\item{label_text_size}{(int, default = 8) Size of the text element for the region labels.}
-
 \item{print_plot}{(bool, default = TRUE) Whether to display the plot (in addition to saving the plot)}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of
@@ -75,20 +74,32 @@ the experiment object output folder.}
 
 \item{reverse_colors}{(bool, default = FALSE) Whether to reverse the color order. This may depend on the order in which you entered the \code{colors} parameter}
 
-\item{legend.justification}{(default = c(0, 0))}
-
-\item{legend.position}{(default = "inside")}
-
-\item{legend.position.inside}{(default = c(0.05, 0.6))}
-
-\item{legend.direction}{(c("vertical", "horizontal"))}
-
 \item{limits}{(c(0,100000)) Range of the normalized cell counts.}
 
 \item{facet_background_color}{(default = NULL) Set to a hexadecimal string, e.g."#FFFFFF", when you want to shade the background of the graph. Defaults to no background when NULL.}
 
 \item{strip_background_colors}{(default = "lightblue) Enter custom codes to control the strip background colors, e.g. c(Isocortex = "#5571a9", OLF = "#64bdc4",
 HPF = "#d2875b", CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960",  MB = "#d796c8", HB = "#646464")}
+
+\item{plot_theme}{(ggplot2 theme object) This allows for fine tuning the aesthetics of the figure. Default parameters shown:
+ggplot2::theme(plot.background = element_blank(),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+panel.border = element_blank(),
+axis.line = element_line(color = 'black'),
+legend.justification = c(0, 0),
+legend.position = "inside",
+legend.position.inside = c(0.05, 0.6),
+legend.direction = "vertical",
+axis.text.y = element_text(angle = 50,
+hjust = 1,
+size = 8,
+color = "black"),
+axis.text.x = element_text(color = "black"),
+strip.text.y = element_text(angle = 0,
+margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
+strip.placement = "outside",
+strip.switch.pad.grid = unit(0.1, "in"))}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 }

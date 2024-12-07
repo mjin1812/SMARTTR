@@ -1563,22 +1563,35 @@ plot_cell_counts <- function(e,
 #' @param anatomical.order (default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order
 #' @param height height of the plot in inches.
 #' @param width width of the plot in inches.
-#' @param region_label_angle (int, default = 50) Angle of the region label.
-#' @param label_text_size  (int, default = 8) Size of the text element for the region labels.
 #' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of
 #'  the experiment object output folder.
 #' @param flip_axis plot cell counts on x-axis rather than y-axis.
 #' @param reverse_colors (bool, default = FALSE) Whether to reverse the color order. This may depend on the order in which you entered the `colors` parameter
-#' @param legend.position (default = "inside")
-#' @param legend.justification (default = c(0, 0))
-#' @param legend.position.inside (default = c(0.05, 0.6))
-#' @param legend.direction (c("vertical", "horizontal"))
 #' @param limits (c(0,100000)) Range of the normalized cell counts.
 #' @param facet_background_color (default = NULL) Set to a hexadecimal string, e.g."#FFFFFF", when you want to shade the background of the graph. Defaults to no background when NULL.
 #' @param image_ext (default = ".png") image extension to the plot as.
 #' @param strip_background_colors (default = "lightblue) Enter custom codes to control the strip background colors, e.g. c(Isocortex = "#5571a9", OLF = "#64bdc4",
 #' HPF = "#d2875b", CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960",  MB = "#d796c8", HB = "#646464")
+#' @param plot_theme (ggplot2 theme object) This allows for fine tuning the aesthetics of the figure. Default parameters shown:
+#' ggplot2::theme(plot.background = element_blank(),
+#'              panel.grid.major = element_blank(),
+#'               panel.grid.minor = element_blank(),
+#'               panel.border = element_blank(),
+#'               axis.line = element_line(color = 'black'),
+#'               legend.justification = c(0, 0),
+#'               legend.position = "inside",
+#'               legend.position.inside = c(0.05, 0.6),
+#'               legend.direction = "vertical",
+#'               axis.text.y = element_text(angle = 50,
+#'                                          hjust = 1,
+#'                                          size = 8,
+#'                                          color = "black"),
+#'               axis.text.x = element_text(color = "black"),
+#'               strip.text.y = element_text(angle = 0,
+#'                                           margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
+#'               strip.placement = "outside",
+#'               strip.switch.pad.grid = unit(0.1, "in"))
 #'
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
@@ -1601,22 +1614,34 @@ plot_normalized_counts <- function(e,
                                                          "TH", "HY", "MB", "HB", "CB"),
                                     height = 7,
                                     width = 20,
-                                    region_label_angle = 50,
-                                    label_text_size = 8,
                                     print_plot = TRUE,
                                     save_plot = TRUE,
                                     flip_axis = FALSE,
                                     reverse_colors = FALSE,
-                                    legend.justification = c(0, 0),
-                                    legend.position = "inside",
-                                    legend.position.inside = c(0.05, 0.6),
-                                    legend.direction = "vertical",
                                     limits = c(0, 100000),
                                     facet_background_color =  NULL,
                                     strip_background_colors =  c(Isocortex = "#5571a9", OLF = "#64bdc4", HPF = "#d2875b",
                                                                  CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af",
                                                                  HY = "#8e7960",  MB = "#d796c8", HB = "#646464"),
-                                    image_ext = ".pdf"){
+                                     plot_theme = ggplot2::theme(plot.background = element_blank(),
+                                                                 panel.grid.major = element_blank(),
+                                                                 panel.grid.minor = element_blank(),
+                                                                 panel.border = element_blank(),
+                                                                 axis.line = element_line(color = 'black'),
+                                                                 legend.justification = c(0, 0),
+                                                                 legend.position = "inside",
+                                                                 legend.position.inside = c(0.05, 0.6),
+                                                                 legend.direction = "vertical",
+                                                                 axis.text.y = element_text(angle = 50,
+                                                                                            hjust = 1,
+                                                                                            size = 8,
+                                                                                            color = "black"),
+                                                                 axis.text.x = element_text(color = "black"),
+                                                                 strip.text.y = element_text(angle = 0,
+                                                                                             margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
+                                                                 strip.placement = "outside",
+                                                                 strip.switch.pad.grid = unit(0.1, "in")),
+                                   image_ext = ".pdf"){
   # check os and set graphics window
   if (get_os() != "osx") {
     quartz <- X11
@@ -1637,15 +1662,12 @@ plot_normalized_counts <- function(e,
       background_x[[c]] <- element_rect(fill = strip_background_colors[[c]], color = "black")
     }
   }
-
   names(p_list) <- channels
   for (k in 1:length(channels)) {
-
     channel <- channels[[k]]
     channel_counts <- NULL
     for (g in 1:length(values)){
       if (is.null(channel_counts)){
-        # filter by parameters
         channel_counts <-  e$combined_normalized_counts[[channel]] %>% dplyr::ungroup() %>%
           filter_df_by_char_params(by, values[[g]]) %>% dplyr::distinct() %>%
           dplyr::select(dplyr::all_of(c(by, "mouse_ID", "name", "acronym", "normalized.count.by.volume"))) %>%
@@ -1662,7 +1684,6 @@ plot_normalized_counts <- function(e,
         channel_counts <- dplyr::bind_rows(channel_counts, to_bind)
       }
     }
-
     if (tolower(ontology) == "allen") {
       regions.ordered <- anatomical.order %>%
         purrr::map(SMARTR::get.sub.structure) %>%
@@ -1672,10 +1693,8 @@ plot_normalized_counts <- function(e,
         purrr::map(SMARTR::get.sub.structure.custom, ontology = ontology) %>%
         unlist()
     }
-
     common.regions.ordered <- channel_counts$name[unique(match(regions.ordered, channel_counts$acronym))]
     channel_counts$name <- factor(channel_counts$name, levels = common.regions.ordered)
-
     if (tolower(ontology) == "allen") {
       channel_counts <- channel_counts %>%
         mutate(parent = get.sup.structure(acronym, matching.string = anatomical.order)) %>%
@@ -1703,24 +1722,6 @@ plot_normalized_counts <- function(e,
       channel_counts$unique_groups <- factor(channel_counts$unique_groups, levels = labels)
     }
 
-    plot_theme <- theme(plot.background = element_blank(),
-                         panel.grid.major = element_blank(),
-                         panel.grid.minor = element_blank(),
-                         panel.border = element_blank(),
-                         axis.line = element_line(color = 'black'),
-                         legend.justification = legend.justification,
-                         legend.position = legend.position,
-                         legend.position.inside = legend.position.inside,
-                         legend.direction = legend.direction,
-                         axis.text.y = element_text(angle = region_label_angle,
-                                                    hjust = 1,
-                                                    size = label_text_size,
-                                                    color = "black"),
-                         axis.text.x = element_text(color = "black"),
-                         strip.text.y = element_text(angle = 0, margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
-                         strip.placement = "outside",
-                         strip.switch.pad.grid = unit(0.1, "in"))
-
     if (flip_axis) {
       p <- channel_counts %>%
         ggplot(aes(x = mean_normalized_counts, y = name,
@@ -1742,7 +1743,7 @@ plot_normalized_counts <- function(e,
                                      strip = ggh4x::strip_themed(background_y = background_x)) + plot_theme
       } else {
         p <- p + theme(strip.background = element_rect(color = "black",
-                                                       fill =  strip_background_color),) + plot_theme
+                                                       fill =  strip_background_color)) + plot_theme
       }
     } else if (isFALSE(flip_axis)) {
       p <- channel_counts %>%
@@ -1765,15 +1766,13 @@ plot_normalized_counts <- function(e,
                                        strip = ggh4x::strip_themed(background_y = background_x)) + plot_theme
         } else {
           p <- p + theme(strip.background = element_rect(color = "black",
-                                                         fill =  strip_background_color),) + plot_theme
+                                                         fill =  strip_background_color)) + plot_theme
         }
     }
-
     if(!is.null(facet_background_color)){
       p <- p +
         theme(panel.background = element_rect(fill = facet_background_color, color = "black"))
     }
-
     if (print_plot) {
       quartz()
       print(p)
