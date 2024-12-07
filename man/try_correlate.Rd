@@ -9,9 +9,6 @@ try_correlate(df_channel, type = "pearson")
 \arguments{
 \item{df_channel}{}
 }
-\value{
-
-}
 \description{
 Try to correlate
 }

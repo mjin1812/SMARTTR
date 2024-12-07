@@ -50,8 +50,6 @@ map_cells_to_atlas(x, ...)
 \item{replace}{(bool, default = FALSE). Replace current forward warped data, both raw and cleaned.}
 }
 \value{
-
-
 m mouse object
 }
 \description{

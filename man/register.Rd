@@ -35,8 +35,6 @@ register(x, ...)
 \item{replace}{(bool, default = FALSE) Replace a registration already contained in a mouse object by resetting to NULL value before registration improvement loop.}
 }
 \value{
-
-
 s slice object
 
 m  mouse object

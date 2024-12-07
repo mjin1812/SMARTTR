@@ -46,8 +46,6 @@ Inner list contains vectors of parameter ranges for that channel.}
 \item{replace}{(bool, default = FALSE) replace existing filters.}
 }
 \value{
-
-
 s slice object. Vector of indices of cells to remove are stored as the channel filters in the slice object.
 
 m mouse object.  Vector of indices of cells to remove are stored as the channel filters in the slice object within the mouse.

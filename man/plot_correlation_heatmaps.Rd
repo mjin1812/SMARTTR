@@ -13,8 +13,8 @@ plot_correlation_heatmaps(
   sig_nudge_y = -0.7,
   sig_size = 7,
   ontology = "allen",
-  anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB",
-    "HB", "CB"),
+  anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB", "HB",
+    "CB"),
   print_plot = TRUE,
   save_plot = TRUE,
   image_ext = ".png",
@@ -27,7 +27,8 @@ plot_correlation_heatmaps(
     legend.text = element_text(size = 22), legend.key.height = unit(100, "points"),
     legend.title = element_text(size = 22), panel.spacing = unit(0.2, "lines"),
     strip.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, size = 10),
-    strip.text.y = element_text(angle = 270,      hjust = 0.5, vjust = 0.5, size = 10),
+    strip.text.y = element_text(angle = 270, 
+     hjust = 0.5, vjust = 0.5, size = 10),
     strip.placement = "outside", strip.background = element_rect(color = "black", fill =
     "lightblue"))
 )

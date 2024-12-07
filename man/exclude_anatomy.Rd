@@ -79,8 +79,6 @@ regions can be further}
 \item{hemisphere}{(str) 'left', 'right' or NULL (both)}
 }
 \value{
-
-
 m mouse object
 }
 \description{

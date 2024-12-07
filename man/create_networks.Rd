@@ -12,8 +12,8 @@ create_networks(
   alpha = 0.05,
   pearson_thresh = 0.8,
   ontology = "allen",
-  anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB",
-    "HB", "CB"),
+  anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB", "HB",
+    "CB"),
   filter_isolates = FALSE
 )
 }

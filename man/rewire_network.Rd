@@ -45,9 +45,3 @@ Summary table of rewired network properties of all nodes showing the average of 
 Note that this essentially erases edge metrics and treats networks like binary graphs. Edge weights are not used in calculating
 network topology metrics.
 }
-\examples{
-
-
-
-
-}

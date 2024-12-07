@@ -17,6 +17,3 @@ common_reg A list of the rois (or any of its subregions) that intersected with t
 \description{
 Get  a list of intersecting regions to a list of common regions
 }
-\examples{
-
-}

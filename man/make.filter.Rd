@@ -18,9 +18,6 @@ make.filter(
   ranges = list(c(200, 12000), c(3, 50), c(0, 600), c(0, 2000), c(0, 5), c(20, Inf))
 )
 }
-\value{
-
-}
 \description{
 #' Modification of Marcos' combine regions function
 #'

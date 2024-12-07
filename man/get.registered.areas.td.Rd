@@ -6,9 +6,6 @@
 \usage{
 get.registered.areas.td(regions, registration, conversion.factor = 1)
 }
-\value{
-
-}
 \description{
 Get top down registered areas
 }

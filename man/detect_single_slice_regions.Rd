@@ -11,9 +11,6 @@ detect_single_slice_regions(m, remove = FALSE, log = TRUE)
 
 \item{log}{(bool, TRUE) Save the regions that don't have enough n into a .csv file in the output folder.}
 }
-\value{
-
-}
 \description{
 Quality check function to make sure that the regions included for analysis show up
 in more than 1 slice object, otherwise the user can remove exceptions from the mouse object.

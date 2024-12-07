@@ -46,8 +46,6 @@ make_segmentation_object(x, ...)
 \item{replace}{(bool, default = FALSE) replace existing raw segmentation data}
 }
 \value{
-
-
 s slice object
 }
 \description{

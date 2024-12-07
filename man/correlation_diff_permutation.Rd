@@ -29,7 +29,7 @@ correlation_diff_permutation(
 \item{n_shuffle}{(int, default = 1000) The number of permutation shuffles.}
 
 \item{method}{(str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute.
-Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements, using midranks for ties. See also \code{\link[hmisc:rcorr]{hmisc::rcorr()}}}
+Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements, using midranks for ties. See also \code{\link[Hmisc:rcorr]{Hmisc::rcorr()}}}
 
 \item{seed}{(int, default = 5) Random seed for future replication.}
 

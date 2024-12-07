@@ -15,8 +15,8 @@ create_joined_networks(
   alpha2 = NULL,
   pearson_thresh2 = NULL,
   proportional_thresh2 = NULL,
-  anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB",
-    "HB", "CB"),
+  anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB", "HB",
+    "CB"),
   export_overlapping_edges = TRUE
 )
 }

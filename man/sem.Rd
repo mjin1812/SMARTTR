@@ -9,9 +9,6 @@ sem(x)
 \arguments{
 \item{x}{(vec)}
 }
-\value{
-
-}
 \description{
 Standard error function
 }

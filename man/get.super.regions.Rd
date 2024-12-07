@@ -6,8 +6,8 @@
 \usage{
 get.super.regions(
   acronym,
-  anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB",
-    "HB", "CB"),
+  anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB", "HB",
+    "CB"),
   ontology = "allen"
 )
 }
@@ -17,9 +17,6 @@ get.super.regions(
 \item{anatomical.order}{(default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order}
 
 \item{ontology}{(str, default = "allen") Region ontology to use. options = "allen" or "unified"}
-}
-\value{
-
 }
 \description{
 Updated function to return character vector of the super region acronyms after inputting a character vector of acronyms

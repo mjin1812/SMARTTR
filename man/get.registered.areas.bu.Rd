@@ -9,9 +9,6 @@ get.registered.areas.bu(regions, registration, conversion.factor = 1)
 \arguments{
 \item{conversion.factor}{}
 }
-\value{
-
-}
 \description{
 Get the registered areas
 }

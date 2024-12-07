@@ -50,8 +50,6 @@ import_segmentation_custom(x, ...)
 \item{hemisphere}{(str)'left', 'right' or NULL}
 }
 \value{
-
-
 s slice object
 
 m mouse object

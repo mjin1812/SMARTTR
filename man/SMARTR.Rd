@@ -2,6 +2,7 @@
 % Please edit documentation in R/SMARTR.R
 \docType{package}
 \name{SMARTR}
+\alias{SMARTR-package}
 \alias{SMARTR}
 \title{SMARTR: A mapping, analysis, and visualization package for wholebrain dual-ensemble coronal datasets.}
 \description{
@@ -46,3 +47,13 @@ It will also contain “metadata” about your experimental personnel and analys
 }
 }
 
+\author{
+\strong{Maintainer}: Michelle Jin \email{mj2947@cumc.columbia.edu} (\href{https://orcid.org/0000-0002-8696-1958}{ORCID})
+
+Other contributors:
+\itemize{
+  \item Simon Ogundare \email{simonogundare2020@gmail.com} (\href{https://orcid.org/0000-0002-6243-2779}{ORCID}) [contributor]
+  \item Marcos Lanio \email{ml3696@cumc.columbia.edu} (\href{https://orcid.org/0000-0003-3000-1592}{ORCID}) [contributor]
+}
+
+}

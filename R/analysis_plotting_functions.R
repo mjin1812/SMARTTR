@@ -137,7 +137,7 @@ get_percent_colabel <-function(e, by, colabel_channel = "colabel",
 #' @param alpha (num, default = 0.05) The alpha level for significance applied AFTER p-adjustment.
 #' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #' @param method (str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute. Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements,
-#' using midranks for ties. See also [hmisc::rcorr()]
+#' using midranks for ties. See also [Hmisc::rcorr()]
 #' @return e experiment object. The experiment object now has a named `correlation_list` object stored in it.
 #' The name of the correlation object is the concatenation of the variable values separated by a "_".
 #' This name allows for unambiguous identification of different analysis subgroups in the future.
@@ -233,7 +233,7 @@ get_correlations <- function(e, by, values,
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
 #' @param n_shuffle (int, default = 1000) The number of permutation shuffles.
 #' @param method (str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute.
-#' Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements, using midranks for ties. See also [hmisc::rcorr()]
+#' Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements, using midranks for ties. See also [Hmisc::rcorr()]
 #' @param seed (int, default = 5) Random seed for future replication.
 #' @param p_adjust_method (bool or str, default = "BH") Benjamini-Hochberg method is recommended.
 #'  Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE or "none"
@@ -3539,7 +3539,7 @@ maslov_sneppen_rewire <- function(network, n_rewires = 10000){
 #' @param n_shuffle
 #' @param seed random seed for replication
 #' @param method (str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute.
-#' Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements, using midranks for ties. See also [hmisc::rcorr()]
+#' Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements, using midranks for ties. See also [Hmisc::rcorr()]
 #' @param ...
 #' @return
 #'
