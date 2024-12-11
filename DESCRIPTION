@@ -55,7 +55,7 @@ Imports:
     readr (>= 1.4.0),
     readxl (>= 1.3.1),
     rmarkdown (>= 2.8.0),
-    grImport (> = 0.9.3)
+    grImport (>= 0.9.3)
 Suggests:
     SMART (>= 0.1.0),
     wholebrain (>= 0.1.1),
