@@ -1743,7 +1743,7 @@ plot_normalized_counts <- function(e,
                                      strip = ggh4x::strip_themed(background_y = background_x)) + plot_theme
       } else {
         p <- p + theme(strip.background = element_rect(color = "black",
-                                                       fill =  strip_background_color)) + plot_theme
+                                                       fill =  strip_background_colors)) + plot_theme
       }
     } else if (isFALSE(flip_axis)) {
       p <- channel_counts %>%
@@ -1766,7 +1766,7 @@ plot_normalized_counts <- function(e,
                                        strip = ggh4x::strip_themed(background_y = background_x)) + plot_theme
         } else {
           p <- p + theme(strip.background = element_rect(color = "black",
-                                                         fill =  strip_background_color)) + plot_theme
+                                                         fill =  strip_background_colors)) + plot_theme
         }
     }
     if(!is.null(facet_background_color)){
