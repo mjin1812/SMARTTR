@@ -128,17 +128,17 @@ For Macs, the instructions can be found <a href="https://osf.io/k963s" class="ex
 Windows setup, as this package has been used mostly in Windows.</p>
 <p>If wholebrain is not installed, only the analysis and visualization
 functions may work.</p>
-<div class="section level4">
-<h4 id="install-rtools">1.2.1 Install Rtools<a class="anchor" aria-label="anchor" href="#install-rtools"></a>
-</h4>
+</div>
+<div class="section level3">
+<h3 id="install-rtools">1.3 Install Rtools<a class="anchor" aria-label="anchor" href="#install-rtools"></a>
+</h3>
 <p>If you are using R 3.6+ on a Windows machine, you will need to
 install Rtools version 3.5. Download it <a href="https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe" class="external-link">here</a>
 if you haven’t already installed it during the <code>wholebrain</code>
 installation process.</p>
 </div>
-</div>
 <div class="section level3">
-<h3 id="install-smartr-on-windows">1.3 Install <code>SMARTR</code> on Windows<a class="anchor" aria-label="anchor" href="#install-smartr-on-windows"></a>
+<h3 id="install-smartr">1.4 Install <code>SMARTR</code><a class="anchor" aria-label="anchor" href="#install-smartr"></a>
 </h3>
 <p>To to download the package from github, we need to use the
 <code><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github()</a></code> function from the <code>remotes</code>
@@ -166,11 +166,27 @@ package ‘C:/Users/[User]/AppData/Local/Temp/RtmpGo67wj/file261419dd3f94/SMARTR
 <span></span>
 <span><span class="co"># Try the following command again without the contriburl parameter to install SMARTR. Enter a space to skip any updates.</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"mjin1812/SMARTR@main"</span>, dependencies <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Depends"</span>, <span class="st">"Imports"</span><span class="op">)</span>, INSTALL_opts <span class="op">=</span> <span class="st">"--no-multiarch"</span><span class="op">)</span></span></code></pre></div>
-<p>If you are running into package version issues, edit run the
-following code below to install the relevant packages. Then rerun the
-<code><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">remotes::install_github()</a></code> command from the section
-above.</p>
+<p>We can now load the package!</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Load SMARTR</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SMARTR</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># You can pull up the package description with the code below:</span></span>
+<span><span class="op">?</span><span class="va">SMARTR</span></span></code></pre></div>
+<blockquote>
+<p>Tip: From now on, get in the habit of using the <code>?</code>
+operator to pull up the help page about a package, object, function, or
+piece of data</p>
+</blockquote>
+</div>
+<div class="section level3">
+<h3 id="troubleshooting-dependencies">1.5 Troubleshooting dependencies<a class="anchor" aria-label="anchor" href="#troubleshooting-dependencies"></a>
+</h3>
+<p>If you are running into package dependency or version issues, you can
+edit run the following code below to install the relevant packages
+manually. Then rerun the <code><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">remotes::install_github()</a></code> command
+from the section above.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># You can edit the following list of packages to install any ones which may missing. Enter a space to skip any updates.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Hmisc"</span>, <span class="st">"gtable"</span>,<span class="st">"dplyr"</span>, <span class="st">"readr"</span>, <span class="st">"readxl"</span>, <span class="st">"tidyselect"</span>, <span class="st">"tidyr"</span>, <span class="st">"ggplot2"</span>, <span class="st">"igraph"</span>, <span class="st">"tidygraph"</span>, <span class="st">"ggraph"</span>, <span class="st">"stringdist"</span>, <span class="st">"stringr"</span>, <span class="st">"grImport"</span><span class="op">)</span>, contriburl <span class="op">=</span> <span class="st">"https://cran-archive.r-project.org/bin/windows/contrib/3.6/"</span><span class="op">)</span></span>
 <span></span>
@@ -191,20 +207,6 @@ above.</p>
 <span></span>
 <span><span class="co">## Optional: uncomment below to install ggpattern package (can be useful package for certain plotting options) </span></span>
 <span><span class="co"># remotes::install_github("coolbutuseless/ggpattern")</span></span></code></pre></div>
-<p>We can now load the package!</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Load SMARTR</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SMARTR</span><span class="op">)</span></span></code></pre></div>
-<p>You can pull up the package description with the code below:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="op">?</span><span class="va">SMARTR</span></span>
-<span><span class="co">#&gt; No documentation for 'SMARTR' in specified packages and libraries:</span></span>
-<span><span class="co">#&gt; you could try '??SMARTR'</span></span></code></pre></div>
-<blockquote>
-<p>Tip: From now on, get in the habit of using the <code>?</code>
-operator to pull up the help page about a package, object, function, or
-piece of data</p>
-</blockquote>
 </div>
 </div>
 <div class="section level2">
@@ -250,7 +252,7 @@ attributes.</p>
 <p>Run the code below to used the <code>?</code> operator to pull up the
 documentation for a <code>slice</code> object. This will pull up a help
 page description of all the <code>slice</code> object attributes.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">?</span><span class="fu">SMARTR</span><span class="fu">::</span><span class="va"><a href="../reference/slice.html">slice</a></span></span></code></pre></div>
 <blockquote>
 <p>Tip: Usage of the <code>::</code> or double colons here means that R
