@@ -41,7 +41,7 @@
 #'    + Removing cells from a contralateral hemisphere per slice if the registrations are divided by right and left hemispheres.
 #' 8)  Obtaining cell counts normalized by region volume (per mm^2^) and region areas (per mm^2^).
 #' @md
-#' @docType package
+#' @docType _PACKAGE
 #' @name SMARTR
 NULL
 

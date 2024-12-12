@@ -52,6 +52,9 @@
     <loc>/reference/attr2match.html</loc>
   </url>
   <url>
+    <loc>/reference/check_ontology_coding.html</loc>
+  </url>
+  <url>
     <loc>/reference/check_redundant_parents.html</loc>
   </url>
   <url>
@@ -76,6 +79,15 @@
     <loc>/reference/exclude_anatomy.html</loc>
   </url>
   <url>
+    <loc>/reference/exclude_by_acronym.html</loc>
+  </url>
+  <url>
+    <loc>/reference/exclude_by_keyword.html</loc>
+  </url>
+  <url>
+    <loc>/reference/exclude_redundant_regions.html</loc>
+  </url>
+  <url>
     <loc>/reference/experiment.html</loc>
   </url>
   <url>
@@ -83,6 +95,9 @@
   </url>
   <url>
     <loc>/reference/filter.html</loc>
+  </url>
+  <url>
+    <loc>/reference/filter_regions.html</loc>
   </url>
   <url>
     <loc>/reference/find_all_subregions.html</loc>
@@ -149,6 +164,9 @@
   </url>
   <url>
     <loc>/reference/id.from.acronym.custom.html</loc>
+  </url>
+  <url>
+    <loc>/reference/import_mapped_datasets.html</loc>
   </url>
   <url>
     <loc>/reference/import_segmentation_custom.html</loc>
@@ -260,6 +278,9 @@
   </url>
   <url>
     <loc>/reference/print.slice.html</loc>
+  </url>
+  <url>
+    <loc>/reference/read_check_file.html</loc>
   </url>
   <url>
     <loc>/reference/register.html</loc>

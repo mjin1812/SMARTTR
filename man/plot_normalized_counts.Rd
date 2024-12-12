@@ -24,9 +24,7 @@ plot_normalized_counts(
   reverse_colors = FALSE,
   limits = c(0, 1e+05),
   facet_background_color = NULL,
-  strip_background_colors = c(Isocortex = "#5571a9", OLF = "#64bdc4", HPF = "#d2875b",
-    CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960", MB = "#d796c8",
-    HB = "#646464"),
+  strip_background_colors = "lightblue",
   plot_theme = ggplot2::theme(plot.background = element_blank(), panel.grid.major =
     element_blank(), panel.grid.minor = element_blank(), panel.border = element_blank(),
     axis.line = element_line(color = "black"), legend.justification = c(0, 0),
@@ -79,7 +77,7 @@ the experiment object output folder.}
 \item{facet_background_color}{(default = NULL) Set to a hexadecimal string, e.g."#FFFFFF", when you want to shade the background of the graph. Defaults to no background when NULL.}
 
 \item{strip_background_colors}{(default = "lightblue) Enter custom codes to control the strip background colors, e.g. c(Isocortex = "#5571a9", OLF = "#64bdc4",
-HPF = "#d2875b", CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960",  MB = "#d796c8", HB = "#646464")}
+HPF = "#d2875b", CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960",  MB = "#d796c8", HB = "#646464"). If more than one color is used, you must install the package ggh4x.}
 
 \item{plot_theme}{(ggplot2 theme object) This allows for fine tuning the aesthetics of the figure. Default parameters shown:
 ggplot2::theme(plot.background = element_blank(),

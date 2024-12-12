@@ -63,29 +63,32 @@
 <span>  <span class="va">e</span>,</span>
 <span>  channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cfos"</span>, <span class="st">"eyfp"</span>, <span class="st">"colabel"</span><span class="op">)</span>,</span>
 <span>  by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span>, <span class="st">"group"</span><span class="op">)</span>,</span>
-<span>  values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"female"</span>, <span class="st">"non"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"female"</span>, <span class="st">"agg"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"female"</span>, <span class="st">"control"</span><span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"male"</span>, <span class="st">"agg"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"male"</span>, <span class="st">"control"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"female"</span>, <span class="st">"non"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"female"</span>, <span class="st">"agg"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"female"</span>, <span class="st">"control"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"male"</span>,</span>
+<span>    <span class="st">"agg"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"male"</span>, <span class="st">"control"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"lightblue"</span>, <span class="st">"black"</span>, <span class="st">"red"</span>, <span class="st">"green"</span><span class="op">)</span>,</span>
 <span>  ontology <span class="op">=</span> <span class="st">"allen"</span>,</span>
 <span>  title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  unit_label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/bquote.html" class="external-link">bquote</a></span><span class="op">(</span><span class="fu">`Cell counts `</span><span class="op">(</span><span class="st">"cells/mm"</span><span class="op">^</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  anatomical.order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Isocortex"</span>, <span class="st">"OLF"</span>, <span class="st">"HPF"</span>, <span class="st">"CTXsp"</span>, <span class="st">"CNU"</span>, <span class="st">"TH"</span>, <span class="st">"HY"</span>, <span class="st">"MB"</span>,</span>
-<span>    <span class="st">"HB"</span>, <span class="st">"CB"</span><span class="op">)</span>,</span>
+<span>  anatomical.order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Isocortex"</span>, <span class="st">"OLF"</span>, <span class="st">"HPF"</span>, <span class="st">"CTXsp"</span>, <span class="st">"CNU"</span>, <span class="st">"TH"</span>, <span class="st">"HY"</span>, <span class="st">"MB"</span>, <span class="st">"HB"</span>,</span>
+<span>    <span class="st">"CB"</span><span class="op">)</span>,</span>
 <span>  height <span class="op">=</span> <span class="fl">7</span>,</span>
 <span>  width <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>  region_label_angle <span class="op">=</span> <span class="fl">50</span>,</span>
-<span>  label_text_size <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>  print_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  save_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  flip_axis <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  reverse_colors <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  legend.justification <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,</span>
-<span>  legend.position <span class="op">=</span> <span class="st">"inside"</span>,</span>
-<span>  legend.position.inside <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.6</span><span class="op">)</span>,</span>
-<span>  legend.direction <span class="op">=</span> <span class="st">"vertical"</span>,</span>
 <span>  limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1e+05</span><span class="op">)</span>,</span>
 <span>  facet_background_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  strip_background_color <span class="op">=</span> <span class="st">"lightblue"</span>,</span>
+<span>  strip_background_colors <span class="op">=</span> <span class="st">"lightblue"</span>,</span>
+<span>  plot_theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.background <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>, panel.grid.major <span class="op">=</span></span>
+<span>    <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>, panel.grid.minor <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>, panel.border <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    axis.line <span class="op">=</span> <span class="fu">element_line</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span>, legend.justification <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,</span>
+<span>    legend.position <span class="op">=</span> <span class="st">"inside"</span>, legend.position.inside <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.6</span><span class="op">)</span>, legend.direction <span class="op">=</span></span>
+<span>    <span class="st">"vertical"</span>, axis.text.y <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">50</span>, hjust <span class="op">=</span> <span class="fl">1</span>, size <span class="op">=</span> <span class="fl">8</span>, color <span class="op">=</span></span>
+<span>    <span class="st">"black"</span><span class="op">)</span>, axis.text.x <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span>, strip.text.y <span class="op">=</span></span>
+<span>    <span class="fu">element_text</span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">0</span>, margin <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span>t <span class="op">=</span> <span class="fl">5</span>, </span>
+<span>     r <span class="op">=</span> <span class="fl">5</span>, b <span class="op">=</span> <span class="fl">5</span>, l <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>    unit <span class="op">=</span> <span class="st">"pt"</span><span class="op">)</span><span class="op">)</span>, strip.placement <span class="op">=</span> <span class="st">"outside"</span>, strip.switch.pad.grid <span class="op">=</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">0.1</span>, <span class="st">"in"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  image_ext <span class="op">=</span> <span class="st">".pdf"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -139,14 +142,6 @@ e.g.values = c("female", "AD").</p></dd>
 <dd><p>width of the plot in inches.</p></dd>
 
 
-<dt>region_label_angle</dt>
-<dd><p>(int, default = 50) Angle of the region label.</p></dd>
-
-
-<dt>label_text_size</dt>
-<dd><p>(int, default = 8) Size of the text element for the region labels.</p></dd>
-
-
 <dt>print_plot</dt>
 <dd><p>(bool, default = TRUE) Whether to display the plot (in addition to saving the plot)</p></dd>
 
@@ -164,22 +159,6 @@ the experiment object output folder.</p></dd>
 <dd><p>(bool, default = FALSE) Whether to reverse the color order. This may depend on the order in which you entered the <code>colors</code> parameter</p></dd>
 
 
-<dt>legend.justification</dt>
-<dd><p>(default = c(0, 0))</p></dd>
-
-
-<dt>legend.position</dt>
-<dd><p>(default = "inside")</p></dd>
-
-
-<dt>legend.position.inside</dt>
-<dd><p>(default = c(0.05, 0.6))</p></dd>
-
-
-<dt>legend.direction</dt>
-<dd><p>(c("vertical", "horizontal"))</p></dd>
-
-
 <dt>limits</dt>
 <dd><p>(c(0,100000)) Range of the normalized cell counts.</p></dd>
 
@@ -188,8 +167,31 @@ the experiment object output folder.</p></dd>
 <dd><p>(default = NULL) Set to a hexadecimal string, e.g."#FFFFFF", when you want to shade the background of the graph. Defaults to no background when NULL.</p></dd>
 
 
-<dt>strip_background_color</dt>
-<dd><p>(default = "lightblue") Color of background srip delineating major anatomical parent regions. Set to color name or to hexadecimal code.</p></dd>
+<dt>strip_background_colors</dt>
+<dd><p>(default = "lightblue) Enter custom codes to control the strip background colors, e.g. c(Isocortex = "#5571a9", OLF = "#64bdc4",
+HPF = "#d2875b", CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960",  MB = "#d796c8", HB = "#646464"). If more than one color is used, you must install the package ggh4x.</p></dd>
+
+
+<dt>plot_theme</dt>
+<dd><p>(ggplot2 theme object) This allows for fine tuning the aesthetics of the figure. Default parameters shown:
+ggplot2::theme(plot.background = element_blank(),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+panel.border = element_blank(),
+axis.line = element_line(color = 'black'),
+legend.justification = c(0, 0),
+legend.position = "inside",
+legend.position.inside = c(0.05, 0.6),
+legend.direction = "vertical",
+axis.text.y = element_text(angle = 50,
+hjust = 1,
+size = 8,
+color = "black"),
+axis.text.x = element_text(color = "black"),
+strip.text.y = element_text(angle = 0,
+margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
+strip.placement = "outside",
+strip.switch.pad.grid = unit(0.1, "in"))</p></dd>
 
 
 <dt>image_ext</dt>

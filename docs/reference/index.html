@@ -85,6 +85,11 @@ m &lt;- add_slice(m, s, replace = FALSE)</dd>
         <dd>attr2match</dd>
       </dl><dl><dt>
           
+          <code><a href="check_ontology_coding.html">check_ontology_coding()</a></code> 
+        </dt>
+        <dd>Checks the acronyms and full length region names to match with internally stored ontology</dd>
+      </dl><dl><dt>
+          
           <code><a href="check_redundant_parents.html">check_redundant_parents()</a></code> 
         </dt>
         <dd>Check for redundant parent regions included in a list of acronyms in a plate. For example, if all the the subregions for
@@ -128,6 +133,21 @@ This function also automatically keeps only the common regions that are found ac
         <dd>exclude_anatomy (generic function)</dd>
       </dl><dl><dt>
           
+          <code><a href="exclude_by_acronym.html">exclude_by_acronym()</a></code> 
+        </dt>
+        <dd>Excluded user chosen regions by entering acronyms</dd>
+      </dl><dl><dt>
+          
+          <code><a href="exclude_by_keyword.html">exclude_by_keyword()</a></code> 
+        </dt>
+        <dd>Excluded user chosen regions by keywords found in long-form name</dd>
+      </dl><dl><dt>
+          
+          <code><a href="exclude_redundant_regions.html">exclude_redundant_regions()</a></code> 
+        </dt>
+        <dd>Exclude redundant regions</dd>
+      </dl><dl><dt>
+          
           <code><a href="experiment.html">experiment()</a></code> 
         </dt>
         <dd>Create an experiment object</dd>
@@ -141,6 +161,11 @@ This function also automatically keeps only the common regions that are found ac
           <code><a href="filter.html">filter</a></code> 
         </dt>
         <dd>Premade.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="filter_regions.html">filter_regions()</a></code> 
+        </dt>
+        <dd>Filters to chosen base parent regions and all child subregions</dd>
       </dl><dl><dt>
           
           <code><a href="find_all_subregions.html">find_all_subregions()</a></code> 
@@ -255,6 +280,11 @@ than their cohort mean.</dd>
         <dd>Get region ontology  ID from acronym</dd>
       </dl><dl><dt>
           
+          <code><a href="import_mapped_datasets.html">import_mapped_datasets()</a></code> 
+        </dt>
+        <dd>Import externally mapped datasets into an experiment</dd>
+      </dl><dl><dt>
+          
           <code><a href="import_segmentation_custom.html">import_segmentation_custom()</a></code> 
         </dt>
         <dd>import_segmentation (generic function)</dd>
@@ -282,9 +312,6 @@ make.filter(
   params = c("Vol..unit.", "Moment1", "Moment2", "Moment3", "Moment4", "Sigma"),
   ranges = list(c(200, 12000), c(3, 50), c(0, 600), c(0, 2000), c(0, 5), c(20, Inf))
 )
-
-
-
 
 
 #' Modification of Marcos' combine regions function
@@ -477,6 +504,11 @@ set it to the <code>color_mapping</code> parameter and set the <code>pattern_map
           <code><a href="print.slice.html">print(<i>&lt;slice&gt;</i>)</a></code> 
         </dt>
         <dd>Print attributes of slice object</dd>
+      </dl><dl><dt>
+          
+          <code><a href="read_check_file.html">read_check_file()</a></code> 
+        </dt>
+        <dd>Read a csv or excel file as a tibble. Checks first that the file exists, and that it is a csv or xlsx format.</dd>
       </dl><dl><dt>
           
           <code><a href="register.html">register()</a></code> 

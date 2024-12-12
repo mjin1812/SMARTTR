@@ -11,7 +11,7 @@ vignette: >
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval = TRUE, warnings = FALSE)
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE, warnings = FALSE)
 ```
 
 # 1 Analysis Setup 
@@ -320,25 +320,39 @@ To plot a broad overview of the counts per group across all mapped regions for e
 # Chose the group colors for the eyfp channel to plot as a hexadecimal color code
 eyfp.colors <- c(Context = "#FFFFFF", Shock = "#028A0F")
 
+# ggplot2 theme object to specify specific aesthetic choices
+plt_theme <- ggplot2::theme(plot.background = element_blank(),
+                             panel.grid.major = element_blank(),
+                             panel.grid.minor = element_blank(),
+                             panel.border = element_blank(),
+                             axis.line = element_line(color = 'black'),
+                             legend.justification = c(0, 0),
+                             legend.position = "inside",
+                             legend.position.inside = c(0.7, 0.05),
+                             legend.direction = "vertical",
+                             axis.text.y = element_text(angle = 0,        # Adjust to change the angle of the region labels
+                                                        hjust = 1,
+                                                        size = 7,         # Adjust to change region label size
+                                                        color = "black"),
+                             axis.text.x = element_text(color = "black"),
+                             strip.text.y = element_text(angle = 0,
+                                                         margin = ggplot2::margin(t = 5, r = 5, b = 5, l = 5, unit = "pt")),
+                             strip.placement = "outside",
+                             strip.switch.pad.grid = unit(0.1, "in"))
 
 # Plot a long region bar plot
 plot_normalized_counts(e = lh,
-                       channels = c("eyfp"),
+                       channels = "eyfp",
                        by = "group",
                        values = list("Context", "Shock"),
                        colors = eyfp.colors,
                        title = NULL,
                        height = 11, # Specify the height of the saved plot in inches
                        width = 7.5, # Specify the  width of the save plot in inches
-                       region_label_angle = 0,
-                       label_text_size = 7,
                        print_plot = TRUE,
                        flip_axis = TRUE,
                        save_plot = TRUE,
-                       legend.justification = c(0, 0),
-                       legend.position = "inside",
-                       legend.position.inside = c(0.7, 0.05),
-                       legend.direction = "vertical",
+                       plot_theme = plot_theme,
                        facet_background_color = "#FFFFFF",
                        image_ext = ".png")
 ```
@@ -358,28 +372,21 @@ While the output of the following code chunks are not shown, this function can e
 # Chose the group colors for the cfos channel to plot as a hexadecimal color code
 cfos.colors <- c(Context = "#FFFFFF", Shock = "#ff2a04")
 
-
 # Plot a long region bar plot
 plot_normalized_counts(e = lh,
-                       channels = c("cfos"),
+                       channels = "cfos",
                        by = "group",
                        values = list("Context", "Shock"),
                        colors = cfos.colors,
                        title = NULL,
                        height = 11, # Specify the height of the saved plot in inches
                        width = 7.5, # Specify the  width of the save plot in inches
-                       region_label_angle = 0,
-                       label_text_size = 7,
                        print_plot = TRUE,
                        flip_axis = TRUE,
                        save_plot = TRUE,
-                       limits = c(0, 2e+05),
-                       legend.justification = c(0, 0),
-                       legend.position = "inside",
-                       legend.position.inside = c(0.7, 0.05),
-                       legend.direction = "vertical",
+                       plot_theme = plot_theme,
                        facet_background_color = "#FFFFFF",
-                       image_ext = ".pdf")
+                       image_ext = ".png")
 
 ```
 
@@ -388,27 +395,22 @@ plot_normalized_counts(e = lh,
 # Chose the group colors for the colabel channel to plot as a hexadecimal color code
 colabel.colors <- c(Context = "#FFFFFF", Shock = "#ffc845")
 
+# Plot a long region bar plot
 plot_normalized_counts(e = lh,
-                       channels = c("colabel_over_eyfp"),
+                       channels = "colabel_over_eyfp",
                        by = "group",
                        values = list("Context", "Shock"),
                        colors = colabel.colors,
-                       title = NULL,
-                       height = 11,
-                       width = 7.5,
                        unit_label = "co-labelled/EYFP+",
-                       region_label_angle = 0,
-                       label_text_size = 7,
+                       title = NULL,
+                       height = 11, # Specify the height of the saved plot in inches
+                       width = 7.5, # Specify the  width of the save plot in inches
                        print_plot = TRUE,
                        flip_axis = TRUE,
                        save_plot = TRUE,
-                       limits = c(0, 0.8),
-                       legend.justification = c(0, 0),
-                       legend.position = "inside",
-                       legend.position.inside = c(0.7, 0.85),
-                       legend.direction = "vertical",
+                       plot_theme = plot_theme,
                        facet_background_color = "#e5f3e7",
-                       image_ext = ".pdf")
+                       image_ext = ".png")
 ```
 
 
@@ -576,7 +578,7 @@ parallel_coordinate_plot(lh,
 
 The `plot_networks()` function  automatically plots the output of `create_networks()`. You must specify the name of the network you want to plot. There a some customizable features such as setting the edge color (taken as a hexadecimal string) for positively correlated connections. Additionally, you can further customize aesthetics by adding themes compatible with [ggraph](https://rdrr.io/cran/ggraph/man/theme_graph.html) and `ggplot2` themes. Below we will plot the networks for the eyfp channel in Context and Inescapable Shock groups.
 
-```{r, message=TRUE, warnings=FALSE}
+```{r, eval = FALSE, message=TRUE, warnings=FALSE}
 
 # Custom ggplot and ggraph themes 
 graph_theme <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5, size = 36),
