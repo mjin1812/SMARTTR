@@ -42,33 +42,44 @@ plot_networks(
 
 \item{width}{width of the plot in inches.}
 
-\item{edge_type}{(default = "arc") "arc" or "diagonal".
-Can also be a hexadecimal color code written as a string.}
+\item{edge_type}{(default = "arc") "arc" or "diagonal".}
 
 \item{region_legend}{(default = TRUE) Boolean determining whether or not to show the region legend categorizing subregions into their largest parent region. Only works well if the Allen ontology is used for the dataset.}
 
 \item{degree_scale_limit}{(vec, default = c(1,10)) Scale limit for degree size}
+
+\item{anatomical.colors}{(vector, default = NULL) NULL defaults to viridis. A named vector of hexadecimal codes for the anatomical super regions.
+e.g. anatomical.colors = c(Isocortex = "#5571a9", OLF = "#64bdc4", HPF = "#d2875b", CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960",  MB = "#d796c8", HB = "#646464")}
+
+\item{correlation_edge_width_limit}{(default = c(0.8,1))}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 
 \item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.
 the experiment object output folder.}
 
-\item{graph_theme}{(default = NULL) Add a \code{\link[ggraph:theme]{ggraph::theme()}} to the network graph. If NULL, the default is taken.}
+\item{graph_theme}{(default = NULL) Add a \code{\link[ggraph:theme_graph]{ggraph::theme_graph()}} to the network graph. If NULL, the default is taken.}
 
 \item{label_size}{(default = 5) Default font size for network region labels.}
+
+\item{edge_thickness_range}{(default = c(1,5)) Thickness range of the edges.}
+
+\item{node_size_range}{(default = c(1,8)) Node size range.
+Can also be a hexadecimal color code written as a string.}
 
 \item{label_offset}{(default = 0.15) Distance of label from nodes.}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}
-
-\item{anatomical.color}{(vec, NULL) Custom colors for the super region legend. (e.g., c(Isocortex = "#5571a9", OLF = "#64bdc4", HPF = "#d2875b",
-CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960",  MB = "#d796c8", HB = "#646464")). NULL results in viridis.}
 }
 \value{
 p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 }
 \description{
 Plot the networks stored in an experiment object
+}
+\examples{
+\dontrun{
+p <- plot_networks(e, network_name = "Shock", channels = "cfos")
+}
 }

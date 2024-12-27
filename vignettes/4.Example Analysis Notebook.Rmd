@@ -22,7 +22,7 @@ In this analysis tutorial we will load the learned helplessness dataset as an ex
 
 ```{r, results='hide', message=FALSE}
 library(SMARTR)
-library(tidyverse)
+# library(tidyverse)
 
 # Install rstatix if it is not installed already
 library(rstatix) 
@@ -255,11 +255,16 @@ lh <- correlation_diff_permutation(lh,
                                    alpha = 0.01
                                    )
 ```
-The results of the analysis are stored within the experiment object in list called permutation_p_matrix
+
+The results of the analysis can be exported with the function `export_permutation_results()`, which automatically saves into a folder generated for tables.
 
 ```{r}
-names(lh$permutation_p_matrix)
+export_permutation_results(lh, channels = "eyfp")
 ```
+
+
+
+
 
 ## 2.4 Create region networks with summary stats
 
@@ -321,14 +326,13 @@ To plot a broad overview of the counts per group across all mapped regions for e
 eyfp.colors <- c(Context = "#FFFFFF", Shock = "#028A0F")
 
 # ggplot2 theme object to specify specific aesthetic choices
-plt_theme <- ggplot2::theme(plot.background = element_blank(),
+plot_theme <- ggplot2::theme(plot.background = element_blank(),
                              panel.grid.major = element_blank(),
                              panel.grid.minor = element_blank(),
                              panel.border = element_blank(),
                              axis.line = element_line(color = 'black'),
                              legend.justification = c(0, 0),
                              legend.position = "inside",
-                             legend.position.inside = c(0.7, 0.05),
                              legend.direction = "vertical",
                              axis.text.y = element_text(angle = 0,        # Adjust to change the angle of the region labels
                                                         hjust = 1,

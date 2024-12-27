@@ -11,17 +11,13 @@
 #' so the user can qualitatively evaluate the raw data. Users also have to option of removing these regions automatically
 #' from normalized_counts dataframe.
 #'
-#'
 #' The user should run [normalize_cell_counts()] and [get_cell_table()] functions prior to using this function.
 #' If the user has run [split_hipp_DV()] with the option to merge, this function will account for for the dorsal and
 #' ventral hippocampal counts separately.
-#'
 #' @param m
 #' @param remove (bool, FALSE) Remove any regions in the normalized counts table that
 #' @param log (bool, TRUE) Save the regions that don't have enough n into a .csv file in the output folder.
-#'
 #' @return
-#'
 #' @examples
 detect_single_slice_regions <- function(m, remove = FALSE, log = TRUE){
   # $hipp_DV_normalized_counts
@@ -47,27 +43,17 @@ detect_single_slice_regions <- function(m, remove = FALSE, log = TRUE){
 #' @examples e <- find_outlier_counts(e, by = c("group","sex"), n_sd = 2, remove = FALSE, log = TRUE)
 #'
 find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FALSE, log = TRUE){
-
-  # Get the channels for an experiment
   e_info <- attr(e, "info")
-
-  # correct mismatched attributes typed by users
-  by <- match_m_attr(by)
-
+  by <- match_m_attr(by)   # correct mismatched attributes typed by users
   for (channel in e_info$channels){
-
-    # Get the mean and sd of each group
     stats_df <- e$combined_normalized_counts[[channel]] %>%
       dplyr::ungroup() %>%
       dplyr::group_by(across(all_of(c(by, "acronym")))) %>%
       dplyr::summarise(mean_norm_counts = mean(normalized.count.by.volume),
                        sd_norm_counts = sd(normalized.count.by.volume))
-
     joined_df <- e$combined_normalized_counts[[channel]] %>% dplyr::inner_join(stats_df, c(by, "acronym")) %>%
       dplyr::mutate(outlier = ifelse(normalized.count.by.volume > mean_norm_counts + sd_norm_counts*n_sd | normalized.count.by.volume < mean_norm_counts - sd_norm_counts*n_sd, TRUE, FALSE))
-
-    # Create a list of outliers to print
-    if (isTRUE(log)){
+    if (isTRUE(log)){ # Create a list of outliers to print
       log_df <- joined_df %>% dplyr::filter(outlier) %>%
         dplyr::select(-c(mean_norm_counts,sd_norm_counts)) %>%
         dplyr::arrange(across(all_of(by)), acronym, mouse_ID)
@@ -83,7 +69,6 @@ find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FA
         message("No regions outliers were found within each group for channel ", channel)
       }
     }
-
     if (isTRUE(remove)){
       e$combined_normalized_counts[[channel]] <- joined_df %>% dplyr::filter(!outlier) %>%
         dplyr::select(-c(mean_norm_counts,sd_norm_counts, outlier))

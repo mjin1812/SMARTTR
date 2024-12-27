@@ -32,7 +32,7 @@ plot_degree_regions(
 
 \item{network}{(str, default = "AD") Which network to plot the degree distribution across regions}
 
-\item{title}{(str, default = "")}
+\item{title}{(str, default = "") Plot title.}
 
 \item{height}{(int, default = 15) Height of the plot in inches.}
 
@@ -63,4 +63,10 @@ p_list A list the same length as the number of channels, with each element conta
 }
 \description{
 Bar plot of degree per region in descending magnitude
+}
+\examples{
+\dontrun{
+p <- plot_degree_regions(e, colors = c("#660000", "#FF0000"), channels = "cfos", region_label_angle = 60,
+ylim = c(0, 15), image_ext = ".png")
+}
 }

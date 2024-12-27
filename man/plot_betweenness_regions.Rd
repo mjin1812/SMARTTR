@@ -64,3 +64,9 @@ p_list A list the same length as the number of channels, with each element conta
 \description{
 Bar plot of betweenness per region in descending magnitude
 }
+\examples{
+\dontrun{
+p <- plot_betweenness_regions(e, colors ="#660000", channels = "cfos", region_label_angle = 60,
+ylim = c(0, 50), image_ext = ".png")
+}
+}

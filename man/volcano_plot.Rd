@@ -35,6 +35,8 @@ the experiment object output folder.}
 
 \item{title}{Title of the plot.}
 
+\item{ylim}{(vec, default = c(0,y)) Y-axis range (logarithmic).}
+
 \item{height}{height of the plot in inches.}
 
 \item{width}{width of the plot in inches.}

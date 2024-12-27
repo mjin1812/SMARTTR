@@ -51,14 +51,15 @@ plot_joined_networks(
 
 \item{degree_scale_limit}{(vec, default = c(1,10)) Scale limit for degree size}
 
-\item{correlation_edge_width_limit}{Can also be a hexadecimal color code written as a string.}
+\item{correlation_edge_width_limit}{(default = c(0.8, 1)) Range for the width size of the edges.
+Can also be a hexadecimal color code written as a string.}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 
 \item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.
 the experiment object output folder.}
 
-\item{graph_theme}{(default = NULL) Add a \code{\link[ggraph:theme]{ggraph::theme()}} to the network graph. If NULL, the default is taken.}
+\item{graph_theme}{(default = NULL) Add a \code{\link[ggraph:theme_graph]{ggraph::theme_graph()}} to the network graph. If NULL, the default is taken.}
 
 \item{label_size}{(default = 5) Default font size for network region labels.}
 
@@ -74,4 +75,13 @@ p_list A list the same length as the number of channels, with each element conta
 }
 \description{
 Plot the networks stored in an experiment object
+}
+\examples{
+\dontrun{
+p_list <- plot_joined_networks(anesthesia, correlation_list_names = c("male_agg", "female_non"),
+channels = "cfos", edge_colors = c(male_agg =  "#06537f", female_non = "#C70039"),
+edge_color_labels = c(male_agg = "Male aggressor", female_non = "Female non-aggressor"),
+degree_scale_limit = c(1,45), correlation_edge_width_limit = c(0.8, 1.0),
+height = 30, width = 30, label_size = 13, label_offset = 0.08, image_ext = ".png")
+}
 }

@@ -45,3 +45,9 @@ Summary table of rewired network properties of all nodes showing the average of 
 Note that this essentially erases edge metrics and treats networks like binary graphs. Edge weights are not used in calculating
 network topology metrics.
 }
+\examples{
+\dontrun{
+summary_table <- rewire_network(e, network_name = "network1", channels = "cfos",
+n_rewire =  igraph::gsize(e$networks$network1$cfos)*100, n_networks = 100)
+}
+}

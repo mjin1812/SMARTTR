@@ -1,9 +1,12 @@
 
 ##______________ Package imports ________________
+
 #' @importFrom magrittr %>%
 NULL
 
+
 ###______________Generic functions ________________###
+
 ## Creating generic function for registration
 #' Register (generic function)
 #'
@@ -12,16 +15,21 @@ NULL
 #'
 #' @return
 #' @export
+#'
+
 register <- function(x, ...) {
   UseMethod("register")
 }
 
 ## Creating generic function for segmentation importation
 #' import_segmentation (generic function)
+#'
 #' @param x
 #' @param ...
+#'
 #' @return
 #' @export
+
 import_segmentation_ij <- function(x, ...){
   UseMethod('import_segmentation_ij')
 }
@@ -29,10 +37,13 @@ import_segmentation_ij <- function(x, ...){
 
 ## Creating generic function for custom segmentation importation
 #' import_segmentation (generic function)
+#'
 #' @param x
 #' @param ...
+#'
 #' @return
 #' @export
+
 import_segmentation_custom <- function(x, ...){
   UseMethod('import_segmentation_custom')
 }
@@ -40,20 +51,26 @@ import_segmentation_custom <- function(x, ...){
 
 ## Creating generic function for filtering raw segmentation data
 #' make_segmentation_filter (generic function)
+#'
 #' @param x
 #' @param ...
+#'
 #' @return
 #' @export
+
 make_segmentation_filter <- function(x, ...){
   UseMethod('make_segmentation_filter')
 }
 
 ## Create segmentation object
 #' make_segmentation_object (generic funciton)
+#'
 #' @param x
 #' @param ...
+#'
 #' @return
 #' @export
+
 make_segmentation_object <- function(x, ...){
   UseMethod('make_segmentation_object')
 }
@@ -61,33 +78,45 @@ make_segmentation_object <- function(x, ...){
 
 ## forward_warp segmentation data to atlas space
 #' map_cells_to_atlas (generic function)
+#'
 #' @param x
 #' @param ...
+#'
 #' @return
 #' @export
+
+
 map_cells_to_atlas <- function(x, ...){
   UseMethod('map_cells_to_atlas')
 }
 
 ## excluded designated regions from the mapped cell data table
 #' exclude_anatomy (generic function)
+#'
 #' @param x
 #' @param ...
+#'
 #' @return
 #' @export
+
 exclude_anatomy <- function(x, ...){
   UseMethod('exclude_anatomy')
 }
 
 ## Combine volumes of all slices mapped
 #' get_registered_volumes (generic function)
+#'
 #' @param x
 #' @param ...
+#'
 #' @return
 #' @export
+
 get_registered_volumes <- function(x, ...){
   UseMethod('get_registered_volumes')
 }
+
+
 
 # #_________ TESTING NEW SEGMENTATION METHOD _________
 #
@@ -96,9 +125,10 @@ get_registered_volumes <- function(x, ...){
 #   UseMethod('import_segmentation_weka')
 # }
 
-#______________ Mouse & Slice object methods for generic functions _____________
+#__________________ Mouse & Slice object methods for generic functions __________________________
 ##____ Creating method for registration of slice object____
 #' Register a slice in a slice object
+#'
 #' @rdname register
 #' @param s slice object
 #' @param filter (list)
@@ -106,32 +136,48 @@ get_registered_volumes <- function(x, ...){
 #' @return s slice object
 #' @examples s <- register(s)
 #' @export
+
 register.slice <- function(s,
                            filter = NULL,
                            ...){
+
+  # Detect the OS and set quartz( as graphing function)
   if(get_os() != "osx"){
     quartz <<- X11
   }
+
+  # Get slice information
   info <- attributes(s)
 
+  # If the user did not set a filter and there is one in the object,
+  # set to the filter that is stored
   if (is.null(filter) && !is.null(s$raw_segmentation_obj$filter)){
     filter <- s$raw_segmentation_obj$filter
   }
+
+  # Check if registration already exists
   if (!is.null(s$registration_obj)){
     message(paste0("\nRegistration data for this slice already exists.\nThe existing registration data will be used."))
   }
+
+
+  # Run the interactive registration correction loop
   quartz()
+
   s$registration_obj <-  SMART::registration2(input = info$info$registration_path,
                                               coordinate = info$info$coordinate,
                                               filter = filter,
                                               correspondance = s$registration_obj,
                                               ...)
+
+
   return(s)
 }
 
 ##____ Creating method for registration of mouse object____
 #' Register a slice in a mouse object. If a slice has been previously registered, the default behavior is to continue modifying the
 #' previous registration. Use the `replace` parameter to change this behavior.
+#'
 #' @rdname register
 #' @param m  mouse object
 #' @param slice_ID (str)  ID of slice
@@ -140,6 +186,7 @@ register.slice <- function(s,
 #' @param replace (bool, default = FALSE) Replace a registration already contained in a mouse object by resetting to NULL value before registration improvement loop.
 #' @param ... additional parameters to pass to the SMART::registration2() function, besides 'input', 'coordinate', 'filter' & 'correspondance'
 #' @return m  mouse object
+#'
 #' @examples m <- register(m, slice_ID = '1_10', hemisphere = "left", filter = my_filter)
 #' @export
 # TODO: add popup window option to better visualize the internal structures of the images
@@ -149,23 +196,35 @@ register.mouse <- function(m,
                            filter = NULL,
                            replace = FALSE,
                            ...){
+
+
+  # get or set output path
   output_path <- attr(m, 'info')$output_path
   if (is.null(output_path)) {
     output_path <- "../"
   } else {
     output_path <- file.path(output_path, "registrations")
+
     if (!file.exists(output_path)){
       dir.create(output_path)
     }
   }
+
+  # Omit hemisphere name if there is no hemisphere value in the attributes
   if (is.null(hemisphere)){
     slice_name <- slice_ID
   } else {
     slice_name <- paste0(slice_ID, "_", hemisphere)
   }
+
+
   # check in list of previous stored slice names for a match
   stored_names <- names(m$slices)
+
+
+  # Check if there is a previous slice that matches
   match <- FALSE
+
   for (stored_name in stored_names){
     if (identical(stored_name, slice_name)){
       match <- slice_name
@@ -183,10 +242,12 @@ register.mouse <- function(m,
                                         output.folder = output_path, ...)
         } else{
           message("Improving previous registration for this slice. Set replace = TRUE to start from scratch!...\n")
+
           if (is.null(filter)){
             filter <- SMARTR::segmentation.object$filter
             filter$resize <-  m$slices[[match]]$registration_obj$resize
           }
+
           # Register matched slices with existing data
           m$slices[[match]] <- register(m$slices[[match]],
                                         filter = filter,
@@ -194,6 +255,7 @@ register.mouse <- function(m,
         }
       } else  {
         message("Starting a new registration!")
+
         # Register matched slices with no registration data yet
         m$slices[[match]] <- register(m$slices[[match]],
                                       filter = filter,
@@ -206,6 +268,9 @@ register.mouse <- function(m,
   }
   return(m)
 }
+
+
+
 
 ##____ Creating method for importing segmentation data for a slice object____
 #' Import segmentation data
@@ -261,6 +326,7 @@ import_segmentation_ij.slice <- function(s,
       coloc_path <- paste0( mouse_ID,'_',section,"_ColocOnlyTable.txt")
       M_image_A_path <- paste0("M_", mouse_ID, '_', section,"_Coloc_A_C2.txt")
       M_image_B_path <- paste0("M_", mouse_ID, '_', section,"_Coloc_B_C1.txt")
+
 
       # Best match helper in case of user name edit errors
       coloc_path <- txt_files[stringdist::amatch(coloc_path, txt_files, maxDist=Inf)]

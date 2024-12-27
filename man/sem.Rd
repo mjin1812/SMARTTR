@@ -9,6 +9,12 @@ sem(x)
 \arguments{
 \item{x}{(vec)}
 }
+\value{
+numeric
+}
 \description{
 Standard error function
+}
+\examples{
+sem(c(3,4,5))
 }

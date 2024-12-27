@@ -42,5 +42,7 @@ This analysis will only include common regions that are included in both the col
 cfos or eyfp channels. The colabelled percentage of individual animals will be calculated with the option to export the data.
 }
 \examples{
+\donrun{
 e <- get_percent_colabel(e, c("group", "sex", channel = "eyfp"))
+}
 }

@@ -60,3 +60,10 @@ p_list A list the same length as the number of channels, with each element conta
 \description{
 Plot a stacked bar plot of the degree distributions.
 }
+\examples{
+\dontrun{
+p <- plot_degree_distributions(e, channels = "cfos",
+labels = c(female_AD = "female_AD_label", female_control = "female_control_label"),
+title = "my title", image_ext = ".png")
+}
+}

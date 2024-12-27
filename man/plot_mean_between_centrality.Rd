@@ -16,6 +16,7 @@ plot_mean_between_centrality(
   label_angle = 60,
   rev_x_scale = FALSE,
   ylim = c(0, 50),
+  theme.gg = NULL,
   image_ext = ".png",
   print_plot = TRUE,
   save_plot = TRUE
@@ -41,10 +42,11 @@ Warning: this will be applied to all channels. It's recommended to set the chann
 
 \item{label_angle}{(int, default = 60)}
 
-\item{rev_x_scale}{(bool, default = FALSE) Reveres the scale of the categorical variables
-the experiment object output folder.}
+\item{rev_x_scale}{(bool, default = FALSE) Reveres the scale of the categorical variables}
 
 \item{ylim}{(vec, default = c(0,10)) Axes limits of y-axis}
+
+\item{theme.gg}{(default = NULL) Option to use custom ggplot2 theme if the user wants}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 
@@ -58,4 +60,10 @@ p_list A list the same length as the number of channels, with each element conta
 }
 \description{
 Plot the mean betweenness centrality of the networks in a barplot. Error bars are plotted as SEM.
+}
+\examples{
+\dontrun{
+p <- plot_mean_between_centrality(e, colors_manual = c("#660000", "#FF0000"), channels = "cfos",
+labels = c("AD" = "AD_label", "control" = "control_label"), title = "my title", ylim = c(0, 50), image_ext = ".png")
+}
 }

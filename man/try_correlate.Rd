@@ -7,7 +7,11 @@
 try_correlate(df_channel, type = "pearson")
 }
 \arguments{
-\item{df_channel}{}
+\item{df_channel}{dataframe of normalized counts, with rows as animals and columns as regions}
+}
+\value{
+a list with elements r, the matrix of correlations, n the matrix of number of observations used in analyzing each
+pair of variables, and P, the asymptotic P-values.
 }
 \description{
 Try to correlate

@@ -16,6 +16,7 @@ plot_mean_clust_coeff(
   label_angle = 60,
   rev_x_scale = FALSE,
   ylim = c(0, 0.7),
+  theme.gg = NULL,
   image_ext = ".png",
   print_plot = TRUE,
   save_plot = TRUE
@@ -46,6 +47,8 @@ the experiment object output folder.}
 
 \item{ylim}{(vec, default = c(0,10)) Axes limits of y-axis}
 
+\item{theme.gg}{(default = NULL) Option to use custom ggplot2 theme if the user wants}
+
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 
 \item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.s}
@@ -58,4 +61,10 @@ p_list A list the same length as the number of channels, with each element conta
 }
 \description{
 Plot the mean clustering coefficients of the networks in a barplot. Error bars are plotted as SEM.
+}
+\examples{
+\dontrun{
+p <- plot_mean_clust_coeff(e, colors_manual = c("#660000", "#FF0000"), channels = "cfos",
+labels = c("AD" = "AD_label", "control" = "control_label"), title = "my title", ylim = c(0, 0.7), image_ext = ".png")
+}
 }

@@ -266,13 +266,6 @@ import_mapped_datasets <- function(e, normalized_count_paths, ...){
 
 
 
-
-
-
-
-
-
-
 #' Reset the root path for the folder containing the registration and segmentation data.
 #' @description This function takes a mouse object and also a `input_path` as the root folder for that mouse.
 #' It then adjusts all the paths for the registration and segmentation data read to be relative to the root folder.
@@ -286,23 +279,16 @@ import_mapped_datasets <- function(e, normalized_count_paths, ...){
 reset_mouse_root <- function(m, input_path = NULL, print = TRUE){
 
   if (is.null(input_path)){
-    stop("Please provide a new root folder path using the 'root' parameter...")
+    stop("Please provide a new root folder path using the input_path parameter...")
   }
-
-  # Search all of the files listed that match the pattern MAX
   root_files <- list.files(path = input_path, pattern = "MAX", recursive = TRUE)
 
   if (length(root_files) < 1){
     stop("There were no registration files found in the directory set as the input path. Please recheck where your folder is.")
   }
-
-
   message("OLD mouse output path: ", attr(m, "info")$output_path, "\n",
           "New mouse output path: ", input_path)
-
   attr(m, "info")$output_path <- input_path
-
-
     for (k in 1:length(m$slices)){
     s <- m$slices[[k]]
     s_reg_path <- attr(s, "info")$registration_path
@@ -313,11 +299,8 @@ reset_mouse_root <- function(m, input_path = NULL, print = TRUE){
       message("Changed ", s_reg_path, " to ", attr(m$slices[[k]], "info")$registration_path)
     }
   }
-
   return(m)
 }
-
-
 
 #__________________ Internal Functions __________________________
 
@@ -363,7 +346,6 @@ match_m_attr <- function(attribs){
 
 
 #' Read a csv or excel file as a tibble. Checks first that the file exists, and that it is a csv or xlsx format.
-#'
 #' @param x A file path
 #' @param ... additional parameters to pass to either the [readr::read_csv] function or [readxl::read_excel]
 #' @return tibble dataframe
@@ -969,8 +951,6 @@ get.sub.structure.custom <- function(x, ontology = "unified"){
   }
   return(tmp2)
 }
-
-
 
 
 #' Get super parent region acronyms

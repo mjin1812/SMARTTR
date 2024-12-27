@@ -64,3 +64,9 @@ p_list A list the same length as the number of channels, with each element conta
 Plot the correlation difference between two comparison groups into a parallel coordinate plot. The function
 \code{\link[=correlation_diff_permutation]{correlation_diff_permutation()}} must be run first in order to generate results to plot.
 }
+\examples{
+\dontrun{
+p_list <- parallel_coordinate_plot(e, permutation_comparison = "Context_vs_Shock",
+ channels = "cfos", colors ="#be0000", x_label_group1 = "Context", x_label_group_2 = "Shock")
+}
+}

@@ -45,15 +45,19 @@ plot_cell_counts(
 
 \item{error_bar}{(str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.}
 
+\item{ylim}{(vec, default = c(0,100)) Y-axis range.}
+
+\item{plot_individual}{(bool) whether to plot individual points}
+
 \item{height}{(numeric) height of the plot in inches to save as.}
 
 \item{width}{(numeric) height of the plot in inches to save as.}
 
-\item{save_plot}{(book) Whether to save the plot in the experiment figures folder.}
+\item{print_plot}{(bool) Whether to to print the plot.}
+
+\item{save_plot}{(bool) Whether to save the plot in the experiment figures folder.}
 
 \item{image_ext}{(str, default = ".png") Extension of the output file}
-
-\item{plot_individua}{(bool) whether to plot individual points}
 }
 \value{
 p Plot handle to the figure
