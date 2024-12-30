@@ -49,7 +49,11 @@ make_segmentation_filter(x, ...)
 )
 }
 \arguments{
+\item{x}{a mouse or slice object}
+
 \item{...}{}
+
+\item{s}{slice object}
 
 \item{channels}{(str vector, default = "eyfp") Channels to process. If NULL, defaults to the channels stored in the slice object attributes (not recommended).}
 
@@ -67,6 +71,8 @@ Inner list contains vectors of parameter ranges for that channel.}
 \item{replace}{(bool, default = FALSE) replace existing filters.}
 }
 \value{
+a mouse or slice object
+
 s slice object. Vector of indices of cells to remove are stored as the channel filters in the slice object.
 
 m mouse object.  Vector of indices of cells to remove are stored as the channel filters in the slice object within the mouse.

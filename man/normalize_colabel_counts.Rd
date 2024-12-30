@@ -32,7 +32,9 @@ a designated normalization channel to provide a normalized ratio. Please note th
 This is not designed to work on multiple hemispheres. Please combine cell counts across multiple hemispheres when you run \code{\link[=normalize_cell_counts]{normalize_cell_counts()}}.
 }
 \examples{
+\dontrun{
 e <- normalize_colabel_counts(e, denominator_channel = "eyfp")
+}
 e <- normalize_colabel_counts(e, denominator_channel = "eyfp")
 }
 \seealso{

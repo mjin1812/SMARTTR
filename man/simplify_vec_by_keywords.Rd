@@ -34,3 +34,10 @@ df, dataframe as a tibble with included long name and acronyms that are simplifi
 \description{
 Simplify vector of acronyms by keywords.
 }
+\examples{
+acronyms <- c("LGd", "GU4", "dCA1so" )
+simplify_vec_by_keywords(acronyms)
+
+acronyms <- c("LPBD", "MPBE", "CPre")
+simplify_vec_by_keywords(acronyms, keywords = c("dorsal part", "external part", "Caudoputamen-"), ontology = "unified")
+}

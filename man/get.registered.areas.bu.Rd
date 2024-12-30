@@ -9,7 +9,14 @@ get.registered.areas.bu(regions, registration, conversion.factor = 1)
 get.registered.areas.bu(regions, registration, conversion.factor = 1)
 }
 \arguments{
+\item{regions}{vector of acronyms of regions in the registration}
+
+\item{registration}{wholebrain registration object}
+
 \item{conversion.factor}{}
+}
+\value{
+tibble dataframe with the columns \code{name}, \code{acronym}, \code{right.hemisphere}, and  \code{area}
 }
 \description{
 Get the registered areas

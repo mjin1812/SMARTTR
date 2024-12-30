@@ -7,7 +7,9 @@
 get_common_regions(mouse_count, by)
 }
 \arguments{
-\item{by}{}
+\item{mouse_count}{dataframe of all region counts across all mice}
+
+\item{by}{variables to group by}
 }
 \value{
 unique acronyms that are the intersection across all groups

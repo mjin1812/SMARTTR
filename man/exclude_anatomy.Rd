@@ -83,6 +83,8 @@ exclude_anatomy(x, ...)
 )
 }
 \arguments{
+\item{x}{a mouse or slice object}
+
 \item{...}{}
 
 \item{s}{slice object}
@@ -117,6 +119,8 @@ regions can be further}
 \item{hemisphere}{(str) 'left', 'right' or NULL (both)}
 }
 \value{
+a mouse or slice object
+
 m mouse object
 
 m mouse object

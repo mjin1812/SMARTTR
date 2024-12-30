@@ -33,6 +33,8 @@ register(x, ...)
 )
 }
 \arguments{
+\item{x}{a mouse or slice object}
+
 \item{...}{additional parameters to pass to the SMART::registration2() function, besides 'input', 'coordinate', 'filter' & 'correspondance'}
 
 \item{s}{slice object}
@@ -48,6 +50,8 @@ register(x, ...)
 \item{replace}{(bool, default = FALSE) Replace a registration already contained in a mouse object by resetting to NULL value before registration improvement loop.}
 }
 \value{
+a mouse or slice object
+
 s slice object
 
 m  mouse object

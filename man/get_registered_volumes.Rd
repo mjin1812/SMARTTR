@@ -26,6 +26,8 @@ get_registered_volumes(x, ...)
 )
 }
 \arguments{
+\item{x}{a mouse or slice object}
+
 \item{...}{}
 
 \item{s}{slice object}
@@ -35,6 +37,8 @@ get_registered_volumes(x, ...)
 \item{simplify_keywords}{(str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure}
 }
 \value{
+a mouse or slice object
+
 s slice object with a stored dataframe with columns 'name' (full region name), 'acronym', 'area' (in microns^2^), 'volume' (in microns^3^) 'right.hemisphere'
 
 s slice object with a stored dataframe with columns 'name' (full region name), 'acronym', 'area' (in microns^2^), 'volume' (in microns^3^) 'right.hemisphere'

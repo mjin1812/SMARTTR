@@ -8,6 +8,16 @@ get.registered.areas.td(regions, registration, conversion.factor = 1)
 
 get.registered.areas.td(regions, registration, conversion.factor = 1)
 }
+\arguments{
+\item{regions}{vector of acronyms of regions in the registration}
+
+\item{registration}{wholebrain registration object}
+
+\item{conversion.factor}{pixel-to-micron conversion factor}
+}
+\value{
+tibble dataframe with the columns \code{name}, \code{acronym}, \code{right.hemisphere}, and  \code{area}
+}
 \description{
 Get top down registered areas
 

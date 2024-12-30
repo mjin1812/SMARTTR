@@ -18,6 +18,13 @@ get.super.regions(
 
 \item{ontology}{(str, default = "allen") Region ontology to use. options = "allen" or "unified"}
 }
+\value{
+vector the same length as acronym consisting of the super regions of the acronyms
+}
 \description{
 Updated function to return character vector of the super region acronyms after inputting a character vector of acronyms
+}
+\examples{
+get.super.regions(acronym = c("DG-sg", "ACA5", "CLA", "ACB", "BLA", "PERI" , "PB"))
+get.super.regions(acronym = c("CPi", "MHb", "ZI", "Acb", "BL"), ontology = "unified")
 }

@@ -7,10 +7,10 @@ NULL
 ## Creating generic function for registration
 #' Register (generic function)
 #'
-#' @param x
-#' @param ...
+#' @param x a mouse or slice object
+#' @param ... further arguments passed to or from other methods.
 #'
-#' @return
+#' @return a mouse or slice object
 #' @export
 register <- function(x, ...) {
   UseMethod("register")
@@ -18,31 +18,29 @@ register <- function(x, ...) {
 
 ## Creating generic function for segmentation importation
 #' import_segmentation (generic function)
-#' @param x
-#' @param ...
-#' @return
+#' @param x a mouse or slice object
+#' @param ... further arguments passed to or from other methods.
+#' @return a mouse or slice object
 #' @export
 import_segmentation_ij <- function(x, ...){
   UseMethod('import_segmentation_ij')
 }
 
-
 ## Creating generic function for custom segmentation importation
 #' import_segmentation (generic function)
-#' @param x
-#' @param ...
-#' @return
+#' @param x a mouse or slice object
+#' @param ... further arguments passed to or from other methods.
+#' @return a mouse or slice object
 #' @export
 import_segmentation_custom <- function(x, ...){
   UseMethod('import_segmentation_custom')
 }
 
-
 ## Creating generic function for filtering raw segmentation data
 #' make_segmentation_filter (generic function)
-#' @param x
-#' @param ...
-#' @return
+#' @param x a mouse or slice object
+#' @param ... further arguments passed to or from other methods.
+#' @return a mouse or slice object
 #' @export
 make_segmentation_filter <- function(x, ...){
   UseMethod('make_segmentation_filter')
@@ -50,20 +48,19 @@ make_segmentation_filter <- function(x, ...){
 
 ## Create segmentation object
 #' make_segmentation_object (generic funciton)
-#' @param x
-#' @param ...
-#' @return
+#' @param x a mouse or slice object
+#' @param ... further arguments passed to or from other methods.
+#' @return a mouse or slice object
 #' @export
 make_segmentation_object <- function(x, ...){
   UseMethod('make_segmentation_object')
 }
 
-
 ## forward_warp segmentation data to atlas space
 #' map_cells_to_atlas (generic function)
-#' @param x
-#' @param ...
-#' @return
+#' @param x a mouse or slice object
+#' @param ... further arguments passed to or from other methods.
+#' @return a mouse or slice object
 #' @export
 map_cells_to_atlas <- function(x, ...){
   UseMethod('map_cells_to_atlas')
@@ -71,9 +68,9 @@ map_cells_to_atlas <- function(x, ...){
 
 ## excluded designated regions from the mapped cell data table
 #' exclude_anatomy (generic function)
-#' @param x
-#' @param ...
-#' @return
+#' @param x a mouse or slice object
+#' @param ... further arguments passed to or from other methods.
+#' @return a mouse or slice object
 #' @export
 exclude_anatomy <- function(x, ...){
   UseMethod('exclude_anatomy')
@@ -81,9 +78,9 @@ exclude_anatomy <- function(x, ...){
 
 ## Combine volumes of all slices mapped
 #' get_registered_volumes (generic function)
-#' @param x
-#' @param ...
-#' @return
+#' @param x a mouse or slice object
+#' @param ... further arguments passed to or from other methods.
+#' @return a mouse or slice object
 #' @export
 get_registered_volumes <- function(x, ...){
   UseMethod('get_registered_volumes')
@@ -553,15 +550,13 @@ import_segmentation_custom.mouse <- function(m,
 
 #' Make a segmentation filter for a slice object
 #' @rdname make_segmentation_filter
-#' @param s
+#' @param s slice object
 #' @param channels (str vector, default = "eyfp") Channels to process. If NULL, defaults to the channels stored in the slice object attributes (not recommended).
 #' @param params (list) Has same length as channels. Each element contains a vector of parameters names used for filtering that channel
 #' @param ranges (list of lists) Has same length as channels. Each element of outer list corresponds the order of channels you want to process.
 #' Inner list contains vectors of parameter ranges for that channel.
-#'
 #' @return s slice object. Vector of indices of cells to remove are stored as the channel filters in the slice object.
 #' @export
-#'
 #' @examples s <- make_segmentation_filter(s, channels = c('eyfp'),
 #' params = list(c("Vol..unit.","Moment1","Moment2","Moment3","Moment4","Sigma")),
 #' ranges = list(list(c(200, 12000), c(3, 50), c(0, 600), c(0, 2000), c(0, 5), c(20, Inf))))
@@ -842,7 +837,7 @@ make_segmentation_object.mouse <- function(m,
 #' @param clean (bool, default = TRUE). Remove cells that don't map to any regions.
 #' @param display (bool, default = TRUE). Display the results of the forward warp for the slice.
 #' @param mouse_ID (str) mouse ID
-#' @param ... additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the [wholebrain::inspect.registration()] function
+#' @param ... additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the `wholebrain::inspect.registration()` function
 #' @examples s <- map_cells_to_atlas(s, channels c('cfos' , 'eyfp', 'colabel'), clean = TRUE, display = TRUE, mouse_ID = "255")
 #' @export
 
@@ -900,7 +895,7 @@ map_cells_to_atlas.slice <- function(s,
 #' @param clean (bool, default = TRUE). Remove cells that don't map to any regions.
 #' @param display (bool, default = TRUE). Display the results of the forward warp for the slice.display
 #' @param replace (bool, default = FALSE). Replace current forward warped data, both raw and cleaned.
-#' @param ... additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the [wholebrain::inspect.registration()] function
+#' @param ... additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the `wholebrain::inspect.registration()` function
 #' @return m mouse object
 #' @examples m <- map_cells_to_atlas(m, slice_ID = "1_10", hemisphere = NULL, channels = c("cfos", "eyfp", "colabel"), clean = TRUE, replace = FALSE)
 #' @export
@@ -1503,11 +1498,9 @@ get_cell_table <- function(m,
 #' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure
 #' @param split_hipp_DV (bool, default = TRUE) Split the subregions of the CA1, CA2, CA3, and DG based on a specified AP coordinate cutoff. This is because the Allen atlas doesn't have a dorsal/ventral region designation for these ROIs.
 #' @param DV_split_AP_thresh (numeric, default = -2,7) The specified AP coordinate threshold to split hippocampal cell counts into dorsal and ventral.
-#' @return
+#' @return m mouse object
 #' @examples m <- normalize_cell_counts(m, combine_hemispheres = TRUE, simplify_regions = TRUE)
 #' @export
-#' @ms
-#'
 # TODO: Change the internal implementation of plyr::ddply to a function consistent with dplyr
 #
 normalize_cell_counts <- function(m,
@@ -1517,23 +1510,19 @@ normalize_cell_counts <- function(m,
                                   split_hipp_DV = TRUE,
                                   DV_split_AP_thresh = -2.7
                                   ){
-  # 1) NULL areas check
     for(s in 1:length(m$slices)){
 
-      # Get slice information
       s_info <- attr(m$slices[[s]], "info")
       hemisphere <- s_info$hemisphere
       slice_ID <-  s_info$slice_ID
       AP <-  s_info$coordinate
 
-      # Omit hemisphere name if there is no hemisphere value in the attributes
       if (is.null(hemisphere)){
         slice_name <- slice_ID
       } else {
         slice_name <- paste0(slice_ID, "_", hemisphere)
       }
 
-      ## Check that this slice has run get_registered_volumes
       if (is.null(m$slices[[s]]$volumes)){
         stop(paste0("Slice ", slice_name ," in your mouse dataset has an empty areas vector.\n",
                     "Run the function get_registered_volumes() for this slice before you can normalized all your cell counts by total area or by volume."))
@@ -1547,46 +1536,35 @@ normalize_cell_counts <- function(m,
       }
     }
 
-  ## split volumes into dorsal and ventral for the hippocampus
   if (isTRUE(split_hipp_DV)){
     all_hipp_subregions <- c(c("DG", "CA1", "CA2", "CA3"), SMARTR::get.sub.structure(c("DG", "CA1", "CA2", "CA3")))
-    # Filter out hippocampal regions only and split into dorsal and ventral
     hipp_split_volumes <- aggregate_volumes %>% dplyr::filter(acronym %in% all_hipp_subregions) %>%  dplyr::mutate(acronym = if_else(AP > DV_split_AP_thresh , paste0("d", acronym), paste0("v", acronym)),
                                                                                                                    name = as.character(SMARTR::name.from.acronym(acronym)))
-    # Filter out old hippoampus, append new hippocampal information
     aggregate_volumes <- aggregate_volumes %>% dplyr::filter(!acronym %in% all_hipp_subregions) %>% dplyr::bind_rows(hipp_split_volumes) %>% dplyr::arrange(desc(AP), acronym, right.hemisphere)
   }
 
-  ## Get a tally of cells per region
   normalized_counts <-vector(mode = "list", length = length(m$cell_table))
   names(normalized_counts) <- names(m$cell_table)
   counts_per_slice <-vector(mode = "list", length = length(m$cell_table))
   names(counts_per_slice) <- names(m$cell_table)
-
   mismatched_regions <-vector(mode = "list", length = length(m$cell_table))
   names(mismatched_regions) <- names(m$cell_table)
 
   for (channel in names(normalized_counts)){
 
-    # Simplify the regions is necessary
     if (isTRUE(simplify_regions)){
       m$cell_table[[channel]] <-  m$cell_table[[channel]] %>% simplify_by_keywords(keywords = simplify_keywords)
 
-      # Find the number of unique regions that aren't nested further into parent regions
       acronyms <- m$cell_table[[channel]]$acronym %>% unique()
       redundant_parents <- check_redundant_parents(acronyms)
       m$cell_table[[channel]] <- m$cell_table[[channel]]  %>% dplyr::filter(acronym %in% redundant_parents$unique_acronyms)
     }
 
-    # Split the hippocampal counts into dorsal ventral
     if (isTRUE(split_hipp_DV)){
-      # Filter out hippocampal regions only and split into dorsal and ventral
       cell_table_hipp <-  m$cell_table[[channel]] %>% dplyr::filter(acronym %in% all_hipp_subregions) %>%  dplyr::mutate(acronym = if_else(AP > DV_split_AP_thresh , paste0("d", acronym), paste0("v", acronym)),
                                                                                                                      name = as.character(SMARTR::name.from.acronym(acronym)))
-      # Filter out old hippoampus, append new hippocampal information
       m$cell_table[[channel]] <-  m$cell_table[[channel]] %>% dplyr::filter(!acronym %in% all_hipp_subregions) %>% dplyr::bind_rows(cell_table_hipp) %>% dplyr::arrange(desc(AP), acronym, right.hemisphere)
     }
-    ## Cell counts per slice
    aggregate_counts <-  m$cell_table[[channel]] %>% dplyr::group_by(slice_name, AP, right.hemisphere, acronym, name) %>% dplyr::summarize(count = n())
    ###################  acronym checking This is primarily for troubleshooting.
    # mismatch <- union(setdiff(aggregate_volumes$acronym,  aggregate_counts$acronym), setdiff(aggregate_counts$acronym, aggregate_volumes$acronym))
@@ -1609,69 +1587,46 @@ normalize_cell_counts <- function(m,
                      normalized.count.by.volume = count/volume.mm3)
    }
   }
-
-  # Store the normalized counts in the mouse object
   m$normalized_counts <- normalized_counts
   m$counts_per_slice <- counts_per_slice
-  # m$mismatched_regions <- mismatched_regions
   return(m)
 }
 
  #__________________ Experiment object specific functions __________________________
-
-
 #' @title Combine cell counts across all mice in an experiment into a single dataframe.
 #' @description This function also stores the mouse attribute names (not experiment attributes) as columns that will be used as categorical variables to make analysis subgroups.
 #' The values of these attributes (`group`, `drug`, `age`) will automatically be converted to a string values for consistency.
 #' @param e experiment object
 #' @param by (str) names of the experiment attributes (categorical variables) that will be used to create analysis subgroups.
-#' @return
+#' @return e en experiment object
 #' @export
 #' @examples e <- combine_cell_counts(e, by = c('groups', 'sex'))
-
 combine_cell_counts <- function(e, by){
-
-  # Get experiment info
   e_info <- attr(e, "info")
-
-  # Fix close but wrong attribute names
   if (!all(by %in% names(e_info))){
         by <- c(by[by %in% names(e_info)], m2e_attr(by[!by %in% names(e_info)]))
   }
-
-  # initialize list to store the combined dataframes and the attributes
   combined_norm_counts_list <- vector(mode = "list", length(e_info$channels))
   names(combined_norm_counts_list) <- e_info$channels
-
   combined_counts_per_slice_list <- vector(mode = "list", length(e_info$channels))
   names(combined_counts_per_slice_list) <- e_info$channels
-
   for (channel in e_info$channels){
     for (m in 1:length(e$mice)){
-
-      # Get mouse info
       m_info <- attr(e$mice[[m]], "info")
       df <- e$mice[[m]]$normalized_counts[[channel]]
       df_slice <- e$mice[[m]]$counts_per_slice[[channel]]
-
       for (attrib in by){
-        # Add column keeping track of the mouse attribute
         add_col <- m_info[[e2m_attr(attrib)]] %>% toString() %>% tibble::tibble()
         names(add_col)  <- e2m_attr(attrib)
         df <- df %>% tibble::add_column(add_col, .before = TRUE)
         df_slice <- df_slice %>% tibble::add_column(add_col, .before = TRUE)
       }
-
-      # Always add the mouse ID
       df <- df %>% tibble::add_column(mouse_ID = m_info[["mouse_ID"]], .before = TRUE)
       df_slice <- df_slice %>% tibble::add_column(mouse_ID = m_info[["mouse_ID"]], .before = TRUE)
-
-
       if (m == 1){
         combined_norm_counts <- df
         combined_counts_per_slice <- df_slice
       } else{
-        # add mouse dataframe of norm counts to growing combined norm counts table
         combined_norm_counts <- combined_norm_counts %>% dplyr::bind_rows(df)
         combined_counts_per_slice <- combined_counts_per_slice %>% dplyr::bind_rows(df_slice)
       }
@@ -1684,25 +1639,22 @@ combine_cell_counts <- function(e, by){
   return(e)
 }
 
-
-
 #' @title Normalize colabel counts over a designated denominator channel.
 #' @description This function can only be run after running [SMARTR::combine_norm_cell_counts()]. It divides the colabelled cell counts by
 #' a designated normalization channel to provide a normalized ratio. Please note that the areas and volumes cancel out in this operation.
 #' This is not designed to work on multiple hemispheres. Please combine cell counts across multiple hemispheres when you run [SMARTR::normalize_cell_counts()].
-#'
 #' @param e experiment object
 #' @param denominator_channel (str, default = "eyfp") The exact name of the channel used for normalization
-#'
 #' @return e An experiment object with a new dataframe with the normalized ratios of colabelled counts over the designated denominator counts.
 #' Because the volumes and region areas cancel out, the values of count, normalized.count.by.area, and normalized.count.by.volume are all the same.
 #' This is to provide a consistent input dataframe into the analysis functions.
 #' @export
 #' @seealso [SMARTR::combine_norm_cell_counts()] &  [SMARTR::normalize_cell_counts()]
-#' @examples e <- normalize_colabel_counts(e, denominator_channel = "eyfp")
+#' @examples
+#' \dontrun{
+#' e <- normalize_colabel_counts(e, denominator_channel = "eyfp")
+#' }
 normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
-
-
   end_index <- which(names(e$combined_normalized_counts$colabel) == "name")
   by <- names(e$combined_normalized_counts$colabel)[1:end_index]
 
@@ -1734,7 +1686,6 @@ normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
 #'  because the options offered for simplification are more flexible.
 #'  The benefit of this function is that it can operate on experiment objects with externally imported combined cell counts tables that are formatted for compatibility. This allows
 #'  for simplification using other ontologies. See the available atlas options under the `ontology` parameter.
-#'
 #' @param e experiment object
 #' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural")).
@@ -1743,7 +1694,6 @@ normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
 #' regions can be further
 #' @return e experiment object with simplified keywords
 #' @export
-#' @examples
 simplify_cell_count <- function(e,
                                 ontology = "allen",
                                 simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island",
@@ -1787,11 +1737,10 @@ simplify_cell_count <- function(e,
 
 ## modified function
 #' Get top down registered areas
-#' @param registration
-#' @param conversion.factor
-#' @param regions
-#' @return
-#' @examples
+#' @param registration wholebrain registration object
+#' @param conversion.factor pixel-to-micron conversion factor
+#' @param regions vector of acronyms of regions in the registration
+#' @return tibble dataframe with the columns `name`, `acronym`, `right.hemisphere`, and  `area`
 get.registered.areas.td <- function(regions, registration, conversion.factor = 1){
 
   regions <- regions %>% tidyr::drop_na()
@@ -1799,7 +1748,6 @@ get.registered.areas.td <- function(regions, registration, conversion.factor = 1
                           acronym=regions$acronym,
                           right.hemisphere=regions$right.hemisphere,
                           area=rep(0,nrow(regions)))
-
   for (k in 1:nrow(regions)) {
       region.data <- wholebrain::get.region(regions$acronym[k],registration) %>% dplyr::as_tibble() %>%
         dplyr::filter(right.hemisphere == regions$right.hemisphere[k]) %>% tidyr::drop_na()
@@ -1808,13 +1756,10 @@ get.registered.areas.td <- function(regions, registration, conversion.factor = 1
       subregion_areas <- vector(mode = "numeric", length = length(unique_subregions))
       for (l in 1:length(unique_subregions)){
         subregion.data <- region.data %>% dplyr::filter(unique_subregions[l] == name)
-
         # Gauss's formula
         area <- subregion.data$xT[1:(nrow(subregion.data)-1)]*subregion.data$yT[2:nrow(subregion.data)] - subregion.data$xT[2:nrow(subregion.data)]*subregion.data$yT[1:(nrow(subregion.data)-1)]
         area <- sum(area)
         area <- 0.5*abs(area + subregion.data$xT[nrow(subregion.data)]*subregion.data$yT[1] - subregion.data$xT[1]*subregion.data$yT[nrow(subregion.data)])
-
-        # Add to subregion area
         subregion_areas[l] <- area
       }
       areas$area[k] <- sum(subregion_areas)
@@ -1824,13 +1769,10 @@ get.registered.areas.td <- function(regions, registration, conversion.factor = 1
 
 ## Modification of Marcos' function
 #' Get the registered areas
-#' @param cell.data.list
-#' @param registration
-#' @param conversion.factor
-#'
-#' @return
-#'
-#' @examples
+#' @param registration wholebrain registration object
+#' @param conversion.factor pixel-to-micron conversion factor
+#' @param regions vector of acronyms of regions in the registration
+#' @return tibble dataframe with the columns `name`, `acronym`, `right.hemisphere`, and  `area`
 get.registered.areas.bu <- function(regions, registration, conversion.factor = 1){
 
   region.info <- list()
@@ -1841,12 +1783,10 @@ get.registered.areas.bu <- function(regions, registration, conversion.factor = 1
     region.data[,1:4] <- region.data[,1:4]*conversion.factor
     region.info <- c(region.info, list(region.data[region.data$right.hemisphere==regions$right.hemisphere[k],]))
   }
-
   areas <- tibble::tibble(name=as.character(name.from.acronym(regions$acronym)),
                       acronym=regions$acronym,
                       right.hemisphere=regions$right.hemisphere,
                       area=rep(0,nrow(regions)))
-
   # Use Gauss' area formula (shoelace formula)
   for (k in 1:length(region.info)) {
     r <- region.info[[k]]
@@ -1855,92 +1795,17 @@ get.registered.areas.bu <- function(regions, registration, conversion.factor = 1
     area <- 0.5*abs(area + r$xT[nrow(r)]*r$yT[1] - r$xT[1]*r$yT[nrow(r)])
     areas$area[k] <- area
   }
-
   return(areas)
 }
 
-
-
-#' #' Modification of Marcos' combine regions function
-#' #'
-#' #' @param normalized_counts list with length = No. channels., each channel element is df of normalized counts
-#' #' @param keywords a vector of keywords with which to simplify the region names
-#' #'
-#' #' @return a list with length = No. channels. Each channel df has simplified parent acronyms and names is summed from original df based on them.
-#' #'
-#' #' @examples
-#' simplify.regions <- function(normalized_counts, keywords = c("layer","part","stratum","division")) {
-#'
-#'
-#'   # Initialize empty list vector to store the simplified counts
-#'   simplified_counts <- vector(mode = "list", length = length(normalized_counts))
-#'   names(simplified_counts) <- names(normalized_counts)
-#'
-#'   for(channel in names(normalized_counts)) {
-#'
-#'     # Extract the dataframe for one channel
-#'     simplified_counts_chan <- normalized_counts[[channel]]
-#'
-#'     # loop through each keyword
-#'     for (s in keywords) {
-#'
-#'       # Look for row indices where the names contain the keywords
-#'       k <- grep(s, simplified_counts_chan$name, value = FALSE, ignore.case = TRUE)
-#'
-#'       while(length(k) > 0){
-#'         # Store the parent acronym and full name
-#'         simplified_counts_chan$acronym[k] <- wholebrain::get.acronym.parent(simplified_counts_chan$acronym[k])
-#'         simplified_counts_chan$name[k] <- as.character(wholebrain::name.from.acronym(simplified_counts_chan$acronym[k]))
-#'
-#'         # Continue storing storing the parent names until there are no more that match the keyword
-#'         k <- grep(s, simplified_counts_chan$name, value = FALSE, ignore.case = TRUE)
-#'       }
-#'     }
-#'
-#'     # Check if the data has been collapsed by hemisphere
-#'     if (!"right.hemisphere" %in% names(simplified_counts_chan)){
-#'
-#'       # step to collapse by name/acronym
-#'       # simplified_counts_chan <- plyr::ddply(simplified_counts_chan, c("acronym", "name"), plyr::numcolwise(sum))
-#'
-#'       simplified_counts_chan <- dplyr::group_by(simplified_counts_chan, acronym, name) %>%
-#'         dplyr::summarise_at(c("count", "area.mm2", "volume.mm3"), sum) %>%
-#'         dplyr::mutate(normalized.count.by.area = count/area.mm2,
-#'                       normalized.count.by.volume = count/volume.mm3)
-#'
-#'     } else {
-#'       # step to collapse by name/acronym and hemisphere
-#'       # simplified_counts_chan <- plyr::ddply(simplified_counts_chan, c("acronym", "name", "right.hemisphere"), plyr::numcolwise(sum))
-#'
-#'       simplified_counts_chan <- dplyr::group_by(simplified_counts_chan, acronym, name, right.hemisphere) %>%
-#'         dplyr::summarise_at(c("count", "area.mm2", "volume.mm3"), sum) %>%
-#'         dplyr::mutate(normalized.count.by.area = count/area.mm2,
-#'                       normalized.count.by.volume = count/volume.mm3)
-#'     }
-#'
-#'     # # Recalculated normalized count by area
-#'     # simplified_counts_chan$normalized.count.by.area <- simplified_counts_chan$count/simplified_counts_chan$area.mm2
-#'     #
-#'     # # Recalculate normalized count by volume
-#'     # simplified_counts_chan$normalized.count.by.volume <- simplified_counts_chan$count/simplified_counts_chan$volume.mm3
-#'
-#'     # Store in simplified counts list
-#'     simplified_counts[[channel]] <- simplified_counts_chan
-#'   }
-#'
-#'   return(simplified_counts)
-#' }
-
-
-
 #' Make a filter for the cfos or eyfp channel
 #' This is specific to filtering counts quantified and exported through our ImageJ scripts.
-#' @param data
-#' @param params
-#' @param ranges
-#' @return
+#' This will be defunct removed from the pipeline soon.
+#' @param data dataframe of segmented cells
+#' @param params names of the variables (columns) to filter based on
+#' @param ranges list of ranges corresponding number of variables to filter on
+#' @return Returns the index of  all objects to filter out
 #' @export
-#' @examples
 make.filter <- function(data,
                         params = c("Vol..unit.","Moment1","Moment2","Moment3","Moment4","Sigma"),
                         ranges = list(c(200,12000),c(3,50),c(0,600),c(0,2000),c(0,5),c(20,Inf))){
@@ -1951,19 +1816,17 @@ make.filter <- function(data,
   return(unique(non.cells))
 }
 
-
 #' Get colabelled cells data table. This is designed specifically to create a segmentation object from the imported raw files that are outputs from the batch_3D_MultiColocalization.ijm macro.
-#' @param coloc_table
-#' @param image_A_objects
-#' @param image_B_objects
+#'
+#' @param coloc_table dataframe of colocalized object
+#' @param image_A_objects df of objects for channel 2
+#' @param image_B_objects df of objects for channel 1
 #' @param overlap (default = 0.5) Minimum fraction of object volume overlap from image A (Ch2) with object from image B (Ch1). Fraction is of image A objects.
 #' @param volume (default = 25) Minimum threshold for colocalized volume in voxels.
 #' @param euc_centroid_dist (default = 30) Euclidean threshold in pixels between the centroid coordinates of two flagged overlapping objects. If this distance is exceeded, there will be an error message.
-#' @export
+#'
 #' @return returns segmentation object with x Y coordinates as an average of the centroid coordinates. The area will be replaced with the volume of the image A object.
 #' Intensity is also just replaced with the volume of the image A object.
-#'
-#' @examples
 get.colabeled.cells <- function(coloc_table,
                                 image_A_objects,
                                 image_B_objects,
@@ -2004,8 +1867,6 @@ get.colabeled.cells <- function(coloc_table,
   x_b <- image_B_objects$CX..pix.[match(mo, image_B_objects$Label)]
   y_b <- image_B_objects$CY..pix.[match(mo, image_B_objects$Label)]
   areas <- image_B_objects$Vol..pix.[match(mo, image_B_objects$Label)]
-
-  # Quality check
   distances <- sqrt((x_a-x_b)^2+(y_a-y_b)^2)
   max_distance <- max(distances, na.rm = TRUE)
   if (max_distance > euc_centroid_dist){
@@ -2019,11 +1880,8 @@ get.colabeled.cells <- function(coloc_table,
     y_b <-  y_b[coloc_ind]
     areas <- areas[coloc_ind]
   }
-
   x <-  rowMeans(cbind(x_a, x_b))
   y <-  rowMeans(cbind(y_a, y_b))
-
-  # Create a segmentation object
   seg.coloc <- SMARTR::segmentation.object
   seg.coloc$soma$x  <-   x
   seg.coloc$soma$y  <-   y
@@ -2033,13 +1891,13 @@ get.colabeled.cells <- function(coloc_table,
 }
 
 
-
 #' Find segmentation files following the naming conventions of the denny lab given a channel name and a root slice directory
-#' @param slice_directory
-#' @param channel
+#'
+#' @param slice_directory path to the slice directory
+#' @param channel which channel to import files for
+#'
 #' @return returns a vector of two paths. The first element is the path to the measurement data. The second path is the path to the
 #' quantification data.
-#' @examples
 find_segmentation_files <- function(slice_directory, channel){
 
   files <-  list.files(slice_directory, pattern = "\\.txt")
@@ -2055,16 +1913,10 @@ find_segmentation_files <- function(slice_directory, channel){
 
 
 #' find_all_subregions
-#'
 #' @param regions A string vector of the Allen Mouse Brain Atlas abbreviated
-#' regions of regions to exclude
 #' @return all_regions. A string vector of all the input & subregions within them to exclude
-#' @examples
 find_all_subregions <- function(regions){
-
-  # is.null check for exclude regions
   if (!is.null(regions)){
-    # Containing all subregions to exclude too
     all_regions <- c()
     for (region in regions) {
       all_regions <- c(all_regions,
@@ -2077,72 +1929,5 @@ find_all_subregions <- function(regions){
   }
   return(all_regions)
 }
-
-
-
-# # Rearrange things to be anatomical order
-#
-# # anatomical_order<- c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")
-# # anat.order$region <- anatomical.order %>% map(get.sub.structure) %>% map(intersect,y=common.regions) %>% unlist()
-# # for(super.region in anatomical.order){
-# # anat.order$super.region[anat.order$region %in% get.sub.structure(super.region)] <- super.region
-# #}
-# get_hipp_DV_volumes <- function(m, AP_coord = -2.7, rois = c("DG", "CA1", "CA2", "CA3"), hipp_AP_coordinates){
-#
-#   DV <- c("dorsal", "ventral")
-#
-#   # Loop through all rois and get all subregions
-#   regions <- c(rois)
-#   for (roi in rois) {
-#     regions <- c(regions, wholebrain::get.sub.structure(roi))
-#   }
-#
-#   # Loop through all slices and concatenate ONLY areas from the hippocampus.
-#   # Split these areas into dorsal and ventral
-#   aggregate_volumes_dorsal <- data.frame()
-#   aggregate_volumes_ventral <- data.frame()
-#   for (slice in m$slices){
-#     coordinate <- attr(slice, "info")$coordinate
-#     if (coordinate %in% hipp_AP_coordinates){
-#       # dorsal
-#       if (coordinate > AP_coord){
-#         aggregate_volumes_dorsal <- rbind(aggregate_volumes_dorsal, slice$volumes)
-#       }
-#       # Ventral
-#       if (coordinate <= AP_coord){
-#         aggregate_volumes_ventral <- rbind(aggregate_volumes_ventral, slice$volumes)
-#       }
-#     }
-#   }
-#
-#   # Drop any NA values
-#   aggregate_volumes_dorsal  <- tidyr::drop_na(aggregate_volumes_dorsal)
-#   aggregate_volumes_ventral <- tidyr::drop_na(aggregate_volumes_ventral)
-#
-#   # Store total volumes
-#   total_volumes_hipp <- list("dorsal" = aggregate_volumes_dorsal,
-#                               "ventral" = aggregate_volumes_ventral)
-#
-#   for (dv in names(total_volumes_hipp)){
-#     if (length(total_volumes_hipp[[dv]]) > 0){
-#
-#       total_volumes_hipp[[dv]] <- total_volumes_hipp[[dv]] %>% dplyr::group_by(acronym, right.hemisphere, name) %>%
-#         dplyr::summarise(area.mm2 = sum(area)*1e-6, volume.mm3 = sum(volume)*1e-9)
-#
-#       # Store only regions in the hippocampus
-#       total_volumes_hipp[[dv]] <- total_volumes_hipp[[dv]][total_volumes_hipp[[dv]]$acronym %in% regions,]
-#
-#     } else {
-#       message("There was no volume data found for the ", dv, " hippocampus!")
-#     }
-#   }
-#   return(total_volumes_hipp)
-# }
-
-
-
-
-
-
 
 

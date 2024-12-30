@@ -51,6 +51,8 @@ map_cells_to_atlas(x, ...)
 )
 }
 \arguments{
+\item{x}{a mouse or slice object}
+
 \item{...}{additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the \code{\link[wholebrain:inspect.registration]{wholebrain::inspect.registration()}} function}
 
 \item{s}{slice object}
@@ -72,6 +74,8 @@ map_cells_to_atlas(x, ...)
 \item{replace}{(bool, default = FALSE). Replace current forward warped data, both raw and cleaned.}
 }
 \value{
+a mouse or slice object
+
 m mouse object
 
 m mouse object

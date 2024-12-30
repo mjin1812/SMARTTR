@@ -19,3 +19,7 @@ A list containing two elements: one vector of unique child acronyms, a vector of
 Check for redundant parent regions included in a list of acronyms in a plate. For example, if all the the subregions for
 the hypothalamus are represented, the HY should not be included in the list.
 }
+\examples{
+check_redundant_parents(acronyms = c("ACA5", "ACA1", "ACA"))
+check_redundant_parents(acronyms = c("VMHDM", "VMHSh", "VMH"), ontology = "unified")
+}

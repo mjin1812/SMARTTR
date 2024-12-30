@@ -2,15 +2,9 @@
 % Please edit documentation in R/mapping_functions.R, R/utils.R
 \name{make.filter}
 \alias{make.filter}
-\title{#' Modification of Marcos' combine regions function
-#'
-#' @param normalized_counts list with length = No. channels., each channel element is df of normalized counts
-#' @param keywords a vector of keywords with which to simplify the region names
-#'
-#' @return a list with length = No. channels. Each channel df has simplified parent acronyms and names is summed from original df based on them.
-#'
-#' @examples
-simplify.regions <- function(normalized_counts, keywords = c("layer","part","stratum","division")) {}
+\title{Make a filter for the cfos or eyfp channel
+This is specific to filtering counts quantified and exported through our ImageJ scripts.
+This will be defunct removed from the pipeline soon.}
 \usage{
 make.filter(
   data,
@@ -24,16 +18,20 @@ make.filter(
   ranges = list(c(200, 12000), c(3, 50), c(0, 600), c(0, 2000), c(0, 5), c(20, Inf))
 )
 }
+\arguments{
+\item{data}{dataframe of segmented cells}
+
+\item{params}{names of the variables (columns) to filter based on}
+
+\item{ranges}{list of ranges corresponding number of variables to filter on}
+}
+\value{
+Returns the index of  all objects to filter out
+}
 \description{
-#' Modification of Marcos' combine regions function
-#'
-#' @param normalized_counts list with length = No. channels., each channel element is df of normalized counts
-#' @param keywords a vector of keywords with which to simplify the region names
-#'
-#' @return a list with length = No. channels. Each channel df has simplified parent acronyms and names is summed from original df based on them.
-#'
-#' @examples
-simplify.regions <- function(normalized_counts, keywords = c("layer","part","stratum","division")) {
+Make a filter for the cfos or eyfp channel
+This is specific to filtering counts quantified and exported through our ImageJ scripts.
+This will be defunct removed from the pipeline soon.
 
 #' Modification of Marcos' combine regions function
 #'
@@ -47,13 +45,8 @@ simplify.regions <- function(normalized_counts, keywords = c("layer","part","str
 }
 \details{
 
-
-
 }
 \section{Initialize empty list vector to store the simplified counts}{
-simplified_counts <- vector(mode = "list", length = length(normalized_counts))
-names(simplified_counts) <- names(normalized_counts)
-
 simplified_counts <- vector(mode = "list", length = length(normalized_counts))
 names(simplified_counts) <- names(normalized_counts)
 }

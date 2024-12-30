@@ -24,3 +24,9 @@ object level before continuing further.
 This function will also read the individual mouse attributes and automatically populate the experimental attributes that are relevant. For example, the 'group' attribute of
 a mouse will be read and automatically added to the experiment object's 'experimental_groups' attribute if it is a new unique experimental group name.
 }
+\examples{
+e <- experiment(experiment_name = "example")
+m <- mouse(mouse_ID = "Mouse1")
+e <- add_mouse(e, m)
+e <- add_mouse(e, m, replace = TRUE)
+}

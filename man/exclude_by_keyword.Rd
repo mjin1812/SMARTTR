@@ -13,6 +13,9 @@ exclude_by_keyword(e, keywords, channels = NULL)
 
 \item{channels}{(str, default = NULL) NULL option processes all channels. \code{channels = c("cfos", "eyfp")} specifies exact channels.}
 }
+\value{
+e experiment object
+}
 \description{
 Excluded user chosen regions by keywords found in long-form name
 }

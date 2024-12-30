@@ -23,6 +23,12 @@ get.colabeled.cells(
 )
 }
 \arguments{
+\item{coloc_table}{dataframe of colocalized object}
+
+\item{image_A_objects}{df of objects for channel 2}
+
+\item{image_B_objects}{df of objects for channel 1}
+
 \item{volume}{(default = 25) Minimum threshold for colocalized volume in voxels.}
 
 \item{euc_centroid_dist}{(default = 30) Euclidean threshold in pixels between the centroid coordinates of two flagged overlapping objects. If this distance is exceeded, there will be an error message.}

@@ -8,6 +8,11 @@ find_segmentation_files(slice_directory, channel)
 
 find_segmentation_files(slice_directory, channel)
 }
+\arguments{
+\item{slice_directory}{path to the slice directory}
+
+\item{channel}{which channel to import files for}
+}
 \value{
 returns a vector of two paths. The first element is the path to the measurement data. The second path is the path to the
 quantification data.

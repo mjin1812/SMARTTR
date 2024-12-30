@@ -13,6 +13,9 @@ combine_cell_counts(e, by)
 
 \item{by}{(str) names of the experiment attributes (categorical variables) that will be used to create analysis subgroups.}
 }
+\value{
+e en experiment object
+}
 \description{
 This function also stores the mouse attribute names (not experiment attributes) as columns that will be used as categorical variables to make analysis subgroups.
 The values of these attributes (\code{group}, \code{drug}, \code{age}) will automatically be converted to a string values for consistency.

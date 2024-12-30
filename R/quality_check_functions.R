@@ -14,11 +14,10 @@
 #' The user should run [normalize_cell_counts()] and [get_cell_table()] functions prior to using this function.
 #' If the user has run [split_hipp_DV()] with the option to merge, this function will account for for the dorsal and
 #' ventral hippocampal counts separately.
-#' @param m
+#' @param m mouse object
 #' @param remove (bool, FALSE) Remove any regions in the normalized counts table that
 #' @param log (bool, TRUE) Save the regions that don't have enough n into a .csv file in the output folder.
-#' @return
-#' @examples
+#' @return mouse object
 detect_single_slice_regions <- function(m, remove = FALSE, log = TRUE){
   # $hipp_DV_normalized_counts
   if (!is.null(m$hipp_DV_normalized_counts)){
@@ -285,12 +284,10 @@ exclude_by_acronym <- function(e, acronyms = "fiber_tracts", ontology = "allen",
 }
 
 #' Excluded user chosen regions by keywords found in long-form name
-#'
 #' @param e experiment object
 #' @param keywords (str) vector of region/structure keywords to match and exclude from the datasets, e.g. c("nerve", "tract")
 #' @param channels (str, default = NULL) NULL option processes all channels. `channels = c("cfos", "eyfp")` specifies exact channels.
-#'
-#' @returne e experiment object
+#' @return e experiment object
 #' @export
 exclude_by_keyword <- function(e, keywords, channels = NULL){
   if (is.null(channels)){
@@ -313,13 +310,10 @@ exclude_by_keyword <- function(e, keywords, channels = NULL){
 #' @description If a single comparison group doesn't have any mice that have brain regions
 #' contained in the other groups, no statistical comparison can be made. This region
 #' should be removed.
-#'
-#' @param mouse_count
-#' @param by
-#'
+#' @param mouse_count dataframe of all region counts across all mice
+#' @param by variables to group by
 #' @return unique acronyms that are the intersection across all groups
-#'
-#' @examples
+
 get_common_regions <- function(mouse_count, by){
   # keeps track of number of group combinations
 

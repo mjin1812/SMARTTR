@@ -51,6 +51,8 @@ import_segmentation_custom(x, ...)
 )
 }
 \arguments{
+\item{x}{a mouse or slice object}
+
 \item{...}{}
 
 \item{s}{slice object}
@@ -72,6 +74,8 @@ import_segmentation_custom(x, ...)
 \item{hemisphere}{(str)'left', 'right' or NULL}
 }
 \value{
+a mouse or slice object
+
 s slice object
 
 m mouse object

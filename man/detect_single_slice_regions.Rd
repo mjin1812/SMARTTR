@@ -7,9 +7,14 @@
 detect_single_slice_regions(m, remove = FALSE, log = TRUE)
 }
 \arguments{
+\item{m}{mouse object}
+
 \item{remove}{(bool, FALSE) Remove any regions in the normalized counts table that}
 
 \item{log}{(bool, TRUE) Save the regions that don't have enough n into a .csv file in the output folder.}
+}
+\value{
+mouse object
 }
 \description{
 Quality check function to make sure that the regions included for analysis show up

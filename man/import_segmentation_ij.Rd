@@ -31,6 +31,8 @@ import_segmentation_ij(x, ...)
 )
 }
 \arguments{
+\item{x}{a mouse or slice object}
+
 \item{...}{}
 
 \item{s}{slice object}
@@ -48,6 +50,8 @@ import_segmentation_ij(x, ...)
 \item{replace}{(bool, default = FALSE) replace existing raw segmentation data}
 }
 \value{
+a mouse or slice object
+
 s slice object
 
 m mouse object

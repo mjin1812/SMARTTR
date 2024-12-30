@@ -39,6 +39,9 @@ normalize_cell_counts(
 
 \item{DV_split_AP_thresh}{(numeric, default = -2,7) The specified AP coordinate threshold to split hippocampal cell counts into dorsal and ventral.}
 }
+\value{
+m mouse object
+}
 \description{
 Run this function after all the slices that you want to process are finished being added
 and you have combined your cell counts with \code{\link[=get_cell_table]{get_cell_table()}}. This functions process all channels

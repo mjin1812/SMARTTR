@@ -47,6 +47,8 @@ make_segmentation_object(x, ...)
 )
 }
 \arguments{
+\item{x}{a mouse or slice object}
+
 \item{...}{(optional) additional volume and overlap parameters for get.colabeled.cells().}
 
 \item{s}{slice object}
@@ -66,6 +68,8 @@ make_segmentation_object(x, ...)
 \item{replace}{(bool, default = FALSE) replace existing raw segmentation data}
 }
 \value{
+a mouse or slice object
+
 s slice object
 
 s slice object

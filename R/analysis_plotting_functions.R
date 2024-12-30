@@ -3135,10 +3135,7 @@ plot_betweenness_regions <- function(e,
   return(p_list)
 }
 
-
-
 #________________ Internal Analysis functions _______________
-
 
 filter_df_by_char_params <- function(df, by, values){
   for (k in 1:length(by)){
@@ -3150,9 +3147,7 @@ filter_df_by_char_params <- function(df, by, values){
   return(df)
 }
 
-
 # Sort the dataframes columns to be in anatomical order
-
 sort_anatomical_order <- function(common_regions, ontology ="allen",
                                   anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")){
 
