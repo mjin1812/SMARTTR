@@ -1,6 +1,4 @@
-#' Premade.
-#'
-#' A filter used in wholebrain functions.
+#' A filter with parameters for registration used in wholebrain functions.
 #'
 #' @format A list of parameters to filter features of interest in an image
 #' \describe{

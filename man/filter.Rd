@@ -3,7 +3,7 @@
 \docType{data}
 \name{filter}
 \alias{filter}
-\title{Premade.}
+\title{A filter with parameters for registration used in wholebrain functions.}
 \format{
 A list of parameters to filter features of interest in an image
 \describe{
@@ -23,6 +23,6 @@ A list of parameters to filter features of interest in an image
 filter
 }
 \description{
-A filter used in wholebrain functions.
+A filter with parameters for registration used in wholebrain functions.
 }
 \keyword{datasets}

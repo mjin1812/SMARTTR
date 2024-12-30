@@ -27,7 +27,7 @@
     <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
     <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
     <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example%20Analysis%20Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
     <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
     <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
   </div>
@@ -65,14 +65,29 @@
 <span>  <span class="va">correlation_list_name_2</span>,</span>
 <span>  n_shuffle <span class="op">=</span> <span class="va">n_shuffle</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"pearson"</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  method <span class="op">=</span> <span class="st">"pearson"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>seed</dt>
+    <dl><dt>df</dt>
+<dd><p>dataframe</p></dd>
+
+
+<dt>correlation_list_name_1</dt>
+<dd><p>permutation group 1</p></dd>
+
+
+<dt>correlation_list_name_2</dt>
+<dd><p>permutation group 2</p></dd>
+
+
+<dt>n_shuffle</dt>
+<dd><p>number of shuffles</p></dd>
+
+
+<dt>seed</dt>
 <dd><p>random seed for replication</p></dd>
 
 
@@ -81,6 +96,12 @@
 Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements, using midranks for ties. See also <code><a href="https://rdrr.io/pkg/Hmisc/man/rcorr.html" class="external-link">Hmisc::rcorr()</a></code></p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
+
+<p>a matrix storing the permutation with the dimensions no. regions x no. regions x n_shuffle</p>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>

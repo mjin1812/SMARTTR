@@ -33,7 +33,7 @@ NULL
 #' @return e experiment object with colabelled percentage table stored in it.
 #' @export
 #' @examples
-#' \donrun{
+#' \dontrun{
 #' e <- get_percent_colabel(e, c("group", "sex", channel = "eyfp"))
 #' }
 
@@ -861,13 +861,12 @@ create_joined_networks <- function(e,
   return(e)
 }
 
-#' Implement rewiring algorithms to current empirical networks to randomize certain network properties, while
-#' keeping other characterisitics constant (such as preserved degree sequence). These null networks can them be used to compare
-#' against and normalize the empirical networks.
+#' Implement rewiring algorithms to current empirical networks to randomize certain network properties.
 #'
-#' Note that this essentially erases edge metrics and treats networks like binary graphs. Edge weights are not used in calculating
+#' Not that this keeps other characteristics constant (such as preserved degree sequence). These null networks can them be used to compare
+#' against and normalize the empirical networks. Currently this essentially erases edge metrics and treats networks like binary graphs.
+#' Edge weights are not used in calculating
 #' network topology metrics.
-#'
 #' @param e experiment object
 #' @param network_name (str) Name of the network
 #' @param channels (str)  Vector of channels to process
@@ -1019,8 +1018,9 @@ summarize_null_networks <- function(null_nodes_p1,
 
 ##_____________________ Plotting functions ___________________________
 
-#' This function allows for plotting of colabelled cells over either the "cfos" or "eyfp" channels. And allows for specification
-#' of specific brain regions to plot. Two different mouse attributes can be used as categorical variables to map to either the color or
+#' This function allows for plotting of colabelled cells over either the "cfos" or "eyfp" channels.
+#'
+#' Allows for specification of specific brain regions to plot. Two different mouse attributes can be used as categorical variables to map to either the color or
 #' pattern aesthetics of the bar plot, e.g. sex and experimental group.
 #' The color aesthetic takes precedence over the pattern aesthetic so if you only want to use one mouse attribute, for plotting
 #' set it to the `color_mapping` parameter and set the `pattern_mapping` parameter to NULL.
@@ -1240,11 +1240,12 @@ plot_percent_colabel <- function(e,
 }
 
 
-#' This function allows for plotting of normalized cell counts by area across specific regions to plot. Two different mouse attributes can be used as categorical variables to map to either the color or
+#' This function allows for plotting of normalized cell counts by area across specific regions to plot.
+#'
+#' Two different mouse attributes can be used as categorical variables to map to either the color or
 #' pattern aesthetics of the bar plot, e.g. sex and experimental group.
 #' The color aesthetic takes precedence over the pattern aesthetic so if you only want to use one mouse attribute, for plotting
 #' set it to the `color_mapping` parameter and set the `pattern_mapping` parameter to NULL.
-#'
 #' @param e experiment object
 #' @param channel (str, default = "eyfp") The channel used as denominator in fraction counts.
 #' @param rois (vec,  default = c("AAA", "dDG", "HY")) Allen acronyms of the ROIS that the user would like to plot
@@ -1261,7 +1262,6 @@ plot_percent_colabel <- function(e,
 #' @param save_plot (bool) Whether to save the plot in the experiment figures folder.
 #' @param image_ext (str, default = ".png") Extension of the output file
 #' @param error_bar (str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.
-#'
 #' @return p Plot handle to the figure
 #' @export
 #' @examples plot_percentage_colabel
@@ -3318,6 +3318,7 @@ plot_joined_networks <- function(e,
 }
 
 #' Internal algorithm for maslov-sneppen rewiring
+#'
 #' This algorithm is not appropriate if you would like to take weights into account
 #' See Maslov & Sneppen (2002)"Specificity and stability in topology of protein networks"
 #' @param network tidygraph graph object

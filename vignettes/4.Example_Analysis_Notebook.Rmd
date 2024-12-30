@@ -23,7 +23,6 @@ In this analysis tutorial we will load the learned helplessness dataset as an ex
 ```{r, results='hide', message=FALSE}
 library(SMARTR)
 # library(tidyverse)
-
 # Install rstatix if it is not installed already
 library(rstatix) 
 ```

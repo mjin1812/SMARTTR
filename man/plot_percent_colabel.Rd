@@ -2,11 +2,7 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{plot_percent_colabel}
 \alias{plot_percent_colabel}
-\title{This function allows for plotting of colabelled cells over either the "cfos" or "eyfp" channels. And allows for specification
-of specific brain regions to plot. Two different mouse attributes can be used as categorical variables to map to either the color or
-pattern aesthetics of the bar plot, e.g. sex and experimental group.
-The color aesthetic takes precedence over the pattern aesthetic so if you only want to use one mouse attribute, for plotting
-set it to the \code{color_mapping} parameter and set the \code{pattern_mapping} parameter to NULL.}
+\title{This function allows for plotting of colabelled cells over either the "cfos" or "eyfp" channels.}
 \usage{
 plot_percent_colabel(
   e,
@@ -50,8 +46,7 @@ plot_percent_colabel(
 p Plot handle to the figure
 }
 \description{
-This function allows for plotting of colabelled cells over either the "cfos" or "eyfp" channels. And allows for specification
-of specific brain regions to plot. Two different mouse attributes can be used as categorical variables to map to either the color or
+Allows for specification of specific brain regions to plot. Two different mouse attributes can be used as categorical variables to map to either the color or
 pattern aesthetics of the bar plot, e.g. sex and experimental group.
 The color aesthetic takes precedence over the pattern aesthetic so if you only want to use one mouse attribute, for plotting
 set it to the \code{color_mapping} parameter and set the \code{pattern_mapping} parameter to NULL.

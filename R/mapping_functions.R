@@ -1801,11 +1801,11 @@ get.registered.areas.bu <- function(regions, registration, conversion.factor = 1
 #' Make a filter for the cfos or eyfp channel
 #' This is specific to filtering counts quantified and exported through our ImageJ scripts.
 #' This will be defunct removed from the pipeline soon.
+#'
 #' @param data dataframe of segmented cells
 #' @param params names of the variables (columns) to filter based on
 #' @param ranges list of ranges corresponding number of variables to filter on
 #' @return Returns the index of  all objects to filter out
-#' @export
 make.filter <- function(data,
                         params = c("Vol..unit.","Moment1","Moment2","Moment3","Moment4","Sigma"),
                         ranges = list(c(200,12000),c(3,50),c(0,600),c(0,2000),c(0,5),c(20,Inf))){
@@ -1824,7 +1824,6 @@ make.filter <- function(data,
 #' @param overlap (default = 0.5) Minimum fraction of object volume overlap from image A (Ch2) with object from image B (Ch1). Fraction is of image A objects.
 #' @param volume (default = 25) Minimum threshold for colocalized volume in voxels.
 #' @param euc_centroid_dist (default = 30) Euclidean threshold in pixels between the centroid coordinates of two flagged overlapping objects. If this distance is exceeded, there will be an error message.
-#'
 #' @return returns segmentation object with x Y coordinates as an average of the centroid coordinates. The area will be replaced with the volume of the image A object.
 #' Intensity is also just replaced with the volume of the image A object.
 get.colabeled.cells <- function(coloc_table,

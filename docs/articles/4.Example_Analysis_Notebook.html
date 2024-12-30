@@ -44,7 +44,7 @@
     <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
     <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
     <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example%20Analysis%20Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
     <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
     <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
   </div>
@@ -76,7 +76,7 @@
             
       
       
-      <div class="d-none name"><code>4.Example Analysis Notebook.Rmd</code></div>
+      <div class="d-none name"><code>4.Example_Analysis_Notebook.Rmd</code></div>
     </div>
 
     
@@ -95,8 +95,7 @@ groups used in this experiment.</p>
 </h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SMARTR</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
-<span></span>
+<span><span class="co"># library(tidyverse)</span></span>
 <span><span class="co"># Install rstatix if it is not installed already</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/rstatix/" class="external-link">rstatix</a></span><span class="op">)</span> </span></code></pre></div>
 <p>Load the experiment object</p>
@@ -368,10 +367,11 @@ analysis group with the <code>Shock</code> group.</p>
 <span>                                   p_adjust_method <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>                                   alpha <span class="op">=</span> <span class="fl">0.01</span></span>
 <span>                                   <span class="op">)</span></span></code></pre></div>
-<p>The results of the analysis are stored within the experiment object
-in list called permutation_p_matrix</p>
+<p>The results of the analysis can be exported with the function
+<code><a href="../reference/export_permutation_results.html">export_permutation_results()</a></code>, which automatically saves
+into a folder generated for tables.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">lh</span><span class="op">$</span><span class="va">permutation_p_matrix</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/export_permutation_results.html">export_permutation_results</a></span><span class="op">(</span><span class="va">lh</span>, channels <span class="op">=</span> <span class="st">"eyfp"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="create-region-networks-with-summary-stats">2.4 Create region networks with summary stats<a class="anchor" aria-label="anchor" href="#create-region-networks-with-summary-stats"></a>
@@ -459,14 +459,13 @@ attributes such as <code>age</code> or <code>sex</code>.</p>
 <span><span class="va">eyfp.colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Context <span class="op">=</span> <span class="st">"#FFFFFF"</span>, Shock <span class="op">=</span> <span class="st">"#028A0F"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># ggplot2 theme object to specify specific aesthetic choices</span></span>
-<span><span class="va">plt_theme</span> <span class="op">&lt;-</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span><span class="va">plot_theme</span> <span class="op">&lt;-</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>                             panel.grid.major <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>                             panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>                             panel.border <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>                             axis.line <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span>,</span>
 <span>                             legend.justification <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,</span>
 <span>                             legend.position <span class="op">=</span> <span class="st">"inside"</span>,</span>
-<span>                             legend.position.inside <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="fl">0.05</span><span class="op">)</span>,</span>
 <span>                             legend.direction <span class="op">=</span> <span class="st">"vertical"</span>,</span>
 <span>                             axis.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">0</span>,        <span class="co"># Adjust to change the angle of the region labels</span></span>
 <span>                                                        hjust <span class="op">=</span> <span class="fl">1</span>,</span>

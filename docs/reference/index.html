@@ -27,7 +27,7 @@
     <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
     <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
     <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example%20Analysis%20Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
     <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
     <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
   </div>
@@ -71,8 +71,7 @@
           
           <code><a href="add_slice.html">add_slice()</a></code> 
         </dt>
-        <dd>Add slice to a mouse object
-m &lt;- add_slice(m, s, replace = FALSE)</dd>
+        <dd>Add slice to a mouse object</dd>
       </dl><dl><dt>
           
           <code><a href="adjust_brain_outline.html">adjust_brain_outline()</a></code> 
@@ -113,7 +112,7 @@ the hypothalamus are represented, the HY should not be included in the list.</dd
           
           <code><a href="create_networks.html">create_networks()</a></code> 
         </dt>
-        <dd>Create %&gt;% graph objects for plotting different analysis subgroups.</dd>
+        <dd>Create graph objects for plotting different analysis subgroups.</dd>
       </dl><dl><dt>
           
           <code><a href="detect_single_slice_regions.html">detect_single_slice_regions()</a></code> 
@@ -160,7 +159,7 @@ This function also automatically keeps only the common regions that are found ac
           
           <code><a href="filter.html">filter</a></code> 
         </dt>
-        <dd>Premade.</dd>
+        <dd>A filter with parameters for registration used in wholebrain functions.</dd>
       </dl><dl><dt>
           
           <code><a href="filter_regions.html">filter_regions()</a></code> 
@@ -295,41 +294,11 @@ than their cohort mean.</dd>
         <dd>import_segmentation (generic function)</dd>
       </dl><dl><dt>
           
-          <code><a href="make.filter.html">make.filter</a></code> 
+          <code><a href="make.filter.html">make.filter()</a></code> 
         </dt>
-        <dd>#' Modification of Marcos' combine regions function
-#'
-#' @param normalized_counts list with length = No. channels., each channel element is df of normalized counts
-#' @param keywords a vector of keywords with which to simplify the region names
-#'
-#' @return a list with length = No. channels. Each channel df has simplified parent acronyms and names is summed from original df based on them.
-#'
-#' @examples
-simplify.regions &lt;- function(normalized_counts, keywords = c("layer","part","stratum","division")) 
-
-make.filter(
-  data,
-  params = c("Vol..unit.", "Moment1", "Moment2", "Moment3", "Moment4", "Sigma"),
-  ranges = list(c(200, 12000), c(3, 50), c(0, 600), c(0, 2000), c(0, 5), c(20, Inf))
-)
-
-
-#' Modification of Marcos' combine regions function
-#'
-#' @param normalized_counts list with length = No. channels., each channel element is df of normalized counts
-#' @param keywords a vector of keywords with which to simplify the region names
-#'
-#' @return a list with length = No. channels. Each channel df has simplified parent acronyms and names is summed from original df based on them.
-#'
-#' @examples
-simplify.regions &lt;- function(normalized_counts, keywords = c("layer","part","stratum","division")) 
-
-
-
-
-Initialize empty list vector to store the simplified counts
-simplified_counts &lt;- vector(mode = "list", length = length(normalized_counts))
-names(simplified_counts) &lt;- names(normalized_counts)</dd>
+        <dd>Make a filter for the cfos or eyfp channel
+This is specific to filtering counts quantified and exported through our ImageJ scripts.
+This will be defunct removed from the pipeline soon.</dd>
       </dl><dl><dt>
           
           <code><a href="make_segmentation_filter.html">make_segmentation_filter()</a></code> 
@@ -349,9 +318,7 @@ names(simplified_counts) &lt;- names(normalized_counts)</dd>
           
           <code><a href="maslov_sneppen_rewire.html">maslov_sneppen_rewire()</a></code> 
         </dt>
-        <dd>Internal algorithm for maslov-sneppen rewiring
-This algorithm is not appropriate if you would like to take weights into account
-See Maslov &amp; Sneppen (2002)"Specificity and stability in topology of protein networks"</dd>
+        <dd>Internal algorithm for maslov-sneppen rewiring</dd>
       </dl><dl><dt>
           
           <code><a href="mouse.html">mouse()</a></code> 
@@ -421,10 +388,7 @@ See Maslov &amp; Sneppen (2002)"Specificity and stability in topology of protein
           
           <code><a href="plot_cell_counts.html">plot_cell_counts()</a></code> 
         </dt>
-        <dd>This function allows for plotting of normalized cell counts by area across specific regions to plot. Two different mouse attributes can be used as categorical variables to map to either the color or
-pattern aesthetics of the bar plot, e.g. sex and experimental group.
-The color aesthetic takes precedence over the pattern aesthetic so if you only want to use one mouse attribute, for plotting
-set it to the <code>color_mapping</code> parameter and set the <code>pattern_mapping</code> parameter to NULL.</dd>
+        <dd>This function allows for plotting of normalized cell counts by area across specific regions to plot.</dd>
       </dl><dl><dt>
           
           <code><a href="plot_correlation_heatmaps.html">plot_correlation_heatmaps()</a></code> 
@@ -479,11 +443,7 @@ set it to the <code>color_mapping</code> parameter and set the <code>pattern_map
           
           <code><a href="plot_percent_colabel.html">plot_percent_colabel()</a></code> 
         </dt>
-        <dd>This function allows for plotting of colabelled cells over either the "cfos" or "eyfp" channels. And allows for specification
-of specific brain regions to plot. Two different mouse attributes can be used as categorical variables to map to either the color or
-pattern aesthetics of the bar plot, e.g. sex and experimental group.
-The color aesthetic takes precedence over the pattern aesthetic so if you only want to use one mouse attribute, for plotting
-set it to the <code>color_mapping</code> parameter and set the <code>pattern_mapping</code> parameter to NULL.</dd>
+        <dd>This function allows for plotting of colabelled cells over either the "cfos" or "eyfp" channels.</dd>
       </dl><dl><dt>
           
           <code><a href="print.correlation_list.html">print(<i>&lt;correlation_list&gt;</i>)</a></code> 
@@ -523,9 +483,7 @@ set it to the <code>color_mapping</code> parameter and set the <code>pattern_map
           
           <code><a href="rewire_network.html">rewire_network()</a></code> 
         </dt>
-        <dd>Implement rewiring algorithms to current empirical networks to randomize certain network properties, while
-keeping other characterisitics constant (such as preserved degree sequence). These null networks can them be used to compare
-against and normalize the empirical networks.</dd>
+        <dd>Implement rewiring algorithms to current empirical networks to randomize certain network properties.</dd>
       </dl><dl><dt>
           
           <code><a href="rois_intersect_region_list.html">rois_intersect_region_list()</a></code> 

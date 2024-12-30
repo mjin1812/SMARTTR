@@ -27,7 +27,7 @@
     <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
     <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
     <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example%20Analysis%20Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
     <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
     <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
   </div>
@@ -71,6 +71,7 @@
 <span>  label_angle <span class="op">=</span> <span class="fl">60</span>,</span>
 <span>  rev_x_scale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.7</span><span class="op">)</span>,</span>
+<span>  theme.gg <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  image_ext <span class="op">=</span> <span class="st">".png"</span>,</span>
 <span>  print_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  save_plot <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -117,12 +118,15 @@ Warning: this will be applied to all channels. It's recommended to set the chann
 
 
 <dt>rev_x_scale</dt>
-<dd><p>(bool, default = FALSE) Reveres the scale of the categorical variables
-the experiment object output folder.</p></dd>
+<dd><p>(bool, default = FALSE) Reveres the scale of the categorical variables</p></dd>
 
 
 <dt>ylim</dt>
 <dd><p>(vec, default = c(0,10)) Axes limits of y-axis</p></dd>
+
+
+<dt>theme.gg</dt>
+<dd><p>(default = NULL) Option to use custom ggplot2 theme if the user wants</p></dd>
 
 
 <dt>image_ext</dt>
@@ -145,6 +149,14 @@ the experiment object output folder.</p></dd>
 <p>p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">plot_mean_global_effic</span><span class="op">(</span><span class="va">e</span>, colors_manual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#660000"</span>, <span class="st">"#FF0000"</span><span class="op">)</span>, channels <span class="op">=</span> <span class="st">"cfos"</span>,</span></span>
+<span class="r-in"><span>labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AD"</span> <span class="op">=</span> <span class="st">"AD_label"</span>, <span class="st">"control"</span> <span class="op">=</span> <span class="st">"control_label"</span><span class="op">)</span>, title <span class="op">=</span> <span class="st">"my title"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.7</span><span class="op">)</span>, image_ext <span class="op">=</span> <span class="st">".png"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

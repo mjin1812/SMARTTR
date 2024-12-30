@@ -2,9 +2,7 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{rewire_network}
 \alias{rewire_network}
-\title{Implement rewiring algorithms to current empirical networks to randomize certain network properties, while
-keeping other characterisitics constant (such as preserved degree sequence). These null networks can them be used to compare
-against and normalize the empirical networks.}
+\title{Implement rewiring algorithms to current empirical networks to randomize certain network properties.}
 \usage{
 rewire_network(
   e,
@@ -42,7 +40,9 @@ you want to summarize the null network statistics with \code{\link[=summarize_nu
 Summary table of rewired network properties of all nodes showing the average of all randomized network properties generated.
 }
 \description{
-Note that this essentially erases edge metrics and treats networks like binary graphs. Edge weights are not used in calculating
+Not that this keeps other characteristics constant (such as preserved degree sequence). These null networks can them be used to compare
+against and normalize the empirical networks. Currently this essentially erases edge metrics and treats networks like binary graphs.
+Edge weights are not used in calculating
 network topology metrics.
 }
 \examples{

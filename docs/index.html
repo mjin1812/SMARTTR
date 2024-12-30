@@ -6,45 +6,29 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="`SMARTR` (Simple multi-ensemble atlas registration and statistical testing in R)
-    This package allows for the user-friendly accomplishing of the analysis steps below:
-    1. Setting up the pipeline by specifying experiment parameters, and save directories.
-    2. The interactive registration process.
-    3. Importing raw segmentation data from .txt files generated from ImageJ for multiple channels.
-    4. Optionally creating a filter for the cfos and eyfp channels to clean segmented counts. 
-    5. Creating a segmentation object that is compatible with `wholebrain` functions.
-    6. Forward warping and mapping the data onto the standardized mouse atlas.
-    7. Cleaning the mapped data in all the following ways: 
-        + Removing cells that map outside the boundaries of the atlas.
-        + Omitting regions by a default list of regions to omit.
-        + Omitting regions by user specified region acronyms.
-        + Removing Layer 1 cells
-        + Removing cells from a contralateral hemisphere per slice if the registrations are divided by right and left hemispheres. 
-    8.  Obtaining cell counts normalized by region volume (per mm^2^) and region areas (per mm^2^). 
-    9. Aggregating counts into an experiment object.
-    10. Performing a suite of analysis and visualization capabilities on experiment objects and automatically saving them to a standardized figure folder.">
-<title>SMARTR: A mapping, analysis, and visualization package for wholebrain dual-ensemble coronal datasets. • SMARTR</title>
+    SMARTR is a package designed for the high-throughput mapping and analysis 
+    of dual-labelled ensemble datasets. Genetic activity-tagging strategies in mice 
+    allow for investigation of neural ensembles underlying behavior during multiple time points.
+    SMARTR provides a streamlined API for storing metadata related to imaging, animal subject, 
+    and experimental parameters and groupings. Data management is intrinsically built into the package, 
+    which helps automate the process of combining ensemble datasets across multiple images, animals, and experimental groupings. 
+    Finally, SMARTR provides a set of built-in analysis and visualization functions to conduct network analysis for each ensemble 
+    dataset for immediate downstream analysis.">
+<title>SMARTR: A mapping, analysis, and visualization package for wholebrain dual-ensemble coronal datasets • SMARTR</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="SMARTR: A mapping, analysis, and visualization package for wholebrain dual-ensemble coronal datasets.">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="SMARTR: A mapping, analysis, and visualization package for wholebrain dual-ensemble coronal datasets">
 <meta property="og:description" content="`SMARTR` (Simple multi-ensemble atlas registration and statistical testing in R)
-    This package allows for the user-friendly accomplishing of the analysis steps below:
-    1. Setting up the pipeline by specifying experiment parameters, and save directories.
-    2. The interactive registration process.
-    3. Importing raw segmentation data from .txt files generated from ImageJ for multiple channels.
-    4. Optionally creating a filter for the cfos and eyfp channels to clean segmented counts. 
-    5. Creating a segmentation object that is compatible with `wholebrain` functions.
-    6. Forward warping and mapping the data onto the standardized mouse atlas.
-    7. Cleaning the mapped data in all the following ways: 
-        + Removing cells that map outside the boundaries of the atlas.
-        + Omitting regions by a default list of regions to omit.
-        + Omitting regions by user specified region acronyms.
-        + Removing Layer 1 cells
-        + Removing cells from a contralateral hemisphere per slice if the registrations are divided by right and left hemispheres. 
-    8.  Obtaining cell counts normalized by region volume (per mm^2^) and region areas (per mm^2^). 
-    9. Aggregating counts into an experiment object.
-    10. Performing a suite of analysis and visualization capabilities on experiment objects and automatically saving them to a standardized figure folder.">
+    SMARTR is a package designed for the high-throughput mapping and analysis 
+    of dual-labelled ensemble datasets. Genetic activity-tagging strategies in mice 
+    allow for investigation of neural ensembles underlying behavior during multiple time points.
+    SMARTR provides a streamlined API for storing metadata related to imaging, animal subject, 
+    and experimental parameters and groupings. Data management is intrinsically built into the package, 
+    which helps automate the process of combining ensemble datasets across multiple images, animals, and experimental groupings. 
+    Finally, SMARTR provides a set of built-in analysis and visualization functions to conduct network analysis for each ensemble 
+    dataset for immediate downstream analysis.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -76,7 +60,7 @@
     <a class="dropdown-item" href="articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
     <a class="dropdown-item" href="articles/2.Tutorial.html">2. Mapping Tutorial</a>
     <a class="dropdown-item" href="articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="articles/4.Example%20Analysis%20Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
     <a class="dropdown-item" href="articles/5.FAQ.html">5. FAQ</a>
     <a class="dropdown-item" href="articles/6.Development.html">6. Development environment</a>
   </div>

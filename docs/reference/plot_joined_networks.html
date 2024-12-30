@@ -27,7 +27,7 @@
     <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
     <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
     <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example%20Analysis%20Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
     <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
     <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
   </div>
@@ -127,7 +127,8 @@
 
 
 <dt>correlation_edge_width_limit</dt>
-<dd><p>Can also be a hexadecimal color code written as a string.</p></dd>
+<dd><p>(default = c(0.8, 1)) Range for the width size of the edges.
+Can also be a hexadecimal color code written as a string.</p></dd>
 
 
 <dt>image_ext</dt>
@@ -140,7 +141,7 @@ the experiment object output folder.</p></dd>
 
 
 <dt>graph_theme</dt>
-<dd><p>(default = NULL) Add a <code>ggraph::theme()</code> to the network graph. If NULL, the default is taken.</p></dd>
+<dd><p>(default = NULL) Add a <code><a href="https://ggraph.data-imaginist.com/reference/theme_graph.html" class="external-link">ggraph::theme_graph()</a></code> to the network graph. If NULL, the default is taken.</p></dd>
 
 
 <dt>label_size</dt>
@@ -167,6 +168,17 @@ the experiment object output folder.</p></dd>
 <p>p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">p_list</span> <span class="op">&lt;-</span> <span class="fu">plot_joined_networks</span><span class="op">(</span><span class="va">anesthesia</span>, correlation_list_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"male_agg"</span>, <span class="st">"female_non"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>channels <span class="op">=</span> <span class="st">"cfos"</span>, edge_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>male_agg <span class="op">=</span>  <span class="st">"#06537f"</span>, female_non <span class="op">=</span> <span class="st">"#C70039"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>edge_color_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>male_agg <span class="op">=</span> <span class="st">"Male aggressor"</span>, female_non <span class="op">=</span> <span class="st">"Female non-aggressor"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>degree_scale_limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">45</span><span class="op">)</span>, correlation_edge_width_limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">1.0</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>height <span class="op">=</span> <span class="fl">30</span>, width <span class="op">=</span> <span class="fl">30</span>, label_size <span class="op">=</span> <span class="fl">13</span>, label_offset <span class="op">=</span> <span class="fl">0.08</span>, image_ext <span class="op">=</span> <span class="st">".png"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

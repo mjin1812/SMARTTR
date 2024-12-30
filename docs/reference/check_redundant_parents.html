@@ -31,7 +31,7 @@ the hypothalamus are represented, the HY should not be included in the list."><!
     <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
     <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
     <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example%20Analysis%20Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
     <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
     <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
   </div>
@@ -85,6 +85,24 @@ the hypothalamus are represented, the HY should not be included in the list.</p>
 <p>A list containing two elements: one vector of unique child acronyms, a vector of the parent regions considered redundant</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">check_redundant_parents</span><span class="op">(</span>acronyms <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ACA5"</span>, <span class="st">"ACA1"</span>, <span class="st">"ACA"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $unique_acronyms</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ACA5" "ACA1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $redundant_parents</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ACA"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="fu">check_redundant_parents</span><span class="op">(</span>acronyms <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"VMHDM"</span>, <span class="st">"VMHSh"</span>, <span class="st">"VMH"</span><span class="op">)</span>, ontology <span class="op">=</span> <span class="st">"unified"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $unique_acronyms</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "VMHDM" "VMHSh"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $redundant_parents</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "VMH"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

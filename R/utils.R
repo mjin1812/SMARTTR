@@ -6,7 +6,10 @@
 #' @param ... parameter to pass experiment object
 #' @param timestamp (bool) save the object with a date tag
 #' @export
-#' @example e <- save_experiment(e, timestamp = TRUE)
+#' @examples
+#' \dontrun{
+#' e <- save_experiment(e, timestamp = TRUE)
+#' }
 
 save_experiment <- function(..., timestamp = FALSE){
   info <- attr(..., 'info')
@@ -25,7 +28,10 @@ save_experiment <- function(..., timestamp = FALSE){
 #' @param ... parameter to pass mouse object
 #' @param timestamp (bool) save the object with a date tag
 #' @export
-#' @example m <- save_mouse(m, timestamp = TRUE)
+#' @examples
+#' \dontrun{
+#' m <- save_mouse(m, timestamp = TRUE)
+#' }
 
 save_mouse <- function(..., timestamp = FALSE){
   info <- attr(..., 'info')
@@ -74,11 +80,16 @@ print.correlation_list <- function(cl){
 
 
 #' @title Add slice to a mouse object
-#'  m <- add_slice(m, s, replace = FALSE)
+#'
 #' @param m mouse object
 #' @param s slice object
 #' @param replace (bool, default = FALSE) Replace a slice already contained in a mouse object.
 #' @export
+#' @examples
+#' m <- mouse()
+#' s <- slice()
+#' m <- add_slice(m, s, replace = FALSE)
+#' m <- add_slice(m, s, replace = TRUE)
 
 add_slice <- function(m, s, replace = FALSE){
 

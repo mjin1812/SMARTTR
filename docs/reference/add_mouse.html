@@ -35,7 +35,7 @@ a mouse will be read and automatically added to the experiment object's 'experim
     <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
     <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
     <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example%20Analysis%20Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
     <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
     <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
   </div>
@@ -95,6 +95,16 @@ a mouse will be read and automatically added to the experiment object's 'experim
 <p>an experiment object</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="fu"><a href="experiment.html">experiment</a></span><span class="op">(</span>experiment_name <span class="op">=</span> <span class="st">"example"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="mouse.html">mouse</a></span><span class="op">(</span>mouse_ID <span class="op">=</span> <span class="st">"Mouse1"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="fu">add_mouse</span><span class="op">(</span><span class="va">e</span>, <span class="va">m</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="fu">add_mouse</span><span class="op">(</span><span class="va">e</span>, <span class="va">m</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> There was existing data found for mouse Mouse1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replaced existing mouse data!</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

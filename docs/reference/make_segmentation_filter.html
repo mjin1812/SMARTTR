@@ -31,7 +31,7 @@ Make a segmentation filter for a slice within a mouse object"><!-- mathjax --><s
     <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
     <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
     <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example%20Analysis%20Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
     <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
     <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
   </div>
@@ -91,8 +91,16 @@ Make a segmentation filter for a slice within a mouse object"><!-- mathjax --><s
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>...</dt>
-<dd></dd>
+    <dl><dt>x</dt>
+<dd><p>a mouse or slice object</p></dd>
+
+
+<dt>...</dt>
+<dd><p>further arguments passed to or from other methods.</p></dd>
+
+
+<dt>s</dt>
+<dd><p>slice object</p></dd>
 
 
 <dt>channels</dt>
@@ -127,6 +135,9 @@ Inner list contains vectors of parameter ranges for that channel.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
+
+<p>a mouse or slice object</p>
+
 
 <p>s slice object. Vector of indices of cells to remove are stored as the channel filters in the slice object.</p>
 

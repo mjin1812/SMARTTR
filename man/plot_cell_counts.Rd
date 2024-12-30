@@ -2,10 +2,7 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{plot_cell_counts}
 \alias{plot_cell_counts}
-\title{This function allows for plotting of normalized cell counts by area across specific regions to plot. Two different mouse attributes can be used as categorical variables to map to either the color or
-pattern aesthetics of the bar plot, e.g. sex and experimental group.
-The color aesthetic takes precedence over the pattern aesthetic so if you only want to use one mouse attribute, for plotting
-set it to the \code{color_mapping} parameter and set the \code{pattern_mapping} parameter to NULL.}
+\title{This function allows for plotting of normalized cell counts by area across specific regions to plot.}
 \usage{
 plot_cell_counts(
   e,
@@ -63,7 +60,7 @@ plot_cell_counts(
 p Plot handle to the figure
 }
 \description{
-This function allows for plotting of normalized cell counts by area across specific regions to plot. Two different mouse attributes can be used as categorical variables to map to either the color or
+Two different mouse attributes can be used as categorical variables to map to either the color or
 pattern aesthetics of the bar plot, e.g. sex and experimental group.
 The color aesthetic takes precedence over the pattern aesthetic so if you only want to use one mouse attribute, for plotting
 set it to the \code{color_mapping} parameter and set the \code{pattern_mapping} parameter to NULL.

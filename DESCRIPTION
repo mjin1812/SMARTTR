@@ -48,7 +48,8 @@ Imports:
     rmarkdown (>= 2.8.0),
     Hmisc (>= 4.5.0),
     grImport (>= 0.9.3),
-    magrittr
+    magrittr,
+    knitr
 Suggests:
     SMART (>= 0.1.0),
     wholebrain (>= 0.1.1),

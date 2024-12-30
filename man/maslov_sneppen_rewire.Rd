@@ -2,9 +2,7 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{maslov_sneppen_rewire}
 \alias{maslov_sneppen_rewire}
-\title{Internal algorithm for maslov-sneppen rewiring
-This algorithm is not appropriate if you would like to take weights into account
-See Maslov & Sneppen (2002)"Specificity and stability in topology of protein networks"}
+\title{Internal algorithm for maslov-sneppen rewiring}
 \usage{
 maslov_sneppen_rewire(network, n_rewires = 10000)
 }
@@ -17,7 +15,6 @@ maslov_sneppen_rewire(network, n_rewires = 10000)
 a tidygraph graph
 }
 \description{
-Internal algorithm for maslov-sneppen rewiring
 This algorithm is not appropriate if you would like to take weights into account
 See Maslov & Sneppen (2002)"Specificity and stability in topology of protein networks"
 }
