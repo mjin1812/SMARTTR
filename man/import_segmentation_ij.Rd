@@ -8,13 +8,14 @@
 \usage{
 import_segmentation_ij(x, ...)
 
-\method{import_segmentation_ij}{slice}(s, mouse_ID = NA, channels = NULL)
+\method{import_segmentation_ij}{slice}(s, mouse_ID = NA, channels = NULL, maxdist = 10)
 
 \method{import_segmentation_ij}{mouse}(
   m,
   slice_ID = NA,
   hemisphere = NULL,
   channels = NULL,
+  maxdist = 10,
   replace = FALSE
 )
 }
@@ -28,6 +29,8 @@ import_segmentation_ij(x, ...)
 \item{mouse_ID}{(str) ID of mouse}
 
 \item{channels}{(str vector, default = NULL) channels to import. If NULL, defaults to the channels stored in the slice object attributes.}
+
+\item{maxdist}{(int, default = 10) maximum tolerability of character differences to match the string names of the importation files}
 
 \item{m}{mouse object}
 

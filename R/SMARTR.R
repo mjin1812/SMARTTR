@@ -1,4 +1,4 @@
-#' SMARTR: A mapping, analysis, and visualization package for wholebrain dual-ensemble coronal datasets.
+#' SMARTR: A Mapping, Analysis, and Visualization Package for Wholebrain Dual-Ensemble Coronal Datasets.
 #'
 #' @description
 #' The base of this pipeline is an R package in with the title, `SMARTR`, a self-referential play on
@@ -18,10 +18,6 @@
 #' A [mouse] object is an object that will store multiple slice objects (and therefore all the information in it),
 #' and will eventually store the combined cell data and the region cell counts normalized by volume.
 #' Like a slice, it will also contain “metadata” about your mouse stored as attributes.
-
-
-
-
 
 #' An [experiment]An experiment object consists of a list of processed mouse objects with raw data from slices omitted, and experimental attributes stored as a list.
 #' It will also contain “metadata” about your experimental personnel and analysis groups stored as attributes.

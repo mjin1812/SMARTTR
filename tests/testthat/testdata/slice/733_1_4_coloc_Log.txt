@@ -1,0 +1,48 @@
+1: P:\DENNYLABV\Michelle_Jin\ForGabby\example_image\733_1_4.lif
+Processing: P:\DENNYLABV\Michelle_Jin\ForGabby\example_image\733_1_4.lif
+P:/DENNYLABV/Michelle_Jin/ForGabby/example_image/733_1_4.tif
+Channels: 2
+Done background subtraction
+Done Gaussian Blur
+Threshold = 223
+Done Processing Binary Image.
+  Extracting voxel values (h_min = 0.0, h_max = 223.0)...
+  Extraction took 1058 ms.
+  Sorting voxels by value...
+  Sorting took 258 ms.
+  Flooding...
+  Flooding took: 2483 ms
+Watershed 3d took 9343 ms.
+Done with eyfp segmentation
+Done saving images
+First instance of 3D Manager
+Checking installation...
+Java3D not installed. 
+Replacement of Java3D installed. 
+Installation OK
+Starting RoiManager3D
+1.6
+Adding image : min-max 1 5838
+5838 objects added. Total of 5838 objects
+Saving eyfp measurements
+Saving 3D Measure in P:\DENNYLABV\Michelle_Jin\ForGabby\example_image\M_C1_eYFP_733_1_4.txt
+Saved 3D Measure
+Saving 3D Quantif in P:\DENNYLABV\Michelle_Jin\ForGabby\example_image\Q_C1_eYFP_733_1_4_eYFP.txt
+Time = 52.538 seconds
+Done all!
+1: P:\DENNYLABV\Michelle_Jin\ForGabby\example_image\733_1_4.lif
+Processing: P:\DENNYLABV\Michelle_Jin\ForGabby\example_image\733_1_4.lif
+Running colocalization
+Interactions completed (2961 interactions found), building results table
+ResultsTable.show(): the system ResultTable should only be displayed in the "Results" window.
+Finished
+Done colocalization
+Adding image : min-max 1 5838
+5838 objects added. Total of 11676 objects
+Saving 3D Measure in P:\DENNYLABV\Michelle_Jin\ForGabby\example_image\M_733_1_4_Coloc_B_C1.txt
+Saved 3D Measure
+Adding image : min-max 1 20814
+20814 objects added. Total of 20814 objects
+Saving 3D Measure in P:\DENNYLABV\Michelle_Jin\ForGabby\example_image\M_733_1_4_Coloc_A_C2.txt
+Saved 3D Measure
+Time = 46.42 seconds

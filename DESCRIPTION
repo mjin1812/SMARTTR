@@ -1,5 +1,5 @@
 Package: SMARTR
-Title: SMARTR: A mapping, analysis, and visualization package for wholebrain dual-ensemble coronal datasets
+Title: SMARTR: A Mapping, Analysis, and Visualization Package for Wholebrain Dual-Ensemble Coronal Datasets
 Version: 1.0.1
 Authors@R: c(
     person(given = "Michelle",
@@ -17,6 +17,7 @@ Authors@R: c(
        email ="ml3696@cumc.columbia.edu", 
        role = c("ctb"),
        comment = c(ORCID = "0000-0003-3000-1592")))
+Maintainer: Michelle Jin <mj2947@cumc.columbia.edu>
 Description: `SMARTR` (Simple multi-ensemble atlas registration and statistical testing in R)
     SMARTR is a package designed for the high-throughput mapping and analysis 
     of dual-labelled ensemble datasets. Genetic activity-tagging strategies in mice 
@@ -54,7 +55,7 @@ Suggests:
     SMART (>= 0.1.0),
     wholebrain (>= 0.1.1),
     ggpattern (>= 0.2.0),
-    testthat (>= 3.0.0)
+    testthat (>= 3.1.1)
 Additional_repositories: https://github.com/mjin1812/SMART, https://github.com/tractatus/wholebrain, https://trevorldavis.com/R/ggpattern/dev/
 Config/testthat/edition: 3
 VignetteBuilder: knitr

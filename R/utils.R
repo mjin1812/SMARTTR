@@ -10,7 +10,6 @@
 #' \dontrun{
 #' e <- save_experiment(e, timestamp = TRUE)
 #' }
-
 save_experiment <- function(..., timestamp = FALSE){
   info <- attr(..., 'info')
 
@@ -32,7 +31,6 @@ save_experiment <- function(..., timestamp = FALSE){
 #' \dontrun{
 #' m <- save_mouse(m, timestamp = TRUE)
 #' }
-
 save_mouse <- function(..., timestamp = FALSE){
   info <- attr(..., 'info')
 
@@ -111,7 +109,6 @@ add_slice <- function(m, s, replace = FALSE){
     names(m$slices) <- slice_name
 
   } else{
-
     # check in list of previous stored slice names for a match
     stored_names <- names(m$slices)
 

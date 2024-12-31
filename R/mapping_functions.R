@@ -106,6 +106,10 @@ get_registered_volumes <- function(x, ...){
 register.slice <- function(s,
                            filter = NULL,
                            ...){
+  if (!rlang::is_installed("SMART")){
+    stop(
+      "The \"SMART\" package must be installed to use this function.",
+      call. = FALSE)}
   if(get_os() != "osx"){
     quartz <<- X11
   }
@@ -208,9 +212,11 @@ register.mouse <- function(m,
 #' Import segmentation data
 #' @rdname import_segmentation_ij
 #' @description Method for importing segmentation data for a slice object
+#'
 #' @param s slice object
 #' @param mouse_ID (str) ID of mouse
 #' @param channels (str vector, default = NULL) All the channels the user wants to import.
+#' @param maxdist (int, default = 10) maximum tolerability of character differences to match the string names of the importation files
 #' If NULL, defaults to the channels stored in the slice object attributes.
 #' @return s slice object
 #' @examples
@@ -223,7 +229,8 @@ register.mouse <- function(m,
 
 import_segmentation_ij.slice <- function(s,
                                       mouse_ID = NA,
-                                      channels = NULL){
+                                      channels = NULL,
+                                      maxdist = 10){
 
 
   # Get slice information
@@ -260,9 +267,9 @@ import_segmentation_ij.slice <- function(s,
       M_image_B_path <- paste0("M_", mouse_ID, '_', section,"_Coloc_B_C1.txt")
 
       # Best match helper in case of user name edit errors
-      coloc_path <- txt_files[stringdist::amatch(coloc_path, txt_files, maxDist=Inf)]
-      M_image_A_path <- txt_files[stringdist::amatch(M_image_A_path, txt_files, maxDist=Inf)]
-      M_image_B_path <- txt_files[stringdist::amatch(M_image_B_path, txt_files, maxDist=Inf)]
+      coloc_path <- txt_files[stringdist::amatch(coloc_path, txt_files, maxDist=maxdist)]
+      M_image_A_path <- txt_files[stringdist::amatch(M_image_A_path, txt_files, maxDist=maxdist)]
+      M_image_B_path <- txt_files[stringdist::amatch(M_image_B_path, txt_files, maxDist=maxdist)]
 
       message("Imported the following files: \n")
       print(coloc_path)
@@ -286,8 +293,8 @@ import_segmentation_ij.slice <- function(s,
         quant_path <- paste0("Q_C_", channel, "_", mouse_ID,'_',section,"_", channel,".txt" )
 
         # match to exact name in directory
-        meas_path <- txt_files[stringdist::amatch(meas_path, txt_files, maxDist=Inf)]
-        quant_path <- txt_files[stringdist::amatch(quant_path, txt_files, maxDist=Inf)]
+        meas_path <- txt_files[stringdist::amatch(meas_path, txt_files, maxDist=maxdist)]
+        quant_path <- txt_files[stringdist::amatch(quant_path, txt_files, maxDist=maxdist)]
         message("Imported the following files: \n")
         print(meas_path)
         print(quant_path)
@@ -316,6 +323,7 @@ import_segmentation_ij.slice <- function(s,
 #' @param slice_ID (str) ID of slice
 #' @param hemisphere (str)'left', 'right' or NULL
 #' @param channels (str vector, default = NULL) channels to import. If NULL, defaults to the channels stored in the slice object attributes.
+#' @param maxdist (int, default = 10) maximum tolerability of character differences to match the string names of the importation files
 #' @param replace (bool, default = FALSE) replace existing raw segmentation data
 #' @return m mouse object
 #' @examples m <-  import_segmentation(m, slice_ID = "1_10", channels = c("cfos", "eyfp", "colabel"), replace = FALSE)
@@ -326,6 +334,7 @@ import_segmentation_ij.mouse <- function(m,
                                       slice_ID = NA,
                                       hemisphere = NULL,
                                       channels = NULL,
+                                      maxdist = 10,
                                       replace = FALSE){
 
   # Get mouse ID
@@ -358,7 +367,8 @@ import_segmentation_ij.mouse <- function(m,
           # Import segmentation from scratch
           m$slices[[match]] <- import_segmentation_ij(m$slices[[match]],
                                                    mouse_ID = mouse_ID,
-                                                   channels = channels)
+                                                   channels = channels,
+                                                   maxdist)
         } else{
           stop(paste0("There is existing segmentation data for this slice! If you want to overwrite it, set replace to TRUE."))
         }
@@ -366,7 +376,8 @@ import_segmentation_ij.mouse <- function(m,
         # Import segmentation with matched slices with no segmentation data yet
         m$slices[[match]] <- import_segmentation_ij(m$slices[[match]],
                                                  mouse_ID = mouse_ID,
-                                                 channels = channels)
+                                                 channels = channels,
+                                                 maxdist)
       }
     }
   }
@@ -849,7 +860,12 @@ map_cells_to_atlas.slice <- function(s,
                                      mouse_ID = NULL,
                                      ...){
 
-  # Detect the OS and set quartz( as graphing function)
+  if (!rlang::is_installed("wholebrain")){
+    stop(
+      "The \"wholebrain\" package must be installed to use this function.",
+      call. = FALSE)
+  }
+
   if(get_os() != "osx"){
     quartz <<- X11
   }
@@ -1002,13 +1018,10 @@ exclude_anatomy.slice <- function(s,
                                   simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural"),
                                   plot_filtered = TRUE){
 
-  # Detect the OS and set quartz( as graphing function)
   if(get_os() != "osx"){
     quartz <<- X11
   }
 
-
-  # Get slice information & combine exclude regions parameter with default regions excluded;
   info <- attr(s, 'info')
   if (is.null(channels) && !is.null(info$channels)){
     channels <- info$channels
@@ -1019,15 +1032,10 @@ exclude_anatomy.slice <- function(s,
   include_right_regions <- unique(c(include_right_regions, info$right_regions_included))
   include_left_regions <- unique(c(include_left_regions, info$left_regions_included))
 
-
-  # if (!is.null(include_right_regions)  ){
   if (!(length(include_right_regions) < 1)){
-    # The regions to include parameter is being used. Exclude all other regions
-    # Concatenate list of all regions
     include_right_regions <-  find_all_subregions(include_right_regions)
     attr(s, 'info')$right_regions_included <- include_right_regions
   } else{
-    # Reassign so that all regions excluded on the right side are tracked
     exclude_right_regions <- unique(c(exclude_right_regions, info$right_regions_excluded))
     if (isTRUE(simplify_regions)){
       df <- simplify_vec_by_keywords(exclude_right_regions, keywords = simplify_keywords) %>% dplyr::distinct()
@@ -1037,14 +1045,10 @@ exclude_anatomy.slice <- function(s,
     all_excluded_right_regions <-  find_all_subregions(exclude_right_regions)
   }
 
-  # if (!is.null(include_left_regions)){
   if (!(length(include_left_regions) < 1)){
-    # The regions to include parameter is being used. Exclude all other regions
-    # Concatenate list of all regions
     include_left_regions <-  find_all_subregions(include_left_regions)
     attr(s, 'info')$left_regions_included <- include_left_regions
   } else{
-    # Reassign so that all regions excluded on the left side are tracked
     exclude_left_regions <- unique(c(exclude_left_regions, info$left_regions_excluded))
     if (isTRUE(simplify_regions)){
       df <- simplify_vec_by_keywords(exclude_left_regions, keywords = simplify_keywords) %>% dplyr::distinct()
@@ -1054,28 +1058,20 @@ exclude_anatomy.slice <- function(s,
     all_excluded_left_regions <-  find_all_subregions(exclude_left_regions)
   }
 
-  ## Filtering per channel
   for (channel in channels){
     dataset <- s$forward_warped_data[[channel]]
-
-    # 1) Filter out right and left regions
-
-    # if (!is.null(include_right_regions)){
     if (!(length(include_right_regions)<1)){
       dataset <-  dataset[!dataset$right.hemisphere | (dataset$right.hemisphere & (dataset$acronym %in% include_right_regions)),] # Include regions
     } else {
       dataset <- dataset[!(dataset$right.hemisphere & (dataset$acronym %in% all_excluded_right_regions)),] #exclude regions
     }
 
-    # 1) Filter out left and left regions
-    # if (!is.null(include_left_regions)){
     if (!(length(include_left_regions)<1)){
       dataset <-  dataset[dataset$right.hemisphere | (!dataset$right.hemisphere & (dataset$acronym %in% include_left_regions)),]
     } else {
       dataset <- dataset[!(!dataset$right.hemisphere & (dataset$acronym %in% all_excluded_left_regions)),]
     }
 
-    # 2) Filter out hemisphere
     if (exclude_hemisphere){
       if (info$hemisphere == "right"){
         dataset <- dataset[dataset$right.hemisphere,]
@@ -1084,22 +1080,22 @@ exclude_anatomy.slice <- function(s,
       }
     }
 
-    # 3) Filter out layer 1 of the Cortex
     if (exclude_layer_1){
       dataset <- dataset[-grep("layer 1",dataset$name, ignore.case = TRUE, value = FALSE),]
     }
 
-    # Filter out cell counts that are out of bounds
     if(clean){
       dataset <- dataset[!dataset$id==0,]
-      dataset <- tidyr::drop_na(dataset) # Get rid of rows that contain any NA values
+      dataset <- tidyr::drop_na(dataset)
     }
-
-    # Dataset
     s$forward_warped_data[[channel]] <- dataset
 
-    ## plotting schematic plots to check that the region cell counts are cleaned
     if (plot_filtered){
+      if (!rlang::is_installed("wholebrain")){
+        stop(
+          "The \"wholebrain\" package must be installed when the `plot_filtered` parameter is TRUE.",
+          call. = FALSE)
+      }
       wholebrain::schematic.plot(dataset, device = TRUE)
     }
   }
@@ -1387,35 +1383,34 @@ return(m)
 #' @examples filter <- adjust_brain_outline(s); s <- register(s, filter = filter) Adjust the brain threshold, then run register on the slice object
 adjust_brain_outline <- function(s, filter = NULL){
 
+  if (!rlang::is_installed("wholebrain")){
+    stop(
+      "The \"wholebrain\" package must be installed to use this function.",
+      call. = FALSE)
+  }
   regi_path <- attr(s, "info")$registration_path
-
   if (is.null(filter)){
     filter <- SMARTR::filter
     filter$brain.threshold <- 10
   } else if (!is.list(filter)){
     stop("You did not supply a valid list for the filter parameter.")
   }
-
   cat(paste0("Trying default brain threshold of ", filter$brain.threshold, "\n" ))
   filter <- wholebrain::segment(regi_path, filter = filter)
   filter <- filter$filter
-
   change_done <-FALSE
   while (!change_done) {
     cat(paste0("Your brain threshold is: ", filter$brain.threshold ))
     inp <- readline("Do you want to change your threshold: Y/N?" )
     if (inp=="Y" || inp=="y") {
-
       filter$brain.threshold <- as.integer(readline("Enter your new brain threshold: "))
       filter <- wholebrain::segment(regi_path, filter = filter)
       filter <- filter$filter
-
     } else if ( inp=="N" || inp == "n") {
       # exit out of loop
       change_done  <- TRUE
     }
   }
-
   return(filter)
 }
 
@@ -1742,7 +1737,11 @@ simplify_cell_count <- function(e,
 #' @param regions vector of acronyms of regions in the registration
 #' @return tibble dataframe with the columns `name`, `acronym`, `right.hemisphere`, and  `area`
 get.registered.areas.td <- function(regions, registration, conversion.factor = 1){
-
+  if (!rlang::is_installed("wholebrain")){
+    stop(
+      "The \"wholebrain\" package must be installed to use this function.",
+      call. = FALSE)
+  }
   regions <- regions %>% tidyr::drop_na()
   areas <- tibble::tibble(name=as.character(wholebrain::name.from.acronym(regions$acronym)),
                           acronym=regions$acronym,
@@ -1774,10 +1773,13 @@ get.registered.areas.td <- function(regions, registration, conversion.factor = 1
 #' @param regions vector of acronyms of regions in the registration
 #' @return tibble dataframe with the columns `name`, `acronym`, `right.hemisphere`, and  `area`
 get.registered.areas.bu <- function(regions, registration, conversion.factor = 1){
-
+  if (!rlang::is_installed("wholebrain")){
+    stop(
+      "The \"wholebrain\" package must be installed to use this function.",
+      call. = FALSE)
+  }
   region.info <- list()
   regions <- regions %>% tidyr::drop_na()
-
   for (k in 1:nrow(regions)) {
     region.data <- wholebrain::get.region(regions$acronym[k],registration)
     region.data[,1:4] <- region.data[,1:4]*conversion.factor

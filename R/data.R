@@ -16,15 +16,12 @@
 "filter"
 
 #' segmentation object compatible with wholebrain package functions
-#'
-#'
 #' @format A
 #' \describe{
 #'   \item{filter}{list storing parameter use to segment and get brain contours}
 #'   \item{soma}{list storing cell count data}
 #' }
 "segmentation.object"
-
 
 #' Ontology
 #'
@@ -36,7 +33,6 @@
 #' }
 "ontology"
 
-
 #' Unified Kim ontology
 #'
 #' The combined ontology created by the Yongsoo Kim lab. Combines nomenclature of the two most-used mouse brain atlases, the Franklin and Paxinos (FP) and the common coordinate framework (CCF) from the Allen Institute for Brain Science.
@@ -45,10 +41,6 @@
 #' \describe{
 #' }
 "ontology.unified"
-
-
-
-
 
 #' attr2match
 #'

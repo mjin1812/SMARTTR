@@ -8,7 +8,7 @@ test_that("Test that simplifying vector of acronyms by keywords works for all on
   # Test Kim Unified Atlas
   df <- dplyr::tibble(name = c("Lateral parabrachial nucleus",
                                 "Medial parabrachial nucleus",
-                                "Caudat/e Putamen"), acronym = c("LPB", "MPB", "CP"))
+                                "Caudate Putamen"), acronym = c("LPB", "MPB", "CP"))
   acronyms <- c("LPBD", "MPBE", "CPre")
   expect_equal(simplify_vec_by_keywords(acronyms,
                                         keywords = c("dorsal part", "external part", "Caudoputamen-"),
