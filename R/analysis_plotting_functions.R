@@ -1002,7 +1002,6 @@ summarize_null_networks <- function(null_nodes_list,
 
 
 
-
 ##_____________________ Plotting functions ___________________________
 
 #' This function allows for plotting of colabelled cells over either the "cfos" or "eyfp" channels.
@@ -1037,14 +1036,9 @@ plot_percent_colabel <- function(e,
                                  plot_individual = TRUE,
                                  height = 8,
                                  width = 8,
-                                 print_plot = TRUE,
+                                 print_plot = FALSE,
                                  save_plot = TRUE,
                                  image_ext = ".png"){
-
-  # Detect the OS and set quartz( as graphing function)
-  if(get_os() != "osx"){
-    quartz <- X11
-  }
 
   # Re-running the get_percent_colabel function for the color &/or pattern mapping
   if(is.null(pattern_mapping)){
@@ -1206,13 +1200,13 @@ plot_percent_colabel <- function(e,
   }
 
   if (print_plot){
-    quartz()
+    dev.new(noRStudioGD=TRUE)
     print(p)
   }
 
   if(save_plot){
     # Plot the plot
-    quartz(width = width, height = height)
+    dev.new(width = width, height = height, noRStudioGD=TRUE)
     print(p)
     # Create figure directory if it doesn't already exists
     output_dir <-  file.path(attr(e, "info")$output_path, "figures")
@@ -1265,14 +1259,9 @@ plot_cell_counts <- function(e,
                              plot_individual = TRUE,
                              height = 8,
                              width = 8,
-                             print_plot = TRUE,
+                             print_plot = FALSE,
                              save_plot = TRUE,
                              image_ext = ".png"){
-
-  # Detect the OS and set quartz( as graphing function)
-  if(get_os() != "osx"){
-    quartz <- X11
-  }
 
   # Re-running the get_percent_colabel function for the color &/or pattern mapping
   if(is.null(pattern_mapping)){
@@ -1417,13 +1406,13 @@ plot_cell_counts <- function(e,
   }
 
   if (print_plot){
-    quartz()
+    dev.new(noRStudioGD=TRUE)
     print(p)
   }
 
   if(save_plot){
     # Plot the plot
-    quartz(width = width, height = height)
+    dev.new(width = width, height = height, noRStudioGD=TRUE)
     print(p)
     # Create figure directory if it doesn't already exists
     output_dir <-  file.path(attr(e, "info")$output_path, "figures")
@@ -1460,7 +1449,7 @@ plot_cell_counts <- function(e,
 #' @param anatomical.order (default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order
 #' @param height height of the plot in inches.
 #' @param width width of the plot in inches.
-#' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
+#' @param print_plot (bool, default = FALSE) Whether to display the plot (in addition to saving the plot)
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of
 #'  the experiment object output folder.
 #' @param flip_axis plot cell counts on x-axis rather than y-axis.
@@ -1511,7 +1500,7 @@ plot_normalized_counts <- function(e,
                                                          "TH", "HY", "MB", "HB", "CB"),
                                     height = 7,
                                     width = 20,
-                                    print_plot = TRUE,
+                                    print_plot = FALSE,
                                     save_plot = TRUE,
                                     flip_axis = FALSE,
                                     reverse_colors = FALSE,
@@ -1537,10 +1526,6 @@ plot_normalized_counts <- function(e,
                                                                  strip.placement = "outside",
                                                                  strip.switch.pad.grid = unit(0.1, "in")),
                                    image_ext = ".pdf"){
-  # check os and set graphics window
-  if (get_os() != "osx") {
-    quartz <- X11
-  }
   # create plot list containing number of plots equal to the number of channels
   p_list <- vector(mode = 'list', length = length(channels))
   labels <- purrr::map(values, function(x){paste(x, collapse = "_")}) %>% unlist()
@@ -1669,7 +1654,7 @@ plot_normalized_counts <- function(e,
         theme(panel.background = element_rect(fill = facet_background_color, color = "black"))
     }
     if (print_plot) {
-      quartz()
+      dev.new(noRStudioGD=TRUE)
       print(p)
     }
 
@@ -1678,6 +1663,8 @@ plot_normalized_counts <- function(e,
       if(!dir.exists(output_dir)){
         dir.create(output_dir)
       }
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
+      print(p)
       ggsave(p, filename = paste0(channels[k], "_normalized_counts", image_ext),
              path = file.path(attr(e, 'info')$output_path, "figures"), width = width, height = height, limitsize = FALSE)
     }
@@ -1695,7 +1682,7 @@ plot_normalized_counts <- function(e,
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) Must exist in the channels attribute of the correlation_list.
 #' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal code for the colors corresponding channels parameter. Color values can also be
 #' input compatible with ggplot2 plotting functions.
-#' @param print_plot (bool, default = TRUE) Print the plot as graphics windows.
+#' @param print_plot (bool, default = FALSE) Print the plot as graphics windows.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #' the experiment object output folder.
 #' @param image_ext (default = ".png") image extension to the plot as.
@@ -1723,7 +1710,7 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
                                       ontology = "allen",
                                       anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU",
                                                            "TH", "HY", "MB", "HB", "CB"),
-                                      print_plot = TRUE, save_plot = TRUE, image_ext = ".png",
+                                      print_plot = FALSE, save_plot = TRUE, image_ext = ".png",
                                       plot_title = NULL, height = 10, width = 10,
                                       theme.hm = ggplot2::theme(axis.text.x = element_text(hjust = 1, vjust = 0.5, angle = 90, size = 8),
                                                                 axis.text.y = element_text(vjust = 0.5, size = 8),
@@ -1738,12 +1725,6 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
                                                                 strip.placement = "outside",
                                                                 strip.background = element_rect(color = "black", fill = "lightblue"))
                                       ){
-
-  # Detect the OS and set quartz (as graphing function)
-  if(get_os() != "osx"){
-    quartz <- X11
-  }
-
   # Get the attributes for plotting
   if (is.null(e$correlation_list[[correlation_list_name]])){
     stop(paste0("Your experiment object doesn't contain the specified correlation_list object to plot! ",
@@ -1805,13 +1786,13 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
     theme.hm
 
   if (print_plot){
-    quartz()
+    dev.new(noRStudioGD=TRUE)
     print(p)
   }
 
   if(save_plot){
     # Plot the heatmap
-    quartz(width = width, height = height)
+    dev.new(noRStudioGD=TRUE)
     print(p)
 
     # Create figure directory if it doesn't already exists
@@ -1850,7 +1831,7 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) channels to plot.
 #' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal code for the colors corresponding to the
 #' channels attribute of the correlation_list. Color values can also be input compatible with ggplot2 plotting functions.
-#' @param print_plot (bool, default = TRUE) Print the plot as graphics windows.
+#' @param print_plot (bool, default = FALSE) Print the plot as graphics windows.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #' the experiment object output folder.
 #' @param image_ext (default = ".png") image extension to save the plot as.
@@ -1865,7 +1846,7 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
 #' @export
 #' @examples volcano_plot(e, permutation_comparison = "female_AD_vs_male_AD", channels = c("cfos", "eyfp", "colabel"),
 #' colors =  c("#be0000", "#00782e", "#f09b08"), save_plot = TRUE, title = NULL, ylim = c(0, 3), height = 8,
-#' width = 10, print_plot = TRUE, image_ext = ".png")
+#' width = 10, print_plot = FALSE, image_ext = ".png")
 
 
 volcano_plot <- function(e,
@@ -1877,16 +1858,10 @@ volcano_plot <- function(e,
                          ylim = c(0, 3),
                          height = 8,
                          width = 10,
-                         print_plot = TRUE,
+                         print_plot = FALSE,
                          plt_theme = NULL,
                          point_size = 1,
                          image_ext = ".png"){
-
-  # Detect the OS and set quartz( as graphing function)
-  if(get_os() != "osx"){
-    quartz <- X11
-  }
-
   ## plotting theme
   if (is.null(plt_theme)){
     plt_theme <- ggplot2::theme_classic() + theme(text = element_text(size = 22),
@@ -1943,13 +1918,12 @@ volcano_plot <- function(e,
       plt_theme
 
     if (print_plot){
-      quartz()
+      dev.new(noRStudioGD=TRUE)
       print(p)
     }
 
     if(save_plot){
-      # Plot the plot
-      quartz(width = width, height = height)
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
       print(p)
 
       # Create figure directory if it doesn't already exists
@@ -1986,7 +1960,7 @@ volcano_plot <- function(e,
 #' @param x_label_group_2 (str, NULL) The label for the second group in the permutaiton analysis. Note: this is to customize the graph labels. It does not reverse the group order.
 #' @param height height of the plot in inches.
 #' @param width width of the plot in inches.
-#' @param print_plot (bool, default = TRUE) Whether to display the plot (in addition to saving the plot)
+#' @param print_plot (bool, default = FALSE) Whether to display the plot (in addition to saving the plot)
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
 #' @param reverse_group_order (bool, default = TRUE) Reverse the order of the groups on the x-axis.
@@ -2011,7 +1985,7 @@ parallel_coordinate_plot <- function(e,
                                      x_label_group_2 = NULL,
                                      height = 10,
                                      width = 10,
-                                     print_plot = TRUE,
+                                     print_plot = FALSE,
                                      save_plot = TRUE,
                                      reverse_group_order= FALSE,
                                      force = 1,
@@ -2020,10 +1994,6 @@ parallel_coordinate_plot <- function(e,
                                      image_ext = ".png",
                                      nudge_x = 2:5
                                      ){
-
-  if(get_os() != "osx"){
-    quartz <- X11
-  }
   if(is.null(x_label_group_1)){
     group_1 <- stringr::str_split(permutation_comparison, "_vs_", simplify = TRUE)[,1] %>%
       stringr::str_split("_", simplify = TRUE) %>% paste(collapse = " ")
@@ -2116,12 +2086,12 @@ parallel_coordinate_plot <- function(e,
       expand_limits(y=c(-1,1)) + plt_theme
 
     if (print_plot){
-      quartz(height = height, width = width)
+      dev.new(noRStudioGD=TRUE)
       print(p)
     }
 
     if(save_plot){
-      quartz(width = width, height = height)
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
       print(p)
       output_dir <-  file.path(attr(e, "info")$output_path, "figures")
       if(!dir.exists(output_dir)){
@@ -2146,7 +2116,7 @@ parallel_coordinate_plot <- function(e,
 #' @param image_ext (default = ".png") image extension to the plot as.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
-#' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.
+#' @param print_plot (bool, default = FALSE) Whether to print the plot as an output.
 #'  the experiment object output folder.
 #' @param edge_color (str, default = "firebrick") Color of the network edges.
 #' @param degree_scale_limit (vec, default = c(1,10)) Scale limit for degree size
@@ -2180,16 +2150,13 @@ plot_networks <- function(e,
                           anatomical.colors = NULL,
                           correlation_edge_width_limit = c(0.8,1),
                           image_ext = ".png",
-                          print_plot = TRUE,
+                          print_plot = FALSE,
                           graph_theme = NULL,
                           label_size = 5,
                           edge_thickness_range = c(1,5),
                           node_size_range = c(1, 8),
                           label_offset = 0.15,
                           save_plot = TRUE){
-  if(get_os() != "osx"){
-    quartz <- X11
-  }
   p_list <- vector(mode='list', length = length(channels))
   names(p_list) <- channels
   for (channel in channels){
@@ -2249,11 +2216,11 @@ plot_networks <- function(e,
     }
     p <-  p + ggplot2::ggtitle(title)
     if (print_plot){
-      quartz(width = width, height = height)
+      dev.new(noRStudioGD=TRUE)
       print(p)
     }
     if(save_plot){
-      quartz(width = width, height = height)
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
       print(p)
       output_dir <-  file.path(attr(e, "info")$output_path, "figures")
       if(!dir.exists(output_dir)){
@@ -2283,7 +2250,7 @@ plot_networks <- function(e,
 #' @param width (int, default = 15) Width of the plot in inches.
 #' @param xlim (vec, default = c(0,20)) axes limits x-axis
 #' @param ylim (vec, default = c(0,15))axes limits of y-axis
-#' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.
+#' @param print_plot (bool, default = FALSE) Whether to print the plot as an output.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
 #' @param theme.gg (default = NULL) Option to use custom ggplot2 theme if the user wants
@@ -2309,13 +2276,9 @@ plot_degree_distributions <- function(e,
                                       xlim = c(0,20),
                                       ylim = c(0,15),
                                       image_ext = ".png",
-                                      print_plot = TRUE,
+                                      print_plot = FALSE,
                                       theme.gg = NULL,
                                       save_plot = TRUE){
-  if(get_os() != "osx"){
-    quartz <- X11
-  }
-
   if (is.null(theme.gg)){
     theme.gg <- ggplot2::theme_classic() +
                 theme(text = element_text(size = 22),
@@ -2355,12 +2318,12 @@ plot_degree_distributions <- function(e,
     }
 
     if (print_plot){
-      quartz(width = width, height = height)
+      dev.new(noRStudioGD=TRUE)
       print(p)
     }
 
     if(save_plot){
-      quartz(width = width, height = height)
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
       print(p)
       output_dir <-  file.path(attr(e, "info")$output_path, "figures")
       if(!dir.exists(output_dir)){
@@ -2388,7 +2351,7 @@ plot_degree_distributions <- function(e,
 #' @param title (str, default = "my_title) plot title
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
-#' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
+#' @param print_plot (bool, default = FALSE) Whether to print the plot as an output.s
 #' @param rev_x_scale (bool, default = FALSE) Reveres the scale of the categorical variables
 #'  the experiment object output folder.
 #' @param label_angle (int, default = 60)
@@ -2418,13 +2381,8 @@ plot_mean_degree <- function(e,
                              ylim = c(0, 70),
                              theme.gg = NULL,
                              image_ext = ".png",
-                             print_plot = TRUE,
+                             print_plot = FALSE,
                              save_plot = TRUE){
-
-  if(get_os() != "osx"){
-    quartz <- X11
-  }
-
   if (is.null(theme.gg)){
     theme.gg <- ggplot2::theme_classic() +
       theme(text = element_text(size = 22),
@@ -2474,11 +2432,11 @@ plot_mean_degree <- function(e,
       p <-  p + ggplot2::ggtitle(title)
     }
     if (print_plot){
-      quartz(width = width, height = height)
+      dev.new(noRStudioGD=TRUE)
       print(p)
     }
     if(save_plot){
-      quartz(width = width, height = height)
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
       print(p)
       output_dir <-  file.path(attr(e, "info")$output_path, "figures")
       if(!dir.exists(output_dir)){
@@ -2512,7 +2470,7 @@ plot_mean_degree <- function(e,
 #' @param theme.gg (default = NULL) Option to use custom ggplot2 theme if the user wants
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
-#' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
+#' @param print_plot (bool, default = FALSE) Whether to print the plot as an output.s
 #' @param rev_x_scale (bool, default = FALSE) Reveres the scale of the categorical variables
 #'  the experiment object output folder.
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
@@ -2536,12 +2494,8 @@ plot_mean_clust_coeff <- function(e,
                              ylim = c(0, 0.7),
                              theme.gg = NULL,
                              image_ext = ".png",
-                             print_plot = TRUE,
+                             print_plot = FALSE,
                              save_plot = TRUE){
-  if(get_os() != "osx"){
-    quartz <- X11
-  }
-
   if (is.null(theme.gg)){
     theme.gg <- ggplot2::theme_classic() +
       theme(text = element_text(size = 22),
@@ -2592,12 +2546,12 @@ plot_mean_clust_coeff <- function(e,
     }
 
     if (print_plot){
-      quartz(width = width, height = height)
+      dev.new(noRStudioGD=TRUE)
       print(p)
     }
 
     if(save_plot){
-      quartz(width = width, height = height)
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
       print(p)
       output_dir <-  file.path(attr(e, "info")$output_path, "figures")
       if(!dir.exists(output_dir)){
@@ -2630,7 +2584,7 @@ plot_mean_clust_coeff <- function(e,
 #' @param image_ext (default = ".png") image extension to the plot as.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
-#' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
+#' @param print_plot (bool, default = FALSE) Whether to print the plot as an output.s
 #' @param rev_x_scale (bool, default = FALSE) Reveres the scale of the categorical variables
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
@@ -2653,12 +2607,8 @@ plot_mean_global_effic <- function(e,
                                   ylim = c(0, 0.7),
                                   theme.gg = NULL,
                                   image_ext = ".png",
-                                  print_plot = TRUE,
+                                  print_plot = FALSE,
                                   save_plot = TRUE){
-  if(get_os() != "osx"){
-    quartz <- X11
-  }
-
   if (is.null(theme.gg)){
     theme.gg <- ggplot2::theme_classic() +
       theme(text = element_text(size = 22),
@@ -2710,12 +2660,12 @@ plot_mean_global_effic <- function(e,
     }
 
     if (print_plot){
-      quartz(width = width, height = height)
+      dev.new(noRStudioGD=TRUE)
       print(p)
     }
 
     if(save_plot){
-      quartz(width = width, height = height)
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
       print(p)
       output_dir <-  file.path(attr(e, "info")$output_path, "figures")
       if(!dir.exists(output_dir)){
@@ -2747,7 +2697,7 @@ plot_mean_global_effic <- function(e,
 #' @param image_ext (default = ".png") image extension to the plot as.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
-#' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
+#' @param print_plot (bool, default = FALSE) Whether to print the plot as an output.s
 #' @param rev_x_scale (bool, default = FALSE) Reveres the scale of the categorical variables
 #' @param theme.gg (default = NULL) Option to use custom ggplot2 theme if the user wants
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
@@ -2771,12 +2721,8 @@ plot_mean_between_centrality <- function(e,
                                    ylim = c(0, 50),
                                    theme.gg = NULL,
                                    image_ext = ".png",
-                                   print_plot = TRUE,
+                                   print_plot = FALSE,
                                    save_plot = TRUE){
-  if(get_os() != "osx"){
-    quartz <- X11
-  }
-
   if (is.null(theme.gg)){
     theme.gg <- ggplot2::theme_classic() +
       theme(text = element_text(size = 22),
@@ -2826,12 +2772,12 @@ plot_mean_between_centrality <- function(e,
     }
 
     if (print_plot){
-      quartz(width = width, height = height)
+      dev.new(noRStudioGD=TRUE)
       print(p)
     }
 
     if(save_plot){
-      quartz(width = width, height = height)
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
       print(p)
 
       output_dir <-  file.path(attr(e, "info")$output_path, "figures")
@@ -2861,7 +2807,7 @@ plot_mean_between_centrality <- function(e,
 #' @param image_ext (default = ".png") image extension to the plot as.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
-#' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
+#' @param print_plot (bool, default = FALSE) Whether to print the plot as an output.s
 #' @param colors (str, default = ) String vector of hexadecimal color codes corresponding to to each channel plotted.
 #' @param network (str, default = "AD") Which network to plot the degree distribution across regions
 #' @param filter_isolates (default = TRUE) Avoid plotting isolated nodes (zero value)
@@ -2892,13 +2838,9 @@ plot_degree_regions <- function(e,
                                 label_text_size = 12,
                                 filter_isolates = TRUE,
                                 image_ext = ".png",
-                                print_plot = TRUE,
+                                print_plot = FALSE,
                                 save_plot = TRUE,
                                 theme.bar = NULL){
-  if(get_os() != "osx"){
-    quartz <- X11
-  }
-
   if (is.null(theme.bar)){
     theme.bar <-  ggplot2::theme_classic() +
       theme(axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size, color = "black"),
@@ -2967,12 +2909,12 @@ plot_degree_regions <- function(e,
 
 
     if (print_plot){
-      quartz(width = width, height = height)
+      dev.new(noRStudioGD=TRUE)
       print(p)
     }
 
     if(save_plot){
-      quartz(width = width, height = height)
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
       print(p)
       output_dir <-  file.path(attr(e, "info")$output_path, "figures")
       if(!dir.exists(output_dir)){
@@ -3000,7 +2942,7 @@ plot_degree_regions <- function(e,
 #' @param image_ext (default = ".png") image extension to the plot as.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
-#' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.s
+#' @param print_plot (bool, default = FALSE) Whether to print the plot as an output.s
 #' @param colors (str, default = ) String vector of hexadecimal color codes corresponding to to each channel plotted.
 #' @param network (str, default = "AD") Which network to plot the betweenness distribution across regions
 #' @param title (str, default = "")
@@ -3030,13 +2972,9 @@ plot_betweenness_regions <- function(e,
                                      region_label_angle = 60,
                                      label_text_size = 12,
                                      image_ext = ".png",
-                                     print_plot = TRUE,
+                                     print_plot = FALSE,
                                      save_plot = TRUE,
                                      theme.bar = NULL){
-  if(get_os() != "osx"){
-    quartz <- X11
-  }
-
   if (is.null(theme.bar)){
     theme.bar <-  ggplot2::theme_classic() +
       theme(axis.text.x = element_text(angle = region_label_angle, hjust = 1, size = label_text_size, color = "black"),
@@ -3103,12 +3041,12 @@ plot_betweenness_regions <- function(e,
     }
 
     if (print_plot){
-      quartz(width = width, height = height)
+      dev.new(noRStudioGD=TRUE)
       print(p)
     }
 
     if(save_plot){
-      quartz(width = width, height = height)
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
       print(p)
       output_dir <-  file.path(attr(e, "info")$output_path, "figures")
       if(!dir.exists(output_dir)){
@@ -3158,7 +3096,7 @@ sort_anatomical_order <- function(common_regions, ontology ="allen",
 #' @param image_ext (default = ".png") image extension to the plot as.
 #' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
 #'  the experiment object output folder.
-#' @param print_plot (bool, default = TRUE) Whether to print the plot as an output.
+#' @param print_plot (bool, default = FALSE) Whether to print the plot as an output.
 #'  the experiment object output folder.
 #' @param absolute_weight (bool, default = TRUE) Whether to plot absolute weights. If TRUE, the edge_colors and edge_colors_label should not contain values for positive and negative correlations.
 #' @param edge_color (str, default =  c(male_agg_pos = "Positive male", male_agg_neg = "Negative male", female_non_pos = "Positive female", female_non_neg = "Negative female")) Color of the network edges as a named vector.
@@ -3198,7 +3136,7 @@ plot_joined_networks <- function(e,
                                  degree_scale_limit = c(1,10),
                                  correlation_edge_width_limit = c(0.8,1),
                                  image_ext = ".png",
-                                 print_plot = TRUE,
+                                 print_plot = FALSE,
                                  graph_theme = NULL,
                                  transparent_edge_group1 = TRUE,
                                  transparent_edge_group2 = FALSE,
@@ -3208,9 +3146,9 @@ plot_joined_networks <- function(e,
                                  node_size_range = c(1, 8),
                                  anatomical.colors = NULL,
                                  save_plot = TRUE){
-  if(get_os() != "osx"){
-    quartz <- X11
-  }
+  # if(get_os() != "osx"){
+  #   quartz <- X11
+  # }
 
   p_list <- vector(mode='list', length = length(channels))
   names(p_list) <- channels
@@ -3285,13 +3223,13 @@ plot_joined_networks <- function(e,
     }
     p <-  p + ggplot2::ggtitle(title)
     if (print_plot){
-      quartz(width = width, height = height)
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
       print(p)
     }
     p_list[[channel]] <- p
 
     if(save_plot){
-      quartz(width = width, height = height)
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
       print(p)
       output_dir <-  file.path(attr(e, "info")$output_path, "figures")
       if(!dir.exists(output_dir)){

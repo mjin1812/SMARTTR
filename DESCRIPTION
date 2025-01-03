@@ -35,10 +35,13 @@ RoxygenNote: 7.3.2
 Depends: 
     R (>= 3.6.0)
 Imports: 
+    rlang (>= 1.1.0),  
     dplyr (>= 1.0.0),  
     ggplot2 (>= 3.3.3), 
+    ggrepel (>= 0.9.1),
     tidyr (>= 1.1.3),
     tidyselect (>= 1.1.1),
+    tibble (>= 3.2.1),
     tidygraph (>= 1.2.0),
     igraph (>= 1.2.6),
     ggraph (>= 2.0.5),
@@ -49,13 +52,15 @@ Imports:
     rmarkdown (>= 2.8.0),
     Hmisc (>= 4.5.0),
     grImport (>= 0.9.3),
+    purrr (>= 1.0.0),
     magrittr,
     knitr
 Suggests:
     SMART (>= 0.1.0),
     wholebrain (>= 0.1.1),
     ggpattern (>= 0.2.0),
-    testthat (>= 3.1.1)
-Additional_repositories: https://github.com/mjin1812/SMART, https://github.com/tractatus/wholebrain, https://trevorldavis.com/R/ggpattern/dev/
+    testthat (>= 3.1.1),
+    ggh4x (>= 0.2.8)
+Additional_repositories: https://github.com/mjin1812/SMART,  https://github.com/mjin1812/wholebrain
 Config/testthat/edition: 3
 VignetteBuilder: knitr

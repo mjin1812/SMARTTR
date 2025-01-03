@@ -28,3 +28,8 @@ e experiment object
 \description{
 Filters to chosen base parent regions and all child subregions
 }
+\examples{
+\dontrun{
+e <- filter_regions(e, "Isocortex", channels  = "cfos")
+}
+}

@@ -23,5 +23,7 @@ Note: Processing times scales with the size of your dataset so it
 may take a few minutes if your dataset is large...
 }
 \examples{
+\dontrun{
 e <- check_ontology_coding(e, "allen")
+}
 }

@@ -25,6 +25,4 @@ so the user can qualitatively evaluate the raw data. Users also have to option o
 from normalized_counts dataframe.
 
 The user should run \code{\link[=normalize_cell_counts]{normalize_cell_counts()}} and \code{\link[=get_cell_table]{get_cell_table()}} functions prior to using this function.
-If the user has run \code{\link[=split_hipp_DV]{split_hipp_DV()}} with the option to merge, this function will account for for the dorsal and
-ventral hippocampal counts separately.
 }

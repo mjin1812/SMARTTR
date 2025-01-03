@@ -37,5 +37,7 @@ and you have combined your cell counts with \code{\link[=get_cell_table]{get_cel
 where a cell table was made using the latter function.
 }
 \examples{
+\dontrun{
 m <- normalize_cell_counts(m, combine_hemispheres = TRUE, simplify_regions = TRUE)
+}
 }

@@ -22,5 +22,7 @@ The function will run properly but a warning will be thrown indicating you shoul
 generate a mapped dataset for that particular slice and channel.
 }
 \examples{
+\dontrun{
 m <- get_cell_tables(m, channels = c("cfos", "eyfp", "colabel"))
+}
 }

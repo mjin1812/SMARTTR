@@ -13,7 +13,7 @@ parallel_coordinate_plot(
   x_label_group_2 = NULL,
   height = 10,
   width = 10,
-  print_plot = TRUE,
+  print_plot = FALSE,
   save_plot = TRUE,
   reverse_group_order = FALSE,
   force = 1,
@@ -40,7 +40,7 @@ parallel_coordinate_plot(
 
 \item{width}{width of the plot in inches.}
 
-\item{print_plot}{(bool, default = TRUE) Whether to display the plot (in addition to saving the plot)}
+\item{print_plot}{(bool, default = FALSE) Whether to display the plot (in addition to saving the plot)}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}

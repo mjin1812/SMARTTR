@@ -39,3 +39,8 @@ because the options offered for simplification are more flexible.
 The benefit of this function is that it can operate on experiment objects with externally imported combined cell counts tables that are formatted for compatibility. This allows
 for simplification using other ontologies. See the available atlas options under the \code{ontology} parameter.
 }
+\examples{
+\dontrun{
+e <- simplify_cell_count(e)
+}
+}

@@ -20,7 +20,7 @@ plot_joined_networks(
   degree_scale_limit = c(1, 10),
   correlation_edge_width_limit = c(0.8, 1),
   image_ext = ".png",
-  print_plot = TRUE,
+  print_plot = FALSE,
   graph_theme = NULL,
   transparent_edge_group1 = TRUE,
   transparent_edge_group2 = FALSE,
@@ -56,7 +56,7 @@ Can also be a hexadecimal color code written as a string.}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 
-\item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.
+\item{print_plot}{(bool, default = FALSE) Whether to print the plot as an output.
 the experiment object output folder.}
 
 \item{graph_theme}{(default = NULL) Add a \code{\link[ggraph:theme_graph]{ggraph::theme_graph()}} to the network graph. If NULL, the default is taken.}

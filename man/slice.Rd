@@ -42,7 +42,7 @@ slice(
 
 \item{registration_path}{(str, default = 'set registration image path') May deprecate this in favor of slice_directory in future versions.}
 
-\item{segmentation_path}{(str, default = 'set segmentation image path') Path to image used for segmentation function using base \code{\link[wholebrain:segment]{wholebrain::segment()}} function.}
+\item{segmentation_path}{(str, default = 'set segmentation image path') Path to image used for segmentation function using base \code{wholebrain::segment()} function.}
 
 \item{slice_directory}{(str, default = NULL) The root directory where slice information such as the registration or segmentation images or txt files are stored for a given slice.
 TODO: May change the import and registration functions to only rely on this path.}

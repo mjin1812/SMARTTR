@@ -34,6 +34,7 @@ removes any normalized regions counts that are more than \code{n_sd} standard de
 than their cohort mean.
 }
 \examples{
+\dontrun{
 e <- find_outlier_counts(e, by = c("group","sex"), n_sd = 2, remove = FALSE, log = TRUE)
-
+}
 }

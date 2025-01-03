@@ -11,9 +11,7 @@
 #' so the user can qualitatively evaluate the raw data. Users also have to option of removing these regions automatically
 #' from normalized_counts dataframe.
 #'
-#' The user should run [normalize_cell_counts()] and [get_cell_table()] functions prior to using this function.
-#' If the user has run [split_hipp_DV()] with the option to merge, this function will account for for the dorsal and
-#' ventral hippocampal counts separately.
+#' The user should run [SMARTR::normalize_cell_counts()] and [SMARTR::get_cell_table()] functions prior to using this function.
 #' @param m mouse object
 #' @param remove (bool, FALSE) Remove any regions in the normalized counts table that
 #' @param log (bool, TRUE) Save the regions that don't have enough n into a .csv file in the output folder.
@@ -39,8 +37,10 @@ detect_single_slice_regions <- function(m, remove = FALSE, log = TRUE){
 #'
 #' @return e experiment object. Outlier counts in the experiment object are removed if remove = TRUE.
 #' @export
-#' @examples e <- find_outlier_counts(e, by = c("group","sex"), n_sd = 2, remove = FALSE, log = TRUE)
-#'
+#' @examples
+#' \dontrun{
+#' e <- find_outlier_counts(e, by = c("group","sex"), n_sd = 2, remove = FALSE, log = TRUE)
+#'}
 find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FALSE, log = TRUE){
   e_info <- attr(e, "info")
   by <- match_m_attr(by)   # correct mismatched attributes typed by users
@@ -89,8 +89,10 @@ find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FA
 #' @param log (bool, TRUE) Save the regions that don't have enough n into a '.csv' file in the output folder.
 #' @return e experiment object
 #' @export
-#' @examples e <- enough_mice_per_group(e, by = c("group", "sex"), min_n = 4, remove = TRUE, log = TRUE)
-#'
+#' @examples
+#' \dontrun{
+#' e <- enough_mice_per_group(e, by = c("group", "sex"), min_n = 4, remove = TRUE, log = TRUE)
+#'}
 enough_mice_per_group <- function(e, by = c("group", "sex"), min_n = 5, remove = TRUE, log = TRUE){
 
   # Get the channels for an experiment
@@ -162,7 +164,10 @@ enough_mice_per_group <- function(e, by = c("group", "sex"), min_n = 5, remove =
 #' @param ontology (str, default = "allen") Region ontology to check against. Options = "allen" or "unified"
 #' @return e experiment object
 #' @export
-#' @examples e <- check_ontology_coding(e, "allen")
+#' @examples
+#' \dontrun{
+#' e <- check_ontology_coding(e, "allen")
+#' }
 check_ontology_coding <- function(e, ontology = "allen"){
 
   channels <- names(e$combined_normalized_counts)
@@ -194,6 +199,10 @@ check_ontology_coding <- function(e, ontology = "allen"){
 #' @param channels (str, default = NULL) NULL option processes all channels. `channels = c("cfos", "eyfp")` specifies exact channels.
 #' @return e experiment object
 #' @export
+#' @examples
+#' \dontrun{
+#' e <- filter_regions(e, "Isocortex", channels  = "cfos")
+#' }
 
 filter_regions <- function(e,
                            base_regions = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CBL"),
@@ -236,6 +245,10 @@ filter_regions <- function(e,
 #' @param channels (str, default = NULL) NULL option processes all channels. `channels = c("cfos", "eyfp")` specifies exact channels.
 #' @return e experiment object
 #' @export
+#' @examples
+#' \dontrun{
+#' e <- exclude_redundant_regions(e)
+#' }
 exclude_redundant_regions <- function(e, ontology = "allen", channels = NULL){
   if (is.null(channels)){
     channels <- names(e$combined_normalized_counts)
@@ -259,9 +272,13 @@ exclude_redundant_regions <- function(e, ontology = "allen", channels = NULL){
 #' @param acronyms (str, default = "fiber_tracts") vector of region/structure acronyms to exclude from the datasets, e.g. c("CBL", "sox", "3V")
 #' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #' @param channels (str, default = NULL) NULL option processes all channels. `channels = c("cfos", "eyfp")` specifies exact channels.
-#'
 #' @return e experiment object
 #' @export
+#' @examples
+#' \dontrun{
+#' e <- exclude_by_acronym(e, acronyms = "CBL") # exclude the cerebellum
+#'  }
+#'
 
 exclude_by_acronym <- function(e, acronyms = "fiber_tracts", ontology = "allen", channels = NULL){
   if (is.null(channels)){
@@ -289,6 +306,11 @@ exclude_by_acronym <- function(e, acronyms = "fiber_tracts", ontology = "allen",
 #' @param channels (str, default = NULL) NULL option processes all channels. `channels = c("cfos", "eyfp")` specifies exact channels.
 #' @return e experiment object
 #' @export
+#' @examples
+#' \dontrun{
+#' e <- exclude_by_keyword(e, keywords = "tract")
+#' }
+#'
 exclude_by_keyword <- function(e, keywords, channels = NULL){
   if (is.null(channels)){
     channels <- names(e$combined_normalized_counts)

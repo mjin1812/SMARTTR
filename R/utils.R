@@ -224,10 +224,8 @@ add_mouse <- function(e, m, replace = FALSE){
   for (attrib in attr2match$exp){
     exp_attr[[attrib]] <- c(mouse_attr[[e2m_attr(attrib)]], exp_attr[[attrib]]) %>% unique()
   }
-
   # Detect the number of channels in the mouse
   channels <- names(m$normalized_counts)
-
   if (!all(channels %in% exp_attr[["channels"]])){
     exp_attr[["channels"]] <- c(exp_attr[["channels"]], channels) %>% unique()
   }

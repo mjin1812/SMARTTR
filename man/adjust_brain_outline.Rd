@@ -20,5 +20,7 @@ the image set as the slice registration path. An interative user loop allows for
 since the wholebrain GUI tends to be a bit buggy. This function then returns a filter with the adjusted brain threshold.
 }
 \examples{
+\dontrun{
 filter <- adjust_brain_outline(s); s <- register(s, filter = filter) Adjust the brain threshold, then run register on the slice object
+}
 }

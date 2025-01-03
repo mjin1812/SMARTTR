@@ -14,7 +14,7 @@ volcano_plot(
   ylim = c(0, 3),
   height = 8,
   width = 10,
-  print_plot = TRUE,
+  print_plot = FALSE,
   plt_theme = NULL,
   point_size = 1,
   image_ext = ".png"
@@ -41,7 +41,7 @@ the experiment object output folder.}
 
 \item{width}{width of the plot in inches.}
 
-\item{print_plot}{(bool, default = TRUE) Print the plot as graphics windows.}
+\item{print_plot}{(bool, default = FALSE) Print the plot as graphics windows.}
 
 \item{plt_theme}{(default = NULL) Add a \code{\link[ggplot2:theme]{ggplot2::theme()}} to the plot. If NULL, the default is taken..}
 
@@ -62,5 +62,5 @@ Plot the correlation difference between two comparison groups into a volcano plo
 \examples{
 volcano_plot(e, permutation_comparison = "female_AD_vs_male_AD", channels = c("cfos", "eyfp", "colabel"),
 colors =  c("#be0000", "#00782e", "#f09b08"), save_plot = TRUE, title = NULL, ylim = c(0, 3), height = 8,
-width = 10, print_plot = TRUE, image_ext = ".png")
+width = 10, print_plot = FALSE, image_ext = ".png")
 }

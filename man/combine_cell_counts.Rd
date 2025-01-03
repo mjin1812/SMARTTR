@@ -19,5 +19,7 @@ This function also stores the mouse attribute names (not experiment attributes) 
 The values of these attributes (\code{group}, \code{drug}, \code{age}) will automatically be converted to a string values for consistency.
 }
 \examples{
+\dontrun{
 e <- combine_cell_counts(e, by = c('groups', 'sex'))
+}
 }

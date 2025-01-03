@@ -72,7 +72,7 @@ exclude_anatomy(x, ...)
 \item{simplify_keywords}{(str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure. This means the parent structure is also excluded if the list of excluded right and left
 regions can be further}
 
-\item{plot_filtered}{}
+\item{plot_filtered}{(bool, default = TRUE) plot the segmented cells following the filtering process}
 
 \item{m}{mouse object}
 
@@ -102,9 +102,13 @@ Note: Please see the \code{simplify_regions} and \code{simplify_keywords} parame
 exclude the entire parent region as a conservative exclusion approach. Keep \code{simplify_regions=TRUE} if the final analysis will contain simplified regions.
 }
 \examples{
-s <-  exclude_anatomy(s, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE, exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE, plot_filtered = TRUE)
+\dontrun{
+ s <-  exclude_anatomy(s, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE, exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE, plot_filtered = TRUE)
+}
+\dontrun{
 m <- exclude_anatomy(m, slice_ID = "1_10", hemisphere = NULL, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE,
 exclude_regions = NULL,
 exclude_hemisphere = TRUE,
 exclude_layer_1 = TRUE
+}
 }

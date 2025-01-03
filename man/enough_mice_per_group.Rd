@@ -35,6 +35,7 @@ if the normalized counts data sets are split by specified grouping variables.
 This function also automatically keeps only the common regions that are found across all comparison groups.
 }
 \examples{
+\dontrun{
 e <- enough_mice_per_group(e, by = c("group", "sex"), min_n = 4, remove = TRUE, log = TRUE)
-
+}
 }

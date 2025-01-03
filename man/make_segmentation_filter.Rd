@@ -57,17 +57,5 @@ s slice object. Vector of indices of cells to remove are stored as the channel f
 m mouse object.  Vector of indices of cells to remove are stored as the channel filters in the slice object within the mouse.
 }
 \description{
-make_segmentation_filter (generic function)
-
-Make a segmentation filter for a slice object
-
-Make a segmentation filter for a slice within a mouse object
-}
-\examples{
-s <- make_segmentation_filter(s, channels = c('eyfp'),
-params = list(c("Vol..unit.","Moment1","Moment2","Moment3","Moment4","Sigma")),
-ranges = list(list(c(200, 12000), c(3, 50), c(0, 600), c(0, 2000), c(0, 5), c(20, Inf))))
-m <- make_segmentation_filter(m, slice_ID = '1_10', hemisphere = NULL , channels = c('eyfp'),
-params = list(c("Vol..unit.","Moment1","Moment2","Moment3","Moment4","Sigma")),
-ranges = list(list(c(200, 12000), c(3, 50), c(0, 600), c(0, 2000), c(0, 5), c(20, Inf))))
+Will be deprecated soon
 }

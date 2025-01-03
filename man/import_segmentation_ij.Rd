@@ -58,7 +58,11 @@ If you have a separate method used for detecting colabelled cells, please use a 
 e.g. "colabel_PV_cfos", and import using a customized import function such as \code{\link[=import_segmentation_custom]{import_segmentation_custom()}}.
 }
 \examples{
+\dontrun{
 s <-  import_segmentation(s, mouse_ID = "255") # Defaults to channels stored in slice attributes
 s <-  import_segmentation(s, mouse_ID = "255", channels = c("cfos", "eyfp", "colabel")) # Specify channels
+}
+\dontrun{
 m <-  import_segmentation(m, slice_ID = "1_10", channels = c("cfos", "eyfp", "colabel"), replace = FALSE)
+}
 }

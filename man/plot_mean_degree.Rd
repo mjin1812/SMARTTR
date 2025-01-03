@@ -18,7 +18,7 @@ plot_mean_degree(
   ylim = c(0, 70),
   theme.gg = NULL,
   image_ext = ".png",
-  print_plot = TRUE,
+  print_plot = FALSE,
   save_plot = TRUE
 )
 }
@@ -52,7 +52,7 @@ the experiment object output folder.}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 
-\item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.s}
+\item{print_plot}{(bool, default = FALSE) Whether to print the plot as an output.s}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}

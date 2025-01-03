@@ -18,7 +18,7 @@ plot_mean_global_effic(
   ylim = c(0, 0.7),
   theme.gg = NULL,
   image_ext = ".png",
-  print_plot = TRUE,
+  print_plot = FALSE,
   save_plot = TRUE
 )
 }
@@ -50,7 +50,7 @@ Warning: this will be applied to all channels. It's recommended to set the chann
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 
-\item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.s}
+\item{print_plot}{(bool, default = FALSE) Whether to print the plot as an output.s}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}

@@ -24,3 +24,8 @@ Therefore redundant counts from parent regions should be removed from datasets u
 \details{
 To check and see redundant regions contained in a list of acronyms, see the function \code{\link[=check_redundant_parents]{check_redundant_parents()}}.
 }
+\examples{
+\dontrun{
+e <- exclude_redundant_regions(e)
+}
+}

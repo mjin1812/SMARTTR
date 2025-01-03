@@ -20,7 +20,7 @@ plot_percent_colabel(
   plot_individual = TRUE,
   height = 8,
   width = 8,
-  print_plot = TRUE,
+  print_plot = FALSE,
   save_plot = TRUE,
   image_ext = ".png"
 )

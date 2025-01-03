@@ -18,7 +18,7 @@ plot_networks(
   anatomical.colors = NULL,
   correlation_edge_width_limit = c(0.8, 1),
   image_ext = ".png",
-  print_plot = TRUE,
+  print_plot = FALSE,
   graph_theme = NULL,
   label_size = 5,
   edge_thickness_range = c(1, 5),
@@ -55,7 +55,7 @@ e.g. anatomical.colors = c(Isocortex = "#5571a9", OLF = "#64bdc4", HPF = "#d2875
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 
-\item{print_plot}{(bool, default = TRUE) Whether to print the plot as an output.
+\item{print_plot}{(bool, default = FALSE) Whether to print the plot as an output.
 the experiment object output folder.}
 
 \item{graph_theme}{(default = NULL) Add a \code{\link[ggraph:theme_graph]{ggraph::theme_graph()}} to the network graph. If NULL, the default is taken.}

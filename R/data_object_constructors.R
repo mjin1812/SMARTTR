@@ -212,7 +212,7 @@ validate_slice <- function(s){
 #' @param hemisphere (str, default = NULL) Hemisphere to process. "left", "right" or NULL is legal.
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
 #' @param registration_path (str, default = 'set registration image path') May deprecate this in favor of slice_directory in future versions.
-#' @param segmentation_path (str, default = 'set segmentation image path') Path to image used for segmentation function using base [wholebrain::segment()] function.
+#' @param segmentation_path (str, default = 'set segmentation image path') Path to image used for segmentation function using base `wholebrain::segment()` function.
 #' @param slice_directory (str, default = NULL) The root directory where slice information such as the registration or segmentation images or txt files are stored for a given slice.
 #' TODO: May change the import and registration functions to only rely on this path.
 #' @param left_regions_excluded (str, default = ("layer 1","PIR1","TR1","PAA1","NLOT1","OT1","MOBgl","OV","VLPO","SO",

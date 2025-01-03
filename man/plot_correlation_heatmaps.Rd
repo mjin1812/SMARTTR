@@ -15,7 +15,7 @@ plot_correlation_heatmaps(
   ontology = "allen",
   anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB", "HB",
     "CB"),
-  print_plot = TRUE,
+  print_plot = FALSE,
   save_plot = TRUE,
   image_ext = ".png",
   plot_title = NULL,
@@ -53,7 +53,7 @@ input compatible with ggplot2 plotting functions.}
 
 \item{anatomical.order}{(default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order}
 
-\item{print_plot}{(bool, default = TRUE) Print the plot as graphics windows.}
+\item{print_plot}{(bool, default = FALSE) Print the plot as graphics windows.}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}

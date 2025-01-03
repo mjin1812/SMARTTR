@@ -18,7 +18,7 @@ plot_normalized_counts(
     "CB"),
   height = 7,
   width = 20,
-  print_plot = TRUE,
+  print_plot = FALSE,
   save_plot = TRUE,
   flip_axis = FALSE,
   reverse_colors = FALSE,
@@ -63,7 +63,7 @@ e.g.values = c("female", "AD").}
 
 \item{width}{width of the plot in inches.}
 
-\item{print_plot}{(bool, default = TRUE) Whether to display the plot (in addition to saving the plot)}
+\item{print_plot}{(bool, default = FALSE) Whether to display the plot (in addition to saving the plot)}
 
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of
 the experiment object output folder.}

@@ -52,6 +52,9 @@ Register a slice in a mouse object. If a slice has been previously registered, t
 previous registration. Use the \code{replace} parameter to change this behavior.
 }
 \examples{
+\dontrun{
 s <- register(s)
-m <- register(m, slice_ID = '1_10', hemisphere = "left", filter = my_filter)
+}
+\dontrun{
+m <- register(m, slice_ID = '1_10', hemisphere = "left", filter = my_filter)}
 }

@@ -19,3 +19,9 @@ e experiment object
 \description{
 Excluded user chosen regions by keywords found in long-form name
 }
+\examples{
+\dontrun{
+e <- exclude_by_keyword(e, keywords = "tract")
+}
+
+}

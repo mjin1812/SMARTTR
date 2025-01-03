@@ -42,5 +42,7 @@ subregions, but there is a tiny amount of potential space that allows for cells 
 This potential anatomical space should be ignored.
 }
 \examples{
+\dontrun{
 s <- get_registered_areas(s)
+}
 }
