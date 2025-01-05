@@ -4,10 +4,12 @@
 \alias{print.correlation_list}
 \title{Print attributes of correlation_list object}
 \usage{
-\method{print}{correlation_list}(cl)
+\method{print}{correlation_list}(x, ...)
 }
 \arguments{
-\item{s}{slice object}
+\item{x}{an object used to select a method. A correlation list}
+
+\item{...}{further arguments passed to or from other methods.}
 }
 \description{
 Print attributes of correlation_list object

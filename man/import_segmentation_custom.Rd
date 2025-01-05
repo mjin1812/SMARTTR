@@ -9,31 +9,31 @@
 import_segmentation_custom(x, ...)
 
 \method{import_segmentation_custom}{slice}(
-  s,
+  x,
   channel,
   x_col = NULL,
   y_col = NULL,
   meas_path = NULL,
-  quant_path = NULL
+  quant_path = NULL,
+  ...
 )
 
 \method{import_segmentation_custom}{mouse}(
-  m,
+  x,
   channel,
   slice_ID = NA,
   hemisphere = NULL,
   x_col = NULL,
   y_col = NULL,
   meas_path = NULL,
-  quant_path = NULL
+  quant_path = NULL,
+  ...
 )
 }
 \arguments{
-\item{x}{a mouse or slice object}
+\item{x}{mouse object}
 
 \item{...}{further arguments passed to or from other methods.}
-
-\item{s}{slice object}
 
 \item{channel}{(str) channel to import}
 
@@ -44,8 +44,6 @@ import_segmentation_custom(x, ...)
 \item{meas_path}{= NULL,}
 
 \item{quant_path}{= NULL}
-
-\item{m}{mouse object}
 
 \item{slice_ID}{(str) ID of slice}
 

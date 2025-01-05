@@ -4,11 +4,17 @@
 \alias{print.mouse}
 \title{Print attributes of mouse object}
 \usage{
-\method{print}{mouse}(m)
+\method{print}{mouse}(x, ...)
 }
 \arguments{
-\item{m}{mouse object}
+\item{x}{mouse object}
+
+\item{...}{further arguments passed to or from other methods.}
 }
 \description{
 Print attributes of mouse object
+}
+\examples{
+m <- mouse()
+print(m)
 }

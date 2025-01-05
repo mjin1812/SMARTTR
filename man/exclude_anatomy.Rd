@@ -9,7 +9,7 @@
 exclude_anatomy(x, ...)
 
 \method{exclude_anatomy}{slice}(
-  s,
+  x,
   channels = NULL,
   clean = TRUE,
   exclude_right_regions = NULL,
@@ -22,11 +22,12 @@ exclude_anatomy(x, ...)
   simplify_keywords = c("layer", "part", "stratum", "division", "leaflet",
     "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch",
     "Precommissural"),
-  plot_filtered = TRUE
+  plot_filtered = TRUE,
+  ...
 )
 
 \method{exclude_anatomy}{mouse}(
-  m,
+  x,
   slice_ID = NA,
   hemisphere = NULL,
   channels = NULL,
@@ -41,15 +42,14 @@ exclude_anatomy(x, ...)
   simplify_keywords = c("layer", "part", "stratum", "division", "leaflet",
     "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch",
     "Precommissural"),
-  plot_filtered = TRUE
+  plot_filtered = TRUE,
+  ...
 )
 }
 \arguments{
-\item{x}{a mouse or slice object}
+\item{x}{mouse object}
 
 \item{...}{further arguments passed to or from other methods.}
-
-\item{s}{slice object}
 
 \item{channels}{(str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.}
 
@@ -73,8 +73,6 @@ exclude_anatomy(x, ...)
 regions can be further}
 
 \item{plot_filtered}{(bool, default = TRUE) plot the segmented cells following the filtering process}
-
-\item{m}{mouse object}
 
 \item{slice_ID}{(str) ID of slice}
 

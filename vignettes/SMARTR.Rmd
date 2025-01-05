@@ -34,13 +34,11 @@ This page provides installation instructions and a broad explanation of the cent
 
 # 1 Installation for Windows
 
-
 ## 1.1 Install RStudio R 
 
 We recommend installing R version 3.6 for compatibility with `wholebrain` for registration and mapping. You can download it [here](https://cran-archive.r-project.org/bin/windows/base/old/3.6.3/) for Windows.
 
 However, we will soon be releasing and supporting a separate version of SMARTR supporting R versions 4.1+ for users who only need access to analysis and visualization capabilities. Importation from other workflows would be supported on this version.
-
 
 ## 1.2 Install `wholebrain`
 

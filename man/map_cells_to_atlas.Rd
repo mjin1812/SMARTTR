@@ -9,7 +9,7 @@
 map_cells_to_atlas(x, ...)
 
 \method{map_cells_to_atlas}{slice}(
-  s,
+  x,
   channels = NULL,
   clean = TRUE,
   display = TRUE,
@@ -18,7 +18,7 @@ map_cells_to_atlas(x, ...)
 )
 
 \method{map_cells_to_atlas}{mouse}(
-  m,
+  x,
   slice_ID = NA,
   hemisphere = NULL,
   channels = NULL,
@@ -29,11 +29,9 @@ map_cells_to_atlas(x, ...)
 )
 }
 \arguments{
-\item{x}{a mouse or slice object}
+\item{x}{mouse object}
 
 \item{...}{additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the \code{wholebrain::inspect.registration()} function}
-
-\item{s}{slice object}
 
 \item{channels}{(str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.}
 
@@ -42,8 +40,6 @@ map_cells_to_atlas(x, ...)
 \item{display}{(bool, default = TRUE). Display the results of the forward warp for the slice.display}
 
 \item{mouse_ID}{(str) mouse ID}
-
-\item{m}{mouse object}
 
 \item{slice_ID}{(str) ID of slice}
 

@@ -13,6 +13,9 @@ NULL
 #' @importFrom tidyr pivot_longer pivot_wider
 NULL
 
+#' @importFrom grDevices dev.new
+NULL
+
 ##_____________________ Analysis functions ___________________________
 
 #' Get the percentage of colabelled cells over either cfos or eyfp channels.
@@ -108,6 +111,7 @@ get_percent_colabel <- function(e, by, colabel_channel = "colabel",
 
 #' Get regional cross correlations and their p-values in a correlation list object.
 #' @description This analysis will get regional cross correlations based on cell counts normalized by region volume.
+#'
 #' @param e experiment object
 #' @param by (str) Attribute names to group by, e.g. c("sex", "group")
 #' @param values (str) The respective values of the attributes entered for the `by` parameter to generate a specific analysis group,
@@ -121,13 +125,17 @@ get_percent_colabel <- function(e, by, colabel_channel = "colabel",
 #' @param alpha (num, default = 0.05) The alpha level for significance applied AFTER p-adjustment.
 #' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #' @param method (str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute. Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements,
+#' @param anatomical.order (str, default = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The order of the regions to plot in the heatmaps.
 #' using midranks for ties. See also [Hmisc::rcorr()]
 #' @return e experiment object. The experiment object now has a named `correlation_list` object stored in it.
 #' The name of the correlation object is the concatenation of the variable values separated by a "_".
 #' This name allows for unambiguous identification of different analysis subgroups in the future.
 #' @export
-#' @examples e <- get_correlations(e, by = c("sex", "group"), values = c("female", "AD"),
+#' @examples
+#' \dontrun{
+#' e <- get_correlations(e, by = c("sex", "group"), values = c("female", "AD"),
 #' channels = c("cfos", "eyfp", "colabel"),  p_adjust_method = "BH", alpha = 0.05)
+#' }
 #' @seealso [Hmisc::rcorr()]
 get_correlations <- function(e, by, values,
                              channels = c("cfos", "eyfp", "colabel"),
@@ -152,10 +160,10 @@ get_correlations <- function(e, by, values,
 
     if (is.null(region_order)){
       if (tolower(ontology) == "allen"){
-        common.regions.ordered <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure) %>%
+        common.regions.ordered <- anatomical.order %>% purrr::map(get.sub.structure) %>%
           purrr::map(intersect, y=common.regions) %>% unlist()
       } else {
-        common.regions.ordered <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure.custom, ontology = ontology) %>%
+        common.regions.ordered <- anatomical.order %>% purrr::map(get.sub.structure.custom, ontology = ontology) %>%
           purrr::map(intersect, y=common.regions) %>% unlist()
       }
       } else if (is.list(region_order)){
@@ -211,12 +219,14 @@ get_correlations <- function(e, by, values,
 #'  Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE or "none"
 #'  to keep "raw" p values. See also [stats::p.adjust()] for the correction options.
 #' @param alpha (float, default = 0.05) The alpha cutoff for significance between region pairwise correlation differences
-# @param ... additional parameters to [RcppAlgos::permuteGeneral()] aside from n, m, Parallel and repetition
+#' @param ... additional parameters to pass to `permute_corr_diff_distrib()`
 #' @return e experiment object. The experiment object now has a list called `permutation_p_matrix` stored in it. Elements of this `permutation_p_matrix` list are
 #' the outputs of different permutation comparison analyses. These elements are named by the groups that were compared.
 #' @export
 #' @seealso [SMARTR::get_correlations()]
-#' @examples e <- correlation_diff_permutation(sundowning,
+#' @examples
+#' \dontrun{
+#' e <- correlation_diff_permutation(sundowning,
 #'                                             correlation_list_name_1 = "female_AD",
 #'                                             correlation_list_name_2 = "female_control",
 #'                                             channels = c("cfos", "eyfp", "colabel"),
@@ -225,6 +235,7 @@ get_correlations <- function(e, by, values,
 #'                                             p_adjust_method = FALSE
 #'                                             alpha = 0.001,
 #'                                             )
+#'}
 #'
 correlation_diff_permutation <- function(e,
                                          correlation_list_name_1,
@@ -340,12 +351,16 @@ correlation_diff_permutation <- function(e,
 #' @param ontology (str, default = "allen") Set to "unified" for Kim Lab unified ontology
 #' @param filter_significant (bool, default = TRUE) If FALSE, this keeps all comparisons. Otherwise exports only the most different and significant permutations.
 #' @export
+#' @examples
+#' \dontrun{
+#' e <- export_permutation_results(e, permutation_groups = "all", filter_significant = TRUE)
+#' }
+#'
 export_permutation_results <- function(e,
                                        permutation_groups = "all",
                                        channels = c("cfos"),
                                        ontology = "allen",
                                        filter_significant =  TRUE){
-
   if (permutation_groups == "all") {
     permutation_groups <- e$permutation_p_matrix %>% names()
   } else{
@@ -388,7 +403,6 @@ export_permutation_results <- function(e,
       if (filter_significant) {
         permutation_results <- permutation_results %>% dplyr::filter(sig)
       }
-
       # Create table directory if it doesn't already exists
       output_dir <-  file.path(attr(e, "info")$output_path, "tables")
       if(!dir.exists(output_dir)){
@@ -420,7 +434,7 @@ export_permutation_results <- function(e,
 #' graph object per channel for each network analysis run.
 #' The name of each network (`network_name`) is the same as the `correlation_list_name`
 #' used to generate the network. This `network_name` is fed as a parameter into the
-#' [SMARTR::plot_network()] function.
+#' [SMARTR::plot_networks()] function.
 #' @export
 #' @examples
 #' \dontrun{
@@ -465,11 +479,11 @@ create_networks <- function(e,
     super.region <- acronyms
     if (tolower(ontology) == "allen"){
       for (sup.region in anatomical.order){
-        super.region[super.region %in% SMARTR::get.sub.structure(sup.region)] <- sup.region
+        super.region[super.region %in% get.sub.structure(sup.region)] <- sup.region
       }
     } else {
       for (sup.region in anatomical.order){
-        super.region[super.region %in% SMARTR::get.sub.structure.custom(sup.region, ontology = ontology)] <- sup.region
+        super.region[super.region %in% get.sub.structure.custom(sup.region, ontology = ontology)] <- sup.region
       }
     }
     nodes <- tibble::tibble(name = acronyms, super.region = super.region)
@@ -546,8 +560,11 @@ create_networks <- function(e,
 #' @param save_efficiency_distribution (bool, default = TRUE) Save the efficiency distribution and summary as a csv.
 #' @return e experiment object
 #' @export
-#' @examples e <- get_network_statistics(e,  network_names = c("female_AD", "female_control"),
+#' @examples
+#' \dontrun{
+#' e <- get_network_statistics(e,  network_names = c("female_AD", "female_control"),
 #' channels = c("cfos", "eyfp", "colabel"), save_stats = TRUE, save_degree_distribution = TRUE)
+#' }
 summarise_networks <- function(e,
                                network_names,
                                channels = c("cfos", "eyfp", "colabel"),
@@ -674,7 +691,7 @@ summarise_networks <- function(e,
 #' @return e experiment object. This object now has a new added element called `networks.` This is a list storing a
 #' graph object per channel for each network analysis run. The name of each network (`network_name`) is the same as the `correlation_list_name`
 #' used to generate the network. This `network_name` is fed as a parameter into the
-#' [SMARTR::plot_network()] function.
+#' [SMARTR::plot_networks()] function.
 #' @export
 #' @examples
 #' \dontrun{
@@ -736,11 +753,11 @@ create_joined_networks <- function(e,
 
       if (tolower(ontology) == "allen"){
         for (sup.region in anatomical.order){
-          super.region[super.region %in% SMARTR::get.sub.structure(sup.region)] <- sup.region
+          super.region[super.region %in% get.sub.structure(sup.region)] <- sup.region
         }
       } else {
         for (sup.region in anatomical.order){
-          super.region[super.region %in% SMARTR::get.sub.structure.custom(sup.region, ontology = ontology)] <- sup.region
+          super.region[super.region %in% get.sub.structure.custom(sup.region, ontology = ontology)] <- sup.region
         }
       }
       nodes_joined[[correlation_list_name]] <- tibble::tibble(name = acronyms, super.region = super.region)
@@ -1012,6 +1029,7 @@ summarize_null_networks <- function(null_nodes_list,
 #' set it to the `color_mapping` parameter and set the `pattern_mapping` parameter to NULL.
 #'
 #' @param e experiment object
+#' @param colabel_channel (str, default = "colabel") The channel used as the numerator in fraction counts.
 #' @param channel (str, default = "eyfp") The channel used as denominator in fraction counts.
 #' @param rois character vector of region acronyms, e.g. c("AAA", "DG)
 #' @param color_mapping (str, default = "sex") The name of the categorical variable (e.g., "sex", "age", etc.) to map to the color aesthetic of the bar plot.
@@ -1019,9 +1037,19 @@ summarize_null_networks <- function(null_nodes_list,
 #' @param pattern_mapping (str, default = "sex") The name of the categorical variable (e.g., "sex", "age", etc.) to map to the pattern aesthetic of the bar plot.
 #' @param patterns (str, default = c("gray100", 'hs_fdiagonal', "hs_horizontal", "gray90", "hs_vertical"), Pattern types to define subgroups.
 #' @param error_bar (str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.
+#' @param ylim  (default = c(0,100)) The range of the y-axis
+#' @param plot_individual (boo) Whether or not to plot multiple
+#' @param height (default = 8) height of graphics devices in inches
+#' @param width (default = 8) height of graphics device in inches
+#' @param print_plot (bool, default = FALSE) whether or not to print the plot for just for display
+#' @param save_plot (bool, default = TRUE) whether or not to save the plor
+#' @param image_ext (default = ".png") extension determining the image type to save as
 #' @return p Plot handle to the figure
 #' @export
-#' @examples plot_percentage_colabel
+#' @examples
+#' \dontrun{
+#'  plot_percentage_colabel
+#' }
 plot_percent_colabel <- function(e,
                                  colabel_channel = "colabel",
                                  channel = "eyfp",
@@ -1052,10 +1080,10 @@ plot_percent_colabel <- function(e,
   e <- get_percent_colabel(e, by = by, colabel_channel = colabel_channel, channel = channel, save_table = FALSE, rois = rois, individual = TRUE)
 
   # Get rois of all the child regions
-  child_r <- SMARTR::get.acronym.child(rois)
+  child_r <- get.acronym.child(rois)
   while (length(child_r) > 0){
     rois <- c(rois, child_r)
-    child_r <- SMARTR::get.acronym.child(child_r) %>% na.omit()
+    child_r <- get.acronym.child(child_r) %>% na.omit()
   }
 
   # # Check that a colabel percentage dataframe exists for this channel
@@ -1245,7 +1273,10 @@ plot_percent_colabel <- function(e,
 #' @param error_bar (str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.
 #' @return p Plot handle to the figure
 #' @export
-#' @examples plot_percentage_colabel
+#' @examples
+#' \dontrun{
+#' plot_percentage_colabel
+#' }
 plot_cell_counts <- function(e,
                              channel = "eyfp",
                              rois = c("AAA", "dDG", "HY"),
@@ -1279,10 +1310,10 @@ plot_cell_counts <- function(e,
   # e <- get_percent_colabel(e, by = by, colabel_channel = colabel_channel, channel = channel, save_table = FALSE, rois = rois, individual = TRUE)
 
   # Get rois of all the child regions
-  child_r <- SMARTR::get.acronym.child(rois)
+  child_r <- get.acronym.child(rois)
   while (length(child_r) > 0){
     rois <- c(rois, child_r)
-    child_r <- SMARTR::get.acronym.child(child_r) %>% na.omit()
+    child_r <- get.acronym.child(child_r) %>% na.omit()
   }
 
 
@@ -1482,8 +1513,9 @@ plot_cell_counts <- function(e,
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples
+#' \dontrun{
 #' p_list <- plot_normalized_counts(e, channels = "cfos", by = c("sex", "group"), values = list(c("female", "non"), c("female", "agg")), colors = c("white", "lightblue"))
-#'
+#' }
 plot_normalized_counts <- function(e,
                                     channels = c("cfos", "eyfp", "colabel"),
                                     by = c("sex", "group"),
@@ -1566,11 +1598,11 @@ plot_normalized_counts <- function(e,
     }
     if (tolower(ontology) == "allen") {
       regions.ordered <- anatomical.order %>%
-        purrr::map(SMARTR::get.sub.structure) %>%
+        purrr::map(get.sub.structure) %>%
         unlist()
     } else {
       regions.ordered <- anatomical.order %>%
-        purrr::map(SMARTR::get.sub.structure.custom, ontology = ontology) %>%
+        purrr::map(get.sub.structure.custom, ontology = ontology) %>%
         unlist()
     }
     common.regions.ordered <- channel_counts$name[unique(match(regions.ordered, channel_counts$acronym))]
@@ -1695,10 +1727,12 @@ plot_normalized_counts <- function(e,
 #' @param sig_nudge_y (default = -0.7) Relative amount to nudge the significance symbols in the y direction to center over each square.
 #' @param anatomical.order (default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order
 #' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
-#'
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
-#' @examples plot_correlation_heatmaps(e, correlation_list_name = "female_AD")
+#' @examples
+#' \dontrun{
+#' plot_correlation_heatmaps(e, correlation_list_name = "female_AD")
+#' }
 #' @seealso [SMARTR::get_correlations()]
 
 plot_correlation_heatmaps <- function(e, correlation_list_name,
@@ -1820,7 +1854,6 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
 
 
 
-
 #' Create a Volcano plot.
 #'
 #' Plot the correlation difference between two comparison groups into a volcano plot. The function
@@ -1844,9 +1877,12 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
 #'
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
-#' @examples volcano_plot(e, permutation_comparison = "female_AD_vs_male_AD", channels = c("cfos", "eyfp", "colabel"),
+#' @examples
+#' \dontrun{
+#' volcano_plot(e, permutation_comparison = "female_AD_vs_male_AD", channels = c("cfos", "eyfp", "colabel"),
 #' colors =  c("#be0000", "#00782e", "#f09b08"), save_plot = TRUE, title = NULL, ylim = c(0, 3), height = 8,
 #' width = 10, print_plot = FALSE, image_ext = ".png")
+#' }
 
 
 volcano_plot <- function(e,
@@ -2234,6 +2270,170 @@ plot_networks <- function(e,
   return(p_list)
 }
 
+#' Plot the networks stored in an experiment object
+#'
+#' @param e experiment object
+#' @param correlation_list_names (str vec) character vector of the two correlation lists used to include in a joined network, e.g., `correlation_list_names = c("male_agg", "female_non")`
+#' @param title (str, default = NULL) Title of network plot
+#' @param channels (str, default = c("cfos", "eyfp", "colabel"))
+#' @param height Height of the plot in inches.
+#' @param width width of the plot in inches.
+#' @param image_ext (default = ".png") image extension to the plot as.
+#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
+#'  the experiment object output folder.
+#' @param print_plot (bool, default = FALSE) Whether to print the plot as an output.
+#'  the experiment object output folder.
+#' @param absolute_weight (bool, default = TRUE) Whether to plot absolute weights. If TRUE, the edge_colors and edge_colors_label should not contain values for positive and negative correlations.
+#' @param degree_scale_limit (vec, default = c(1,10)) Scale limit for degree size
+#' @param graph_theme (default = NULL) Add a [ggraph::theme_graph()] to the network graph. If NULL, the default is taken.
+#' @param label_size (default = 5) Default font size for network region labels.
+#' @param label_offset (default = 0.15) Distance of label from nodes.
+#' @param region_legend (default = TRUE) Boolean determining whether or not to show the region legend categorizing subregions into their largest parent region. Only works well if the Allen ontology is used for the dataset.
+#' @param correlation_edge_width_limit (default = c(0.8, 1)) Range for the width size of the edges.
+#' @param edge_colors (vec) vector of hexidecimal codes as strings. Assign a group name to the vector element. e.g. c(male_agg_pos =  "#06537f",
+#' male_agg_neg = "#526c7a", female_non_pos = "#C70039", female_non_neg = "#71585f")
+#' @param edge_color_labels (vec) vector of edge labels as strings. e.g. c(male_agg_pos = "Positive male",
+#' male_agg_neg = "Negative male", female_non_pos = "Positive female", female_non_neg = "Negative female")
+#' @param transparent_edge_group1 (bool) logical to render edges transparent
+#' @param transparent_edge_group2 (bool) logical to render edges transparent
+#' @param edge_thickness_range (default = c(1,5))
+#' @param node_size_range (default = c(1, 8))
+#' @param anatomical.colors (NuLL or vec, default = NULL) Colors for the parent region as a named vector of hexadecimal regions.
+#' Can also be a hexadecimal color code written as a string.
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
+#' @export
+#' @examples
+#' \dontrun{
+#' p_list <- plot_joined_networks(anesthesia, correlation_list_names = c("male_agg", "female_non"),
+#' channels = "cfos", edge_colors = c(male_agg =  "#06537f", female_non = "#C70039"),
+#' edge_color_labels = c(male_agg = "Male aggressor", female_non = "Female non-aggressor"),
+#' degree_scale_limit = c(1,45), correlation_edge_width_limit = c(0.8, 1.0),
+#' height = 30, width = 30, label_size = 13, label_offset = 0.08, image_ext = ".png")
+#' }
+plot_joined_networks <- function(e,
+                                 correlation_list_names = c("male_agg", "female_non"),
+                                 title = NULL,
+                                 channels = "cfos",
+                                 absolute_weight = TRUE,
+                                 edge_colors = c(male_agg_pos =  "#06537f",
+                                                 male_agg_neg = "#526c7a",
+                                                 female_non_pos = "#C70039",
+                                                 female_non_neg = "#71585f"),
+                                 edge_color_labels = c(male_agg_pos = "Positive male",
+                                                       male_agg_neg = "Negative male",
+                                                       female_non_pos = "Positive female",
+                                                       female_non_neg = "Negative female"),
+                                 height = 15,
+                                 width = 15,
+                                 region_legend = TRUE,
+                                 degree_scale_limit = c(1,10),
+                                 correlation_edge_width_limit = c(0.8,1),
+                                 image_ext = ".png",
+                                 print_plot = FALSE,
+                                 graph_theme = NULL,
+                                 transparent_edge_group1 = TRUE,
+                                 transparent_edge_group2 = FALSE,
+                                 label_size = 5,
+                                 label_offset = 0.15,
+                                 edge_thickness_range = c(1,5),
+                                 node_size_range = c(1, 8),
+                                 anatomical.colors = NULL,
+                                 save_plot = TRUE){
+  # if(get_os() != "osx"){
+  #   quartz <- X11
+  # }
+
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
+
+  for (channel in channels){
+    joined_network_name <- paste(correlation_list_names, collapse = "_")
+    network <- e$networks[[joined_network_name]][[channel]]
+    p1 <-  correlation_list_names[1]
+    p2 <-  correlation_list_names[2]
+
+    # _______________ Plot the network ________________________________
+    if (is.null(graph_theme)){
+      graph_theme <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5,size = 28),
+                                                   legend.text = element_text(size = 15),
+                                                   legend.title = element_text(size = 15)
+      )
+    }
+    if (isTRUE(absolute_weight)) {
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(color = factor(network))
+    } else {
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(color = paste(network, sign, sep = "_"))
+    }
+
+    if (isTRUE(transparent_edge_group1) &&  isTRUE(transparent_edge_group2)){
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = 0)
+    } else if (isFALSE(transparent_edge_group1) && isTRUE(transparent_edge_group2)){
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = if_else(network == p2, 0.0, 0.6))
+    } else if (isTRUE(transparent_edge_group1) && isFALSE(transparent_edge_group2)){
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = if_else(network == p1, 0.0, 0.6))
+    } else {
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = 0.6)
+    }
+
+    p <- ggraph::ggraph(network, layout = "linear", circular = TRUE) +
+      ggraph::geom_edge_arc(aes(color = color, width = abs(weight), edge_alpha = edge_alpha),
+                            n = 1000) +
+      ggraph::geom_node_point(aes(size = degree,
+                                  color = super.region),
+                              show.legend = TRUE) +
+      ggraph::geom_node_text(aes(x = (sqrt(x^2+y^2)+label_offset)*cos(atan(y/x))*sign(x),
+                                 y = abs((sqrt(x^2+y^2)+label_offset)*sin(atan(y/x)))*sign(y),
+                                 angle = atan(y/x)*180/pi,
+                                 label = name),
+                             repel = FALSE, color = "grey25",
+                             size = label_size,
+                             show.legend = NA) +
+      ggraph::scale_edge_color_manual(values = edge_colors,
+                                      labels = edge_color_labels,
+                                      name = "Correlation",
+                                      guide = guide_legend(order = 1)) +
+      ggraph::scale_edge_width(limits=correlation_edge_width_limit,range = edge_thickness_range, name = "Correlation Strength",
+                               guide = guide_legend(order = 3))
+    if (is.null(anatomical.colors)){
+      p <- p + ggraph::scale_color_viridis(name = "Anatomical Region",
+                                           discrete = TRUE,
+                                           option = "D",
+                                           guide = guide_legend(override.aes = list(size=max(node_size_range)), order=4)) +
+        ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=node_size_range,
+                            guide = guide_legend(order = 2)) +
+        ggplot2::coord_equal() + graph_theme
+    } else{
+      p <- p + ggplot2::scale_color_manual(name = "Anatomical Region",
+                                           values = anatomical.colors,
+                                           guide = guide_legend(override.aes = list(size=max(node_size_range)), order=4)) +
+        ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=node_size_range,
+                            guide = guide_legend(order = 2)) +
+        ggplot2::coord_equal() + graph_theme
+    }
+    if (is.null(title)){
+      title <- paste(network_name, channel)
+    }
+    p <-  p + ggplot2::ggtitle(title)
+    if (print_plot){
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
+      print(p)
+    }
+    p_list[[channel]] <- p
+
+    if(save_plot){
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
+      print(p)
+      output_dir <-  file.path(attr(e, "info")$output_path, "figures")
+      if(!dir.exists(output_dir)){
+        dir.create(output_dir)
+      }
+      image_file <- file.path(output_dir, paste0("network_", joined_network_name, "_", channel, image_ext))
+      ggsave(filename = image_file,  width = width, height = height, units = "in")
+    }
+  }
+  return(p_list)
+}
+
 #' Plot the degree distributions
 #' @description
 #' Plot a stacked bar plot of the degree distributions.
@@ -2343,7 +2543,7 @@ plot_degree_distributions <- function(e,
 #'
 #' @param e experiment object
 #' @param labels (str) The legend labels to correspond with your network names, e.g. labels = c(network1_name = "network 1 label", network2_name = "network 2 label).
-#' These are the same network names used in the function [`SMARTR::summarise_networks()`].
+#' These are the same network names used in the function [SMARTR::summarise_networks()].
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) Channels to plot
 #' @param color_palettes (str, default = c("reds", "greens")) Color palettes from [grDevices::hcl.colors] that are used to for plotting networks for each channel, respectively.
 #' @param colors_manual (str, default = NULL ) Manually choose the hexadecimal color codes to create a custom color palette, e.g. colors_manual = c("#660000", "#FF0000", "#FF6666").
@@ -2363,7 +2563,7 @@ plot_degree_distributions <- function(e,
 #' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
 #' @export
 #' @examples
-#' #' \dontrun{
+#' \dontrun{
 #' p <- plot_mean_degree(e, colors_manual = c("#660000", "#FF0000"), channels = "cfos",
 #' labels = c("AD" = "AD_label", "control" = "control_label"), title = "my title", ylim = c(0,100), image_ext = ".png")
 #' }
@@ -3062,6 +3262,7 @@ plot_betweenness_regions <- function(e,
 
 #________________ Internal Analysis functions _______________
 
+#' @noRd
 filter_df_by_char_params <- function(df, by, values){
   for (k in 1:length(by)){
     # Convert the variable name into a symbol
@@ -3073,174 +3274,21 @@ filter_df_by_char_params <- function(df, by, values){
 }
 
 # Sort the dataframes columns to be in anatomical order
+#' @noRd
 sort_anatomical_order <- function(common_regions, ontology ="allen",
                                   anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")){
 
   if (tolower(ontology) == "allen"){
-    common_regions <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure) %>%
+    common_regions <- anatomical.order %>% purrr::map(get.sub.structure) %>%
       purrr::map(intersect,y=common_regions) %>% unlist()
   } else {
-    common_regions <- anatomical.order %>% purrr::map(SMARTR::get.sub.structure.custom, ontology=ontology) %>%
+    common_regions <- anatomical.order %>% purrr::map(get.sub.structure.custom, ontology=ontology) %>%
       purrr::map(intersect,y=common_regions) %>% unlist()
   }
   return(common_regions)
   }
 
-#' Plot the networks stored in an experiment object
-#' @param e experiment object
-#' @param correlation_list_names (str vec) character vector of the two correlation lists used to include in a joined network, e.g., `correlation_list_names = c("male_agg", "female_non")`
-#' @param title (str, default = NULL) Title of network plot
-#' @param channels (str, default = c("cfos", "eyfp", "colabel"))
-#' @param height Height of the plot in inches.
-#' @param width width of the plot in inches.
-#' @param image_ext (default = ".png") image extension to the plot as.
-#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
-#'  the experiment object output folder.
-#' @param print_plot (bool, default = FALSE) Whether to print the plot as an output.
-#'  the experiment object output folder.
-#' @param absolute_weight (bool, default = TRUE) Whether to plot absolute weights. If TRUE, the edge_colors and edge_colors_label should not contain values for positive and negative correlations.
-#' @param edge_color (str, default =  c(male_agg_pos = "Positive male", male_agg_neg = "Negative male", female_non_pos = "Positive female", female_non_neg = "Negative female")) Color of the network edges as a named vector.
-#' @param degree_scale_limit (vec, default = c(1,10)) Scale limit for degree size
-#' @param graph_theme (default = NULL) Add a [ggraph::theme_graph()] to the network graph. If NULL, the default is taken.
-#' @param label_size (default = 5) Default font size for network region labels.
-#' @param label_offset (default = 0.15) Distance of label from nodes.
-#' @param region_legend (default = TRUE) Boolean determining whether or not to show the region legend categorizing subregions into their largest parent region. Only works well if the Allen ontology is used for the dataset.
-#' @param correlation_edge_width_limit (default = c(0.8, 1)) Range for the width size of the edges.
-#' Can also be a hexadecimal color code written as a string.
-#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
-#' @export
-#' @examples
-#' \dontrun{
-#' p_list <- plot_joined_networks(anesthesia, correlation_list_names = c("male_agg", "female_non"),
-#' channels = "cfos", edge_colors = c(male_agg =  "#06537f", female_non = "#C70039"),
-#' edge_color_labels = c(male_agg = "Male aggressor", female_non = "Female non-aggressor"),
-#' degree_scale_limit = c(1,45), correlation_edge_width_limit = c(0.8, 1.0),
-#' height = 30, width = 30, label_size = 13, label_offset = 0.08, image_ext = ".png")
-#' }
-plot_joined_networks <- function(e,
-                                 correlation_list_names = c("male_agg", "female_non"),
-                                 title = NULL,
-                                 channels = "cfos",
-                                 absolute_weight = TRUE,
-                                 edge_colors = c(male_agg_pos =  "#06537f",
-                                                 male_agg_neg = "#526c7a",
-                                                 female_non_pos = "#C70039",
-                                                 female_non_neg = "#71585f"),
-                                 edge_color_labels = c(male_agg_pos = "Positive male",
-                                                       male_agg_neg = "Negative male",
-                                                       female_non_pos = "Positive female",
-                                                       female_non_neg = "Negative female"),
-                                 height = 15,
-                                 width = 15,
-                                 region_legend = TRUE,
-                                 degree_scale_limit = c(1,10),
-                                 correlation_edge_width_limit = c(0.8,1),
-                                 image_ext = ".png",
-                                 print_plot = FALSE,
-                                 graph_theme = NULL,
-                                 transparent_edge_group1 = TRUE,
-                                 transparent_edge_group2 = FALSE,
-                                 label_size = 5,
-                                 label_offset = 0.15,
-                                 edge_thickness_range = c(1,5),
-                                 node_size_range = c(1, 8),
-                                 anatomical.colors = NULL,
-                                 save_plot = TRUE){
-  # if(get_os() != "osx"){
-  #   quartz <- X11
-  # }
 
-  p_list <- vector(mode='list', length = length(channels))
-  names(p_list) <- channels
-
-  for (channel in channels){
-
-    joined_network_name <- paste(correlation_list_names, collapse = "_")
-    network <- e$networks[[joined_network_name]][[channel]]
-    p1 <-  correlation_list_names[1]
-    p2 <-  correlation_list_names[2]
-
-    # _______________ Plot the network ________________________________
-    if (is.null(graph_theme)){
-      graph_theme <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5,size = 28),
-                                                   legend.text = element_text(size = 15),
-                                                   legend.title = element_text(size = 15)
-      )
-    }
-    if (isTRUE(absolute_weight)) {
-      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(color = factor(network))
-    } else {
-      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(color = paste(network, sign, sep = "_"))
-    }
-
-    if (isTRUE(transparent_edge_group1) &&  isTRUE(transparent_edge_group2)){
-      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = 0)
-    } else if (isFALSE(transparent_edge_group1) && isTRUE(transparent_edge_group2)){
-      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = if_else(network == p2, 0.0, 0.6))
-    } else if (isTRUE(transparent_edge_group1) && isFALSE(transparent_edge_group2)){
-      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = if_else(network == p1, 0.0, 0.6))
-    } else {
-      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = 0.6)
-    }
-
-    p <- ggraph::ggraph(network, layout = "linear", circular = TRUE) +
-      ggraph::geom_edge_arc(aes(color = color, width = abs(weight), edge_alpha = edge_alpha),
-                            n = 1000) +
-      ggraph::geom_node_point(aes(size = degree,
-                                  color = super.region),
-                              show.legend = TRUE) +
-      ggraph::geom_node_text(aes(x = (sqrt(x^2+y^2)+label_offset)*cos(atan(y/x))*sign(x),
-                                 y = abs((sqrt(x^2+y^2)+label_offset)*sin(atan(y/x)))*sign(y),
-                                 angle = atan(y/x)*180/pi,
-                                 label = name),
-                             repel = FALSE, color = "grey25",
-                             size = label_size,
-                             show.legend = NA) +
-      ggraph::scale_edge_color_manual(values = edge_colors,
-                                      labels = edge_color_labels,
-                                      name = "Correlation",
-                                      guide = guide_legend(order = 1)) +
-      ggraph::scale_edge_width(limits=correlation_edge_width_limit,range = edge_thickness_range, name = "Correlation Strength",
-                               guide = guide_legend(order = 3))
-    if (is.null(anatomical.colors)){
-        p <- p + ggraph::scale_color_viridis(name = "Anatomical Region",
-                                    discrete = TRUE,
-                                    option = "D",
-                                    guide = guide_legend(override.aes = list(size=max(node_size_range)), order=4)) +
-        ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=node_size_range,
-                            guide = guide_legend(order = 2)) +
-        ggplot2::coord_equal() + graph_theme
-    } else{
-      p <- p + ggplot2::scale_color_manual(name = "Anatomical Region",
-                                  values = anatomical.colors,
-                                  guide = guide_legend(override.aes = list(size=max(node_size_range)), order=4)) +
-        ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=node_size_range,
-                            guide = guide_legend(order = 2)) +
-        ggplot2::coord_equal() + graph_theme
-    }
-    if (is.null(title)){
-      title <- paste(network_name, channel)
-    }
-    p <-  p + ggplot2::ggtitle(title)
-    if (print_plot){
-      dev.new(width = width, height = height, noRStudioGD=TRUE)
-      print(p)
-    }
-    p_list[[channel]] <- p
-
-    if(save_plot){
-      dev.new(width = width, height = height, noRStudioGD=TRUE)
-      print(p)
-      output_dir <-  file.path(attr(e, "info")$output_path, "figures")
-      if(!dir.exists(output_dir)){
-        dir.create(output_dir)
-      }
-      image_file <- file.path(output_dir, paste0("network_", joined_network_name, "_", channel, image_ext))
-      ggsave(filename = image_file,  width = width, height = height, units = "in")
-    }
-  }
-  return(p_list)
-}
 
 #' Internal algorithm for maslov-sneppen rewiring
 #'
@@ -3249,7 +3297,8 @@ plot_joined_networks <- function(e,
 #' @param network tidygraph graph object
 #' @param n_rewires number of rewires.
 #' @return a tidygraph graph
-#' @export
+#' @noRd
+
 maslov_sneppen_rewire <- function(network, n_rewires = 10000){
 
   g <- network %>%
@@ -3284,6 +3333,7 @@ maslov_sneppen_rewire <- function(network, n_rewires = 10000){
 #' @param method (str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute.
 #' Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements, using midranks for ties. See also [Hmisc::rcorr()]
 #' @return a matrix storing the permutation with the dimensions no. regions x no. regions x n_shuffle
+#' @noRd
 permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_list_name_2,
                                       n_shuffle = n_shuffle, seed = 5, method = "pearson"){
 
@@ -3325,12 +3375,13 @@ permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_l
 #' @param common_reg A comprehensive list of all regions (and all existing subregions) that the brain area in the `rois` list will be compared against.
 #' @param rois A list of rois whose regions and subregions will be compared the the `common_reg` list
 #' @return common_reg A list of the rois (or any of its subregions) that intersected with the common_reg list.
+#' @noRd
 rois_intersect_region_list <- function(common_reg, rois){
   # Get rois of all the child regions
-  child_r <- SMARTR::get.acronym.child(rois)
+  child_r <- get.acronym.child(rois)
   while (length(child_r) > 0){
     rois <- c(rois, child_r)
-    child_r <- SMARTR::get.acronym.child(child_r) %>% na.omit()
+    child_r <- get.acronym.child(child_r) %>% na.omit()
   }
   message("Checking also for child regions of specified roi(s). Only rois and child rois that overlap with common
             regions of both channels will be used.")
@@ -3348,19 +3399,12 @@ rois_intersect_region_list <- function(common_reg, rois){
   return(common_reg)
 }
 
-#' Standard error function
-#' @param x (vec)
-#' @return numeric
-#' @export
-#' @examples sem(c(3,4,5))
-sem <- function(x){
-  sd(x) / sqrt(length(x))
-}
 
 #' Try to correlate
 #' @param df_channel dataframe of normalized counts, with rows as animals and columns as regions
 #' @return  a list with elements r, the matrix of correlations, n the matrix of number of observations used in analyzing each
 #' pair of variables, and P, the asymptotic P-values.
+#' @noRd
 try_correlate <- function(df_channel, type = "pearson"){
   tryCatch({
     # Code that may throw an error

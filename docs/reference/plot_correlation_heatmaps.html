@@ -24,12 +24,12 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
-    <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
-    <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
-    <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
-    <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
+    <a class="dropdown-item" href="../articles/Part1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
+    <a class="dropdown-item" href="../articles/Part2.Tutorial.html">2. Mapping Tutorial</a>
+    <a class="dropdown-item" href="../articles/Part3.Scripting.html">3. Scripting &amp; notebooks</a>
+    <a class="dropdown-item" href="../articles/Part4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/Part5.FAQ.html">5. FAQ</a>
+    <a class="dropdown-item" href="../articles/Part6.Development.html">6. Development environment</a>
   </div>
 </li>
 <li class="active nav-item">
@@ -70,7 +70,7 @@
 <span>  ontology <span class="op">=</span> <span class="st">"allen"</span>,</span>
 <span>  anatomical.order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Isocortex"</span>, <span class="st">"OLF"</span>, <span class="st">"HPF"</span>, <span class="st">"CTXsp"</span>, <span class="st">"CNU"</span>, <span class="st">"TH"</span>, <span class="st">"HY"</span>, <span class="st">"MB"</span>, <span class="st">"HB"</span>,</span>
 <span>    <span class="st">"CB"</span><span class="op">)</span>,</span>
-<span>  print_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  print_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  save_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  image_ext <span class="op">=</span> <span class="st">".png"</span>,</span>
 <span>  plot_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -129,7 +129,7 @@ input compatible with ggplot2 plotting functions.</p></dd>
 
 
 <dt>print_plot</dt>
-<dd><p>(bool, default = TRUE) Print the plot as graphics windows.</p></dd>
+<dd><p>(bool, default = FALSE) Print the plot as graphics windows.</p></dd>
 
 
 <dt>save_plot</dt>
@@ -170,8 +170,9 @@ the experiment object output folder.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">plot_correlation_heatmaps</span><span class="op">(</span><span class="va">e</span>, correlation_list_name <span class="op">=</span> <span class="st">"female_AD"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in plot_correlation_heatmaps(e, correlation_list_name = "female_AD"):</span> object 'e' not found</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu">plot_correlation_heatmaps</span><span class="op">(</span><span class="va">e</span>, correlation_list_name <span class="op">=</span> <span class="st">"female_AD"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

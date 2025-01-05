@@ -75,7 +75,9 @@ p_list A list the same length as the number of channels, with each element conta
 Plot correlation heatmaps
 }
 \examples{
+\dontrun{
 plot_correlation_heatmaps(e, correlation_list_name = "female_AD")
+}
 }
 \seealso{
 \code{\link[=get_correlations]{get_correlations()}}

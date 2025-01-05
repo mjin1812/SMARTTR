@@ -34,7 +34,7 @@ e experiment object with simplified keywords
 }
 \description{
 This function is designed to offer flexible simplification of mapped cells counts. This can be applied after running
-\code{\link[=combine_norm_cell_counts]{combine_norm_cell_counts()}}. However, if mapping is being conducted using the SMARTR package, we recommend simplifying mapped counts earlier, at the level of mouse objects using \code{\link[=normalize_cell_counts]{normalize_cell_counts()}}
+\code{\link[=combine_cell_counts]{combine_cell_counts()}}. However, if mapping is being conducted using the SMARTR package, we recommend simplifying mapped counts earlier, at the level of mouse objects using \code{\link[=normalize_cell_counts]{normalize_cell_counts()}}
 because the options offered for simplification are more flexible.
 The benefit of this function is that it can operate on experiment objects with externally imported combined cell counts tables that are formatted for compatibility. This allows
 for simplification using other ontologies. See the available atlas options under the \code{ontology} parameter.

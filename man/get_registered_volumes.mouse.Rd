@@ -5,18 +5,19 @@
 \title{Method for getting regional areas and volumes for each slice in a mouse object}
 \usage{
 \method{get_registered_volumes}{mouse}(
-  m,
+  x,
   slice_ID,
   hemisphere = NULL,
   simplify_regions = TRUE,
   simplify_keywords = c("layer", "part", "stratum", "division", "leaflet",
     "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch",
     "Precommissural"),
-  replace = FALSE
+  replace = FALSE,
+  ...
 )
 }
 \arguments{
-\item{m}{mouse object}
+\item{x}{mouse object}
 
 \item{slice_ID}{(str) ID of slice}
 
@@ -27,6 +28,8 @@
 \item{simplify_keywords}{(str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure}
 
 \item{replace}{(bool, default = FALSE). Replace previously calculated volumes for a particular slice.}
+
+\item{...}{further arguments passed to or from other methods.}
 }
 \value{
 m mouse object
@@ -43,6 +46,6 @@ This potential anatomical space should be ignored.
 }
 \examples{
 \dontrun{
-m <- get_registered_areas(m, slice_ID = "1_10", hemisphere = "left", replace = FALSE)
+m <- get_registered_volumes(m, slice_ID = "1_10", hemisphere = "left", replace = FALSE)
 }
 }

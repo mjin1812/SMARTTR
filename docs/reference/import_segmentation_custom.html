@@ -60,12 +60,12 @@ Method for custom importation of segmentation data for a mouse object"><!-- math
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
-    <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
-    <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
-    <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
-    <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
+    <a class="dropdown-item" href="../articles/Part1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
+    <a class="dropdown-item" href="../articles/Part2.Tutorial.html">2. Mapping Tutorial</a>
+    <a class="dropdown-item" href="../articles/Part3.Scripting.html">3. Scripting &amp; notebooks</a>
+    <a class="dropdown-item" href="../articles/Part4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/Part5.FAQ.html">5. FAQ</a>
+    <a class="dropdown-item" href="../articles/Part6.Development.html">6. Development environment</a>
   </div>
 </li>
 <li class="active nav-item">
@@ -117,39 +117,37 @@ This attribute can be stored when initializing the slice object or can be edited
 <span></span>
 <span><span class="co"># S3 method for slice</span></span>
 <span><span class="fu">import_segmentation_custom</span><span class="op">(</span></span>
-<span>  <span class="va">s</span>,</span>
+<span>  <span class="va">x</span>,</span>
 <span>  <span class="va">channel</span>,</span>
 <span>  x_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  y_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  meas_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  quant_path <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  quant_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for mouse</span></span>
 <span><span class="fu">import_segmentation_custom</span><span class="op">(</span></span>
-<span>  <span class="va">m</span>,</span>
+<span>  <span class="va">x</span>,</span>
 <span>  <span class="va">channel</span>,</span>
 <span>  slice_ID <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  hemisphere <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  x_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  y_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  meas_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  quant_path <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  quant_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
-<dd><p>a mouse or slice object</p></dd>
+<dd><p>mouse object</p></dd>
 
 
 <dt>...</dt>
 <dd><p>further arguments passed to or from other methods.</p></dd>
-
-
-<dt>s</dt>
-<dd><p>slice object</p></dd>
 
 
 <dt>channel</dt>
@@ -170,10 +168,6 @@ This attribute can be stored when initializing the slice object or can be edited
 
 <dt>quant_path</dt>
 <dd><p>= NULL</p></dd>
-
-
-<dt>m</dt>
-<dd><p>mouse object</p></dd>
 
 
 <dt>slice_ID</dt>
@@ -199,10 +193,9 @@ This attribute can be stored when initializing the slice object or can be edited
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span>  <span class="fu">import_segmentation_custom</span><span class="op">(</span><span class="va">s</span>, mouse_ID <span class="op">=</span> <span class="st">"255"</span>, channel <span class="op">=</span> <span class="st">"cfos"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in import_segmentation_custom(s, mouse_ID = "255", channel = "cfos"):</span> object 's' not found</span>
-<span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span>  <span class="fu">import_segmentation</span><span class="op">(</span><span class="va">m</span>, slice_ID <span class="op">=</span> <span class="st">"1_10"</span>, channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PV"</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in import_segmentation(m, slice_ID = "1_10", channels = c("PV"),     replace = FALSE):</span> could not find function "import_segmentation"</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="va">s</span> <span class="op">&lt;-</span>  <span class="fu">import_segmentation_custom</span><span class="op">(</span><span class="va">s</span>, mouse_ID <span class="op">=</span> <span class="st">"255"</span>, channel <span class="op">=</span> <span class="st">"cfos"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span>  <span class="fu">import_segmentation</span><span class="op">(</span><span class="va">m</span>, slice_ID <span class="op">=</span> <span class="st">"1_10"</span>, channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PV"</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

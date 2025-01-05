@@ -8,10 +8,10 @@
 \usage{
 register(x, ...)
 
-\method{register}{slice}(s, filter = NULL, ...)
+\method{register}{slice}(x, filter = NULL, ...)
 
 \method{register}{mouse}(
-  m,
+  x,
   slice_ID = NA,
   hemisphere = NULL,
   filter = NULL,
@@ -20,15 +20,11 @@ register(x, ...)
 )
 }
 \arguments{
-\item{x}{a mouse or slice object}
+\item{x}{a mouse object}
 
 \item{...}{additional parameters to pass to the SMART::registration2() function, besides 'input', 'coordinate', 'filter' & 'correspondance'}
 
-\item{s}{slice object}
-
 \item{filter}{(list) Wholebrain filter with parameters.}
-
-\item{m}{mouse object}
 
 \item{slice_ID}{(str)  ID of slice}
 
@@ -39,7 +35,7 @@ register(x, ...)
 \value{
 a mouse or slice object
 
-s slice object
+s a slice object
 
 m  mouse object
 }

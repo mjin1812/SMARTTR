@@ -2,12 +2,12 @@ pandoc: 3.1.11
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
-  1.Segmentation: 1.Segmentation.html
-  2.Tutorial: 2.Tutorial.html
-  3.Scripting: 3.Scripting.html
-  4.Example_Analysis_Notebook: 4.Example_Analysis_Notebook.html
-  5.FAQ: 5.FAQ.html
-  6.Development: 6.Development.html
+  Part1.Segmentation: Part1.Segmentation.html
+  Part2.Tutorial: Part2.Tutorial.html
+  Part3.Scripting: Part3.Scripting.html
+  Part4.Example_Analysis_Notebook: Part4.Example_Analysis_Notebook.html
+  Part5.FAQ: Part5.FAQ.html
+  Part6.Development: Part6.Development.html
   SMARTR: SMARTR.html
-last_built: 2024-12-30T17:39Z
+last_built: 2025-01-05T18:36Z
 

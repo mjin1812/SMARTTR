@@ -24,12 +24,12 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
-    <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
-    <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
-    <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
-    <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
+    <a class="dropdown-item" href="../articles/Part1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
+    <a class="dropdown-item" href="../articles/Part2.Tutorial.html">2. Mapping Tutorial</a>
+    <a class="dropdown-item" href="../articles/Part3.Scripting.html">3. Scripting &amp; notebooks</a>
+    <a class="dropdown-item" href="../articles/Part4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/Part5.FAQ.html">5. FAQ</a>
+    <a class="dropdown-item" href="../articles/Part6.Development.html">6. Development environment</a>
   </div>
 </li>
 <li class="active nav-item">
@@ -167,11 +167,6 @@ This function also automatically keeps only the common regions that are found ac
         <dd>Filters to chosen base parent regions and all child subregions</dd>
       </dl><dl><dt>
           
-          <code><a href="find_all_subregions.html">find_all_subregions()</a></code> 
-        </dt>
-        <dd>find_all_subregions</dd>
-      </dl><dl><dt>
-          
           <code><a href="find_outlier_counts.html">find_outlier_counts()</a></code> 
         </dt>
         <dd>Detect, log, and remove outlier counts. This function
@@ -179,79 +174,9 @@ removes any normalized regions counts that are more than <code>n_sd</code> stand
 than their cohort mean.</dd>
       </dl><dl><dt>
           
-          <code><a href="find_segmentation_files.html">find_segmentation_files()</a></code> 
-        </dt>
-        <dd>Find segmentation files following the naming conventions of the denny lab given a channel name and a root slice directory</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get.acronym.child.custom.html">get.acronym.child.custom()</a></code> 
-        </dt>
-        <dd>Get acronyms of child structures</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get.acronym.child.html">get.acronym.child()</a></code> 
-        </dt>
-        <dd>Get acronyms of child structures</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get.acronym.parent.custom.html">get.acronym.parent.custom()</a></code> 
-        </dt>
-        <dd>Get parent region acronyms</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get.acronym.parent.html">get.acronym.parent()</a></code> 
-        </dt>
-        <dd>Get parent region acronyms</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get.colabeled.cells.html">get.colabeled.cells()</a></code> 
-        </dt>
-        <dd>Get colabelled cells data table. This is designed specifically to create a segmentation object from the imported raw files that are outputs from the batch_3D_MultiColocalization.ijm macro.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get.registered.areas.bu.html">get.registered.areas.bu()</a></code> 
-        </dt>
-        <dd>Get the registered areas</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get.registered.areas.td.html">get.registered.areas.td()</a></code> 
-        </dt>
-        <dd>Get top down registered areas</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get.sub.structure.custom.html">get.sub.structure.custom()</a></code> 
-        </dt>
-        <dd>Get subregion acronyms</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get.sub.structure.html">get.sub.structure()</a></code> 
-        </dt>
-        <dd>Get subregion acronyms</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get.sup.structure.custom.html">get.sup.structure.custom()</a></code> 
-        </dt>
-        <dd>Get super parent region acronyms</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get.sup.structure.html">get.sup.structure()</a></code> 
-        </dt>
-        <dd>Get parent region acronyms</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get.super.regions.html">get.super.regions()</a></code> 
-        </dt>
-        <dd>Updated function to return character vector of the super region acronyms after inputting a character vector of acronyms</dd>
-      </dl><dl><dt>
-          
           <code><a href="get_cell_table.html">get_cell_table()</a></code> 
         </dt>
         <dd>Get cell tables</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get_common_regions.html">get_common_regions()</a></code> 
-        </dt>
-        <dd>Get common regions that are found across all the comparison groups.</dd>
       </dl><dl><dt>
           
           <code><a href="get_correlations.html">get_correlations()</a></code> 
@@ -264,7 +189,7 @@ than their cohort mean.</dd>
         <dd>Get the percentage of colabelled cells over either cfos or eyfp channels.</dd>
       </dl><dl><dt>
           
-          <code><a href="get_registered_areas.html">get_registered_volumes(<i>&lt;mouse&gt;</i>)</a></code> 
+          <code><a href="get_registered_volumes.mouse.html">get_registered_volumes(<i>&lt;mouse&gt;</i>)</a></code> 
         </dt>
         <dd>Method for getting regional areas and volumes for each slice in a mouse object</dd>
       </dl><dl><dt>
@@ -272,11 +197,6 @@ than their cohort mean.</dd>
           <code><a href="get_registered_volumes.html">get_registered_volumes()</a></code> 
         </dt>
         <dd>get_registered_volumes (generic function)</dd>
-      </dl><dl><dt>
-          
-          <code><a href="id.from.acronym.custom.html">id.from.acronym.custom()</a></code> 
-        </dt>
-        <dd>Get region ontology  ID from acronym</dd>
       </dl><dl><dt>
           
           <code><a href="import_mapped_datasets.html">import_mapped_datasets()</a></code> 
@@ -294,18 +214,6 @@ than their cohort mean.</dd>
         <dd>import_segmentation (generic function)</dd>
       </dl><dl><dt>
           
-          <code><a href="make.filter.html">make.filter()</a></code> 
-        </dt>
-        <dd>Make a filter for the cfos or eyfp channel
-This is specific to filtering counts quantified and exported through our ImageJ scripts.
-This will be defunct removed from the pipeline soon.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="make_segmentation_filter.html">make_segmentation_filter()</a></code> 
-        </dt>
-        <dd>make_segmentation_filter (generic function)</dd>
-      </dl><dl><dt>
-          
           <code><a href="make_segmentation_object.html">make_segmentation_object()</a></code> 
         </dt>
         <dd>make_segmentation_object (generic funciton)</dd>
@@ -316,34 +224,9 @@ This will be defunct removed from the pipeline soon.</dd>
         <dd>map_cells_to_atlas (generic function)</dd>
       </dl><dl><dt>
           
-          <code><a href="maslov_sneppen_rewire.html">maslov_sneppen_rewire()</a></code> 
-        </dt>
-        <dd>Internal algorithm for maslov-sneppen rewiring</dd>
-      </dl><dl><dt>
-          
           <code><a href="mouse.html">mouse()</a></code> 
         </dt>
         <dd>Create a mouse object</dd>
-      </dl><dl><dt>
-          
-          <code><a href="name.from.acronym.custom.html">name.from.acronym.custom()</a></code> 
-        </dt>
-        <dd>Get region ontology name from acronym</dd>
-      </dl><dl><dt>
-          
-          <code><a href="name.from.acronym.html">name.from.acronym()</a></code> 
-        </dt>
-        <dd>Get region ontology name from acronym</dd>
-      </dl><dl><dt>
-          
-          <code><a href="name.from.id.custom.html">name.from.id.custom()</a></code> 
-        </dt>
-        <dd>Get region ontology name from ID</dd>
-      </dl><dl><dt>
-          
-          <code><a href="name.from.id.html">name.from.id()</a></code> 
-        </dt>
-        <dd>Get region ontology name from ID</dd>
       </dl><dl><dt>
           
           <code><a href="normalize_cell_counts.html">normalize_cell_counts()</a></code> 
@@ -369,16 +252,6 @@ This will be defunct removed from the pipeline soon.</dd>
           <code><a href="parallel_coordinate_plot.html">parallel_coordinate_plot()</a></code> 
         </dt>
         <dd>Create a parallel coordinate plot</dd>
-      </dl><dl><dt>
-          
-          <code><a href="parentid.from.id.custom.html">parentid.from.id.custom()</a></code> 
-        </dt>
-        <dd>Get parent id from id</dd>
-      </dl><dl><dt>
-          
-          <code><a href="permute_corr_diff_distrib.html">permute_corr_diff_distrib()</a></code> 
-        </dt>
-        <dd>Generate array of null distribution of region pairwise correlation differences.</dd>
       </dl><dl><dt>
           
           <code><a href="plot_betweenness_regions.html">plot_betweenness_regions()</a></code> 
@@ -486,11 +359,6 @@ This will be defunct removed from the pipeline soon.</dd>
         <dd>Implement rewiring algorithms to current empirical networks to randomize certain network properties.</dd>
       </dl><dl><dt>
           
-          <code><a href="rois_intersect_region_list.html">rois_intersect_region_list()</a></code> 
-        </dt>
-        <dd>Get  a list of intersecting regions to a list of common regions</dd>
-      </dl><dl><dt>
-          
           <code><a href="save_experiment.html">save_experiment()</a></code> 
         </dt>
         <dd>Save experiment data</dd>
@@ -533,7 +401,7 @@ This will be defunct removed from the pipeline soon.</dd>
           
           <code><a href="SMARTR.html">SMARTR</a></code> 
         </dt>
-        <dd>SMARTR: A mapping, analysis, and visualization package for wholebrain dual-ensemble coronal datasets.</dd>
+        <dd>SMARTR: A Mapping, Analysis, and Visualization Package for Wholebrain Dual-Ensemble Coronal Datasets.</dd>
       </dl><dl><dt>
           
           <code><a href="summarise_networks.html">summarise_networks()</a></code> 
@@ -545,11 +413,6 @@ calculate network statistics for each network.</dd>
           <code><a href="summarize_null_networks.html">summarize_null_networks()</a></code> 
         </dt>
         <dd>Summarize the parameters of the rewired null networks generated by <code><a href="https://rdrr.io/pkg/SMARTR/man/rewire_network.html" class="external-link">rewire_network()</a></code></dd>
-      </dl><dl><dt>
-          
-          <code><a href="try_correlate.html">try_correlate()</a></code> 
-        </dt>
-        <dd>Try to correlate</dd>
       </dl><dl><dt>
           
           <code><a href="volcano_plot.html">volcano_plot()</a></code> 

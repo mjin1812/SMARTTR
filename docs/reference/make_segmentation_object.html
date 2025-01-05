@@ -26,12 +26,12 @@ Make a wholebrain compatible segmentation object for a slice in a mouse object">
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
-    <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
-    <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
-    <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
-    <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
+    <a class="dropdown-item" href="../articles/Part1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
+    <a class="dropdown-item" href="../articles/Part2.Tutorial.html">2. Mapping Tutorial</a>
+    <a class="dropdown-item" href="../articles/Part3.Scripting.html">3. Scripting &amp; notebooks</a>
+    <a class="dropdown-item" href="../articles/Part4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/Part5.FAQ.html">5. FAQ</a>
+    <a class="dropdown-item" href="../articles/Part6.Development.html">6. Development environment</a>
   </div>
 </li>
 <li class="active nav-item">
@@ -66,7 +66,7 @@ Make a wholebrain compatible segmentation object for a slice in a mouse object">
 <span></span>
 <span><span class="co"># S3 method for slice</span></span>
 <span><span class="fu">make_segmentation_object</span><span class="op">(</span></span>
-<span>  <span class="va">s</span>,</span>
+<span>  <span class="va">x</span>,</span>
 <span>  mouse_ID <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  channels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  use_filter <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -75,7 +75,7 @@ Make a wholebrain compatible segmentation object for a slice in a mouse object">
 <span></span>
 <span><span class="co"># S3 method for mouse</span></span>
 <span><span class="fu">make_segmentation_object</span><span class="op">(</span></span>
-<span>  <span class="va">m</span>,</span>
+<span>  <span class="va">x</span>,</span>
 <span>  slice_ID <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  hemisphere <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  channels <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -88,15 +88,11 @@ Make a wholebrain compatible segmentation object for a slice in a mouse object">
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
-<dd><p>a mouse or slice object</p></dd>
+<dd><p>mouse object</p></dd>
 
 
 <dt>...</dt>
 <dd><p>(optional) additional volume and overlap parameters for get.colabeled.cells().</p></dd>
-
-
-<dt>s</dt>
-<dd><p>slice object</p></dd>
 
 
 <dt>mouse_ID</dt>
@@ -109,10 +105,6 @@ Make a wholebrain compatible segmentation object for a slice in a mouse object">
 
 <dt>use_filter</dt>
 <dd><p>(bool, default = FALSE). Use a filter to create more curated segmentation object from the raw segmentation data.</p></dd>
-
-
-<dt>m</dt>
-<dd><p>mouse object</p></dd>
 
 
 <dt>slice_ID</dt>
@@ -143,10 +135,11 @@ Make a wholebrain compatible segmentation object for a slice in a mouse object">
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu">make_segmentation_object</span><span class="op">(</span><span class="va">s</span>, mouse_ID <span class="op">=</span> <span class="st">"255"</span>, channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cfos"</span>, <span class="st">"eyfp"</span><span class="op">)</span>, use_filter <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in make_segmentation_object(s, mouse_ID = "255", channels = c("cfos",     "eyfp"), use_filter = FALSE):</span> object 's' not found</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu">make_segmentation_object</span><span class="op">(</span><span class="va">s</span>, mouse_ID <span class="op">=</span> <span class="st">"255"</span>, channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cfos"</span>, <span class="st">"eyfp"</span><span class="op">)</span>, use_filter <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span>  <span class="fu">make_segmentation_object</span><span class="op">(</span><span class="va">m</span>, slice_ID <span class="op">=</span> <span class="st">'1_9'</span>, hemisphere <span class="op">=</span> <span class="st">'left'</span>, channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'eyfp'</span>, <span class="st">'cfos'</span>, <span class="st">'colabel'</span><span class="op">)</span>, use_filter <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in make_segmentation_object(m, slice_ID = "1_9", hemisphere = "left",     channels = c("eyfp", "cfos", "colabel"), use_filter = FALSE):</span> object 'm' not found</span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

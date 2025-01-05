@@ -60,7 +60,9 @@ Plot the correlation difference between two comparison groups into a volcano plo
 \code{\link[=correlation_diff_permutation]{correlation_diff_permutation()}} must be run first in order to generate results to plot.
 }
 \examples{
+\dontrun{
 volcano_plot(e, permutation_comparison = "female_AD_vs_male_AD", channels = c("cfos", "eyfp", "colabel"),
 colors =  c("#be0000", "#00782e", "#f09b08"), save_plot = TRUE, title = NULL, ylim = c(0, 3), height = 8,
 width = 10, print_plot = FALSE, image_ext = ".png")
+}
 }

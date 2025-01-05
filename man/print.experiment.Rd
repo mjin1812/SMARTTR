@@ -4,11 +4,17 @@
 \alias{print.experiment}
 \title{Print attributes of experiment object}
 \usage{
-\method{print}{experiment}(e)
+\method{print}{experiment}(x, ...)
 }
 \arguments{
-\item{e}{experiment object}
+\item{x}{experiment object}
+
+\item{...}{further arguments passed to or from other methods.}
 }
 \description{
 Print attributes of experiment object
+}
+\examples{
+e <- experiment()
+print(e)
 }

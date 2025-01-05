@@ -17,7 +17,7 @@ Because the volumes and region areas cancel out, the values of count, normalized
 This is to provide a consistent input dataframe into the analysis functions.
 }
 \description{
-This function can only be run after running \code{\link[=combine_norm_cell_counts]{combine_norm_cell_counts()}}. It divides the colabelled cell counts by
+This function can only be run after running \code{\link[=combine_cell_counts]{combine_cell_counts()}}. It divides the colabelled cell counts by
 a designated normalization channel to provide a normalized ratio. Please note that the areas and volumes cancel out in this operation.
 This is not designed to work on multiple hemispheres. Please combine cell counts across multiple hemispheres when you run \code{\link[=normalize_cell_counts]{normalize_cell_counts()}}.
 }
@@ -27,5 +27,5 @@ e <- normalize_colabel_counts(e, denominator_channel = "eyfp")
 }
 }
 \seealso{
-\code{\link[=combine_norm_cell_counts]{combine_norm_cell_counts()}} &  \code{\link[=normalize_cell_counts]{normalize_cell_counts()}}
+\code{\link[=combine_cell_counts]{combine_cell_counts()}} &  \code{\link[=normalize_cell_counts]{normalize_cell_counts()}}
 }

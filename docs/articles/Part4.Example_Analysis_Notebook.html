@@ -41,12 +41,12 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
-    <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
-    <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
-    <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
-    <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
+    <a class="dropdown-item" href="../articles/Part1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
+    <a class="dropdown-item" href="../articles/Part2.Tutorial.html">2. Mapping Tutorial</a>
+    <a class="dropdown-item" href="../articles/Part3.Scripting.html">3. Scripting &amp; notebooks</a>
+    <a class="dropdown-item" href="../articles/Part4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/Part5.FAQ.html">5. FAQ</a>
+    <a class="dropdown-item" href="../articles/Part6.Development.html">6. Development environment</a>
   </div>
 </li>
 <li class="nav-item">
@@ -76,7 +76,7 @@
             
       
       
-      <div class="d-none name"><code>4.Example_Analysis_Notebook.Rmd</code></div>
+      <div class="d-none name"><code>Part4.Example_Analysis_Notebook.Rmd</code></div>
     </div>
 
     
@@ -147,7 +147,7 @@ CA2 region.</p>
 <code class="sourceCode R"><span><span class="va">toremove</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CA2"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">channels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">lh</span><span class="op">$</span><span class="va">combined_normalized_counts</span><span class="op">)</span></span>
-<span><span class="va">toremove</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">toremove</span>, <span class="fu">SMARTR</span><span class="fu">::</span><span class="fu"><a href="../reference/get.sub.structure.html">get.sub.structure</a></span><span class="op">(</span><span class="va">toremove</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">toremove</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">toremove</span>, <span class="fu">SMARTR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SMARTR/man/get.sub.structure.html" class="external-link">get.sub.structure</a></span><span class="op">(</span><span class="va">toremove</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">channel</span> <span class="kw">in</span> <span class="va">channels</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">lh</span><span class="op">$</span><span class="va">combined_normalized_counts</span><span class="op">[[</span><span class="va">channel</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">lh</span><span class="op">$</span><span class="va">combined_normalized_counts</span><span class="op">[[</span><span class="va">channel</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">acronym</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">toremove</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>

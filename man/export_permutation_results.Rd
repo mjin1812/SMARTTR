@@ -26,3 +26,9 @@ export_permutation_results(
 \description{
 Export the permutation results as a csv file. This automatically saves into the tables folder.
 }
+\examples{
+\dontrun{
+e <- export_permutation_results(e, permutation_groups = "all", filter_significant = TRUE)
+}
+
+}

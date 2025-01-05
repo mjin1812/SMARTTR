@@ -216,11 +216,11 @@ filter_regions <- function(e,
 
   if (ontology == "allen"){
     regions_ordered <- base_regions %>%
-      purrr::map(SMARTR::get.sub.structure) %>%
+      purrr::map(get.sub.structure) %>%
       unlist()
   } else if (ontology == "unified"){
     regions_ordered <- base_regions %>%
-      purrr::map(SMARTR::get.sub.structure.custom, ontology = ontology) %>%
+      purrr::map(get.sub.structure.custom, ontology = ontology) %>%
       unlist()
   }
   regions_ordered <- c(regions_ordered, base_regions)
@@ -335,6 +335,7 @@ exclude_by_keyword <- function(e, keywords, channels = NULL){
 #' @param mouse_count dataframe of all region counts across all mice
 #' @param by variables to group by
 #' @return unique acronyms that are the intersection across all groups
+#' @noRd
 
 get_common_regions <- function(mouse_count, by){
   # keeps track of number of group combinations

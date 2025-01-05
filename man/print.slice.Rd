@@ -4,11 +4,17 @@
 \alias{print.slice}
 \title{Print attributes of slice object}
 \usage{
-\method{print}{slice}(s)
+\method{print}{slice}(x, ...)
 }
 \arguments{
-\item{s}{slice object}
+\item{x}{slice object}
+
+\item{...}{further arguments passed to or from other methods.}
 }
 \description{
 Print attributes of slice object
+}
+\examples{
+s <- slice()
+print(s)
 }

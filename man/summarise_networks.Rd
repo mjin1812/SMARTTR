@@ -38,6 +38,8 @@ Summarize multiple networks. Create summary dataframes of for multiple networks 
 calculate network statistics for each network.
 }
 \examples{
+\dontrun{
 e <- get_network_statistics(e,  network_names = c("female_AD", "female_control"),
 channels = c("cfos", "eyfp", "colabel"), save_stats = TRUE, save_degree_distribution = TRUE)
+}
 }

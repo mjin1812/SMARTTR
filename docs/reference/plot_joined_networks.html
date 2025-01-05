@@ -24,12 +24,12 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
-    <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
-    <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
-    <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
-    <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
+    <a class="dropdown-item" href="../articles/Part1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
+    <a class="dropdown-item" href="../articles/Part2.Tutorial.html">2. Mapping Tutorial</a>
+    <a class="dropdown-item" href="../articles/Part3.Scripting.html">3. Scripting &amp; notebooks</a>
+    <a class="dropdown-item" href="../articles/Part4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/Part5.FAQ.html">5. FAQ</a>
+    <a class="dropdown-item" href="../articles/Part6.Development.html">6. Development environment</a>
   </div>
 </li>
 <li class="active nav-item">
@@ -75,7 +75,7 @@
 <span>  degree_scale_limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  correlation_edge_width_limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  image_ext <span class="op">=</span> <span class="st">".png"</span>,</span>
-<span>  print_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  print_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  graph_theme <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  transparent_edge_group1 <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  transparent_edge_group2 <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -110,6 +110,16 @@
 <dd><p>(bool, default = TRUE) Whether to plot absolute weights. If TRUE, the edge_colors and edge_colors_label should not contain values for positive and negative correlations.</p></dd>
 
 
+<dt>edge_colors</dt>
+<dd><p>(vec) vector of hexidecimal codes as strings. Assign a group name to the vector element. e.g. c(male_agg_pos =  "#06537f",
+male_agg_neg = "#526c7a", female_non_pos = "#C70039", female_non_neg = "#71585f")</p></dd>
+
+
+<dt>edge_color_labels</dt>
+<dd><p>(vec) vector of edge labels as strings. e.g. c(male_agg_pos = "Positive male",
+male_agg_neg = "Negative male", female_non_pos = "Positive female", female_non_neg = "Negative female")</p></dd>
+
+
 <dt>height</dt>
 <dd><p>Height of the plot in inches.</p></dd>
 
@@ -127,8 +137,7 @@
 
 
 <dt>correlation_edge_width_limit</dt>
-<dd><p>(default = c(0.8, 1)) Range for the width size of the edges.
-Can also be a hexadecimal color code written as a string.</p></dd>
+<dd><p>(default = c(0.8, 1)) Range for the width size of the edges.</p></dd>
 
 
 <dt>image_ext</dt>
@@ -136,12 +145,20 @@ Can also be a hexadecimal color code written as a string.</p></dd>
 
 
 <dt>print_plot</dt>
-<dd><p>(bool, default = TRUE) Whether to print the plot as an output.
+<dd><p>(bool, default = FALSE) Whether to print the plot as an output.
 the experiment object output folder.</p></dd>
 
 
 <dt>graph_theme</dt>
 <dd><p>(default = NULL) Add a <code><a href="https://ggraph.data-imaginist.com/reference/theme_graph.html" class="external-link">ggraph::theme_graph()</a></code> to the network graph. If NULL, the default is taken.</p></dd>
+
+
+<dt>transparent_edge_group1</dt>
+<dd><p>(bool) logical to render edges transparent</p></dd>
+
+
+<dt>transparent_edge_group2</dt>
+<dd><p>(bool) logical to render edges transparent</p></dd>
 
 
 <dt>label_size</dt>
@@ -152,13 +169,22 @@ the experiment object output folder.</p></dd>
 <dd><p>(default = 0.15) Distance of label from nodes.</p></dd>
 
 
+<dt>edge_thickness_range</dt>
+<dd><p>(default = c(1,5))</p></dd>
+
+
+<dt>node_size_range</dt>
+<dd><p>(default = c(1, 8))</p></dd>
+
+
+<dt>anatomical.colors</dt>
+<dd><p>(NuLL or vec, default = NULL) Colors for the parent region as a named vector of hexadecimal regions.
+Can also be a hexadecimal color code written as a string.</p></dd>
+
+
 <dt>save_plot</dt>
 <dd><p>(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.</p></dd>
-
-
-<dt>edge_color</dt>
-<dd><p>(str, default =  c(male_agg_pos = "Positive male", male_agg_neg = "Negative male", female_non_pos = "Positive female", female_non_neg = "Negative female")) Color of the network edges as a named vector.</p></dd>
 
 </dl></div>
     <div class="section level2">

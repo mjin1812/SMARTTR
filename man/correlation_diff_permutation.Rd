@@ -38,6 +38,8 @@ Apply the named method to control for the inflated false discovery rate or FWER.
 to keep "raw" p values. See also \code{\link[stats:p.adjust]{stats::p.adjust()}} for the correction options.}
 
 \item{alpha}{(float, default = 0.05) The alpha cutoff for significance between region pairwise correlation differences}
+
+\item{...}{additional parameters to pass to \code{permute_corr_diff_distrib()}}
 }
 \value{
 e experiment object. The experiment object now has a list called \code{permutation_p_matrix} stored in it. Elements of this \code{permutation_p_matrix} list are
@@ -50,6 +52,7 @@ number of channels to compare. The functions \code{get_correlations()} needs to 
 running this function. The test statistics used is the pearson values of those in correlation_list_name_2 subtracted from corresponding Pearson values in correlation_list_name_1.
 }
 \examples{
+\dontrun{
 e <- correlation_diff_permutation(sundowning,
                                             correlation_list_name_1 = "female_AD",
                                             correlation_list_name_2 = "female_control",
@@ -59,6 +62,7 @@ e <- correlation_diff_permutation(sundowning,
                                             p_adjust_method = FALSE
                                             alpha = 0.001,
                                             )
+}
 
 }
 \seealso{

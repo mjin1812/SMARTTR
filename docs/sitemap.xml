@@ -4,25 +4,25 @@
     <loc>/404.html</loc>
   </url>
   <url>
-    <loc>/articles/1.Segmentation.html</loc>
-  </url>
-  <url>
-    <loc>/articles/2.Tutorial.html</loc>
-  </url>
-  <url>
-    <loc>/articles/3.Scripting.html</loc>
-  </url>
-  <url>
-    <loc>/articles/4.Example_Analysis_Notebook.html</loc>
-  </url>
-  <url>
-    <loc>/articles/5.FAQ.html</loc>
-  </url>
-  <url>
-    <loc>/articles/6.Development.html</loc>
-  </url>
-  <url>
     <loc>/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>/articles/Part1.Segmentation.html</loc>
+  </url>
+  <url>
+    <loc>/articles/Part2.Tutorial.html</loc>
+  </url>
+  <url>
+    <loc>/articles/Part3.Scripting.html</loc>
+  </url>
+  <url>
+    <loc>/articles/Part4.Example_Analysis_Notebook.html</loc>
+  </url>
+  <url>
+    <loc>/articles/Part5.FAQ.html</loc>
+  </url>
+  <url>
+    <loc>/articles/Part6.Development.html</loc>
   </url>
   <url>
     <loc>/articles/SMARTR.html</loc>
@@ -100,55 +100,10 @@
     <loc>/reference/filter_regions.html</loc>
   </url>
   <url>
-    <loc>/reference/find_all_subregions.html</loc>
-  </url>
-  <url>
     <loc>/reference/find_outlier_counts.html</loc>
   </url>
   <url>
-    <loc>/reference/find_segmentation_files.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.acronym.child.custom.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.acronym.child.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.acronym.parent.custom.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.acronym.parent.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.colabeled.cells.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.registered.areas.bu.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.registered.areas.td.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.sub.structure.custom.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.sub.structure.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.sup.structure.custom.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.sup.structure.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.super.regions.html</loc>
-  </url>
-  <url>
     <loc>/reference/get_cell_table.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_common_regions.html</loc>
   </url>
   <url>
     <loc>/reference/get_correlations.html</loc>
@@ -157,13 +112,10 @@
     <loc>/reference/get_percent_colabel.html</loc>
   </url>
   <url>
-    <loc>/reference/get_registered_areas.html</loc>
-  </url>
-  <url>
     <loc>/reference/get_registered_volumes.html</loc>
   </url>
   <url>
-    <loc>/reference/id.from.acronym.custom.html</loc>
+    <loc>/reference/get_registered_volumes.mouse.html</loc>
   </url>
   <url>
     <loc>/reference/import_mapped_datasets.html</loc>
@@ -178,34 +130,13 @@
     <loc>/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/make.filter.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_segmentation_filter.html</loc>
-  </url>
-  <url>
     <loc>/reference/make_segmentation_object.html</loc>
   </url>
   <url>
     <loc>/reference/map_cells_to_atlas.html</loc>
   </url>
   <url>
-    <loc>/reference/maslov_sneppen_rewire.html</loc>
-  </url>
-  <url>
     <loc>/reference/mouse.html</loc>
-  </url>
-  <url>
-    <loc>/reference/name.from.acronym.custom.html</loc>
-  </url>
-  <url>
-    <loc>/reference/name.from.acronym.html</loc>
-  </url>
-  <url>
-    <loc>/reference/name.from.id.custom.html</loc>
-  </url>
-  <url>
-    <loc>/reference/name.from.id.html</loc>
   </url>
   <url>
     <loc>/reference/normalize_cell_counts.html</loc>
@@ -221,12 +152,6 @@
   </url>
   <url>
     <loc>/reference/parallel_coordinate_plot.html</loc>
-  </url>
-  <url>
-    <loc>/reference/parentid.from.id.custom.html</loc>
-  </url>
-  <url>
-    <loc>/reference/permute_corr_diff_distrib.html</loc>
   </url>
   <url>
     <loc>/reference/plot_betweenness_regions.html</loc>
@@ -292,9 +217,6 @@
     <loc>/reference/rewire_network.html</loc>
   </url>
   <url>
-    <loc>/reference/rois_intersect_region_list.html</loc>
-  </url>
-  <url>
     <loc>/reference/save_experiment.html</loc>
   </url>
   <url>
@@ -328,9 +250,9 @@
     <loc>/reference/summarize_null_networks.html</loc>
   </url>
   <url>
-    <loc>/reference/try_correlate.html</loc>
+    <loc>/reference/volcano_plot.html</loc>
   </url>
   <url>
-    <loc>/reference/volcano_plot.html</loc>
+    <loc>/well-mice_reprex.html</loc>
   </url>
 </urlset>

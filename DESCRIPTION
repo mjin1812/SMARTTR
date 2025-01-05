@@ -53,14 +53,15 @@ Imports:
     Hmisc (>= 4.5.0),
     grImport (>= 0.9.3),
     purrr (>= 1.0.0),
-    magrittr,
-    knitr
+    magrittr
 Suggests:
     SMART (>= 0.1.0),
     wholebrain (>= 0.1.1),
     ggpattern (>= 0.2.0),
     testthat (>= 3.1.1),
-    ggh4x (>= 0.2.8)
+    ggh4x (>= 0.2.8),
+    knitr (>= 1.33.0),
+    rmarkdown (>= 2.18.0)
 Additional_repositories: https://github.com/mjin1812/SMART,  https://github.com/mjin1812/wholebrain
 Config/testthat/edition: 3
 VignetteBuilder: knitr

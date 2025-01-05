@@ -43,6 +43,12 @@ plot_joined_networks(
 
 \item{absolute_weight}{(bool, default = TRUE) Whether to plot absolute weights. If TRUE, the edge_colors and edge_colors_label should not contain values for positive and negative correlations.}
 
+\item{edge_colors}{(vec) vector of hexidecimal codes as strings. Assign a group name to the vector element. e.g. c(male_agg_pos =  "#06537f",
+male_agg_neg = "#526c7a", female_non_pos = "#C70039", female_non_neg = "#71585f")}
+
+\item{edge_color_labels}{(vec) vector of edge labels as strings. e.g. c(male_agg_pos = "Positive male",
+male_agg_neg = "Negative male", female_non_pos = "Positive female", female_non_neg = "Negative female")}
+
 \item{height}{Height of the plot in inches.}
 
 \item{width}{width of the plot in inches.}
@@ -51,8 +57,7 @@ plot_joined_networks(
 
 \item{degree_scale_limit}{(vec, default = c(1,10)) Scale limit for degree size}
 
-\item{correlation_edge_width_limit}{(default = c(0.8, 1)) Range for the width size of the edges.
-Can also be a hexadecimal color code written as a string.}
+\item{correlation_edge_width_limit}{(default = c(0.8, 1)) Range for the width size of the edges.}
 
 \item{image_ext}{(default = ".png") image extension to the plot as.}
 
@@ -61,14 +66,23 @@ the experiment object output folder.}
 
 \item{graph_theme}{(default = NULL) Add a \code{\link[ggraph:theme_graph]{ggraph::theme_graph()}} to the network graph. If NULL, the default is taken.}
 
+\item{transparent_edge_group1}{(bool) logical to render edges transparent}
+
+\item{transparent_edge_group2}{(bool) logical to render edges transparent}
+
 \item{label_size}{(default = 5) Default font size for network region labels.}
 
 \item{label_offset}{(default = 0.15) Distance of label from nodes.}
 
+\item{edge_thickness_range}{(default = c(1,5))}
+
+\item{node_size_range}{(default = c(1, 8))}
+
+\item{anatomical.colors}{(NuLL or vec, default = NULL) Colors for the parent region as a named vector of hexadecimal regions.
+Can also be a hexadecimal color code written as a string.}
+
 \item{save_plot}{(bool, default = TRUE) Save into the figures subdirectory of the
 the experiment object output folder.}
-
-\item{edge_color}{(str, default =  c(male_agg_pos = "Positive male", male_agg_neg = "Negative male", female_non_pos = "Positive female", female_non_neg = "Negative female")) Color of the network edges as a named vector.}
 }
 \value{
 p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.

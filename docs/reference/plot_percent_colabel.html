@@ -30,12 +30,12 @@ set it to the color_mapping parameter and set the pattern_mapping parameter to N
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
-    <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
-    <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
-    <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
-    <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
+    <a class="dropdown-item" href="../articles/Part1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
+    <a class="dropdown-item" href="../articles/Part2.Tutorial.html">2. Mapping Tutorial</a>
+    <a class="dropdown-item" href="../articles/Part3.Scripting.html">3. Scripting &amp; notebooks</a>
+    <a class="dropdown-item" href="../articles/Part4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/Part5.FAQ.html">5. FAQ</a>
+    <a class="dropdown-item" href="../articles/Part6.Development.html">6. Development environment</a>
   </div>
 </li>
 <li class="active nav-item">
@@ -84,7 +84,7 @@ set it to the <code>color_mapping</code> parameter and set the <code>pattern_map
 <span>  plot_individual <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  height <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>  width <span class="op">=</span> <span class="fl">8</span>,</span>
-<span>  print_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  print_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  save_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  image_ext <span class="op">=</span> <span class="st">".png"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -94,6 +94,10 @@ set it to the <code>color_mapping</code> parameter and set the <code>pattern_map
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>e</dt>
 <dd><p>experiment object</p></dd>
+
+
+<dt>colabel_channel</dt>
+<dd><p>(str, default = "colabel") The channel used as the numerator in fraction counts.</p></dd>
 
 
 <dt>channel</dt>
@@ -123,6 +127,34 @@ set it to the <code>color_mapping</code> parameter and set the <code>pattern_map
 <dt>error_bar</dt>
 <dd><p>(str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.</p></dd>
 
+
+<dt>ylim</dt>
+<dd><p>(default = c(0,100)) The range of the y-axis</p></dd>
+
+
+<dt>plot_individual</dt>
+<dd><p>(boo) Whether or not to plot multiple</p></dd>
+
+
+<dt>height</dt>
+<dd><p>(default = 8) height of graphics devices in inches</p></dd>
+
+
+<dt>width</dt>
+<dd><p>(default = 8) height of graphics device in inches</p></dd>
+
+
+<dt>print_plot</dt>
+<dd><p>(bool, default = FALSE) whether or not to print the plot for just for display</p></dd>
+
+
+<dt>save_plot</dt>
+<dd><p>(bool, default = TRUE) whether or not to save the plor</p></dd>
+
+
+<dt>image_ext</dt>
+<dd><p>(default = ".png") extension determining the image type to save as</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -133,8 +165,9 @@ set it to the <code>color_mapping</code> parameter and set the <code>pattern_map
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">plot_percentage_colabel</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'plot_percentage_colabel' not found</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span> <span class="va">plot_percentage_colabel</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

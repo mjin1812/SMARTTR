@@ -51,7 +51,7 @@ The \code{pearson_thresh} parameter will then be used as the threshold for netwo
 e experiment object. This object now has a new added element called \code{networks.} This is a list storing a
 graph object per channel for each network analysis run. The name of each network (\code{network_name}) is the same as the \code{correlation_list_name}
 used to generate the network. This \code{network_name} is fed as a parameter into the
-\code{\link[=plot_network]{plot_network()}} function.
+\code{\link[=plot_networks]{plot_networks()}} function.
 }
 \description{
 Create a joined network to visualize overlapping connections with the same outer joined node set.

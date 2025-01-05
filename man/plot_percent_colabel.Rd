@@ -28,6 +28,8 @@ plot_percent_colabel(
 \arguments{
 \item{e}{experiment object}
 
+\item{colabel_channel}{(str, default = "colabel") The channel used as the numerator in fraction counts.}
+
 \item{channel}{(str, default = "eyfp") The channel used as denominator in fraction counts.}
 
 \item{rois}{character vector of region acronyms, e.g. c("AAA", "DG)}
@@ -41,6 +43,20 @@ plot_percent_colabel(
 \item{patterns}{(str, default = c("gray100", 'hs_fdiagonal', "hs_horizontal", "gray90", "hs_vertical"), Pattern types to define subgroups.}
 
 \item{error_bar}{(str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.}
+
+\item{ylim}{(default = c(0,100)) The range of the y-axis}
+
+\item{plot_individual}{(boo) Whether or not to plot multiple}
+
+\item{height}{(default = 8) height of graphics devices in inches}
+
+\item{width}{(default = 8) height of graphics device in inches}
+
+\item{print_plot}{(bool, default = FALSE) whether or not to print the plot for just for display}
+
+\item{save_plot}{(bool, default = TRUE) whether or not to save the plor}
+
+\item{image_ext}{(default = ".png") extension determining the image type to save as}
 }
 \value{
 p Plot handle to the figure
@@ -52,5 +68,7 @@ The color aesthetic takes precedence over the pattern aesthetic so if you only w
 set it to the \code{color_mapping} parameter and set the \code{pattern_mapping} parameter to NULL.
 }
 \examples{
-plot_percentage_colabel
+\dontrun{
+ plot_percentage_colabel
+}
 }

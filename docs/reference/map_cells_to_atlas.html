@@ -30,12 +30,12 @@ Requires segmentation objects to be made for the channels specified and a regist
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
-    <a class="dropdown-item" href="../articles/2.Tutorial.html">2. Mapping Tutorial</a>
-    <a class="dropdown-item" href="../articles/3.Scripting.html">3. Scripting &amp; notebooks</a>
-    <a class="dropdown-item" href="../articles/4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
-    <a class="dropdown-item" href="../articles/5.FAQ.html">5. FAQ</a>
-    <a class="dropdown-item" href="../articles/6.Development.html">6. Development environment</a>
+    <a class="dropdown-item" href="../articles/Part1.Segmentation.html">1. Imaging, segmentation, and preprocessing</a>
+    <a class="dropdown-item" href="../articles/Part2.Tutorial.html">2. Mapping Tutorial</a>
+    <a class="dropdown-item" href="../articles/Part3.Scripting.html">3. Scripting &amp; notebooks</a>
+    <a class="dropdown-item" href="../articles/Part4.Example_Analysis_Notebook.html">4. Example analysis notebook</a>
+    <a class="dropdown-item" href="../articles/Part5.FAQ.html">5. FAQ</a>
+    <a class="dropdown-item" href="../articles/Part6.Development.html">6. Development environment</a>
   </div>
 </li>
 <li class="active nav-item">
@@ -72,7 +72,7 @@ Requires segmentation objects to be made for the channels specified and a regist
 <span></span>
 <span><span class="co"># S3 method for slice</span></span>
 <span><span class="fu">map_cells_to_atlas</span><span class="op">(</span></span>
-<span>  <span class="va">s</span>,</span>
+<span>  <span class="va">x</span>,</span>
 <span>  channels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  clean <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  display <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -82,7 +82,7 @@ Requires segmentation objects to be made for the channels specified and a regist
 <span></span>
 <span><span class="co"># S3 method for mouse</span></span>
 <span><span class="fu">map_cells_to_atlas</span><span class="op">(</span></span>
-<span>  <span class="va">m</span>,</span>
+<span>  <span class="va">x</span>,</span>
 <span>  slice_ID <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  hemisphere <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  channels <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -96,15 +96,11 @@ Requires segmentation objects to be made for the channels specified and a regist
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
-<dd><p>a mouse or slice object</p></dd>
+<dd><p>mouse object</p></dd>
 
 
 <dt>...</dt>
 <dd><p>additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the <code>wholebrain::inspect.registration()</code> function</p></dd>
-
-
-<dt>s</dt>
-<dd><p>slice object</p></dd>
 
 
 <dt>channels</dt>
@@ -121,10 +117,6 @@ Requires segmentation objects to be made for the channels specified and a regist
 
 <dt>mouse_ID</dt>
 <dd><p>(str) mouse ID</p></dd>
-
-
-<dt>m</dt>
-<dd><p>mouse object</p></dd>
 
 
 <dt>slice_ID</dt>

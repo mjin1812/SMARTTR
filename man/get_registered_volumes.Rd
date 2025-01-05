@@ -8,19 +8,18 @@
 get_registered_volumes(x, ...)
 
 \method{get_registered_volumes}{slice}(
-  s,
+  x,
   simplify_regions = TRUE,
   simplify_keywords = c("layer", "part", "stratum", "division", "leaflet",
     "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch",
-    "Precommissural")
+    "Precommissural"),
+  ...
 )
 }
 \arguments{
-\item{x}{a mouse or slice object}
+\item{x}{slice object}
 
 \item{...}{further arguments passed to or from other methods.}
-
-\item{s}{slice object}
 
 \item{simplify_regions}{(bool, default = TRUE ) simplify the areas based on keywords in found the long-form of a region name. Fed into the internal function, \code{simplify_keywords}}
 

@@ -9,7 +9,7 @@
 make_segmentation_object(x, ...)
 
 \method{make_segmentation_object}{slice}(
-  s,
+  x,
   mouse_ID = NA,
   channels = NULL,
   use_filter = FALSE,
@@ -17,7 +17,7 @@ make_segmentation_object(x, ...)
 )
 
 \method{make_segmentation_object}{mouse}(
-  m,
+  x,
   slice_ID = NA,
   hemisphere = NULL,
   channels = NULL,
@@ -27,19 +27,15 @@ make_segmentation_object(x, ...)
 )
 }
 \arguments{
-\item{x}{a mouse or slice object}
+\item{x}{mouse object}
 
 \item{...}{(optional) additional volume and overlap parameters for get.colabeled.cells().}
-
-\item{s}{slice object}
 
 \item{mouse_ID}{(str) ID of mouse}
 
 \item{channels}{(str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.}
 
 \item{use_filter}{(bool, default = FALSE). Use a filter to create more curated segmentation object from the raw segmentation data.}
-
-\item{m}{mouse object}
 
 \item{slice_ID}{(str) ID of slice}
 

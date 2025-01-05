@@ -42,7 +42,7 @@ e experiment object. This object now has a new added element called \code{networ
 graph object per channel for each network analysis run.
 The name of each network (\code{network_name}) is the same as the \code{correlation_list_name}
 used to generate the network. This \code{network_name} is fed as a parameter into the
-\code{\link[=plot_network]{plot_network()}} function.
+\code{\link[=plot_networks]{plot_networks()}} function.
 }
 \description{
 Create graph objects for plotting different analysis subgroups.

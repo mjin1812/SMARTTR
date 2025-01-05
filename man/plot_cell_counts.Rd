@@ -66,5 +66,7 @@ The color aesthetic takes precedence over the pattern aesthetic so if you only w
 set it to the \code{color_mapping} parameter and set the \code{pattern_mapping} parameter to NULL.
 }
 \examples{
+\dontrun{
 plot_percentage_colabel
+}
 }

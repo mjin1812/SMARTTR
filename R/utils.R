@@ -20,7 +20,6 @@ save_experiment <- function(..., timestamp = FALSE){
   }
 }
 
-
 #' @title Save mouse data
 #' @description Saves mouse object into it's attribute output path as an RDATA file
 #'  save_mouse(m)
@@ -42,40 +41,49 @@ save_mouse <- function(..., timestamp = FALSE){
 }
 
 #' Print attributes of experiment object
-#' @param e experiment object
+#' @param x 	experiment object
+#' @param ... further arguments passed to or from other methods.
 #' @export
+#' @examples
+#' e <- experiment()
+#' print(e)
 
-print.experiment <- function(e){
-  print(attr(e, 'info'))
+print.experiment <- function(x, ...){
+  print(attr(x, 'info'))
 }
 
 ## Printing methods for mouse and slices
 #' Print attributes of mouse object
-#' @param m mouse object
+#' @param x 	mouse object
+#' @param ... further arguments passed to or from other methods.
 #' @export
+#' @examples
+#' m <- mouse()
+#' print(m)
 
-print.mouse <- function(m){
-  print(attr(m, 'info'))
+print.mouse <- function(x, ...){
+  print(attr(x, 'info'))
 }
 
 #' Print attributes of slice object
-#' @param s slice object
+#' @param x 	slice object
+#' @param ... further arguments passed to or from other methods.
 #' @export
+#' @examples
+#' s <- slice()
+#' print(s)
 
-print.slice <- function(s){
-  print(attr(s, 'info'))
+print.slice <- function(x, ...){
+  print(attr(x, 'info'))
 }
-
 
 #' Print attributes of correlation_list object
-#' @param s slice object
+#' @param x 	an object used to select a method. A correlation list
+#' @param ... further arguments passed to or from other methods.
 #' @export
-
-print.correlation_list <- function(cl){
-  print(attributes(cl))
+print.correlation_list <- function(x, ...){
+  print(attributes(x))
 }
-
-
 
 #' @title Add slice to a mouse object
 #'
@@ -139,8 +147,6 @@ add_slice <- function(m, s, replace = FALSE){
       m$slices[[index]] <- s
       names(m$slices)[index] <- slice_name
     }
-
-
   }
   return(m)
 }
@@ -160,7 +166,6 @@ add_slice <- function(m, s, replace = FALSE){
 #' @param replace (bool, default = FALSE) Replace a mouse already contained in an experiment object.
 #' @return an experiment object
 #' @export
-#'
 #' @examples
 #' e <- experiment(experiment_name = "example")
 #' m <- mouse(mouse_ID = "Mouse1")
@@ -195,8 +200,7 @@ add_mouse <- function(e, m, replace = FALSE){
         message(paste0('There was existing data found for mouse ', mouse_ID, '\n'))
 
         if (replace){
-          # replace slice
-          m$slices <- NULL # Delete slice information
+          m$slices <- NULL
           e$mice[[mouse_ID]] <- m
           message(paste0('Replaced existing mouse data!'))
         } else {
@@ -205,19 +209,16 @@ add_mouse <- function(e, m, replace = FALSE){
         }
       }
     }
-
     # If there were no matches, store the mouse as a new mouse
     if (isFALSE(match)){
       index <- length(e$mice) + 1
-      m$slices <- NULL # Delete slice information
+      m$slices <- NULL
       e$mice[[index]] <- m
       names(e$mice)[index] <- mouse_ID
     }
   }
-
   # Check with the other experimental attributes and see if there are any new unique ones -> store it
   attr2match <- SMARTR::attr2match
-
   mouse_attr <- attr(m, 'info')
   exp_attr <- attr(e,"info")
 
@@ -229,14 +230,10 @@ add_mouse <- function(e, m, replace = FALSE){
   if (!all(channels %in% exp_attr[["channels"]])){
     exp_attr[["channels"]] <- c(exp_attr[["channels"]], channels) %>% unique()
   }
-
   # Reassign the attributes
   attr(e,"info") <- exp_attr
-
   return(e)
 }
-
-
 
 #' Import externally mapped datasets into an experiment
 #'
@@ -285,7 +282,10 @@ import_mapped_datasets <- function(e, normalized_count_paths, ...){
 #' @param print (bool, default = TRUE) Print the changes in the console.
 #' @return m a mouse object
 #' @export
-#' @examples m <- reset_mouse_root(m, input_path = "C:/Users/Documents/Mice/mouse_1/", print = TRUE)
+#' @examples
+#' \dontrun{
+#' m <- reset_mouse_root(m, input_path = "C:/Users/Documents/Mice/mouse_1/", print = TRUE)
+#' }
 reset_mouse_root <- function(m, input_path = NULL, print = TRUE){
 
   if (is.null(input_path)){
@@ -395,9 +395,9 @@ check_redundant_parents <- function(acronyms, ontology = "allen"){
   while (keep_going){
 
     if (tolower(ontology)=="allen"){
-      parent_acronyms <- SMARTR::get.acronym.parent(child_acronyms)
+      parent_acronyms <- get.acronym.parent(child_acronyms)
     } else{
-      parent_acronyms <- SMARTR::get.acronym.parent.custom(child_acronyms, ontology = ontology)
+      parent_acronyms <- get.acronym.parent.custom(child_acronyms, ontology = ontology)
     }
     intersection <- intersect(parent_acronyms, acronyms)
     if (length(intersection) > 0){
@@ -425,7 +425,6 @@ check_redundant_parents <- function(acronyms, ontology = "allen"){
 #' @param dont_fold (vec, default = c("Dorsal part of the lateral geniculate complex", "Ventral posterolateral nucleus of the thalamus, parvicellular part", "
 #' Ventral posteromedial nucleus of the thalamus, parvicellular part","Ventral posterolateral nucleus of the thalamus, parvicellular part",
 #' "Ventral posteromedial nucleus of the thalamus, parvicellular part","Substantia nigra")) Regions that are exceptions to being folded into their parent regions.
-#'
 #' @return df
 #' @export
 #' @examples
@@ -449,22 +448,20 @@ simplify_by_keywords <- function(df,
     # Look for row indices where the names contain the keywords
     k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
 
-    if (!is.na(dont_fold) && (!dont_fold=="")){
+    if (all(!is.na(dont_fold)) && all(!dont_fold=="")){
       k_omit <- grep(paste(dont_fold, collapse = "|"), df$name, value = FALSE, ignore.case = TRUE)
       k <- setdiff(k, k_omit)
     }
 
     while(length(k) > 0){
-
-
       if (tolower(ontology) == "allen"){
         # Store the parent acronym and full name
-        df$acronym[k] <- SMARTR::get.acronym.parent(df$acronym[k])
-        df$name[k] <- as.character(SMARTR::name.from.acronym(df$acronym[k]))
+        df$acronym[k] <- get.acronym.parent(df$acronym[k])
+        df$name[k] <- as.character(name.from.acronym(df$acronym[k]))
       } else {
         # df$acronym[k] <- SMARTR::get.acronym.parent.custom(df$acronym[k], ontology = ontology)
         # df$name[k] <- as.character(SMARTR::name.from.acronym.custom(df$acronym[k], ontology = ontology))
-        ids <- SMARTR::id.from.acronym.custom(df$acronym[k], ontology = ontology)
+        ids <- id.from.acronym.custom(df$acronym[k], ontology = ontology)
         parent_ids <- parentid.from.id.custom(ids, ontology=ontology)
         df$acronym[k] <- acronym.from.id.custom(parent_ids, ontology = ontology)
         df$name[k] <- name.from.id.custom(parent_ids, ontology = ontology)
@@ -472,7 +469,7 @@ simplify_by_keywords <- function(df,
 
       # Continue storing storing the parent names until there are no more that match the keyword
       k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
-      if (!is.na(dont_fold) && (!dont_fold=="")){
+      if (all(!is.na(dont_fold)) && all((!dont_fold==""))){
         k_omit <- grep(paste(dont_fold, collapse = "|"), df$name, value = FALSE, ignore.case = TRUE)
         k <- setdiff(k, k_omit)
       }
@@ -514,9 +511,9 @@ simplify_vec_by_keywords <- function(vec,
   name <- vector(mode="character", length = length(vec))
   for (v in 1:length(vec)){
     if (tolower(ontology) == "allen"){
-      name[v] <- SMARTR::name.from.acronym(vec[v]) %>% as.character()
+      name[v] <- name.from.acronym(vec[v]) %>% as.character()
     } else {
-      name[v] <- SMARTR::name.from.acronym.custom(vec[v], ontology = ontology) %>% as.character()
+      name[v] <- name.from.acronym.custom(vec[v], ontology = ontology) %>% as.character()
     }
   }
 
@@ -528,7 +525,7 @@ simplify_vec_by_keywords <- function(vec,
 
     # Look for row indices where the names contain the keywords
     k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
-    if (!is.na(dont_fold) && (!dont_fold=="")){
+    if (all(!is.na(dont_fold)) && all(!dont_fold=="")){
       k_omit <- grep(paste(dont_fold, collapse = "|"), df$name, value = FALSE, ignore.case = TRUE)
       k <- setdiff(k, k_omit)
     }
@@ -537,12 +534,12 @@ simplify_vec_by_keywords <- function(vec,
 
       if (tolower(ontology) == "allen"){
       # Store the parent acronym and full name
-        df$acronym[k] <- SMARTR::get.acronym.parent(df$acronym[k])
-        df$name[k] <- as.character(SMARTR::name.from.acronym(df$acronym[k]))
+        df$acronym[k] <- get.acronym.parent(df$acronym[k])
+        df$name[k] <- as.character(name.from.acronym(df$acronym[k]))
       } else {
         # df$acronym[k] <- SMARTR::get.acronym.parent.custom(df$acronym[k], ontology = ontology)
         # df$name[k] <- as.character(SMARTR::name.from.acronym.custom(df$acronym[k], ontology = ontology))
-        ids <- SMARTR::id.from.acronym.custom(df$acronym[k], ontology = ontology)
+        ids <- id.from.acronym.custom(df$acronym[k], ontology = ontology)
         parent_ids <- parentid.from.id.custom(ids, ontology=ontology)
         df$acronym[k] <- acronym.from.id.custom(parent_ids, ontology = ontology)
         df$name[k] <- name.from.id.custom(parent_ids, ontology = ontology)
@@ -551,7 +548,7 @@ simplify_vec_by_keywords <- function(vec,
 
       # Continue storing storing the parent names until there are no more that match the keyword
       k <- grep(s, df$name, value = FALSE, ignore.case = TRUE)
-      if (!is.na(dont_fold) && (!dont_fold=="")){
+      if (all(!is.na(dont_fold)) && all(!dont_fold=="")){
         k_omit <- grep(paste(dont_fold, collapse = "|"), df$name, value = FALSE, ignore.case = TRUE)
         k <- setdiff(k, k_omit)
       }
@@ -561,28 +558,25 @@ simplify_vec_by_keywords <- function(vec,
   return(df)
 }
 
-
-
-
-
-
 #' Get region ontology name from acronym
 #' @description Get whole regional names from acronyms based on a lookup table including SMARTR's custom ontology for the
 #' dorsal ventral split of the hippocampus
 #' @param x (str) Regional acronym or vector of regional acronyms
-#' @export
+#' @return full ontology names of regions
+#' @noRd
+
 name.from.acronym <- function (x){
   x <- na.omit(x)
   unlist(lapply(x, function(y){ SMARTR::ontology$name[SMARTR::ontology$acronym %in% y] %>% return()})) %>% return()
-
 }
-
 
 #' Get region ontology name from ID
 #' @description Similar to wholebrain package's search functions to get whole regional names from a numerical ID lookup table
 #' including SMARTR's custom ontology for the  dorsal ventral split of the hippocampus
 #' @param x (int) integer ID
-#' @export
+#' @return full ontology names of regions
+#' @noRd
+
 name.from.id <- function (x){
   x <- na.omit(x)
   unlist(lapply(x, function(y){ SMARTR::ontology$name[SMARTR::ontology$id %in% y] %>% return()})) %>% return()
@@ -594,7 +588,9 @@ name.from.id <- function (x){
 #' Get subregion acronyms
 #' @description Search function to get ALL substructure acronyms from parent acronym.
 #' @param x (str vector) Regional acronyms in a vector
-#' @export
+#' @return acroynms of subregions
+#' @noRd
+
 get.sub.structure <- function (x)
 {
   tmp <- get.acronym.child(x)
@@ -618,10 +614,7 @@ get.sub.structure <- function (x)
 #' @param anatomical.order (default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order
 #' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #' @return vector the same length as acronym consisting of the super regions of the acronyms
-#' @export
-#' @examples
-#' get.super.regions(acronym = c("DG-sg", "ACA5", "CLA", "ACB", "BLA", "PERI" , "PB"))
-#' get.super.regions(acronym = c("CPi", "MHb", "ZI", "Acb", "BL"), ontology = "unified")
+#' @noRd
 get.super.regions <- function(acronym, anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU",
                                                             "TH", "HY", "MB", "HB", "CB"), ontology = "allen"){
   # get the parent super region
@@ -629,11 +622,11 @@ get.super.regions <- function(acronym, anatomical.order = c("Isocortex", "OLF", 
 
   if (tolower(ontology) == "allen"){
     for (sup.region in anatomical.order){
-      super.region[super.region %in% SMARTR::get.sub.structure(sup.region)] <- sup.region
+      super.region[super.region %in% get.sub.structure(sup.region)] <- sup.region
     }
   } else {
     for (sup.region in anatomical.order){
-      super.region[super.region %in% SMARTR::get.sub.structure.custom(sup.region, ontology = ontology)] <- sup.region
+      super.region[super.region %in% get.sub.structure.custom(sup.region, ontology = ontology)] <- sup.region
     }
   }
   return(super.region)
@@ -643,7 +636,9 @@ get.super.regions <- function(acronym, anatomical.order = c("Isocortex", "OLF", 
 #' @description Function to get the acronym of parent regions in the ontology
 #' @param x (str) Regional acronym
 #' @param matching.string (str vector, default = c("CTX", "CNU", "IB", "MB", "HB", "grey", "root", "VS", "fiber tracts")) Vector of the basest parent levels to stop at.
-#' @export
+#' @return acronyms as a str
+#' @noRd
+
 get.sup.structure <- function (x, matching.string = c("CTX", "CNU", "IB",
                                  "MB", "HB", "grey", "root", "VS",
                                  "fiber tracts"))
@@ -672,7 +667,9 @@ get.sup.structure <- function (x, matching.string = c("CTX", "CNU", "IB",
 #' Get acronyms of child structures
 #' @description Function to get the acronym of parent regions in the ontology
 #' @param x (str) Regional acronym
-#' @export
+#' @return acronyms as str
+#' @noRd
+
 get.acronym.child <-  function (x)
   {
     ids <- unlist(lapply(x, function(y) {
@@ -696,8 +693,9 @@ get.acronym.child <-  function (x)
 #' Get parent region acronyms
 #' @description Function to get the acronym of parent regions
 #' @param x (str) Regional acronym
-#'
-#' @export
+#' @return acronyms as str
+#' @noRd
+
 get.acronym.parent <- function (x)
 {
   ids <- unlist(lapply(x, function(y) {
@@ -717,7 +715,10 @@ get.acronym.parent <- function (x)
   return(acronym.from.id(ids))
 }
 
-#' @export
+#'  Retrieves acronym from an id
+#' @param x region as an id number
+#' @return acronyms
+#' @noRd
 acronym.from.id <- function (x)
 {
   unlist(lapply(x, function(y) {
@@ -731,11 +732,10 @@ acronym.from.id <- function (x)
   }))
 }
 
+#' Get current OS
+#' @return str of current operating system
+#' @noRd
 
-
-
-#' @export
-# Get current OS
 get_os <- function(){
   sysinf <- Sys.info()
   if (!is.null(sysinf)){
@@ -753,7 +753,13 @@ get_os <- function(){
 }
 
 
-#' @export
+#' Code to evaluate an expression and
+#'
+#' @param expr expresion to evaluation
+#' @param cpu n cpus to run with
+#' @param elapsed time before timeout
+#' @return either outcome of evaluated expression or timeout
+#' @noRd
 with_timeout <- function(expr, cpu=1, elapsed=1){
   expr <- substitute(expr)
   envir <- parent.frame()
@@ -761,10 +767,6 @@ with_timeout <- function(expr, cpu=1, elapsed=1){
   on.exit(setTimeLimit(cpu = Inf, elapsed = Inf, transient = FALSE))
   eval(expr, envir = envir)
 }
-
-
-
-
 
 # List of standard tiny regions to remove
 # Oculomotor nucleus
@@ -775,28 +777,20 @@ with_timeout <- function(expr, cpu=1, elapsed=1){
 #
 
 ################################### Functions designed to accommodate custom atlases ############################
-
-
-
-
-
 #' Get region ontology name from acronym
 #' @description Get whole regional names from acronyms based on a custom lookup table imported to accomodate other ontologies.
 #'
 #' @param ontology (str, options: "unified")
 #' @param x (str) Regional acronym or vector of regional acronyms
-#'
-#' @export
+#' @return full ontology name
+#' @noRd
 name.from.acronym.custom <- function (x, ontology = "unified"){
-  # x <- na.omit(x)
-
   if (tolower(ontology) == "unified"){
     indices <- lapply(x, function(y){which(SMARTR::ontology.unified$acronym %in% y)}) %>% unlist()
     return(SMARTR::ontology.unified$name[indices])
     } else {
     stop("You did not enter a valid ontology name.")
   }
-
 }
 
 
@@ -804,10 +798,10 @@ name.from.acronym.custom <- function (x, ontology = "unified"){
 #' @description Similar to wholebrain package's search functions to get whole regional names from a numerical ID lookup table. For custom ontologies.
 #' @param ontology (str, options: "unified")
 #' @param x (int) integer ID
-#'
-#' @export
+#' @return full ontology name
+#' @noRd
+
 name.from.id.custom <- function (x, ontology = "unified"){
-  # x <- na.omit(x)
   if (tolower(ontology) == "unified"){
     unlist(lapply(x, function(y){SMARTR::ontology.unified$name[SMARTR::ontology.unified$id %in% y] %>% return()})) %>% return()
   }else {
@@ -821,8 +815,8 @@ name.from.id.custom <- function (x, ontology = "unified"){
 #' @description Similar to wholebrain package's search functions to get whole regional names from a numerical ID lookup table. For custom ontologies.
 #' @param ontology (str, options: "unified")
 #' @param x (int) integer ID
-#'
-#' @export
+#' @return return acronyms
+#' @noRd
 id.from.acronym.custom <- function (x, ontology = "unified"){
   # x <- na.omit(x)
   if (tolower(ontology) == "unified"){
@@ -830,17 +824,16 @@ id.from.acronym.custom <- function (x, ontology = "unified"){
   } else {
     stop("You did not enter a valid ontology name.")
   }
-
 }
 
 
 #' Get acronyms of child structures
 #' @description Function to get the acronym of parent regions in the ontology
-#'
 #' @param ontology (str, options: "unified")
 #' @param x (str) Regional acronym
-#'
-#' @export
+#' @return acronyms str
+#' @noRd
+
 get.acronym.child.custom <-  function (x, ontology = "unified")
 {
   if (tolower(ontology) == "unified"){
@@ -851,9 +844,7 @@ get.acronym.child.custom <-  function (x, ontology = "unified")
       else {
         return(NA)
       }
-    }
-    ))
-
+    }))
   } else {
     stop("You did not enter a valid ontology name.")
   }
@@ -864,11 +855,10 @@ get.acronym.child.custom <-  function (x, ontology = "unified")
 #' @description Function to get the acronym of parent regions
 #' @param ontology (str, options: "unified")
 #' @param x (str) Regional acronym
-#'
-#' @export
+#' @return acronyms of parents
+#' @noRd
 get.acronym.parent.custom <- function (x, ontology = "unified")
 {
-
   if (tolower(ontology) == "unified"){
     parents <- unlist(lapply(x, function(y) {
       if (length(which(SMARTR::ontology.unified$acronym == y)) != 0) {
@@ -876,8 +866,7 @@ get.acronym.parent.custom <- function (x, ontology = "unified")
           return("")
         }
         else {
-          return(SMARTR::ontology.unified$parent_acronym[which(SMARTR::ontology.unified$acronym ==
-                                                 y)])
+          return(SMARTR::ontology.unified$parent_acronym[which(SMARTR::ontology.unified$acronym == y)])
         }
       }
       else {
@@ -887,11 +876,16 @@ get.acronym.parent.custom <- function (x, ontology = "unified")
   } else {
     stop("You did not enter a valid ontology name.")
   }
-
   return(parents)
 }
 
-#' @export
+#' get acronym of region from its id
+#'
+#' @param x id of region
+#' @param ontology which ontology to use
+#' @return acronym of the region
+#' @noRd
+
 acronym.from.id.custom <- function (x, ontology = "unified"){
   if (tolower(ontology) == "unified"){
     acronyms <- unlist(lapply(x, function(y) {
@@ -911,11 +905,11 @@ acronym.from.id.custom <- function (x, ontology = "unified"){
 
 
 #' Get parent id from id
-#' @param x
-#'
-#' @param ontology
-#'
-#' @export
+#' @param x id of region
+#' @param ontology which ontology to use
+#' @return id of parent region
+#' @noRd
+
 parentid.from.id.custom <- function (x, ontology = "unified"){
   if (tolower(ontology) == "unified"){
     acronyms <- unlist(lapply(x, function(y) {
@@ -932,18 +926,13 @@ parentid.from.id.custom <- function (x, ontology = "unified"){
   return(acronyms)
 }
 
-
-
-
 ######### These functions are the recursive ones that should be used ###############
-
-
 #' Get subregion acronyms
 #' @description Search function to get ALL substructure acronyms from parent acronym. Note this functions is recursive.
 #' @param ontology (str, options: "unified")
 #' @param x (str vector) Regional acronyms in a vector
-#'
-#' @export
+#' @return acronyms of substructures
+#' @noRd
 get.sub.structure.custom <- function(x, ontology = "unified"){
   if (tolower(ontology) == "unified"){
     tmp <- get.acronym.child.custom(x, ontology = ontology)
@@ -964,30 +953,37 @@ get.sub.structure.custom <- function(x, ontology = "unified"){
   return(tmp2)
 }
 
-
 #' Get super parent region acronyms
 #' @description Function to get the acronym of super parent regions in the ontology
 #' @param x (str) Regional acronym
 #' @param ontology (str, options: "unified")
 #' @param matching.string (str vector, default = c("CTX", "CNU", "IB", "MB", "HB", "grey", "root", "VS", "fiber tracts")) Vector of the basest parent levels to stop at.
-#'
-#' @export
+#' @return acronyms of parents
+#' @noRd
+
 get.sup.structure.custom <- function (x,
                                       ontology = "unified",
                                       matching.string = c("root", "grey", "CH", "VS", "CTX", "CNU", "MB", "HB"))
-{
+  {
   if (x %in% matching.string) {
     return(x)
   }
-
   tmp <- get.acronym.parent.custom(x, ontology = ontology)
-
   while (!(tmp %in% matching.string)) {
     tmp0 <- tmp
     tmp <- get.acronym.parent.custom(tmp0, ontology = ontology)
   }
-
   return(tmp)
+}
 
+
+
+#' Standard error function
+#' @param x (vec)
+#' @return numeric
+#' @export
+#' @examples sem(c(3,4,5))
+sem <- function(x){
+  sd(x) / sqrt(length(x))
 }
 

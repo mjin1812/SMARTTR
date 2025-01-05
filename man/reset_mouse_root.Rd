@@ -22,5 +22,7 @@ It then adjusts all the paths for the registration and segmentation data read to
 This function is especially useful if you have changed the computers you are analyzing and drive mappings may be different.
 }
 \examples{
+\dontrun{
 m <- reset_mouse_root(m, input_path = "C:/Users/Documents/Mice/mouse_1/", print = TRUE)
+}
 }
