@@ -1,11 +1,3 @@
-
-##______________ Package imports ________________
-#' @importFrom magrittr %>%
-NULL
-
-#' @importFrom grDevices dev.new
-NULL
-
 ###______________Generic functions ________________###
 ## Creating generic function for registration
 #' Register (generic function)
@@ -146,7 +138,8 @@ register.slice <- function(x,
 #' @return m  mouse object
 #' @examples
 #' \dontrun{
-#' m <- register(m, slice_ID = '1_10', hemisphere = "left", filter = my_filter)}
+#' m <- register(m, slice_ID = '1_10', hemisphere = "left", filter = my_filter)
+#' }
 #' @export
 # TODO: add popup window option to better visualize the internal structures of the images
 register.mouse <- function(x,
@@ -284,7 +277,7 @@ import_segmentation_ij.slice <- function(x,
       print(M_image_B_path)
 
       # Read
-      coloc.table <- read.delim(file.path(path_stem, coloc_path), stringsAsFactors = FALSE)
+      coloc.table <- utils::read.delim(file.path(path_stem, coloc_path), stringsAsFactors = FALSE)
       image_A_objects <- read.csv(file.path(path_stem,  M_image_A_path), stringsAsFactors = FALSE)
       image_B_objects <- read.csv(file.path(path_stem,  M_image_B_path), stringsAsFactors = FALSE)
 
@@ -419,7 +412,9 @@ import_segmentation_ij.mouse <- function(x,
 #'
 #' @return s slice object
 #' @examples
-#' \dontrun{s <-  import_segmentation_custom(s, mouse_ID = "255", channel = "cfos")}
+#' \dontrun{
+#' s <-  import_segmentation_custom(s, mouse_ID = "255", channel = "cfos")
+#' }
 #' @export
 import_segmentation_custom.slice <- function(x,
                                              channel,
@@ -501,7 +496,8 @@ import_segmentation_custom.slice <- function(x,
 #' @return m mouse object
 #' @examples
 #' \dontrun{
-#' m <-  import_segmentation(m, slice_ID = "1_10", channels = c("PV"), replace = FALSE)}
+#' m <-  import_segmentation(m, slice_ID = "1_10", channels = c("PV"), replace = FALSE)
+#' }
 #' @export
 
 import_segmentation_custom.mouse <- function(x,
@@ -687,7 +683,8 @@ make_segmentation_filter.mouse <- function(x,
 #' @return s slice object
 #' @examples
 #' \dontrun{
-#' s <- make_segmentation_object(s, mouse_ID = "255", channels = c("cfos", "eyfp"), use_filter = FALSE)}
+#' s <- make_segmentation_object(s, mouse_ID = "255", channels = c("cfos", "eyfp"), use_filter = FALSE)
+#' }
 #' @export
 #' @note If you are processing the colabel channel, the X and Y positions of colabelled cells are the average of the x,y centroid coordinates of the colabelled objects
 
@@ -1122,10 +1119,9 @@ exclude_anatomy.slice <- function(x,
 #' @return m mouse object
 #' @examples
 #' \dontrun{
-#' m <- exclude_anatomy(m, slice_ID = "1_10", hemisphere = NULL, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE,
-#' exclude_regions = NULL,
-#' exclude_hemisphere = TRUE,
-#' exclude_layer_1 = TRUE
+#' m <- exclude_anatomy(m, slice_ID = "1_10",
+#' hemisphere = NULL, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE,
+#' exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE
 #' }
 #' @export
  exclude_anatomy.mouse <- function(x,
@@ -1600,7 +1596,6 @@ normalize_cell_counts <- function(m,
 #' \dontrun{
 #' e <- combine_cell_counts(e, by = c('groups', 'sex'))
 #' }
-
 combine_cell_counts <- function(e, by){
   e_info <- attr(e, "info")
   if (!all(by %in% names(e_info))){

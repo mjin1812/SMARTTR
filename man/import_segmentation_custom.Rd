@@ -83,7 +83,10 @@ This attribute can be stored when initializing the slice object or can be edited
 Method for custom importation of segmentation data for a mouse object
 }
 \examples{
-\dontrun{s <-  import_segmentation_custom(s, mouse_ID = "255", channel = "cfos")}
 \dontrun{
-m <-  import_segmentation(m, slice_ID = "1_10", channels = c("PV"), replace = FALSE)}
+s <-  import_segmentation_custom(s, mouse_ID = "255", channel = "cfos")
+}
+\dontrun{
+m <-  import_segmentation(m, slice_ID = "1_10", channels = c("PV"), replace = FALSE)
+}
 }

@@ -1,8 +1,5 @@
-# Quality check functions
-
 
 #_____________________ For mouse objects _________________________
-
 #' Detect atlas regions that only show up in a single slice object within a mouse.
 #' @description Quality check function to make sure that the regions included for analysis show up
 #' in more than 1 slice object, otherwise the user can remove exceptions from the mouse object.
@@ -40,8 +37,10 @@ detect_single_slice_regions <- function(m, remove = FALSE, log = TRUE){
 #' @examples
 #' \dontrun{
 #' e <- find_outlier_counts(e, by = c("group","sex"), n_sd = 2, remove = FALSE, log = TRUE)
-#'}
+#' }
 find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FALSE, log = TRUE){
+
+
   e_info <- attr(e, "info")
   by <- match_m_attr(by)   # correct mismatched attributes typed by users
   for (channel in e_info$channels){
@@ -49,7 +48,7 @@ find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FA
       dplyr::ungroup() %>%
       dplyr::group_by(across(all_of(c(by, "acronym")))) %>%
       dplyr::summarise(mean_norm_counts = mean(normalized.count.by.volume),
-                       sd_norm_counts = sd(normalized.count.by.volume))
+                       sd_norm_counts = stats::sd(normalized.count.by.volume))
     joined_df <- e$combined_normalized_counts[[channel]] %>% dplyr::inner_join(stats_df, c(by, "acronym")) %>%
       dplyr::mutate(outlier = ifelse(normalized.count.by.volume > mean_norm_counts + sd_norm_counts*n_sd | normalized.count.by.volume < mean_norm_counts - sd_norm_counts*n_sd, TRUE, FALSE))
     if (isTRUE(log)){ # Create a list of outliers to print
@@ -61,7 +60,7 @@ find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FA
         message("There were ", length(log_df$mouse_ID),
                 " outliers found. Outliers were based on within group mean and standard deviation.")
         out_path <- file.path(e_info$output_path, paste0("region_count_outliers_", channel,".csv"))
-        write.csv(log_df, file = out_path)
+        utils::write.csv(log_df, file = out_path)
         message(paste0("Saved regions outliers dataframe at:\n", out_path))
         print(log_df)
       } else {
@@ -92,28 +91,21 @@ find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FA
 #' @examples
 #' \dontrun{
 #' e <- enough_mice_per_group(e, by = c("group", "sex"), min_n = 4, remove = TRUE, log = TRUE)
-#'}
+#' }
 enough_mice_per_group <- function(e, by = c("group", "sex"), min_n = 5, remove = TRUE, log = TRUE){
 
-  # Get the channels for an experiment
   e_info <- attr(e, "info")
-
-  # correct mismatched attributes typed by users
   by <- match_m_attr(by)
 
   for (channel in e_info$channels){
 
-    ## Get mouse counts
     mouse_count <- e$combined_normalized_counts[[channel]] %>%
       dplyr::ungroup() %>%
       dplyr::select(all_of(c(by, "mouse_ID", "acronym"))) %>% dplyr::distinct() %>%
       dplyr::group_by(across(all_of(c(by, "acronym")))) %>% dplyr::count()
 
-
-    # Create a new dataframe of just the regions and groups below the min thresh
     below_thresh <- dplyr::filter(mouse_count, n < min_n) %>%
       dplyr::bind_cols(tibble::tibble(channel = channel), .)
-
 
     if (exists('below_thresh_combine')){
       below_thresh_combine <- dplyr::bind_rows(below_thresh_combine, below_thresh)
@@ -121,36 +113,30 @@ enough_mice_per_group <- function(e, by = c("group", "sex"), min_n = 5, remove =
       below_thresh_combine <- below_thresh
     }
 
-    # Remove regions that are below the threshold
     if (remove && dim(below_thresh)[1] > 0){
       to_remove <- which(e$combined_normalized_counts[[channel]]$acronym %in% below_thresh$acronym)
       e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]][-to_remove,]
       message("Removed regions for ", channel, " channel.")
     }
-
-    ## Keep only common regions found across all groups
     common_regions <- get_common_regions(mouse_count, by)
     to_keep <- which(e$combined_normalized_counts[[channel]]$acronym %in% common_regions$acronym)
     e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]][to_keep,]
-
   }
-     ## If there are any regions in any groups below the threshold, print them
+
   if (dim(below_thresh_combine)[1] > 0){
     message("There were regions below the minimum n:")
     print(below_thresh_combine, n = length(below_thresh_combine$group))
 
     if (log){
       out_path <- file.path(e_info$output_path, "regions_below_N_thresh.csv")
-      write.csv(below_thresh_combine, file = out_path)
+      utils::write.csv(below_thresh_combine, file = out_path)
       message(paste0("Saved regions below the threshold at location: ", out_path))
     }
   } else{
     message("There were no regions below the minimum threshold.")
   }
-
   return(e)
 }
-
 
 #' Checks the acronyms and full length region names to match with internally stored ontology
 #'
@@ -208,6 +194,8 @@ filter_regions <- function(e,
                            base_regions = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CBL"),
                            ontology = "allen",
                            channels = NULL){
+
+
   if (is.null(channels)){
     channels <- names(e$combined_normalized_counts)
   } else if (!all(channels %in% names(e$combined_normalized_counts))){
@@ -250,6 +238,7 @@ filter_regions <- function(e,
 #' e <- exclude_redundant_regions(e)
 #' }
 exclude_redundant_regions <- function(e, ontology = "allen", channels = NULL){
+
   if (is.null(channels)){
     channels <- names(e$combined_normalized_counts)
   } else if (!all(channels %in% names(e$combined_normalized_counts))){
@@ -257,8 +246,6 @@ exclude_redundant_regions <- function(e, ontology = "allen", channels = NULL){
   }
 
   for (channel in channels){
-    # Exclude redundant parent regions
-    # acronyms <- df$acronym %>% unique()
     acronyms <- e$combined_normalized_counts[[channel]]$acronym %>% unique()
     redundant_regions <- check_redundant_parents(acronyms, ontology = ontology)
     e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]] %>%
@@ -277,7 +264,7 @@ exclude_redundant_regions <- function(e, ontology = "allen", channels = NULL){
 #' @examples
 #' \dontrun{
 #' e <- exclude_by_acronym(e, acronyms = "CBL") # exclude the cerebellum
-#'  }
+#' }
 #'
 
 exclude_by_acronym <- function(e, acronyms = "fiber_tracts", ontology = "allen", channels = NULL){
@@ -310,7 +297,6 @@ exclude_by_acronym <- function(e, acronyms = "fiber_tracts", ontology = "allen",
 #' \dontrun{
 #' e <- exclude_by_keyword(e, keywords = "tract")
 #' }
-#'
 exclude_by_keyword <- function(e, keywords, channels = NULL){
   if (is.null(channels)){
     channels <- names(e$combined_normalized_counts)

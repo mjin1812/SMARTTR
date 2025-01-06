@@ -60,8 +60,7 @@ Suggests:
     ggpattern (>= 0.2.0),
     testthat (>= 3.1.1),
     ggh4x (>= 0.2.8),
-    knitr (>= 1.33.0),
-    rmarkdown (>= 2.18.0)
+    knitr (>= 1.33.0)
 Additional_repositories: https://github.com/mjin1812/SMART,  https://github.com/mjin1812/wholebrain
 Config/testthat/edition: 3
 VignetteBuilder: knitr

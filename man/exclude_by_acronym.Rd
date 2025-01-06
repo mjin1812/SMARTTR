@@ -29,6 +29,6 @@ Excluded user chosen regions by entering acronyms
 \examples{
 \dontrun{
 e <- exclude_by_acronym(e, acronyms = "CBL") # exclude the cerebellum
- }
+}
 
 }

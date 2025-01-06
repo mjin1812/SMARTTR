@@ -9,7 +9,7 @@ rewire_network(
   network_name,
   channels = "cfos",
   method = "ms",
-  ontology = "unified",
+  ontology = "allen",
   n_rewires = 10000,
   n_networks = 100,
   return_graphs = FALSE,

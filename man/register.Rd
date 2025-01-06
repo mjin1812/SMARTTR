@@ -52,5 +52,6 @@ previous registration. Use the \code{replace} parameter to change this behavior.
 s <- register(s)
 }
 \dontrun{
-m <- register(m, slice_ID = '1_10', hemisphere = "left", filter = my_filter)}
+m <- register(m, slice_ID = '1_10', hemisphere = "left", filter = my_filter)
+}
 }

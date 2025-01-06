@@ -1,20 +1,3 @@
-#' @importFrom ggplot2 ggplot aes theme element_text unit geom_tile geom_text scale_fill_gradient2 labs ggsave guide_legend xlab ylab xlim ylim
-NULL
-
-#' @importFrom tidyselect all_of
-NULL
-
-#' @importFrom dplyr n mutate summarize summarise across arrange group_by
-NULL
-
-#' @importFrom tidygraph activate convert
-NULL
-
-#' @importFrom tidyr pivot_longer pivot_wider
-NULL
-
-#' @importFrom grDevices dev.new
-NULL
 
 ##_____________________ Analysis functions ___________________________
 
@@ -39,7 +22,6 @@ NULL
 #' \dontrun{
 #' e <- get_percent_colabel(e, c("group", "sex", channel = "eyfp"))
 #' }
-
 get_percent_colabel <- function(e, by, colabel_channel = "colabel",
                                channel = "eyfp", save_table = TRUE, rois = NULL, individual = TRUE){
   e_info <- attr(e, "info")
@@ -59,19 +41,19 @@ get_percent_colabel <- function(e, by, colabel_channel = "colabel",
   } else { # join by user defined attributes
     by <- c("mouse_ID", by, "acronym", "name", "count")
   }
-
-  colabel_counts <-  e$combined_normalized_counts[[colabel_channel]] %>% dplyr::filter(acronym %in% common_reg) %>%
+  colabel_counts <-  e$combined_normalized_counts[[colabel_channel]] %>% dplyr::filter(.data$acronym %in% common_reg) %>%
     dplyr::select(all_of(by))
-  channel_counts <-  e$combined_normalized_counts[[channel]] %>% dplyr::filter(acronym %in% common_reg) %>%
+  channel_counts <-  e$combined_normalized_counts[[channel]] %>% dplyr::filter(.data$acronym %in% common_reg) %>%
     dplyr::select(all_of(by))
 
   # Create master counts table of percentage colabels
   # Inner join deletes any mice with na values for counts
-  var <- sym(paste0("count.", channel)) # symbol for mutate
+  var <- rlang::sym(paste0("count.", channel)) # symbol for mutate
   master_counts <- colabel_counts %>%
     dplyr::inner_join(channel_counts, suffix = c(".colabel", paste0(".", channel)),
                       by = setdiff(by, "count")) %>%
-    dplyr::mutate(colabel_percentage = count.colabel/{{ var }} * 100)
+    dplyr::mutate(colabel_percentage = .data$count.colabel/{{ var }} * 100)
+
   attr_group <- names(master_counts)[1: (which(names(master_counts) == "acronym")-1)]
 
   # Sort the dataframe by these grouping names
@@ -85,11 +67,11 @@ get_percent_colabel <- function(e, by, colabel_channel = "colabel",
     master_counts <- master_counts %>%
       dplyr::group_by(across(all_of(attr_group_by))) %>%
       dplyr::summarise(n = dplyr::n(),
-                       colabel_percentage.sd = sd(colabel_percentage),
-                       colabel_percentage.sem = colabel_percentage.sd/sqrt(n),
+                       colabel_percentage.sd = sd(.data$colabel_percentage),
+                       colabel_percentage.sem = .data$colabel_percentage.sd/sqrt(.data$n),
                        across(all_of(col_to_summarize), mean)) %>%
       dplyr::rename_with(function(x){paste0(x,".mean")}, all_of(col_to_summarize)) %>%
-      dplyr::relocate(colabel_percentage.sd, colabel_percentage.sem, n, .after = last_col())
+      dplyr::relocate(all_of(c("colabel_percentage.sd", "colabel_percentage.sem", "n")), .after = last_col())
     indiv_or_avg <- "average"
   } else {
     indiv_or_avg <- "individual"
@@ -111,7 +93,6 @@ get_percent_colabel <- function(e, by, colabel_channel = "colabel",
 
 #' Get regional cross correlations and their p-values in a correlation list object.
 #' @description This analysis will get regional cross correlations based on cell counts normalized by region volume.
-#'
 #' @param e experiment object
 #' @param by (str) Attribute names to group by, e.g. c("sex", "group")
 #' @param values (str) The respective values of the attributes entered for the `by` parameter to generate a specific analysis group,
@@ -152,11 +133,11 @@ get_correlations <- function(e, by, values,
     df_channel <-  e$combined_normalized_counts[[channel]] %>%
       filter_df_by_char_params(by, values) %>% dplyr::distinct()
 
-    df_channel <- df_channel %>%  dplyr::select(mouse_ID:acronym, normalized.count.by.volume) %>%
-      tidyr::pivot_wider(names_from = acronym, values_from = normalized.count.by.volume, values_fill = NA)
+    df_channel <- df_channel %>%  dplyr::select(any_of("mouse_ID"):any_of("acronym"), "normalized.count.by.volume") %>%
+      tidyr::pivot_wider(names_from = any_of("acronym"), values_from = any_of("normalized.count.by.volume"), values_fill = NA)
 
     # Rearrange the correlations to be in "anatomical order"
-    common.regions <-  df_channel %>% dplyr::ungroup() %>% dplyr::select(-any_of(c('mouse_ID', attr2match$mouse))) %>% names()
+    common.regions <-  df_channel %>% dplyr::ungroup() %>% dplyr::select(-any_of(c('mouse_ID', SMARTR::attr2match$mouse))) %>% names()
 
     if (is.null(region_order)){
       if (tolower(ontology) == "allen"){
@@ -173,7 +154,7 @@ get_correlations <- function(e, by, values,
       stop("You did not supply a list object for the variable `region_order`."
       )
     }
-    df_channel <- df_channel %>% dplyr::ungroup() %>% dplyr::select(all_of(c(common.regions.ordered))) %>%
+    df_channel <- df_channel %>% dplyr::ungroup() %>% dplyr::select(all_of(common.regions.ordered)) %>%
       as.matrix()
 
     df_corr <-  try_correlate(df_channel, type = method)
@@ -184,9 +165,9 @@ get_correlations <- function(e, by, values,
       uppertri <- df_corr$P %>%  upper.tri(diag = FALSE)
       upper_p <- df_corr$P[uppertri]
 
-      lower_p <- lower_p %>% p.adjust(method = p_adjust_method)
+      lower_p <- lower_p %>% stats::p.adjust(method = p_adjust_method)
       df_corr$P[lowertri] <- lower_p
-      upper_p <- upper_p %>% p.adjust(method = p_adjust_method)
+      upper_p <- upper_p %>% stats::p.adjust(method = p_adjust_method)
       df_corr$P[uppertri] <- upper_p
     }
     df_corr$sig <- df_corr$P <= alpha
@@ -264,22 +245,22 @@ correlation_diff_permutation <- function(e,
     df_channel_group_1 <- filter_df_by_char_params(df_channel, attr_group_1$group_by, attr_group_1$values)
     df_channel_group_2 <- filter_df_by_char_params(df_channel, attr_group_2$group_by, attr_group_2$values)
 
-    df_channel_group_1  <- df_channel_group_1  %>%  dplyr::select(mouse_ID:acronym, normalized.count.by.volume) %>%
-      tidyr::pivot_wider(names_from = acronym, values_from = normalized.count.by.volume) %>%
-      dplyr::mutate(corr_group = correlation_list_name_1) %>% dplyr::relocate(corr_group, .before = 2) %>%
+    df_channel_group_1  <- df_channel_group_1  %>%  dplyr::select(any_of("mouse_ID"):any_of("acronym"), "normalized.count.by.volume") %>%
+      tidyr::pivot_wider(names_from = any_of("acronym"), values_from = any_of("normalized.count.by.volume")) %>%
+      dplyr::mutate(corr_group = correlation_list_name_1) %>% dplyr::relocate(any_of("corr_group"), .before = 2) %>%
       dplyr::ungroup() %>%
-      dplyr::select(-any_of(attr2match$mouse))
+      dplyr::select(-any_of(SMARTR::attr2match$mouse))
 
-    df_channel_group_2  <- df_channel_group_2  %>%  dplyr::select(mouse_ID:acronym, normalized.count.by.volume) %>%
-      tidyr::pivot_wider(names_from = acronym, values_from = normalized.count.by.volume) %>%
-      dplyr::mutate(corr_group = correlation_list_name_2) %>% dplyr::relocate(corr_group, .before = 2) %>%
+    df_channel_group_2  <- df_channel_group_2  %>%  dplyr::select(any_of("mouse_ID"):any_of("acronym"), "normalized.count.by.volume") %>%
+      tidyr::pivot_wider(names_from = any_of("acronym"), values_from = any_of("normalized.count.by.volume")) %>%
+      dplyr::mutate(corr_group = correlation_list_name_2) %>% dplyr::relocate(any_of("corr_group"), .before = 2) %>%
       dplyr::ungroup() %>%
-      dplyr::select(-any_of(attr2match$mouse))
+      dplyr::select(-any_of(SMARTR::attr2match$mouse))
 
     # Select the common regions in anatomical order across the two group dataframes
     common_regions_btwn_groups <- intersect(names(df_channel_group_1), names(df_channel_group_2))
-    df_channel_group_1 <- df_channel_group_1 %>% dplyr::select(mouse_ID, corr_group, all_of(common_regions_btwn_groups)) %>% dplyr::mutate(mouse_ID = as.character(mouse_ID))
-    df_channel_group_2 <- df_channel_group_2 %>% dplyr::select(mouse_ID, corr_group, all_of(common_regions_btwn_groups)) %>% dplyr::mutate(mouse_ID = as.character(mouse_ID))
+    df_channel_group_1 <- df_channel_group_1 %>% dplyr::select(any_of(c("mouse_ID", "corr_group")), all_of(common_regions_btwn_groups)) %>% dplyr::mutate(mouse_ID = as.character(.data$mouse_ID))
+    df_channel_group_2 <- df_channel_group_2 %>% dplyr::select(any_of(c("mouse_ID", "corr_group")), all_of(common_regions_btwn_groups)) %>% dplyr::mutate(mouse_ID = as.character(.data$mouse_ID))
     df_channel_groups <- dplyr::bind_rows(df_channel_group_1, df_channel_group_2)
 
     group_1_corr <- df_channel_group_1 %>% dplyr::select(dplyr::where(is.numeric)) %>%
@@ -323,7 +304,7 @@ correlation_diff_permutation <- function(e,
     }
 
     if (!isFALSE(p_adjust_method)){
-      p_matrix <- p_matrix %>% p.adjust(method = p_adjust_method) %>%
+      p_matrix <- p_matrix %>% stats::p.adjust(method = p_adjust_method) %>%
         matrix(nrow = length(l_reg), ncol= length(l_reg), dimnames = dimnames(test_statistic))
     }
     p_matrix_list[[channel]] <- list(p_val = p_matrix,
@@ -361,6 +342,7 @@ export_permutation_results <- function(e,
                                        channels = c("cfos"),
                                        ontology = "allen",
                                        filter_significant =  TRUE){
+
   if (permutation_groups == "all") {
     permutation_groups <- e$permutation_p_matrix %>% names()
   } else{
@@ -401,7 +383,7 @@ export_permutation_results <- function(e,
                                                                      .before = test_statistic)
       }
       if (filter_significant) {
-        permutation_results <- permutation_results %>% dplyr::filter(sig)
+        permutation_results <- permutation_results %>% dplyr::filter(.data$sig)
       }
       # Create table directory if it doesn't already exists
       output_dir <-  file.path(attr(e, "info")$output_path, "tables")
@@ -410,9 +392,9 @@ export_permutation_results <- function(e,
       }
 
       if (filter_significant) {
-      write.csv(permutation_results, file.path(output_dir, paste0("permutation_results", "_", pg, "_", channel, "_significant.csv")), row.names = FALSE)
+      utils::write.csv(permutation_results, file.path(output_dir, paste0("permutation_results", "_", pg, "_", channel, "_significant.csv")), row.names = FALSE)
       }
-      write.csv(permutation_results, file.path(output_dir, paste0("permutation_results", "_", pg, "_", channel, ".csv")), row.names = FALSE)
+      utils::write.csv(permutation_results, file.path(output_dir, paste0("permutation_results", "_", pg, "_", channel, ".csv")), row.names = FALSE)
     }
   }
 }
@@ -462,17 +444,18 @@ create_networks <- function(e,
 
     for (k in 1:length(corr_df)){
       corr_df[[k]] <- tibble::add_column(corr_df[[k]], row_acronym = names(corr_df[[k]]), .before = TRUE) %>%
-        tidyr::pivot_longer(!row_acronym, names_to = "col_acronym", values_to = val_names[k])
+        tidyr::pivot_longer(!any_of("row_acronym"), names_to = "col_acronym", values_to = val_names[k])
     }
-    df <- corr_df$r %>% dplyr::left_join(corr_df$n, by = c("row_acronym", "col_acronym")) %>%
+    df <- corr_df$r %>%
+      dplyr::left_join(corr_df$n, by = c("row_acronym", "col_acronym")) %>%
       dplyr::left_join(corr_df$P, by = c("row_acronym", "col_acronym")) %>%
       dplyr::left_join(corr_df$sig, by = c("row_acronym", "col_acronym")) %>%
       tidyr::drop_na()
-    edges <- df %>% dplyr::mutate(sign = ifelse(r >= 0, "pos", "neg"),
-                                  weight = abs(r)) %>%
-       dplyr::rename(from = row_acronym,
-             to = col_acronym,
-             p.value = P)
+    edges <- df %>% dplyr::mutate(sign = ifelse(.data$r >= 0, "pos", "neg"),
+                                  weight = abs(.data$r)) %>%
+       dplyr::rename(from = any_of("row_acronym"),
+                     to = any_of("col_acronym"),
+                     p.value = any_of("P"))
 
     # ___________Create Node tibble ________________
     acronyms <-  e$correlation_list[[correlation_list_name]][[channel]]$r %>% rownames()
@@ -488,13 +471,10 @@ create_networks <- function(e,
     }
     nodes <- tibble::tibble(name = acronyms, super.region = super.region)
 
-
     # _____________ Create the network ________________
     network <- tidygraph::tbl_graph(nodes = nodes,
                                     edges = edges,
                                     directed = FALSE)
-
-    # Remove self-loops and parallel edges
     network <- network %>%
       tidygraph::convert(tidygraph::to_simple) %>%
       activate(edges) %>%
@@ -509,29 +489,29 @@ create_networks <- function(e,
       tidygraph::select(-.tidygraph_node_index)
 
     if (!is.na(proportional_thresh) && !is.null(proportional_thresh)){
-      edges <- network %>% activate(edges) %>% dplyr::arrange(dplyr::desc(weight)) %>% dplyr::as_tibble()
+      edges <- network %>% activate(edges) %>% dplyr::arrange(dplyr::desc(.data$weight)) %>% dplyr::as_tibble()
       row <- round(igraph::gsize(network)*proportional_thresh)
       pearson_thresh <- edges$weight[[row]]
-      network <- network %>% activate(edges) %>% dplyr::filter(weight >= pearson_thresh)
+      network <- network %>% activate(edges) %>% dplyr::filter(.data$weight >= pearson_thresh)
 
     } else{
       if(!is.na(alpha) && !is.null(alpha)){
-        network <- network %>% activate(edges) %>% dplyr::filter(p.value < alpha)
+        network <- network %>% activate(edges) %>% dplyr::filter(.data$p.value < alpha)
       }
       if(!is.na(pearson_thresh) && !is.null(pearson_thresh)){
-        network <- network %>% activate(edges) %>% dplyr::filter(weight > pearson_thresh)
+        network <- network %>% activate(edges) %>% dplyr::filter(.data$weight > pearson_thresh)
       }
     }
 
     network <- network %>% activate(nodes) %>%
-      dplyr::mutate(super.region = factor(super.region,levels = unique(super.region)),
+      dplyr::mutate(super.region = factor(.data$super.region, levels = unique(.data$super.region)),
                     degree = tidygraph::centrality_degree(),
                     triangles = igraph::count_triangles(.),
                     # clust.coef = ifelse(degree < 2, 0 , 2*triangles/(degree*(degree - 1))),
                     clust.coef = igraph::transitivity(., type = "local", isolates = "zero"))
     if (filter_isolates){
       network <- network %>% activate(nodes) %>%
-        dplyr::filter(degree > 0)
+        dplyr::filter(.data$degree > 0)
     }
     # Add distance, efficiency, and btw metrics
     d <- igraph::distances(network, weights = NA)
@@ -540,8 +520,7 @@ create_networks <- function(e,
     network <- network %>%
       dplyr::mutate(avg.dist = rowSums(d, na.rm = TRUE)/(n()-1),
              efficiency = rowSums(d^(-1),na.rm = TRUE)/(n()-1),
-             btw = tidygraph::centrality_betweenness(weights = NULL,
-                                          directed = FALSE),
+             btw = tidygraph::centrality_betweenness(weights = NULL, directed = FALSE),
              group = as.factor(tidygraph::group_walktrap()))
     networks[[channel]] <- network
   }
@@ -587,53 +566,48 @@ summarise_networks <- function(e,
     }
   }
 
-  # Create summary tibble
   for (channel in channels){
     nodes_df_list <- list()
     edges_df_list <- list()
     for (network in network_names){
-
       nodes_df_list[[network]] <-  e$networks[[network]][[channel]] %>% tidygraph::activate(nodes) %>%
         tibble::as_tibble() %>% dplyr::mutate(group = network)
       edges_df_list[[network]] <-  e$networks[[network]][[channel]] %>% tidygraph::activate(edges) %>%
         tibble::as_tibble() %>% dplyr::mutate(group = network)
     }
-    nodes_df <- dplyr::bind_rows(nodes_df_list) %>% dplyr::mutate(group=factor(group, levels = network_names))
-    edges_df <- dplyr::bind_rows(edges_df_list) %>% dplyr::mutate(group=factor(group, levels = network_names))
+    nodes_df <- dplyr::bind_rows(nodes_df_list) %>% dplyr::mutate(group=factor(.data$group, levels = network_names))
+    edges_df <- dplyr::bind_rows(edges_df_list) %>% dplyr::mutate(group=factor(.data$group, levels = network_names))
 
-    network_stats_df <- nodes_df %>% dplyr::group_by(group) %>%
+    network_stats_df <- nodes_df %>% dplyr::group_by_at("group") %>%
       dplyr::summarise_if(is.numeric,list(~mean(.),~sd(.), ~sem(.))) %>%
-      dplyr::left_join(nodes_df %>% dplyr::group_by(group) %>% dplyr::summarise(n.nodes = n())) %>%
-      dplyr::left_join(edges_df %>% dplyr::group_by(group) %>% dplyr::summarise(n.edges = n())) %>%
-      dplyr::mutate(edge.density = n.edges/(n.nodes*(n.nodes-1)/2)) %>%
+      dplyr::left_join(nodes_df %>% dplyr::group_by_at("group") %>% dplyr::summarise(n.nodes = n())) %>%
+      dplyr::left_join(edges_df %>% dplyr::group_by_at("group") %>% dplyr::summarise(n.edges = n())) %>%
+      dplyr::mutate(edge.density = .data$n.edges/(.data$n.nodes*(.data$n.nodes-1)/2)) %>%
       dplyr::rename_all(stringr::str_replace,pattern = "_",replacement=".")
 
     #make table of degree frequency (useful for plotting degree histogram outside of R)
-    degree_distribution_df <- nodes_df %>% dplyr::group_by(group, degree) %>% dplyr::count(degree)
-
+    degree_distribution_df <- nodes_df %>% dplyr::group_by_at(c("group", "degree")) %>% dplyr::count(.data$degree)
 
     # Make a dataframe of degree (useful)
-    degree_distribution <- nodes_df %>% dplyr::select(name, group, degree) %>%
-      dplyr::group_by(group) %>% dplyr::arrange(group, dplyr::desc(degree)) %>%
-      dplyr::mutate(name = factor(name, levels=name))
+    degree_distribution <- nodes_df %>% dplyr::select(any_of(c("name", "group", "degree"))) %>%
+      dplyr::group_by_at("group") %>% dplyr::arrange(.data$group, dplyr::desc(.data$degree)) %>%
+      dplyr::mutate(name = factor(.data$name, levels=.data$name))
 
     #make table of betweenness frequency (useful for plotting degree histogram outside of R)
-    betweenness_distribution_df <- nodes_df %>% dplyr::group_by(group, btw) %>% dplyr::count(btw)
-
+    betweenness_distribution_df <- nodes_df %>% dplyr::group_by_at(c("group", "btw")) %>% dplyr::count(.data$btw)
 
     # Make a dataframe of betweenness (useful)
-    betweenness_distribution <- nodes_df %>% dplyr::select(name, group, btw) %>%
-      dplyr::group_by(group) %>% dplyr::arrange(group, dplyr::desc(btw)) %>%
-      dplyr::mutate(name = factor(name, levels=name))
+    betweenness_distribution <- nodes_df %>% dplyr::select(any_of(c("name", "group", "btw"))) %>%
+      dplyr::group_by_at("group") %>% dplyr::arrange(.data$group, dplyr::desc(.data$btw)) %>%
+      dplyr::mutate(name = factor(.data$name, levels=.data$name))
 
     #make table of efficiency frequency (useful for plotting degree histogram outside of R)
-    efficiency_distribution_df <- nodes_df %>% dplyr::group_by(group, efficiency) %>% dplyr::count(efficiency)
-
+    efficiency_distribution_df <- nodes_df %>% dplyr::group_by_at(c("group", "efficiency")) %>% dplyr::count(.data$efficiency)
 
     # Make a dataframe of efficiency (useful)
-    efficiency_distribution <- nodes_df %>% dplyr::select(name, group, efficiency) %>%
-      dplyr::group_by(group) %>% dplyr::arrange(group, dplyr::desc(efficiency)) %>%
-      dplyr::mutate(name = factor(name, levels=name))
+    efficiency_distribution <- nodes_df %>% dplyr::select(any_of(c("name", "group", "efficiency"))) %>%
+      dplyr::group_by_at("group") %>% dplyr::arrange(.data$group, dplyr::desc(.data$efficiency)) %>%
+      dplyr::mutate(name = factor(.data$name, levels=.data$name))
 
     # Create table directory if it doesn't already exists
     output_dir <-  file.path(attr(e, "info")$output_path, "tables")
@@ -726,7 +700,7 @@ create_joined_networks <- function(e,
 
       for (k in 1:length(corr_df)){
         corr_df[[k]] <- tibble::add_column(corr_df[[k]], row_acronym = names(corr_df[[k]]), .before = TRUE) %>%
-          tidyr::pivot_longer(!row_acronym, names_to = "col_acronym", values_to = val_names[k])
+          tidyr::pivot_longer(!any_of("row_acronym"), names_to = "col_acronym", values_to = val_names[k])
       }
 
       # Combined the correlation plots into one dataframe
@@ -736,11 +710,11 @@ create_joined_networks <- function(e,
         tidyr::drop_na()
 
       # Edges dataframe
-      edges_joined[[correlation_list_name]] <- df %>% dplyr::mutate(sign = ifelse(r >= 0, "pos", "neg"),
-                                                                    weight = abs(r)) %>%
-        dplyr::rename(from = row_acronym,
-                      to = col_acronym,
-                      p.value = P) %>%
+      edges_joined[[correlation_list_name]] <- df %>% dplyr::mutate(sign = ifelse(.data$r >= 0, "pos", "neg"),
+                                                                    weight = abs(.data$r)) %>%
+        dplyr::rename(from = any_of("row_acronym"),
+                      to = any_of("col_acronym"),
+                      p.value = any_of("P")) %>%
         tibble::add_column(network = correlation_list_name)
       # ___________Create Node tibble ________________
 
@@ -771,8 +745,6 @@ create_joined_networks <- function(e,
     network2 <- tidygraph::tbl_graph(nodes = nodes_joined[[2]],
                                      edges = edges_joined[[2]],
                                      directed = FALSE)
-
-
 
     # Remove self-loops and parallel edges
     network1 <- network1 %>%
@@ -805,70 +777,67 @@ create_joined_networks <- function(e,
 
     ######### check that proportional thresholding is null or NA. If proportional thresholding has a value, then that takes precedent over alpha or pearson thresholding
     if (!is.na(proportional_thresh) && !is.null(proportional_thresh)){
-      edges <- network1 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(weight)) %>% dplyr::as_tibble()
+      edges <- network1 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(.data$weight)) %>% dplyr::as_tibble()
       row <- round(igraph::gsize(network1)*proportional_thresh)
       pearson_thresh <- edges$weight[[row]]
-      network1 <- network1 %>% activate(edges) %>% dplyr::filter(weight >= pearson_thresh)
+      network1 <- network1 %>% activate(edges) %>% dplyr::filter(.data$weight >= pearson_thresh)
       if (!is.na(proportional_thresh2) && !is.null(proportional_thresh2)){
-        edges <- network2 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(weight)) %>% dplyr::as_tibble()
+        edges <- network2 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(.data$weight)) %>% dplyr::as_tibble()
         row <- round(igraph::gsize(network2)*proportional_thresh2)
         pearson_thresh <- edges$weight[[row]]
-        network2 <- network2 %>% activate(edges) %>% dplyr::filter(weight >= pearson_thresh)
+        network2 <- network2 %>% activate(edges) %>% dplyr::filter(.data$weight >= pearson_thresh)
       } else{
-        edges <- network2 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(weight)) %>% dplyr::as_tibble()
+        edges <- network2 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(.data$weight)) %>% dplyr::as_tibble()
         row <- round(igraph::gsize(network2)*proportional_thresh)
         pearson_thresh <- edges$weight[[row]]
-        network2 <- network2 %>% activate(edges) %>% dplyr::filter(weight >= pearson_thresh)
+        network2 <- network2 %>% activate(edges) %>% dplyr::filter(.data$weight >= pearson_thresh)
       }
     } else{
       # filter by alpha
       if(!is.na(alpha) && !is.null(alpha)){
-        network1 <- network1 %>% tidygraph::activate(edges) %>% dplyr::filter(p.value < alpha)
+        network1 <- network1 %>% tidygraph::activate(edges) %>% dplyr::filter(.data$p.value < alpha)
         if(!is.na(alpha2) && !is.null(alpha2)){
-          network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(p.value < alpha2)
+          network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(.data$p.value < alpha2)
         } else{
-          network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(p.value < alpha)
+          network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(.data$p.value < alpha)
         }
       }
 
-      # Filter by pearson correlation coefficient
       if(!is.na(pearson_thresh) && !is.null(pearson_thresh)){
-        network1 <- network1 %>% tidygraph::activate(edges) %>% dplyr::filter(weight > pearson_thresh)
+        network1 <- network1 %>% tidygraph::activate(edges) %>% dplyr::filter(.data$weight > pearson_thresh)
         if (!is.na(pearson_thresh2) && !is.null(pearson_thresh2)){
-          network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(weight > pearson_thresh2)
+          network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(.data$weight > pearson_thresh2)
         } else {
-          network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(weight > pearson_thresh)
+          network2 <- network2 %>% tidygraph::activate(edges) %>% dplyr::filter(.data$weight > pearson_thresh)
         }
       }
     }
 
     network <- tidygraph::graph_join(network1, network2)
-
     network <- network %>% tidygraph::activate(nodes) %>%
-      dplyr::mutate(super.region = factor(super.region,levels = unique(super.region)),
+      dplyr::mutate(super.region = factor(.data$super.region, levels = unique(.data$super.region)),
                     degree = tidygraph::centrality_degree(mode="all")) %>%
-      dplyr::filter(degree>0)
+      dplyr::filter(.data$degree>0)
 
     networks[[channel]] <- network
 
-    # Whether to export the list of overlapping edges
     if (export_overlapping_edges) {
       joined_network_name <- paste(correlation_list_names, collapse = "_")
-      networks[[channel]]%>% tidygraph::activate(nodes) %>% as_tibble() -> nodes_df
-      networks[[channel]] %>% tidygraph::activate(edges) %>% as_tibble() -> edges_df
+      networks[[channel]]%>% tidygraph::activate(nodes) %>% tibble::as_tibble() -> nodes_df
+      networks[[channel]] %>% tidygraph::activate(edges) %>% tibble::as_tibble() -> edges_df
       edges_df <- edges_df %>% mutate(from = nodes_df$name[edges_df$from],
                                       to =   nodes_df$name[edges_df$to])
-      edges_df_p1 <- edges_df %>% dplyr::filter(network == correlation_list_names[1])
-      edges_df_p2 <- edges_df %>% dplyr::filter(network == correlation_list_names[2])
-      mutual_edges <- edges_df_p1 %>% dplyr::inner_join(edges_df_p2, by = c("from", "to"), suffix = c(paste0(".", correlation_list_names[1]), paste0(".", correlation_list_names[2])))
+      edges_df_p1 <- edges_df %>% dplyr::filter(.data$network == correlation_list_names[1])
+      edges_df_p2 <- edges_df %>% dplyr::filter(.data$network == correlation_list_names[2])
+      mutual_edges <- edges_df_p1 %>% dplyr::inner_join(edges_df_p2, by = c("from", "to"),
+                                                        suffix = c(paste0(".", correlation_list_names[1]), paste0(".", correlation_list_names[2])))
 
-      # Create table directory if it doesn't already exists
       output_dir <-  file.path(attr(e, "info")$output_path, "tables")
       if(!dir.exists(output_dir)){
         dir.create(output_dir)
       }
       file_path <- file.path(output_dir, paste0("joined_networks_mutual_edges_",joined_network_name, "_", channel,".csv"))
-      write.csv(mutual_edges, file = file_path)
+      utils::write.csv(mutual_edges, file = file_path)
       message(paste0("Saved mutual edge list at: ", file_path))
     }
   }
@@ -904,7 +873,7 @@ rewire_network <- function(e,
                            network_name,
                            channels = "cfos",
                            method = "ms",
-                           ontology = "unified",
+                           ontology = "allen",
                            n_rewires = 10000,
                            n_networks = 100,
                            return_graphs = FALSE,
@@ -912,11 +881,11 @@ rewire_network <- function(e,
 
   # null_graphs <- vector(mode = "list", length = length(channels))
   null_nodes <- vector(mode = "list", length = length(channels))
-  names(null_nodes) <- names(channels)
+  names(null_nodes) <- channels
 
   if (return_graphs){
     null_graphs <- vector(mode = "list", length = length(channels))
-    names(null_graphs) <- names(channels)
+    names(null_graphs) <- channels
   }
 
   set.seed(seed)
@@ -934,7 +903,7 @@ rewire_network <- function(e,
 
     if (method == "ms") {
       g <- e$networks[[network_name]][[channel]] %>% maslov_sneppen_rewire(n_rewires = n_rewires)
-      g <- g %>% activate(nodes) %>% dplyr::mutate(iter = 1) %>% dplyr::select(-group)
+      g <- g %>% activate(nodes) %>% dplyr::mutate(iter = 1) %>% dplyr::select(-any_of("group"))
       null_nodes[[channel]] <- g %>% dplyr::as_tibble()
 
       if (return_graphs){
@@ -944,9 +913,9 @@ rewire_network <- function(e,
 
       for (i in 2:n_networks){
         g <- e$networks[[network_name]][[channel]] %>% maslov_sneppen_rewire(n_rewires = n_rewires)
-        g <- g %>% activate(nodes) %>% dplyr::mutate(iter = i) %>% dplyr::select(-group)
+        g <- g %>% activate(nodes) %>% dplyr::mutate(iter = i) %>% dplyr::select(-any_of("group"))
         null_node <- g  %>% dplyr::as_tibble()
-        null_nodes[[channel]] <- bind_rows(null_nodes[[channel]], null_node)
+        null_nodes[[channel]] <- dplyr::bind_rows(null_nodes[[channel]], null_node)
 
         if (return_graphs){
           graph_list[[i]] <- g
@@ -965,7 +934,6 @@ rewire_network <- function(e,
 }
 
 
-
 #' Summarize the parameters of the rewired null networks generated by [SMARTR::rewire_network()]
 #'
 #' @param null_nodes_list a list of output summary tables (1 per network) of rewired network properties of all nodes from [SMARTR::rewire_network()].
@@ -978,39 +946,39 @@ rewire_network <- function(e,
 #' @export
 #' @examples
 #' \dontrun{
-#' TODO. will add examples
+#' rewire_summary <- rewire_network(e, "Context", channels = "eyfp", return_graphs = FALSE)
+#' summarized_null_networks <- summarize_null_networks(rewire_summary, network_names = "Context", channel = "eyfp")
 #' }
 summarize_null_networks <- function(null_nodes_list,
                                     network_names = NULL,
                                     channel = "cfos"){
-
   summaries <- vector(mode="list", length = 2)
   names(summaries) <- c("node_summary", "global_summary")
 
   for (n in 1:length(null_nodes_list)){
     if (n == 1){
-    null_node_summary <- null_nodes_list[[n]][[channel]] %>% dplyr::group_by(name, super.region) %>%
-      summarise(null_degree = mean(degree, na.rm = TRUE),
-                null_triangles = mean(triangles, na.rm = TRUE),
-                null_clust.coef = mean(clust.coef, na.rm = TRUE),
-                null_dist = mean(avg.dist, na.rm = TRUE),
-                null_efficiency = mean(efficiency, na.rm = TRUE),
-                null_btw = mean(btw, na.rm = TRUE)) %>%
+    null_node_summary <- null_nodes_list[[n]][[channel]] %>% dplyr::group_by_at(c("name", "super.region")) %>%
+      dplyr::summarise(null_degree = mean(.data$degree, na.rm = TRUE),
+                null_triangles = mean(.data$triangles, na.rm = TRUE),
+                null_clust.coef = mean(.data$clust.coef, na.rm = TRUE),
+                null_dist = mean(.data$avg.dist, na.rm = TRUE),
+                null_efficiency = mean(.data$efficiency, na.rm = TRUE),
+                null_btw = mean(.data$btw, na.rm = TRUE)) %>%
       dplyr::mutate(group = network_names[[n]], .before = null_degree)
     } else {
-      toadd <- null_nodes_list[[n]][[channel]] %>% dplyr::group_by(name, super.region) %>%
-        summarise(null_degree = mean(degree, na.rm = TRUE),
-                  null_triangles = mean(triangles, na.rm = TRUE),
-                  null_clust.coef = mean(clust.coef, na.rm = TRUE),
-                  null_dist = mean(avg.dist, na.rm = TRUE),
-                  null_efficiency = mean(efficiency, na.rm = TRUE),
-                  null_btw = mean(btw, na.rm = TRUE)) %>%
+      toadd <- null_nodes_list[[n]][[channel]] %>% dplyr::group_by_at(c("name", "super.region")) %>%
+        summarise(null_degree = mean(.data$degree, na.rm = TRUE),
+                  null_triangles = mean(.data$triangles, na.rm = TRUE),
+                  null_clust.coef = mean(.data$clust.coef, na.rm = TRUE),
+                  null_dist = mean(.data$avg.dist, na.rm = TRUE),
+                  null_efficiency = mean(.data$efficiency, na.rm = TRUE),
+                  null_btw = mean(.data$btw, na.rm = TRUE)) %>%
         dplyr::mutate(group = network_names[[n]], .before = null_degree)
       null_node_summary <- null_node_summary  %>% dplyr::bind_rows(toadd)
     }
   }
   ## Global level normalization
-  null_global_summary <- null_node_summary %>% dplyr::ungroup() %>%  dplyr::group_by(group) %>%
+  null_global_summary <- null_node_summary %>% dplyr::ungroup() %>%  dplyr::group_by_at("group") %>%
     dplyr::summarise_if(is.numeric,list(~mean(.),~sd(.), ~sem(.)))
   summaries[["node_summary"]] <- null_node_summary
   summaries[["global_summary"]] <- null_global_summary
@@ -1068,64 +1036,29 @@ plot_percent_colabel <- function(e,
                                  save_plot = TRUE,
                                  image_ext = ".png"){
 
-  # Re-running the get_percent_colabel function for the color &/or pattern mapping
   if(is.null(pattern_mapping)){
     by <- match_m_attr(color_mapping)
   } else{
     by <- match_m_attr(c(color_mapping, pattern_mapping))
   }
 
-  # Get the average and individual percentages
   e <- get_percent_colabel(e, by = by, colabel_channel = colabel_channel, channel = channel, save_table = FALSE, rois = rois, individual = FALSE)
   e <- get_percent_colabel(e, by = by, colabel_channel = colabel_channel, channel = channel, save_table = FALSE, rois = rois, individual = TRUE)
 
-  # Get rois of all the child regions
   child_r <- get.acronym.child(rois)
   while (length(child_r) > 0){
     rois <- c(rois, child_r)
     child_r <- get.acronym.child(child_r) %>% na.omit()
   }
 
-  # # Check that a colabel percentage dataframe exists for this channel
-  # if(is.null(e$colabel_percent[[channel]])){
-  #   message("The percent colabelled data does not exist in your experiment object for this channel. Autorunning the function now...")
-  #   e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = FALSE)
-  #   e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = TRUE)
-  # }
-
-  # Make sure the by (if not NULL) is equal to the by parameter fed to get_percent_colabel() used to generate the dataframes
-  # attrib <- attributes(e$colabel_percent[[channel]]$average)
-  # stored_by <- names(attrib$groups) %>% setdiff(c("acronym", ".rows"))
-  #
-  # if (!is.null(by) && all(by %in% stored_by)){
-  #   loop <- TRUE
-  #   while(loop){
-  #     message("The 'by' parameter used here doesn't include attributes input to the 'by' parameter that was used in get_percent_colabel().\n",
-  #             "The groups that you intend to compare may be different.")
-  #
-  #     inp <- readline("Would you like to rerun the get_percent_colabel() function using the new 'by' parameters for grouping?: Y/N?" )
-  #     if (inp=="Y" || inp=="y") {
-  #       e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = FALSE)
-  #       e <- get_percent_colabel(e, by = by, channel = channel, save_table = FALSE, rois = rois, individual = TRUE)
-  #       loop <- FALSE
-  #     } else if ( inp=="N" || inp == "n") {
-  #       stop("Cannot continue with plotting using the current function parameters.")
-  #     }
-  #   }
-  # } else{
-  #   by <- stored_by
-  # }
-
-  # Error bar check
   if (error_bar == "sem"){
-    error_var <- sym("colabel_percentage.sem")
+    error_var <- rlang::sym("colabel_percentage.sem")
   } else if (error_bar == "sd") {
-    error_var <- sym("colabel_percentage.sd")
+    error_var <-rlang::sym("colabel_percentage.sd")
   } else {
     stop("You did not supply a valid option for the error_bar. Valid options are 'sem' and 'sd'.")
   }
 
-  # Set up custom bar plot theme
   bar_theme <- theme(axis.title.x=element_blank(),
                      axis.text.x=element_blank(),
                      axis.ticks.x=element_blank(),
@@ -1136,28 +1069,22 @@ plot_percent_colabel <- function(e,
                      axis.title = element_text(size = 20, color = "black"),
                      legend.text = element_text(size = 20,  color = "black"),
                      legend.title = element_text(size = 20, color = "black"),
-                     # axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
                      axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))
 
-  # Create  variable names for mapping
-  color_var <- sym(color_mapping)
+  color_var <- rlang::sym(color_mapping)
 
-  # Use pattern as a variable if not NULL
   if (!is.null(pattern_mapping)){
-
-    # Check if ggpattern is installed
     if (!requireNamespace("ggpattern", quietly = TRUE)) {
-      message("Package \"ggpattern\" (>= 0.2.0) is needed for the pattern mapping to work. Installing it now.",
-           call. = FALSE)
-      install.packages('ggpattern')
+      stop(
+        "Package \"ggpattern\" (>= 0.2.0) is needed for the pattern mapping parameter to work. Please install it or set `pattern_mapping` to NULL.",
+        call. = FALSE)
     }
-
-    pattern_var <- sym(pattern_mapping)
+    pattern_var <- rlang::sym(pattern_mapping)
 
     # Create the plot
-    p <- ggplot(e$colabel_percent[[channel]]$average %>% dplyr::filter(acronym %in% rois),
+    p <- ggplot(e$colabel_percent[[channel]]$average %>% dplyr::filter(.data$acronym %in% rois),
                 aes(x = interaction(!!pattern_var, !!color_var),
-                    y = colabel_percentage.mean,
+                    y = .data$colabel_percentage.mean,
                     fill = !!color_var)) +
       ggpattern::geom_bar_pattern(aes(pattern_type = !!pattern_var),
                                   stat = "identity",
@@ -1165,17 +1092,17 @@ plot_percent_colabel <- function(e,
                                   pattern_color = "black",
                                   pattern_fill = "black",
                                   pattern = "magick",
-                                  position = position_dodge(width = .5),
+                                  position = ggplot2::position_dodge(width = .5),
                                   show.legend = TRUE,
                                   width = 0.4) +
       ggplot2::scale_fill_manual(values = colors) +
       ggpattern::scale_pattern_type_manual(values = patterns) +
-      geom_errorbar(aes(ymin = colabel_percentage.mean - !!error_var,
+      ggplot2::geom_errorbar(aes(ymin = colabel_percentage.mean - !!error_var,
                         ymax = colabel_percentage.mean + !!error_var),
                     width=.2,
-                    position = position_dodge(width = .5)) +
-      geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
-      facet_wrap(~acronym,
+                    position = ggplot2::position_dodge(width = .5)) +
+      ggplot2::geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
+      ggplot2::facet_wrap(~.data$acronym,
                  strip.position = "bottom") +
       ylim(ylim) +
       geom_text(aes(x=c(2.5), y= 0.4, label=c("|")),
@@ -1184,32 +1111,30 @@ plot_percent_colabel <- function(e,
       bar_theme
 
     if (plot_individual){
-      df <- e$colabel_percent[[channel]]$individual %>% dplyr::filter(acronym %in% rois)
+      df <- e$colabel_percent[[channel]]$individual %>% dplyr::filter(.data$acronym %in% rois)
       p <- p + geom_jitter(data = df,
                            aes(x = interaction(!!pattern_var, !!color_var),
-                               y = colabel_percentage),
+                               y = .data$colabel_percentage),
                            size = 2,
                            width = 0.1)
     }
   } else{
-
-    # Create the plot
-    p <- ggplot(e$colabel_percent[[channel]]$average %>% dplyr::filter(acronym %in% rois),
+    p <- ggplot(e$colabel_percent[[channel]]$average %>% dplyr::filter(.data$acronym %in% rois),
                 aes(x = !!color_var,
-                    y = colabel_percentage.mean,
+                    y = .data$colabel_percentage.mean,
                     fill = !!color_var)) +
       ggplot2::geom_bar(stat='identity',
-                        position = position_dodge(width = .5),
+                        position = ggplot2::position_dodge(width = .5),
                         color = "black",
                         show.legend = TRUE,
                         width = 0.4) +
       scale_fill_manual(values = colors) +
-      geom_errorbar(aes(ymin = colabel_percentage.mean - !!error_var,
-                        ymax = colabel_percentage.mean + !!error_var),
+      geom_errorbar(aes(ymin = .data$colabel_percentage.mean - !!error_var,
+                        ymax = .data$colabel_percentage.mean + !!error_var),
                     width=.2,
-                    position = position_dodge(width = .5)) +
+                    position = ggplot2::position_dodge(width = .5)) +
       geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
-      facet_wrap(~acronym,
+      ggplot2::facet_wrap(~.data$acronym,
                  strip.position = "bottom") +
       ylim(ylim) +
       geom_text(aes(x=c(2.5), y= 0.4, label=c("|")),
@@ -1218,25 +1143,22 @@ plot_percent_colabel <- function(e,
       bar_theme
 
     if (plot_individual){
-      df <- e$colabel_percent[[channel]]$individual %>% dplyr::filter(acronym %in% rois)
+      df <- e$colabel_percent[[channel]]$individual %>% dplyr::filter(.data$acronym %in% rois)
       p <- p + geom_jitter(data = df,
                            aes(x = !!color_var,
-                               y = colabel_percentage),
+                               y = .data$colabel_percentage),
                            size = 2,
                            width = 0.1)
     }
   }
-
   if (print_plot){
     dev.new(noRStudioGD=TRUE)
     print(p)
   }
 
   if(save_plot){
-    # Plot the plot
     dev.new(width = width, height = height, noRStudioGD=TRUE)
     print(p)
-    # Create figure directory if it doesn't already exists
     output_dir <-  file.path(attr(e, "info")$output_path, "figures")
     if(!dir.exists(output_dir)){
       dir.create(output_dir)
@@ -1255,12 +1177,15 @@ plot_percent_colabel <- function(e,
 #' pattern aesthetics of the bar plot, e.g. sex and experimental group.
 #' The color aesthetic takes precedence over the pattern aesthetic so if you only want to use one mouse attribute, for plotting
 #' set it to the `color_mapping` parameter and set the `pattern_mapping` parameter to NULL.
+#'
+#' Set to be deprecated in favor of plot_normalized_counts()
+#'
 #' @param e experiment object
 #' @param channel (str, default = "eyfp") The channel used as denominator in fraction counts.
 #' @param rois (vec,  default = c("AAA", "dDG", "HY")) Allen acronyms of the ROIS that the user would like to plot
 #' @param color_mapping (str, default = "group") The variable name that maps subgroups  you would like to graphically distinguish through colors.
 #' @param colors (vec, default = c("#952899", "#358a9c")) A vector of hexadecimal color codes for each subgroup distinguished by the color mapping variable.
-#' @param pattern_mapping (str, default = NULL) variable name that maps subgroups  you would like to graphically distinguish through bar patterns.Set to NULL if not in use.
+#' @param pattern_mapping (str, default = NULL) variable name that maps subgroups  you would like to graphically distinguish through bar patterns. Set to NULL if not in use. Should not be the same mapping as color_mapping.
 #' @param patterns  (default = c("gray100", 'hs_fdiagonal', "hs_horizontal", "gray90", "hs_vertical") Available patterns in ggpattern package to map to subgroups distinguished by the pattern mapping variable.
 #' @param ylab (str, default =  bquote('Cell counts '('cells/mm'^3))) unit of measurement
 #' @param ylim (vec, default = c(0,100)) Y-axis range.
@@ -1272,7 +1197,7 @@ plot_percent_colabel <- function(e,
 #' @param image_ext (str, default = ".png") Extension of the output file
 #' @param error_bar (str, c("sd", "sem)) options for which type of error bar to display, standard deviation or standard error of the mean.
 #' @return p Plot handle to the figure
-#' @export
+#' @noRd
 #' @examples
 #' \dontrun{
 #' plot_percentage_colabel
@@ -1305,11 +1230,7 @@ plot_cell_counts <- function(e,
     warning("You have not run `combine_cell_counts()` yet. Running this automatically based on your color_mapping and pattern_mappings parameters.")
    e <- combine_cell_counts(e, by = by)
   }
-  # Get the average and individual percentages
-  # e <- get_percent_colabel(e, by = by, colabel_channel = colabel_channel, channel = channel, save_table = FALSE, rois = rois, individual = FALSE)
-  # e <- get_percent_colabel(e, by = by, colabel_channel = colabel_channel, channel = channel, save_table = FALSE, rois = rois, individual = TRUE)
 
-  # Get rois of all the child regions
   child_r <- get.acronym.child(rois)
   while (length(child_r) > 0){
     rois <- c(rois, child_r)
@@ -1317,26 +1238,23 @@ plot_cell_counts <- function(e,
   }
 
 
-  df <- e$combined_normalized_counts[[channel]] %>% dplyr::group_by(group, acronym, name) %>%
-    dplyr::summarise(normalized.count.mean = mean(normalized.count.by.volume),
-                     normalized.count.sem = sd(normalized.count.by.volume)/sqrt(n()),
-                     normalized.count.sd = sd(normalized.count.by.volume),
+  df <- e$combined_normalized_counts[[channel]] %>% dplyr::group_by_at(c("group", "acronym", "name")) %>%
+    dplyr::summarise(normalized.count.mean = mean(.data$normalized.count.by.volume),
+                     normalized.count.sem = sd(.data$normalized.count.by.volume)/sqrt(n()),
+                     normalized.count.sd = sd(.data$normalized.count.by.volume),
                      n = n())
 
-  df <- df %>% dplyr::filter(acronym %in% rois)
-  df_indiv <- e$combined_normalized_counts[[channel]]  %>% dplyr::filter(acronym %in% rois)
+  df <- df %>% dplyr::filter(.data$acronym %in% rois)
+  df_indiv <- e$combined_normalized_counts[[channel]]  %>% dplyr::filter(.data$acronym %in% rois)
 
-
-  # Error bar check
   if (error_bar == "sem"){
-    error_var <- sym("normalized.count.sem")
+    error_var <- rlang::sym("normalized.count.sem")
   } else if (error_bar == "sd") {
-    error_var <- sym("normalized.count.sem")
+    error_var <- rlang::sym("normalized.count.sem")
   } else {
     stop("You did not supply a valid option for the error_bar. Valid options are 'sem' and 'sd'.")
   }
 
-  # Set up custom bar plot theme
   bar_theme <- theme(axis.title.x=element_blank(),
                      axis.text.x=element_blank(),
                      axis.ticks.x=element_blank(),
@@ -1347,28 +1265,19 @@ plot_cell_counts <- function(e,
                      axis.title = element_text(size = 20, color = "black"),
                      legend.text = element_text(size = 20,  color = "black"),
                      legend.title = element_text(size = 20, color = "black"),
-                     # axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
                      axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))
 
-  # Create  variable names for mapping
-  color_var <- sym(color_mapping)
-
-  # Use pattern as a variable if not NULL
+  color_var <- rlang::sym(color_mapping)
   if (!is.null(pattern_mapping)){
-
-    # Check if ggpattern is installed
     if (!requireNamespace("ggpattern", quietly = TRUE)) {
       message("Package \"ggpattern\" (>= 0.2.0) is needed for the pattern mapping to work. Installing it now.",
               call. = FALSE)
-      install.packages('ggpattern')
+      utils::install.packages('ggpattern')
     }
-
-    pattern_var <- sym(pattern_mapping)
-
-    # Create the plot
+    pattern_var <- rlang::sym(pattern_mapping)
     p <- ggplot(df,
                 aes(x = interaction(!!pattern_var, !!color_var),
-                    y = normalized.count.mean,
+                    y = .data$normalized.count.mean,
                     fill = !!color_var)) +
       ggpattern::geom_bar_pattern(aes(pattern_type = !!pattern_var),
                                   stat = "identity",
@@ -1376,7 +1285,7 @@ plot_cell_counts <- function(e,
                                   pattern_color = "black",
                                   pattern_fill = "black",
                                   pattern = "magick",
-                                  position = position_dodge(width = .5),
+                                  position = ggplot2::position_dodge(width = .5),
                                   show.legend = TRUE,
                                   width = 0.4) +
       ggplot2::scale_fill_manual(values = colors) +
@@ -1384,9 +1293,9 @@ plot_cell_counts <- function(e,
       geom_errorbar(aes(ymin = normalized.count.mean - !!error_var,
                         ymax = normalized.count.mean + !!error_var),
                     width=.2,
-                    position = position_dodge(width = .5)) +
+                    position = ggplot2::position_dodge(width = .5)) +
       geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
-      facet_wrap(~acronym,
+      ggplot2::facet_wrap(~.data$acronym,
                  strip.position = "bottom") +
       ylim(ylim) +
       geom_text(aes(x=c(2.5), y= 0.4, label=c("|")),
@@ -1397,40 +1306,37 @@ plot_cell_counts <- function(e,
     if (plot_individual){
       p <- p + geom_jitter(data = df_indiv,
                            aes(x = interaction(!!pattern_var, !!color_var),
-                               y = count),
+                               y = .data$count),
                            size = 2,
                            width = 0.1)
     }
   } else{
-
-    # Create the plot
     p <- ggplot(df,
                 aes(x = !!color_var,
-                    y = normalized.count.mean,
+                    y = .data$normalized.count.mean,
                     fill = !!color_var)) +
       ggplot2::geom_bar(stat='identity',
-                        position = position_dodge(width = .5),
+                        position = ggplot2::position_dodge(width = .5),
                         color = "black",
                         show.legend = TRUE,
                         width = 0.4) +
       scale_fill_manual(values = colors) +
-      geom_errorbar(aes(ymin = normalized.count.mean - !!error_var,
-                        ymax = normalized.count.mean + !!error_var),
+      geom_errorbar(aes(ymin = .data$normalized.count.mean - !!error_var,
+                        ymax = .data$normalized.count.mean + !!error_var),
                     width=.2,
-                    position = position_dodge(width = .5)) +
+                    position = ggplot2::position_dodge(width = .5)) +
       geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
-      facet_wrap(~acronym,
+      ggplot2::facet_wrap(~.data$acronym,
                  strip.position = "bottom") +
       ylim(ylim) +
       geom_text(aes(x=c(2.5), y= 0.4, label=c("|")),
                 vjust=1.2, size=3) +
       labs(y = ylab) +
       bar_theme
-
     if (plot_individual){
       p <- p + geom_jitter(data = df_indiv,
                            aes(x = !!color_var,
-                               y = normalized.count.by.volume),
+                               y = .data$normalized.count.by.volume),
                            size = 2,
                            width = 0.1)
     }
@@ -1456,12 +1362,6 @@ plot_cell_counts <- function(e,
   }
   return(p)
 }
-
-
-
-
-
-
 
 #' Plot normalized cell counts
 #' @description Plot the cell counts normalized by volume for a given channel
@@ -1539,7 +1439,7 @@ plot_normalized_counts <- function(e,
                                     limits = c(0, 100000),
                                     facet_background_color =  NULL,
                                     strip_background_colors =  "lightblue",
-                                     plot_theme = ggplot2::theme(plot.background = element_blank(),
+                                    plot_theme = ggplot2::theme(plot.background = element_blank(),
                                                                  panel.grid.major = element_blank(),
                                                                  panel.grid.minor = element_blank(),
                                                                  panel.border = element_blank(),
@@ -1558,7 +1458,6 @@ plot_normalized_counts <- function(e,
                                                                  strip.placement = "outside",
                                                                  strip.switch.pad.grid = unit(0.1, "in")),
                                    image_ext = ".pdf"){
-  # create plot list containing number of plots equal to the number of channels
   p_list <- vector(mode = 'list', length = length(channels))
   labels <- purrr::map(values, function(x){paste(x, collapse = "_")}) %>% unlist()
 
@@ -1566,14 +1465,15 @@ plot_normalized_counts <- function(e,
     if (!requireNamespace("ggh4x", quietly = TRUE)) {
       message("Package \"ggh4x\" is needed to plot more than 1 strip background color. Installing it now.",
               call. = FALSE)
-      install.packages('ggh4x')
+      utils::install.packages('ggh4x')
     }
-    ## organizing strip background colors
+
     background_x <- vector(mode = "list", length = length(strip_background_colors))
     for (c in 1:length(strip_background_colors)){
       background_x[[c]] <- element_rect(fill = strip_background_colors[[c]], color = "black")
     }
   }
+
   names(p_list) <- channels
   for (k in 1:length(channels)) {
     channel <- channels[[k]]
@@ -1584,15 +1484,15 @@ plot_normalized_counts <- function(e,
           filter_df_by_char_params(by, values[[g]]) %>% dplyr::distinct() %>%
           dplyr::select(dplyr::all_of(c(by, "mouse_ID", "name", "acronym", "normalized.count.by.volume"))) %>%
           dplyr::group_by(across(all_of(c(by, "acronym", "name" )))) %>%
-          dplyr::summarise(mean_normalized_counts = mean(normalized.count.by.volume),
-                           sem = sd(normalized.count.by.volume, na.rm=TRUE)/sqrt(n()))
+          dplyr::summarise(mean_normalized_counts = mean(.data$normalized.count.by.volume),
+                           sem = sd(.data$normalized.count.by.volume, na.rm=TRUE)/sqrt(n()))
       } else {
         to_bind <-  e$combined_normalized_counts[[channel]] %>% dplyr::ungroup() %>%
           filter_df_by_char_params(by, values[[g]]) %>% dplyr::distinct() %>%
           dplyr::select(dplyr::all_of(c(by, "mouse_ID", "name", "acronym", "normalized.count.by.volume"))) %>%
           dplyr::group_by(across(all_of(c(by, "acronym", "name" )))) %>%
-          dplyr::summarise(mean_normalized_counts = mean(normalized.count.by.volume),
-                           sem = sd(normalized.count.by.volume, na.rm=TRUE)/sqrt(n()))
+          dplyr::summarise(mean_normalized_counts = mean(.data$normalized.count.by.volume),
+                           sem = sd(.data$normalized.count.by.volume, na.rm=TRUE)/sqrt(n()))
         channel_counts <- dplyr::bind_rows(channel_counts, to_bind)
       }
     }
@@ -1627,7 +1527,6 @@ plot_normalized_counts <- function(e,
     text <- paste( "channel_counts <- channel_counts %>% mutate(unique_groups=paste(", dynamic_ref, ", sep='_' ))", collapse = "")
     eval((parse(text=text)))
 
-    # plot normalized cell counts, grouped by specified groups and ordered by parent region
     if (reverse_colors){
       channel_counts$unique_groups <- factor(channel_counts$unique_groups, levels = rev(labels))
     } else{
@@ -1636,22 +1535,23 @@ plot_normalized_counts <- function(e,
 
     if (flip_axis) {
       p <- channel_counts %>%
-        ggplot(aes(x = mean_normalized_counts, y = name,
-                   fill = unique_groups), color = "black") +
-        geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
-        geom_errorbar(aes(xmin = mean_normalized_counts - sem,
-                          xmax = mean_normalized_counts + sem, y = name),
-                      position = position_dodge(0.8),
+        ggplot(aes(x = .data$mean_normalized_counts, y = .data$name,
+                   fill = .data$unique_groups), color = "black") +
+        geom_col(position = ggplot2::position_dodge(0.8), width = 0.8, color = "black") +
+        geom_errorbar(aes(xmin = .data$mean_normalized_counts - .data$sem,
+                          xmax = .data$mean_normalized_counts + .data$sem,
+                          y = .data$name),
+                      position = ggplot2::position_dodge(0.8),
                       width = 0.5,
                       color = "black") +
         labs(title = title,
              x = unit_label,
              y = "",
              fill = "Group") +
-        scale_x_continuous(expand = c(0,0), limits = limits) +
-        scale_fill_manual(values=c(colors))
+        ggplot2::scale_x_continuous(expand = c(0,0), limits = limits) +
+        ggplot2::scale_fill_manual(values=colors)
       if (length(strip_background_colors) > 1) {
-        p <- p +  ggh4x::facet_grid2(parent~., scales = "free", space = "free_y", switch = "y",
+        p <- p +  ggh4x::facet_grid2(.data$parent~., scales = "free", space = "free_y", switch = "y",
                                      strip = ggh4x::strip_themed(background_y = background_x)) + plot_theme
       } else {
         p <- p + theme(strip.background = element_rect(color = "black",
@@ -1659,12 +1559,12 @@ plot_normalized_counts <- function(e,
       }
     } else if (isFALSE(flip_axis)) {
       p <- channel_counts %>%
-        ggplot(aes(y = mean_normalized_counts, x = name,
-                   fill = unique_groups), color = "black") +
-        geom_col(position = position_dodge(0.8), width = 0.8, color = "black") +
-        geom_errorbar(aes(ymin = mean_normalized_counts - sem,
-                          ymax = mean_normalized_counts + sem, x = name),
-                      position = position_dodge(0.8),
+        ggplot(aes(y = .data$mean_normalized_counts, x = .data$name,
+                   fill = .data$unique_groups), color = "black") +
+        geom_col(position = ggplot2::position_dodge(0.8), width = 0.8, color = "black") +
+        geom_errorbar(aes(ymin = .data$mean_normalized_counts - .data$sem,
+                          ymax = .data$mean_normalized_counts + .data$sem, x = .data$name),
+                      position = ggplot2::position_dodge(0.8),
                       width = 0.5,
                       color = "black") +
         labs(title = title,
@@ -1672,9 +1572,9 @@ plot_normalized_counts <- function(e,
              x = "",
              fill = "Group") +
         scale_y_continuous(expand = c(0,0), limits = limits) +
-        scale_fill_manual(values=colors, labels = labels) +
+        scale_fill_manual(values=colors, labels = labels)
         if (length(strip_background_colors) > 1) {
-          p <- p +  ggh4x::facet_grid2(parent~., scales = "free", space = "free_y", switch = "y",
+          p <- p +  ggh4x::facet_grid2(.data$parent~., scales = "free", space = "free_y", switch = "y",
                                        strip = ggh4x::strip_themed(background_y = background_x)) + plot_theme
         } else {
           p <- p + theme(strip.background = element_rect(color = "black",
@@ -1807,7 +1707,7 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
   # Generate a correlation heatmap in anatomical order
   n_facet <- df$row_parent %>% unique() %>% length()
   p <-  ggplot(df, aes(row_acronym, col_acronym, fill = r)) +
-        facet_grid(col_parent ~ row_parent,
+        ggplot2::facet_grid(col_parent ~ row_parent,
                    space = "free",
                    margins = FALSE,
                    scales = "free") +
@@ -2084,7 +1984,7 @@ parallel_coordinate_plot <- function(e,
              group_plot = paste(rowreg, colreg, sep = "."))
 
     if (isTRUE(reverse_group_order)){
-      df <- df %>% dplyr::mutate(group = fct_rev(group),
+      df <- df %>% dplyr::mutate(group = forcats::fct_rev(group),
                                  nudge = ifelse(group == group_2, -0.1, 0.1))
     }
 
@@ -2119,7 +2019,7 @@ parallel_coordinate_plot <- function(e,
                       nudge_x = dplyr::pull(df, nudge)*nudge_x, max.iter = 20000) +
       ggplot2::geom_hline(yintercept = 0,linetype=2,size=1.2) +
       xlab("Group") + ylab("Correlation") +
-      expand_limits(y=c(-1,1)) + plt_theme
+      ggplot2::expand_limits(y=c(-1,1)) + plt_theme
 
     if (print_plot){
       dev.new(noRStudioGD=TRUE)
@@ -3081,7 +2981,7 @@ plot_degree_regions <- function(e,
       p <- df %>%
         ggplot2::ggplot(aes(name, degree)) +
         ggplot2::geom_col(fill = colors[[k]], color = "black") +
-        facet_grid(~super.region, scales = "free_x", space = "free_x", switch = "x")  +
+        ggplot2::facet_grid(~super.region, scales = "free_x", space = "free_x", switch = "x")  +
         xlab("Brain Region") + ylab("Degree") +
         ylim(ylim)  + theme.bar
 
@@ -3188,7 +3088,7 @@ plot_betweenness_regions <- function(e,
             strip.placement = "outside",
             strip.background = element_rect(color = "black",
                                             fill = "lightblue"),
-            plot.margin = margin(1,1.5,0,1.5, "cm"),
+            plot.margin = ggplot2::margin(1,1.5,0,1.5, "cm"),
             plot.background = element_blank(),
             panel.grid.major = element_blank(),
             panel.grid.minor = element_blank(),
@@ -3213,7 +3113,7 @@ plot_betweenness_regions <- function(e,
       p <- df %>%
         ggplot2::ggplot(aes(name, btw)) +
         ggplot2::geom_col(fill = colors[[k]], color = "black") +
-        facet_grid(~super.region, scales = "free_x", space = "free_x", switch = "x")  +
+        ggplot2::facet_grid(~super.region, scales = "free_x", space = "free_x", switch = "x")  +
         xlab("Brain Region") + ylab("Betweenness") +
         ylim(ylim)  + theme.bar
 
@@ -3304,7 +3204,7 @@ maslov_sneppen_rewire <- function(network, n_rewires = 10000){
   g <- network %>%
     igraph::rewire(igraph::keeping_degseq(loops = FALSE, niter = n_rewires)) %>%
     tidygraph::as_tbl_graph()
-  g <-  g %>% tidygraph::activate(edges) %>% dplyr::select(c(from, to))
+  g <-  g %>% tidygraph::activate(edges) %>% dplyr::select(any_of(c("from", "to")))
   # Recalculate the nodal metrics
   g <- g %>% tidygraph::activate(nodes) %>% dplyr::mutate(degree = tidygraph::centrality_degree(),
                                                           triangles = igraph::count_triangles(.),

@@ -58,7 +58,8 @@ If you are processing the colabel channel, the X and Y positions of colabelled c
 }
 \examples{
 \dontrun{
-s <- make_segmentation_object(s, mouse_ID = "255", channels = c("cfos", "eyfp"), use_filter = FALSE)}
+s <- make_segmentation_object(s, mouse_ID = "255", channels = c("cfos", "eyfp"), use_filter = FALSE)
+}
 \dontrun{
 m <-  make_segmentation_object(m, slice_ID = '1_9', hemisphere = 'left', channels = c('eyfp', 'cfos', 'colabel'), use_filter = FALSE)
 }
