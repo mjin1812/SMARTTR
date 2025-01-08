@@ -92,7 +92,7 @@ get_registered_volumes <- function(x, ...){
 ##____ Creating method for registration of slice object____
 #' Register a slice in a slice object
 #' @rdname register
-#' @param x a slice object
+#' @param x a mouse or slice object
 #' @param filter (list)
 #' @param ... additional parameters to pass to the SMART::registration2() function, besides 'input', 'coordinate', 'filter' & 'correspondance'
 #' @return s a slice object
@@ -129,7 +129,7 @@ register.slice <- function(x,
 #' Register a slice in a mouse object. If a slice has been previously registered, the default behavior is to continue modifying the
 #' previous registration. Use the `replace` parameter to change this behavior.
 #' @rdname register
-#' @param x a mouse object
+#' @param x a mouse or slice object
 #' @param slice_ID (str)  ID of slice
 #' @param hemisphere  (str, default = NULL) 'left', 'right' or NULL if both hemispheres are included
 #' @param filter (list) Wholebrain filter with parameters.
@@ -211,7 +211,7 @@ register.mouse <- function(x,
 #' @rdname import_segmentation_ij
 #' @description Method for importing segmentation data for a slice object
 #'
-#' @param x slice object
+#' @param x a mouse or slice object
 #' @param mouse_ID (str) ID of mouse
 #' @param channels (str vector, default = NULL) All the channels the user wants to import. Defaults to channels stored in slice attributes
 #' @param maxdist (int, default = 10) maximum tolerability of character differences to match the string names of the importation files
@@ -318,7 +318,7 @@ import_segmentation_ij.slice <- function(x,
 #' Import raw segmentation data
 #' @rdname import_segmentation_ij
 #' @description Method for importing segmentation data for a mouse object
-#' @param x mouse object
+#' @param x a mouse or slice object
 #' @param slice_ID (str) ID of slice
 #' @param hemisphere (str)'left', 'right' or NULL
 #' @param channels (str vector, default = NULL) channels to import. If NULL, defaults to the channels stored in the slice object attributes.
@@ -381,8 +381,9 @@ import_segmentation_ij.mouse <- function(x,
 #' Import segmentation data
 #' @rdname import_segmentation_custom
 #' @description Custom method for importing segmentation data for a slice object.
-#' This is a flexible method for importing channels aside from `cfos` and `eyfp` that use the same ImageJ segmentation macros common to the
-#' Denny Lab. Other labs may use this method. This method works best when following saving segmentation data with the same naming conventions using the
+#' This is a flexible method for importing channels aside from `cfos` and `eyfp` that use the same ImageJ segmentation macros provided
+#' in the \href{https://mjin1812.github.io/SMARTR/articles/Part1.Segmentation.html}{SMARTR pipeline}. This method works best when following
+#' saving segmentation data with the same naming conventions using the
 #' \href{https://imagejdocu.list.lu/plugin/stacks/3d_ij_suite/start}{3D Roi Manager} within the
 #' \href{https://imagej.net/plugins/3d-imagej-suite/}{3D ImageJ Suite}.
 #' Segmentation data is saved in two'.txt' files which output the results of the Measure 3D and Quantif 3D options of the 3D Roi Manager plugin,respectively.
@@ -404,13 +405,17 @@ import_segmentation_ij.mouse <- function(x,
 #' Otherwise, the root folder containing the registration image is searched.
 #' This attribute can be stored when initializing the slice object or can be edited afterwards.
 #'
-#' @param x slice object
+#' @param x a mouse or slice object
 #' @param channel (str) channel to import.
 #' @param x_col (int, optional) The column index of the x pixel location in the txt file result from Measure 3D.
 #' @param y_col (int, optional) The column index of the y pixel location in the txt file result from Measure 3D.
-#' @param meas_path (chr, optional, default = NULL).
+#' @param meas_path (chr, optional, default = NULL). Relative path to file from current directory or absolute path.
+#' If NULL, will automatically search for the custom files in the slice directory
+#' based on the slice_ID and channel parameters.
+#' @param quant_path (chr, optional, default = NULL).Relative path to file from current directory or absolute path.
+#' If NULL, will automatically search for the custom files in the slice directory
+#' based on the slice_ID and channel parameters.
 #' @param ... 	further arguments passed to or from other methods.
-#' @param quant_path (chr, optional, default = NULL).
 #'
 #' @return s slice object
 #' @examples
@@ -433,22 +438,28 @@ import_segmentation_custom.slice <- function(x,
 
   if (is.null(quant_path) && is.null(meas_path)){
     seg_f <- find_segmentation_files(info$slice_directory, channel)
-    meas_path <- seg_f[1]
-    quant_path <- seg_f[2]
+    meas_path <- file.path(info$slice_directory, seg_f[1])
+    quant_path <- file.path(info$slice_directory, seg_f[2])
 
   } else {
     if (!file.exists(quant_path) && !file.exists(meas_path)){
       warning('One of the files supplied in either the meas_path or quant_path arguments does not exist.\n
               Will search in the slice root directory for a matching file.')
       seg_f <- find_segmentation_files(info$slice_directory, channel)
-      meas_path <- seg_f[1]
-      quant_path <- seg_f[2]
+      meas_path <- file.path(info$slice_directory, seg_f[1])
+      quant_path <- file.path(info$slice_directory, seg_f[2])
     }
   }
+
+  if (!grepl(tolower(channel), tolower(basename(quant_path))) || !grepl(tolower(channel), tolower(basename(meas_path)))) {
+    warning("Meas_path file or quant_path file does not match the information provided in the channel parameter. Double check the data imported is correct.")
+  }
+
   print(paste0("Importing ", meas_path))
   print(paste0("Importing ", quant_path))
-  meas <- read.csv( file.path(info$slice_directory, meas_path), stringsAsFactors = FALSE)
-  quant <- read.csv(file.path(info$slice_directory, quant_path), stringsAsFactors = FALSE)
+
+  meas <- read.csv(meas_path, stringsAsFactors = FALSE)
+  quant <- read.csv(quant_path, stringsAsFactors = FALSE)
 
   if (is.null(x_col)){
     meas$X2_Pix <- meas$CX..pix./(info$bin)
@@ -484,17 +495,20 @@ import_segmentation_custom.slice <- function(x,
 #'
 #' @rdname import_segmentation_custom
 #' @description Method for custom importation of segmentation data for a mouse object
-#'
-#' @param  x mouse object
-#' @param channel (str) channel to import
+#' @param x a mouse or slice object
 #' @param slice_ID (str) ID of slice
 #' @param hemisphere (str)'left', 'right' or NULL
-#' @param x_col = NULL,
-#' @param y_col = NULL,
-#' @param meas_path = NULL,
-#' @param quant_path = NULL
+#' @param channel (str) channel to import.
+#' @param x_col (int, optional) The column index of the x pixel location in the txt file result from Measure 3D.
+#' @param y_col (int, optional) The column index of the y pixel location in the txt file result from Measure 3D.
+#' @param meas_path (chr, optional, default = NULL). Relative path to file from current directory or absolute path.
+#' If NULL, will automatically search for the custom files in the slice directory
+#' based on the slice_ID and channel parameters.
+#' @param quant_path (chr, optional, default = NULL).Relative path to file from current directory or absolute path.
+#' If NULL, will automatically search for the custom files in the slice directory
+#' based on the slice_ID and channel parameters.
 #' @param ... 	further arguments passed to or from other methods.
-#'
+
 #' @return m mouse object
 #' @examples
 #' \dontrun{
@@ -548,7 +562,7 @@ import_segmentation_custom.mouse <- function(x,
 #' Will be deprecated soon
 #' @rdname make_segmentation_filter
 #'
-#' @param x slice object
+#' @param x a mouse or slice object
 #' @param channels (str vector, default = "eyfp") Channels to process. If NULL, defaults to the channels stored in the slice object attributes (not recommended).
 #' @param params (list) Has same length as channels. Each element contains a vector of parameters names used for filtering that channel
 #' @param ranges (list of lists) Has same length as channels. Each element of outer list corresponds the order of channels you want to process.
@@ -594,7 +608,7 @@ make_segmentation_filter.slice <- function(x,
 #' Will be deprecated soon
 #' @rdname make_segmentation_filter
 #'
-#' @param x mouse object
+#' @param x a mouse or slice object
 #' @param slice_ID (str) ID of slice
 #' @param hemisphere 'left', 'right' or NULL (both)
 #' @param channels (str vector, default = "eyfp") Channels to process. If NULL, defaults to the channels stored in the slice object attributes (not recommended).
@@ -675,7 +689,7 @@ make_segmentation_filter.mouse <- function(x,
 #'
 #' @rdname make_segmentation_object
 #' @description Make a wholebrain compatible segmentation object for a slice in a slice object
-#' @param x slice object
+#' @param x a mouse or slice object
 #' @param mouse_ID (str) ID of mouse
 #' @param channels (str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.
 #' @param use_filter (bool, default = FALSE). Use a filter to create more curated segmentation object from the raw segmentation data.
@@ -753,7 +767,7 @@ make_segmentation_object.slice <- function(x,
 #' Creates a wholebrain segmentation object and stores it
 #' @rdname make_segmentation_object
 #' @description Make a wholebrain compatible segmentation object for a slice in a mouse object
-#' @param x mouse object
+#' @param x a mouse or slice object
 #' @param slice_ID (str) ID of slice
 #' @param hemisphere (str, default = NULL) 'left', 'right' or NULL (both)
 #' @param channels (str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.
@@ -834,7 +848,7 @@ make_segmentation_object.mouse <- function(x,
 #' @description Method for forward warping segmentation data to atlas space for a slice object.
 #' Requires segmentation objects to be made for channels specified and a registration object.
 #' @rdname map_cells_to_atlas
-#' @param x slice object
+#' @param x a mouse or slice object
 #' @param channels (str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.
 #' @param clean (bool, default = TRUE). Remove cells that don't map to any regions.
 #' @param display (bool, default = TRUE). Display the results of the forward warp for the slice.
@@ -891,7 +905,7 @@ map_cells_to_atlas.slice <- function(x,
 #' @description  Method for forward warping segmentation data to atlas space for a slice within a mouse object.
 #' Requires segmentation objects to be made for the channels specified and a registration.
 #' @rdname map_cells_to_atlas
-#' @param x mouse object
+#' @param x a mouse or slice object
 #' @param slice_ID (str) ID of slice
 #' @param hemisphere (str) 'left', 'right' or NULL (both)
 #' @param channels (str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.
@@ -981,7 +995,7 @@ map_cells_to_atlas.mouse <- function(x,
 #' exclude the entire parent region as a conservative exclusion approach. Keep `simplify_regions=TRUE` if the final analysis will contain simplified regions.
 #' @rdname exclude_anatomy
 #'
-#' @param x slice object
+#' @param x a mouse or slice object
 #' @param channels (str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.
 #' @param clean (bool, default = TRUE ). Remove cells that don't map to any regions. This option is recommended.
 #' @param exclude_right_regions (str vector, default = NULL); acronyms of regions you want to exclude from right hemi,in addition to regions that will by default be excluded in the slice attribute 'right_regions_excluded'
@@ -1105,7 +1119,7 @@ exclude_anatomy.slice <- function(x,
 #' exclude the entire parent region as a conservative exclusion approach. Keep `simplify_regions=TRUE` if the final analysis will contain simplified regions.
 #' @rdname exclude_anatomy
 #'
-#' @param x mouse object
+#' @param x a mouse or slice object
 #' @param slice_ID (str) ID of slice
 #' @param hemisphere (str) 'left', 'right' or NULL (both)
 #' @param channels (str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.
@@ -1205,7 +1219,7 @@ exclude_anatomy.slice <- function(x,
 #' This function also automatically removes parent regions that are redundant, e.g. "CTX" should by volumetrically represented by summing all
 #' subregions, but there is a tiny amount of potential space that allows for cells to get mapped to slim spaces between subregions.
 #' This potential anatomical space should be ignored.
-#' @param x slice object
+#' @param x a mouse or slice object
 #' @param simplify_regions (bool, default = TRUE ) simplify the areas based on keywords in found the long-form of a region name. Fed into the internal function, `simplify_keywords`
 #' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure
 #' @param ... further arguments passed to or from other methods.
@@ -1299,7 +1313,7 @@ get_registered_volumes.slice <- function(x,
 #' This potential anatomical space should be ignored.
 #'
 #'
-#' @param x mouse object
+#' @param x a mouse or slice object
 #' @param slice_ID (str) ID of slice
 #' @param hemisphere (str) 'left', 'right' or NULL (both)
 #' @param simplify_regions (bool, default = TRUE ) simplify the normalized region counts based on keywords in the internal function, `simplify_keywords`
@@ -1920,8 +1934,9 @@ find_segmentation_files <- function(slice_directory, channel){
 
   files <-  list.files(slice_directory, pattern = "\\.txt")
   lc_files <- files %>% tolower()
-  meas_path <- files[grepl(paste0("m_._", channel, "_."), lc_files)]
-  quant_path <- files[grepl(paste0("q_._", channel, "_."), lc_files) & grepl(paste0(channel, ".txt"), lc_files)]
+  # meas_path <- files[grepl(paste0("m_*_", channel, "_."), lc_files)]
+  meas_path <- files[grepl(paste0("m_\\S+_", tolower(channel), "\\S+.txt"), lc_files)]
+  quant_path <- files[grepl(paste0("q_\\S+_", tolower(channel), "\\S+.txt"), lc_files)]
 
   if (length(meas_path) < 1 || length(quant_path) < 1){
     stop("Could not find the file within the slice directory. Please check your file naming conventions.")

@@ -31,19 +31,23 @@ import_segmentation_custom(x, ...)
 )
 }
 \arguments{
-\item{x}{mouse object}
+\item{x}{a mouse or slice object}
 
 \item{...}{further arguments passed to or from other methods.}
 
-\item{channel}{(str) channel to import}
+\item{channel}{(str) channel to import.}
 
-\item{x_col}{= NULL,}
+\item{x_col}{(int, optional) The column index of the x pixel location in the txt file result from Measure 3D.}
 
-\item{y_col}{= NULL,}
+\item{y_col}{(int, optional) The column index of the y pixel location in the txt file result from Measure 3D.}
 
-\item{meas_path}{= NULL,}
+\item{meas_path}{(chr, optional, default = NULL). Relative path to file from current directory or absolute path.
+If NULL, will automatically search for the custom files in the slice directory
+based on the slice_ID and channel parameters.}
 
-\item{quant_path}{= NULL}
+\item{quant_path}{(chr, optional, default = NULL).Relative path to file from current directory or absolute path.
+If NULL, will automatically search for the custom files in the slice directory
+based on the slice_ID and channel parameters.}
 
 \item{slice_ID}{(str) ID of slice}
 
@@ -58,10 +62,11 @@ m mouse object
 }
 \description{
 Custom method for importing segmentation data for a slice object.
-This is a flexible method for importing channels aside from \code{cfos} and \code{eyfp} that use the same ImageJ segmentation macros common to the
-Denny Lab. Other labs may use this method. This method works best when following saving segmentation data with the same naming conventions using the
+This is a flexible method for importing channels aside from \code{cfos} and \code{eyfp} that use the same ImageJ segmentation macros provided
+in the \href{https://mjin1812.github.io/SMARTR/articles/Part1.Segmentation.html}{SMARTR pipeline}. This method works best when following
+saving segmentation data with the same naming conventions using the
 \href{https://imagejdocu.list.lu/plugin/stacks/3d_ij_suite/start}{3D Roi Manager} within the
-\href{dx.doi.org/10.1093/bioinformatics/btt276}{3D ImageJ Suite}.
+\href{https://imagej.net/plugins/3d-imagej-suite/}{3D ImageJ Suite}.
 Segmentation data is saved in two'.txt' files which output the results of the Measure 3D and Quantif 3D options of the 3D Roi Manager plugin,respectively.
 A \href{https://imagejdocu.list.lu/tutorial/working/tutorial_for_3d_roi_manager}{description} of what each of those these options measure
 is provided in the online documentation.
