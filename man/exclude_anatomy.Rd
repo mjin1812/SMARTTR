@@ -47,7 +47,7 @@ exclude_anatomy(x, ...)
 )
 }
 \arguments{
-\item{x}{mouse object}
+\item{x}{a mouse or slice object}
 
 \item{...}{further arguments passed to or from other methods.}
 

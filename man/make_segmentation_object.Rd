@@ -27,7 +27,7 @@ make_segmentation_object(x, ...)
 )
 }
 \arguments{
-\item{x}{mouse object}
+\item{x}{a mouse or slice object}
 
 \item{...}{(optional) additional volume and overlap parameters for get.colabeled.cells().}
 

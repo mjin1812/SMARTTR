@@ -20,7 +20,7 @@ register(x, ...)
 )
 }
 \arguments{
-\item{x}{a mouse object}
+\item{x}{a mouse or slice object}
 
 \item{...}{additional parameters to pass to the SMART::registration2() function, besides 'input', 'coordinate', 'filter' & 'correspondance'}
 

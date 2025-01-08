@@ -17,7 +17,7 @@
 )
 }
 \arguments{
-\item{x}{mouse object}
+\item{x}{a mouse or slice object}
 
 \item{slice_ID}{(str) ID of slice}
 

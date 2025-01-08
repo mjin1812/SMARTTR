@@ -29,7 +29,7 @@ map_cells_to_atlas(x, ...)
 )
 }
 \arguments{
-\item{x}{mouse object}
+\item{x}{a mouse or slice object}
 
 \item{...}{additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the \code{wholebrain::inspect.registration()} function}
 

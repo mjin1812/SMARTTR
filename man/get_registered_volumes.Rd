@@ -17,7 +17,7 @@ get_registered_volumes(x, ...)
 )
 }
 \arguments{
-\item{x}{slice object}
+\item{x}{a mouse or slice object}
 
 \item{...}{further arguments passed to or from other methods.}
 
