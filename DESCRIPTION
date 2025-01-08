@@ -1,10 +1,10 @@
 Package: SMARTR
-Title: SMARTR: A Mapping, Analysis, and Visualization Package for Wholebrain Dual-Ensemble Coronal Datasets
+Title: Mapping, Analysis, and Visualization Package for Brainwide Dual-Ensemble Coronal Datasets
 Version: 1.0.1
 Authors@R: c(
     person(given = "Michelle",
            family = "Jin",
-           role = c("aut", "cre"),
+           role = c("aut", "cre", "cph"),
            email = "mj2947@cumc.columbia.edu",
            comment = c(ORCID = "0000-0002-8696-1958")),
     person(given = "Simon", 
@@ -18,16 +18,17 @@ Authors@R: c(
        role = c("ctb"),
        comment = c(ORCID = "0000-0003-3000-1592")))
 Maintainer: Michelle Jin <mj2947@cumc.columbia.edu>
-Description: `SMARTR` (Simple multi-ensemble atlas registration and statistical testing in R)
-    SMARTR is a package designed for the high-throughput mapping and analysis 
-    of dual-labelled ensemble datasets. Genetic activity-tagging strategies in mice 
-    allow for investigation of neural ensembles underlying behavior during multiple time points.
-    SMARTR provides a streamlined API for storing metadata related to imaging, animal subject, 
-    and experimental parameters and groupings. Data management is intrinsically built into the package, 
-    which helps automate the process of combining ensemble datasets across multiple images, animals, and experimental groupings. 
-    Finally, SMARTR provides a set of built-in analysis and visualization functions to conduct network analysis for each ensemble 
-    dataset for immediate downstream analysis.
+Description:  SMARTR (Simple multi-ensemble atlas registration and statistical testing in R) 
+    is designed for the high-throughput mapping and analysis of dual-labelled ensemble datasets. 
+    Genetic activity-tagging strategies in mice allow for investigation of neural ensembles 
+    underlying behavior during multiple time points. SMARTR provides a streamlined API for 
+    storing metadata related to imaging, animal subject, and experimental parameters and groupings. 
+    Data management is intrinsically built into the package, which helps automate the process of 
+    combining ensemble datasets across multiple images, animals, and experimental groupings. 
+    SMARTR is compatible with importing external datasets, and provides a set of built-in analysis 
+    and visualization functions for network analysis for each ensemble datasets.
 License: GPL (>= 3)
+URL: https://mjin1812.github.io/SMARTR/, https://github.com/mjin1812/SMARTR
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
@@ -49,18 +50,19 @@ Imports:
     stringr (>= 1.4.0),
     readr (>= 1.4.0),
     readxl (>= 1.3.1),
-    rmarkdown (>= 2.8.0),
     Hmisc (>= 4.5.0),
-    grImport (>= 0.9.3),
     purrr (>= 1.0.0),
+    forcats (>= 0.5.0),
     magrittr
 Suggests:
     SMART (>= 0.1.0),
     wholebrain (>= 0.1.1),
     ggpattern (>= 0.2.0),
+    grImport (>= 0.9.3),
+    rmarkdown (>= 2.8.0),
     testthat (>= 3.1.1),
     ggh4x (>= 0.2.8),
     knitr (>= 1.33.0)
-Additional_repositories: https://github.com/mjin1812/SMART,  https://github.com/mjin1812/wholebrain
+Additional_repositories: https://mjin1812.github.io/drat/
 Config/testthat/edition: 3
 VignetteBuilder: knitr

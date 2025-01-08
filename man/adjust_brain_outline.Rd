@@ -21,6 +21,7 @@ since the wholebrain GUI tends to be a bit buggy. This function then returns a f
 }
 \examples{
 \dontrun{
-filter <- adjust_brain_outline(s); s <- register(s, filter = filter) Adjust the brain threshold, then run register on the slice object
+# Adjust the brain threshold, then run register on the slice object
+filter <- adjust_brain_outline(s); s <- register(s, filter = filter)
 }
 }

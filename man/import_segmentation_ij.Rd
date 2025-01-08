@@ -56,10 +56,12 @@ e.g. "colabel_PV_cfos", and import using a customized import function such as \c
 }
 \examples{
 \dontrun{
-s <-  import_segmentation(s, mouse_ID = "255") # Defaults to channels stored in slice attributes
-s <-  import_segmentation(s, mouse_ID = "255", channels = c("cfos", "eyfp", "colabel")) # Specify channels
+s <-  import_segmentation(s, mouse_ID = "255")
+s <-  import_segmentation(s, mouse_ID = "255",
+channels = c("cfos", "eyfp", "colabel"))
 }
 \dontrun{
-m <-  import_segmentation(m, slice_ID = "1_10", channels = c("cfos", "eyfp", "colabel"), replace = FALSE)
+m <-  import_segmentation(m, slice_ID = "1_10",
+channels = c("cfos", "eyfp", "colabel"), replace = FALSE)
 }
 }

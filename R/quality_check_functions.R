@@ -39,22 +39,20 @@ detect_single_slice_regions <- function(m, remove = FALSE, log = TRUE){
 #' e <- find_outlier_counts(e, by = c("group","sex"), n_sd = 2, remove = FALSE, log = TRUE)
 #' }
 find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FALSE, log = TRUE){
-
-
   e_info <- attr(e, "info")
   by <- match_m_attr(by)   # correct mismatched attributes typed by users
   for (channel in e_info$channels){
     stats_df <- e$combined_normalized_counts[[channel]] %>%
       dplyr::ungroup() %>%
       dplyr::group_by(across(all_of(c(by, "acronym")))) %>%
-      dplyr::summarise(mean_norm_counts = mean(normalized.count.by.volume),
-                       sd_norm_counts = stats::sd(normalized.count.by.volume))
+      dplyr::summarise(mean_norm_counts = mean(.data$normalized.count.by.volume),
+                       sd_norm_counts = stats::sd(.data$normalized.count.by.volume))
     joined_df <- e$combined_normalized_counts[[channel]] %>% dplyr::inner_join(stats_df, c(by, "acronym")) %>%
-      dplyr::mutate(outlier = ifelse(normalized.count.by.volume > mean_norm_counts + sd_norm_counts*n_sd | normalized.count.by.volume < mean_norm_counts - sd_norm_counts*n_sd, TRUE, FALSE))
-    if (isTRUE(log)){ # Create a list of outliers to print
-      log_df <- joined_df %>% dplyr::filter(outlier) %>%
-        dplyr::select(-c(mean_norm_counts,sd_norm_counts)) %>%
-        dplyr::arrange(across(all_of(by)), acronym, mouse_ID)
+      dplyr::mutate(outlier = ifelse((.data$normalized.count.by.volume > .data$mean_norm_counts + .data$sd_norm_counts*n_sd) | (.data$normalized.count.by.volume < .data$mean_norm_counts - .data$sd_norm_counts*n_sd), TRUE, FALSE))
+    if (isTRUE(log)){
+      log_df <- joined_df %>% dplyr::filter(.data$outlier) %>%
+        dplyr::select(-any_of(c("mean_norm_counts","sd_norm_counts"))) %>%
+        dplyr::arrange(across(all_of(by)), .data$acronym, .data$mouse_ID)
 
       if (length(log_df$mouse_ID) > 0 ){
         message("There were ", length(log_df$mouse_ID),
@@ -68,8 +66,8 @@ find_outlier_counts <- function(e, by = c("group", "sex"), n_sd = 2, remove = FA
       }
     }
     if (isTRUE(remove)){
-      e$combined_normalized_counts[[channel]] <- joined_df %>% dplyr::filter(!outlier) %>%
-        dplyr::select(-c(mean_norm_counts,sd_norm_counts, outlier))
+      e$combined_normalized_counts[[channel]] <- joined_df %>% dplyr::filter(!.data$outlier) %>%
+        dplyr::select(-any_of(c("mean_norm_counts","sd_norm_counts", "outlier")))
     }
   }
   return(e)
@@ -215,7 +213,7 @@ filter_regions <- function(e,
   for (channel in channels){
     # Filter dataset so only subregions under the baselevel regions are included.
     e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]]  %>%
-       dplyr::filter(acronym %in% regions_ordered)
+       dplyr::filter(.data$acronym %in% regions_ordered)
   }
   return(e)
 }
@@ -249,7 +247,7 @@ exclude_redundant_regions <- function(e, ontology = "allen", channels = NULL){
     acronyms <- e$combined_normalized_counts[[channel]]$acronym %>% unique()
     redundant_regions <- check_redundant_parents(acronyms, ontology = ontology)
     e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]] %>%
-      dplyr::filter(acronym %in% redundant_regions$unique_acronyms)
+      dplyr::filter(.data$acronym %in% redundant_regions$unique_acronyms)
   }
   return(e)
 }
@@ -281,7 +279,7 @@ exclude_by_acronym <- function(e, acronyms = "fiber_tracts", ontology = "allen",
       } else {
         all_exclusion_sub <- c(k, get.sub.structure.custom(k, ontology = ontology))
       }
-      e$combined_normalized_counts[[channel]]  <- e$combined_normalized_counts[[channel]] %>% dplyr::filter(!acronym %in%  all_exclusion_sub)
+      e$combined_normalized_counts[[channel]]  <- e$combined_normalized_counts[[channel]] %>% dplyr::filter(!any_of("acronym") %in%  all_exclusion_sub)
     }
   }
   return(e)

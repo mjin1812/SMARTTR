@@ -64,7 +64,8 @@ Plot the mean clustering coefficients of the networks in a barplot. Error bars a
 }
 \examples{
 \dontrun{
-p <- plot_mean_clust_coeff(e, colors_manual = c("#660000", "#FF0000"), channels = "cfos",
-labels = c("AD" = "AD_label", "control" = "control_label"), title = "my title", ylim = c(0, 0.7), image_ext = ".png")
+p <- plot_mean_clust_coeff(e, colors_manual = c("#660000", "#FF0000"),
+channels = "cfos", labels = c("AD" = "AD_label", "control" = "control_label"),
+title = "my title", ylim = c(0, 0.7), image_ext = ".png")
 }
 }

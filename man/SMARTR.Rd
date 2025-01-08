@@ -4,13 +4,11 @@
 \alias{SMARTR}
 \title{SMARTR: A Mapping, Analysis, and Visualization Package for Wholebrain Dual-Ensemble Coronal Datasets.}
 \description{
-The base of this pipeline is an R package in with the title, \code{SMARTR}.  This package allows for the
-user-friendly pre-processing of segmentation data generated from ImageJ to a be compatible with the \code{wholebrain} package to generate
+\code{SMARTR}.  This package allows for the user-friendly pre-processing of segmentation data generated from ImageJ to a be compatible with the \code{wholebrain} package to generate
 region-based cell counts that are normalized by volume. It will also provides tools for data analysis based on experimental groupings.
 }
 \details{
 Object descriptions
-
 The data for analysis will be stored in objects that allow for more neat bundling of useful information together.
 
 A \link{slice} object will contain all the data related to registration, segmentation for each channel, and cell counts for a particular image.

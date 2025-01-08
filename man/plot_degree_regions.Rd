@@ -66,7 +66,8 @@ Bar plot of degree per region in descending magnitude
 }
 \examples{
 \dontrun{
-p <- plot_degree_regions(e, colors = c("#660000", "#FF0000"), channels = "cfos", region_label_angle = 60,
+p <- plot_degree_regions(e, colors = c("#660000", "#FF0000"),
+channels = "cfos", region_label_angle = 60,
 ylim = c(0, 15), image_ext = ".png")
 }
 }

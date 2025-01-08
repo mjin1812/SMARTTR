@@ -54,7 +54,7 @@ Here, the image or slice name is `733_1_1.lif` with the slice no. being `1_1`. T
 ## 0.2 Flatten any z-stacks for registration
 
 Although cell counts may be segmented in 3D, during the registration process, a single coronal atlas plate from the Allen Mouse Brain Atlas is fitted to a 2D `.tif` image. 
-Therefore, if you are processing any z-stack images, they need to be flattened and channels need to be collapsed into a single image used for the purpose of registration. This step needs to be completed prior to using SMARTR for registration. We detail how to do this in using our pre-processing [article](/articles/1.Segmentation.html)
+Therefore, if you are processing any z-stack images, they need to be flattened and channels need to be collapsed into a single image used for the purpose of registration. This step needs to be completed prior to using SMARTR for registration. We detail how to do this in using our pre-processing [article](/articles/Part1.Segmentation.html)
 
 # 1 Tutorial outline
 
@@ -129,7 +129,7 @@ print(mouse())
 If you find that you've made a mistake in setting the attributes for a mouse object, don't worry. These attributes can be easily modified. We just need to pull out the `info` list containing the mouse attributes and manually correct them:
 
  
-```{r}
+```{r,  eval = FALSE}
 # get the mouse info list
 mouse_info <- attr(mouse_733, 'info')
 
@@ -158,7 +158,7 @@ Before doing this, look at your image and compare it with a standardized mouse a
 Additionally, if you need to process each hemisphere separately due to hemisphere separation, tears, etc, it should be specified. There are built-in ways to clean data from a right hemisphere slice and omit the contralateral hemisphere for demonstration. If the left and right side align well onto a single atlas plate, initialize only one slice object and set the `hemisphere` attribute to NULL (or don't set it, as this is the default).
 
 
-```{r}
+```{r,  eval = FALSE}
 s <- slice(slice_ID = "1_4",  
            coordinate = -2.14,         # AP coordinate that matches best matches the images
            conversion_factor = 1.0833, # Pixel-to-micron conversion factor. 
@@ -183,7 +183,7 @@ We are ready to bundle our slice information with our mouse. But first...
 
 Type the code below into the R console: 
 
-```{r}
+```{r,  eval = FALSE}
 `mouse_733$`
 ```
 
@@ -194,7 +194,7 @@ because it is empty and doesn't contain anything.
 > Tip: You can use the `$` operator to look at named elements in a mouse. 
 
 
-```{r}
+```{r,  eval = FALSE}
 # Check the length of slices in a mouse first
 length(mouse_733$slices)
 
@@ -205,7 +205,7 @@ That will change soon after we add the slice into our mouse. Let's check out the
 
 > Tip: Check the "Usage" or "Examples" section for a code example of how to use a particular function in a package
 
-```{r}
+```{r,  eval = FALSE}
 
 ?add_slice
 
@@ -213,7 +213,7 @@ That will change soon after we add the slice into our mouse. Let's check out the
 
 Now that we've read how to use the function, let's add our slice to our mouse with the line below:
 
-```{r}
+```{r,  eval = FALSE}
 mouse_733 <- add_slice(mouse_733, s)
 
 # Check the length of slices now
@@ -226,7 +226,7 @@ mouse_733$slices$`1_4`
 
 > Note that if you've changed computers and you find the location of your mouse folder has changed in some way, e.g. different drive mapping letters on Windows or different OS, you can adjust for this using the `reset_mouse_root()` function. 
 
-```{r}
+```{r,  eval = FALSE}
 # Change to the correct drive letter
 mouse_733 <- reset_mouse_root(mouse_733, input_path = "C:/Michelle_Jin/Wholebrain pipeline/733")
 
@@ -250,7 +250,7 @@ If the contours are unsatisfactory, press "esc" or "Q" to exit from the popup an
 
 If your imaging parameters are standardized. You may not need to adjust your filter on an image by image basis. Below we use the brain.threshold of 2 to detect the contours of our image.
 
-```{r}
+```{r,  eval = FALSE}
 
 # store the default filter list from the SMARTR package
 filter <- SMARTR::filter
@@ -275,7 +275,7 @@ The `register()` function is one of the generic functions of the package. Becaus
 
 Pull up the help page with the code below:
 
-```{r}
+```{r,  eval = FALSE}
 ?register
 ```
  
@@ -319,7 +319,7 @@ I recommend always saving with a timestamp so you never lose more than a day's w
 
 The segmentation data from ImageJ is stored into .txt files. We can use the `import_segmentation_ij()` generic function to import the raw data from ImageJ. 
 
-```{r}
+```{r,  eval = FALSE}
 mouse_733 <- import_segmentation_ij(mouse_733,
                                     slice_ID = '1_4',
                                     hemisphere = NULL,
@@ -352,7 +352,7 @@ However, there is built-in capability to include additional custom channels. The
 
 After importing the raw segmentation data, the data needs to be reformatted to be compatible with the registration information using `wholebrain` functions. This is simply done using the `make_segmentation_object()` function:
 
-```{r}
+```{r,  eval = FALSE}
 mouse_733 <- make_segmentation_object(mouse_733,
                                       slice_ID = '1_4',
                                       hemisphere = NULL,
@@ -382,7 +382,7 @@ For all slices, there may be an automatic list of regions to exclude for each he
 
 When you run the `exclude_anatomy` function, it will automatically omit the regions for each hemisphere in these lists. The commands below prints the default excluded regions for the left and right hemispheres.
 
-```{r}
+```{r,  eval = FALSE}
 # Print the default regions excluded list for the right hemisphere
 print(attr(mouse_733$slices$`1_4`, "info")$right_regions_excluded)
 
@@ -392,7 +392,7 @@ print(attr(mouse_733$slices$`1_4`, "info")$left_regions_excluded)
 ```
 You can directly edit this list as an attribute to add additional regions to omit per hemisphere for each slice object. You simply need to add the region acronym from the Allen Mouse Brain Atlas Ontology. In the example below, we will pretend there was a rip in the primary somatosensory cortex on the right hemisphere and will add this as a region to exclude.
 
-```{r}
+```{r,  eval = FALSE}
 # Get default list
 right_regions_excluded <- attr(mouse_733$slices$`1_4`, "info")$right_regions_excluded
 
@@ -409,7 +409,7 @@ Alternatively, you can enter additional regions to exclude directly as an argume
 * exclude cell counts from layer 1 of the cortex
 * manually specify additional regions we want to exclude for each hemisphere. Below we exclude the secondary motor area on the left hemisphere
 
-```{r}
+```{r,  eval = FALSE}
 mouse_733 <- exclude_anatomy(mouse_733, 
                              slice_ID = '1_4',
                              hemisphere = NULL,
@@ -434,7 +434,7 @@ Getting cell counts per region normalized by volume or area in mm^3^ or mm^2^ re
 In order to get cell counts per region in each mouse normalized by volume, the exact volume of each region in each slice needs to be calculated. This is accomplished with the function  `get_registered_volumes()`. The function will automatically calculate region volumes per hemisphere for each slice.
 
 
-```{r}
+```{r,  eval = FALSE}
 
 # Calculate region volumes for the full slice
 mouse_733 <- get_registered_volumes(mouse_733,
@@ -449,7 +449,7 @@ mouse_733 <- get_registered_volumes(mouse_733,
 The `get_cell_table()` function will aggregate all forward warped cell counts across all slices into one data frame named `cell_table`. This can be especially useful for plotting purposes.
 
 
-```{r}
+```{r,  eval = FALSE}
 
 mouse_733 <- get_cell_table(mouse_733, channels = c("cfos", "eyfp", "colabel"))
 
@@ -457,7 +457,7 @@ mouse_733 <- get_cell_table(mouse_733, channels = c("cfos", "eyfp", "colabel"))
 
 You can access the cell table for each channel with the `$` operator (e.g. `mouse_325$cell_table$cfos`). We can use this aggregated dataset if we want to plot an interactive "glass brain" plot of all slices in the mouse.
 
-```{r}
+```{r,  eval = FALSE}
 # Plot an interactive 3D plot of the cfos channel
 SMART::glassbrain2(mouse_733$cell_table$cfos, jitter = TRUE)
 ```
@@ -476,7 +476,7 @@ This information is stored as a named element in the mouse called `normalized_co
 > Tip: The parameter `simplify_regions` will further collapse the normalized cell counts by certain keywords (e.g. "layer" or "stratum"). If a region name is detected to have one of these keywords, it will merge counts with its parent structure until there are no more keywords found. This reduces the overwhelming amount of substructures that we can compare and helps simplify our analysis.
 
 
-```{r}
+```{r,  eval = FALSE}
 mouse_733_0 <- normalize_cell_counts(mouse_733, 
                                    combine_hemispheres = TRUE, 
                                    split_hipp_DV = FALSE,
@@ -491,7 +491,7 @@ head(mouse_733_0$normalized_counts)
 Sometimes, we want to further subdivide the hippocampus into *dorsal* and *ventral* subregions. The `wholebrain` atlas plates are derived from the Allen Mouse Brain Atlas, which does not intrinsically have *dorsal* and *ventral* subdivisions for the hippocampus. Our current strategy is to use an AP coordinate cutoff, where hippocampal counts anterior to this cutoff are considered *dorsal* and posterior to this cutoff are considered *ventral*. You can accomplish this by setting the parameters `split_hipp_DV = TRUE` and`DV_split_AP_thresh = -2.7` in the `normalize_cell_counts` function.   
 
 
-```{r}
+```{r,  eval = FALSE}
 
 
 mouse_733 <- normalize_cell_counts(mouse_733, 
@@ -522,7 +522,7 @@ Additionally, know that adding mice to an experiment will keep only the processe
 
 
 
-```{r}
+```{r,  eval = FALSE}
 # Initialize an experiment object
 my_experiment <- experiment(experiment_name = "Learned Helplessness",
                             experimenters = c("MJ", "MyInitials"),
@@ -536,7 +536,7 @@ my_experiment <- add_mouse(my_experiment, mouse_733)
 
 Just like a mouse object, you can save an experiment object, with or without a timestamp.
 
-```{r}
+```{r,  eval = FALSE}
 save_experiment(my_experiment, timestamp = TRUE)
 ```
 
@@ -547,7 +547,7 @@ Once you've added enough mice to perform an analysis, we want to aggregate all t
 
 For now we will load a saved example experiment object named `lh` that already contains all the mapped mouse object data from our learned helplessness mapping experiment.
 
-```{r, eval = TRUE}
+```{r,  eval = FALSE}
 # Load the presaved data
 load("P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\LH_analysis\\learned_helplessness_experiment.RDATA")
 
@@ -558,7 +558,7 @@ print(names(lh$mice))
 
 Aggregating the normalized cell counts across mice into one dataframe is done with the `combine_norm_cell_counts()` function.  
 
-```{r, eval = TRUE}
+```{r,  eval = FALSE}
 lh <- combine_cell_counts(lh, by = c('groups', "sex", "age"))
 ```
 
@@ -592,13 +592,13 @@ lh <- enough_mice_per_group(lh, by = "group", min_n = 4, remove = TRUE, log = TR
 
 If you would like to save your experiment object, just run the function below!
 
-```{r}
+```{r,  eval = FALSE}
 save_experiment(lh)
 ```
 
 If you use the `timestamp` parameter, the experiment object with automatically save with the date as a way to uniquely timestamp your progress.
 
-```{r}
+```{r,  eval = FALSE}
 save_experiment(lh, timestamp = TRUE)
 ```
 

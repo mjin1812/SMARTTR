@@ -1,55 +1,40 @@
 ##______________ Package imports ________________
-#' @importFrom ggplot2 ggplot aes theme element_text element_line element_rect element_blank
-NULL
-
-#' @importFrom ggplot2 unit geom_tile geom_text geom_jitter scale_fill_gradient2 labs ggsave guide_legend xlab ylab xlim ylim labs
-NULL
-
-#' @importFrom tidyselect all_of any_of
-NULL
-
-#' @importFrom dplyr n mutate summarize summarise across arrange group_by if_else
-NULL
-
+#' @importFrom ggplot2 ggplot aes theme element_text element_line element_rect element_blank unit labs ggsave guide_legend xlab ylab xlim ylim labs
+#' @importFrom ggplot2 geom_col geom_tile geom_text geom_jitter geom_hline geom_vline geom_errorbar geom_point
+#' @importFrom ggplot2 scale_y_continuous scale_x_continuous scale_fill_manual scale_fill_gradient2 position_nudge
+#' @importFrom tidyselect all_of any_of last_col
+#' @importFrom dplyr n mutate summarize summarise across arrange group_by if_else desc
 #' @importFrom tidygraph activate convert
-NULL
-
 #' @importFrom tidyr pivot_longer pivot_wider
-NULL
-
 #' @importFrom grDevices dev.new
-NULL
-
 #' @importFrom utils write.csv read.csv
-NULL
-
 #' @importFrom magrittr %>%
-NULL
-
 #' @importFrom stats sd na.omit
-NULL
-
 #' @importFrom rlang .data
-NULL
+
+# ## ____________Globals bindings _____________
+
+utils::globalVariables(c(".", "!!", ".orig_data", ".tidygraph_edge_index",
+                         ".tidygraph_node_index","nodes", "edges"))
 
 
-## ____________Globals bindings _____________
-utils::globalVariables(c(".", "acronym", "normalized.count.by.volume", "normalized.count.mean",
-                         "sd_norm_counts", "outlier", "network_name", "p_val", "unique_groups",
-                         "mouse_ID", "R1", "R2", "sig", "right.hemisphere", "name","mean_norm_counts",
-                         "count.colabel", "colabel_percentage", "colabel_percentage.mean",
-                         "colabel_percentage.sd", "colabel_percentage.sem", "weight", "p.value",
-                         "area.bu", "area.mm2", "area.mm2.denom", "area.td", "counts", "count",
-                         "volume.mm3", "volume.mm3.denom", "edges", "from", "to", "nodes", "edges",
-                         "count.colabel", "count.denom", "corr_diff", "group", "rowreg", "colreg",
-                         "corr", "group_plot", "text", "nudge", "corr_group", "row_acronym",
-                         "degree",  "degree.mean", "degree.sd", "avg.dist", "triangles",
-                         "btw", "btw.mean", "btw.sd", "clust.coef", "clust.coef.mean", "clust.coef.sd",
-                         "color", "edge_alpha", "efficiency", "efficiency.mean", "efficiency.sd",
-                         "mean_normalized_counts", "n.edges", "n.nodes", "null_degree", "sig_text",
-                         ".orig_data", ".tidygraph_edge_index", ".tidygraph_node_index", "super.region",
-                         "row_parent", "col_acronym", "col_parent", "k","r","x", "y", "P", "!!"
-                         ))
+
+# utils::globalVariables(c(".", "acronym", "normalized.count.by.volume", "normalized.count.mean",
+#                          "sd_norm_counts", "outlier", "network_name", "p_val", "unique_groups",
+#                          "mouse_ID", "R1", "R2", "sig", "right.hemisphere", "name","mean_norm_counts",
+#                          "count.colabel", "colabel_percentage", "colabel_percentage.mean",
+#                          "colabel_percentage.sd", "colabel_percentage.sem", "weight", "p.value",
+#                          "area.bu", "area.mm2", "area.mm2.denom", "area.td", "counts", "count",
+#                          "volume.mm3", "volume.mm3.denom", "edges", "from", "to", "nodes", "edges",
+#                          "count.colabel", "count.denom", "corr_diff", "group", "rowreg", "colreg",
+#                          "corr", "group_plot", "text", "nudge", "corr_group", "row_acronym",
+#                          "degree",  "degree.mean", "degree.sd", "avg.dist", "triangles",
+#                          "btw", "btw.mean", "btw.sd", "clust.coef", "clust.coef.mean", "clust.coef.sd",
+#                          "color", "edge_alpha", "efficiency", "efficiency.mean", "efficiency.sd",
+#                          "mean_normalized_counts", "n.edges", "n.nodes", "null_degree", "sig_text",
+#                          ".orig_data", ".tidygraph_edge_index", ".tidygraph_node_index", "super.region",
+#                          "row_parent", "col_acronym", "col_parent", "k","r","x", "y", "P", "!!"
+#                          ))
 ###_____________ General housekeeping functions __________####
 
 #' @title Save experiment data
@@ -316,13 +301,12 @@ import_mapped_datasets <- function(e, normalized_count_paths, ...){
   names(combined_normalized_counts) <- names(normalized_count_paths)
   for (channel in names(normalized_count_paths)){
     combined_normalized_counts[[channel]] <- read_check_file(normalized_count_paths[[channel]], , ...) %>%
-       dplyr::mutate(across(counts:normalized.count.by.volume, as.numeric)) %>%
-      dplyr::mutate(across(!counts:normalized.count.by.volume, as.character))
+       dplyr::mutate(across(any_of("counts"):any_of("normalized.count.by.volume"), as.numeric)) %>%
+      dplyr::mutate(across(!any_of("counts"):any_of("normalized.count.by.volume"), as.character))
   }
   e$combined_normalized_counts <- combined_normalized_counts
   return(e)
 }
-
 
 
 #' Reset the root path for the folder containing the registration and segmentation data.
@@ -480,11 +464,16 @@ check_redundant_parents <- function(acronyms, ontology = "allen"){
 #' @return df
 #' @export
 #' @examples
-#' df <- dplyr::tibble(acronym = c("LGd", "GU4", "dCA1so" ), name = c("Dorsal part of the lateral geniculate complex", "Gustatory areas, layer 4", "Field CA2, stratum oriens (dorsal)"))
+#' df <- dplyr::tibble(acronym = c("LGd", "GU4", "dCA1so" ),
+#' name = c("Dorsal part of the lateral geniculate complex",
+#' "Gustatory areas, layer 4", "Field CA2, stratum oriens (dorsal)"))
 #' simplify_by_keywords(df)
 #'
-#' df <- dplyr::tibble(acronym = c("LPBD", "MPBE", "CPre"), name = c("Lateral parabrachial nucleus, dorsal part", "Medial parabrachial nucleus, external part", "Caudoputamen- rostral extreme"))
-#' simplify_by_keywords(df, keywords = c("dorsal part", "external part", "Caudoputamen-"), ontology = "unified")
+#' df <- dplyr::tibble(acronym = c("LPBD", "MPBE", "CPre"),
+#' name = c("Lateral parabrachial nucleus, dorsal part",
+#' "Medial parabrachial nucleus, external part", "Caudoputamen- rostral extreme"))
+#' simplify_by_keywords(df, keywords = c("dorsal part", "external part",
+#' "Caudoputamen-"), ontology = "unified")
 #'
 simplify_by_keywords <- function(df,
                                  keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural"),
@@ -549,7 +538,8 @@ simplify_by_keywords <- function(df,
 #' simplify_vec_by_keywords(acronyms)
 #'
 #' acronyms <- c("LPBD", "MPBE", "CPre")
-#' simplify_vec_by_keywords(acronyms, keywords = c("dorsal part", "external part", "Caudoputamen-"), ontology = "unified")
+#' simplify_vec_by_keywords(acronyms,
+#' keywords = c("dorsal part", "external part", "Caudoputamen-"), ontology = "unified")
 simplify_vec_by_keywords <- function(vec,
                                      keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural"),
                                      ontology = "allen",

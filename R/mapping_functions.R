@@ -213,15 +213,16 @@ register.mouse <- function(x,
 #'
 #' @param x slice object
 #' @param mouse_ID (str) ID of mouse
-#' @param channels (str vector, default = NULL) All the channels the user wants to import.
+#' @param channels (str vector, default = NULL) All the channels the user wants to import. Defaults to channels stored in slice attributes
 #' @param maxdist (int, default = 10) maximum tolerability of character differences to match the string names of the importation files
 #' @param ... further arguments passed to or from other methods.
 #' If NULL, defaults to the channels stored in the slice object attributes.
 #' @return s slice object
 #' @examples
 #' \dontrun{
-#' s <-  import_segmentation(s, mouse_ID = "255") # Defaults to channels stored in slice attributes
-#' s <-  import_segmentation(s, mouse_ID = "255", channels = c("cfos", "eyfp", "colabel")) # Specify channels
+#' s <-  import_segmentation(s, mouse_ID = "255")
+#' s <-  import_segmentation(s, mouse_ID = "255",
+#' channels = c("cfos", "eyfp", "colabel"))
 #' }
 #' @export
 #' @note The designated `colabel` channel name in this pipeline will auto import the output of the batch_3D_MultiColocalization.ijm macro provided in the pre-processing pipeline.
@@ -328,7 +329,8 @@ import_segmentation_ij.slice <- function(x,
 #' @return m mouse object
 #' @examples
 #' \dontrun{
-#' m <-  import_segmentation(m, slice_ID = "1_10", channels = c("cfos", "eyfp", "colabel"), replace = FALSE)
+#' m <-  import_segmentation(m, slice_ID = "1_10",
+#' channels = c("cfos", "eyfp", "colabel"), replace = FALSE)
 #' }
 #' @export
 import_segmentation_ij.mouse <- function(x,
@@ -382,18 +384,18 @@ import_segmentation_ij.mouse <- function(x,
 #' This is a flexible method for importing channels aside from `cfos` and `eyfp` that use the same ImageJ segmentation macros common to the
 #' Denny Lab. Other labs may use this method. This method works best when following saving segmentation data with the same naming conventions using the
 #' \href{https://imagejdocu.list.lu/plugin/stacks/3d_ij_suite/start}{3D Roi Manager} within the
-#' \href{dx.doi.org/10.1093/bioinformatics/btt276}{3D ImageJ Suite}.
+#' \href{https://imagej.net/plugins/3d-imagej-suite/}{3D ImageJ Suite}.
 #' Segmentation data is saved in two'.txt' files which output the results of the Measure 3D and Quantif 3D options of the 3D Roi Manager plugin,respectively.
 #' A \href{https://imagejdocu.list.lu/tutorial/working/tutorial_for_3d_roi_manager}{description} of what each of those these options measure
 #' is provided in the online documentation.
 #'
 #' The naming conventions for the ".txt" file storing the Quantif3D results are `Q_*_{channel}_*_{channel}.txt`,
-#' where the `*` indicates a wildcard character(s) and {channel} is the channel name without brackets.
+#' where the `*` indicates a wildcard character(s) and `{channel}` is the channel name without brackets.
 #' E.g. "Q_G_eYFP_258_1_1_eYFP.txt"
 #'
 #'
 #' The naming conventions for the ".txt" file storing the Measure 3D are `M_*_{channel}_*.txt` where
-#' the `*` indicates a wildcard character(s) and {channel} is the channel name without brackets.
+#' the `*` indicates a wildcard character(s) and `{channel}` is the channel name without brackets.
 #' E.g "M_G_eYFP_258_1_1.txt".
 #'
 #' The wildcards characters may be used to store things like date or slice naming information.
@@ -578,8 +580,7 @@ make_segmentation_filter.slice <- function(x,
       stop(paste0("The ", channel, " channel has not been imported yet!"))
     }
 
-    # Make the filter
-    filter <- make.filter(data, params = params[[k]], ranges = ranges[[k]])
+    filter <- make.filter(data, params = params, ranges = ranges)
     x$segmentation_filters[[channel]] <- filter
     message('Processed ', channel, " channel")
   }
@@ -683,7 +684,8 @@ make_segmentation_filter.mouse <- function(x,
 #' @return s slice object
 #' @examples
 #' \dontrun{
-#' s <- make_segmentation_object(s, mouse_ID = "255", channels = c("cfos", "eyfp"), use_filter = FALSE)
+#' s <- make_segmentation_object(s, mouse_ID = "255",
+#' channels = c("cfos", "eyfp"), use_filter = FALSE)
 #' }
 #' @export
 #' @note If you are processing the colabel channel, the X and Y positions of colabelled cells are the average of the x,y centroid coordinates of the colabelled objects
@@ -760,7 +762,8 @@ make_segmentation_object.slice <- function(x,
 #' @param ... (optional) additional volume and overlap parameters for get.colabeled.cells().
 #' @examples
 #' \dontrun{
-#' m <-  make_segmentation_object(m, slice_ID = '1_9', hemisphere = 'left', channels = c('eyfp', 'cfos', 'colabel'), use_filter = FALSE)
+#' m <-  make_segmentation_object(m, slice_ID = '1_9', hemisphere = 'left',
+#' channels = c('eyfp', 'cfos', 'colabel'), use_filter = FALSE)
 #' }
 #' @export
 #'
@@ -839,7 +842,8 @@ make_segmentation_object.mouse <- function(x,
 #' @param ... additional parameters besides 'registration', 'segmentation', 'forward.warps', and 'device' to pass to the `wholebrain::inspect.registration()` function
 #' @examples
 #' \dontrun{
-#' s <- map_cells_to_atlas(s, channels c('cfos' , 'eyfp', 'colabel'), clean = TRUE, display = TRUE, mouse_ID = "255")
+#' s <- map_cells_to_atlas(s, channels c('cfos' , 'eyfp', 'colabel'),
+#' clean = TRUE, display = TRUE, mouse_ID = "255")
 #' }
 #' @export
 
@@ -898,7 +902,8 @@ map_cells_to_atlas.slice <- function(x,
 #' @return m mouse object
 #' @examples
 #' \dontrun{
-#'  m <- map_cells_to_atlas(m, slice_ID = "1_10", hemisphere = NULL, channels = c("cfos", "eyfp", "colabel"), clean = TRUE, replace = FALSE)
+#'  m <- map_cells_to_atlas(m, slice_ID = "1_10", hemisphere = NULL,
+#'  channels = c("cfos", "eyfp", "colabel"), clean = TRUE, replace = FALSE)
 #' }
 #' @export
 
@@ -993,7 +998,8 @@ map_cells_to_atlas.mouse <- function(x,
 #'
 #' @examples
 #' \dontrun{
-#'  s <-  exclude_anatomy(s, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE, exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE, plot_filtered = TRUE)
+#'  s <-  exclude_anatomy(s, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE,
+#'  exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE, plot_filtered = TRUE)
 #' }
 #' @export
 
@@ -1219,32 +1225,26 @@ get_registered_volumes.slice <- function(x,
                                                                "Darkschewitsch", "Precommissural"),
                                          ...){
 
-  # Get conversion factor from pixel to microns
-  # get z-width of this slice (in microns)
     cf <- attr(x, 'info')$conversion_factor
     z_width <- attr(x, 'info')$z_width
     hemisphere <- attr(x, 'info')$hemisphere
 
     ## Below is a big work around for the wholebrain error in returning the right regional outline for certain subregions that show up twice
 
-    # 1) bind forward warped cell tables per channel into one long dataframe
       combined_cell_counts <- do.call("rbind", x$forward_warped_data) %>% dplyr::as_tibble()
-
-    # 2) Extract only unique acronyms for right and left hemispheres
-      regions <- combined_cell_counts %>% dplyr::select(acronym, name, right.hemisphere) %>%
-        dplyr::distinct() %>% dplyr::arrange(acronym)
+      regions <- combined_cell_counts %>% dplyr::select(any_of(c("acronym", "name", "right.hemisphere"))) %>%
+        dplyr::distinct() %>% dplyr::arrange(.data$acronym)
 
       ##################### make  if/else statement here to account for unsimplified mapping approached
 
-      if (simplify_regions){
-        # 3) Simplify the acronyms
+      if (isTRUE(simplify_regions)){
         regions <- simplify_by_keywords(regions, keywords = simplify_keywords)
-        regions <- regions %>% dplyr::distinct() %>% dplyr::arrange(acronym)
+        regions <- regions %>% dplyr::distinct() %>% dplyr::arrange(.data$acronym)
       }
 
       # Find the number of unique regions that aren't nested further into parent regions
       redundant_parents <- check_redundant_parents(regions$acronym)
-      regions <- regions %>% dplyr::filter(acronym %in% redundant_parents$unique_acronyms)
+      regions <- regions %>% dplyr::filter(.data$acronym %in% redundant_parents$unique_acronyms)
 
       # print(paste0("redundant parents ", redundant_parents$redundant_parents))
       # print(paste0("unique regions ", redundant_parents$unique_acronyms))
@@ -1259,28 +1259,27 @@ get_registered_volumes.slice <- function(x,
     areas.td <- get.registered.areas.td(regions, x$registration_obj, conversion.factor = cf)
 
     ###### Bottum up approach #######
-    regions.bu <- combined_cell_counts %>% dplyr::select(acronym, name, right.hemisphere) %>%
-      dplyr::distinct() %>% dplyr::arrange(acronym)
+    regions.bu <- combined_cell_counts %>% dplyr::select(any_of(c("acronym", "name", "right.hemisphere"))) %>%
+      dplyr::distinct() %>% dplyr::arrange(.data$acronym)
     areas.bu <- get.registered.areas.bu(regions.bu, x$registration_obj, conversion.factor = cf)
 
     if (simplify_regions){
       areas.bu <- simplify_by_keywords(areas.bu, keywords = simplify_keywords)
-      areas.bu <- areas.bu %>% dplyr::group_by(acronym, right.hemisphere, name) %>%  dplyr::summarise_at(c("area"), na.rm=TRUE , sum)
+      areas.bu <- areas.bu %>% dplyr::group_by_at(c("acronym", "right.hemisphere", "name")) %>%  dplyr::summarise_at(c("area"), na.rm=TRUE , sum)
     }
-    areas.bu <- areas.bu  %>% dplyr::arrange(acronym, right.hemisphere) %>% dplyr::filter(acronym %in% redundant_parents$unique_acronyms)
+    areas.bu <- areas.bu  %>% dplyr::arrange(.data$acronym, .data$right.hemisphere) %>% dplyr::filter(.data$acronym %in% redundant_parents$unique_acronyms)
 
     areas <- dplyr::left_join(areas.td, areas.bu, by=c("acronym", "right.hemisphere", "name"), suffix=c(".td", ".bu"))
 
     # Take larger of the two areas: bottum-up or top-down
-    areas <- areas %>% dplyr::mutate(area.mm2 = pmax(area.td, area.bu)*1e-6,
-                                    volume.mm3 = area.mm2*z_width*1e-3) %>% tidyr::drop_na() %>% dplyr::select(-c(area.td, area.bu))
-
+    areas <- areas %>% dplyr::mutate(area.mm2 = pmax(.data$area.td, .data$area.bu)*1e-6,
+                                    volume.mm3 = .data$area.mm2*z_width*1e-3) %>% tidyr::drop_na() %>% dplyr::select(-any_of(c("area.td", "area.bu")))
     # Filter out volumes based on hemisphere of the slice
     if (!is.null(hemisphere)){
       if (tolower(hemisphere) == "right"){
-        areas <- areas %>% dplyr::filter(right.hemisphere == TRUE)
+        areas <- areas %>% dplyr::filter(.data$right.hemisphere == TRUE)
       } else {
-        areas <- areas %>% dplyr::filter(right.hemisphere == FALSE)
+        areas <- areas %>% dplyr::filter(.data$right.hemisphere == FALSE)
       }
     }
     x$volumes <- areas
@@ -1375,7 +1374,8 @@ return(x)
 #' @export
 #' @examples
 #' \dontrun{
-#' filter <- adjust_brain_outline(s); s <- register(s, filter = filter) Adjust the brain threshold, then run register on the slice object
+#' # Adjust the brain threshold, then run register on the slice object
+#' filter <- adjust_brain_outline(s); s <- register(s, filter = filter)
 #' }
 adjust_brain_outline <- function(s, filter = NULL){
 
@@ -1494,6 +1494,7 @@ get_cell_table <- function(m,
 #' }
 #' @export
 # TODO: Change the internal implementation of plyr::ddply to a function consistent with dplyr
+# TODO: add a function check that to advise that split_hipp_DV can be run once after get_cell_table()
 #
 normalize_cell_counts <- function(m,
                                   combine_hemispheres = TRUE,
@@ -1503,12 +1504,10 @@ normalize_cell_counts <- function(m,
                                   DV_split_AP_thresh = -2.7
                                   ){
     for(s in 1:length(m$slices)){
-
       s_info <- attr(m$slices[[s]], "info")
       hemisphere <- s_info$hemisphere
       slice_ID <-  s_info$slice_ID
       AP <-  s_info$coordinate
-
       if (is.null(hemisphere)){
         slice_name <- slice_ID
       } else {
@@ -1530,9 +1529,13 @@ normalize_cell_counts <- function(m,
 
   if (isTRUE(split_hipp_DV)){
     all_hipp_subregions <- c(c("DG", "CA1", "CA2", "CA3"), get.sub.structure(c("DG", "CA1", "CA2", "CA3")))
-    hipp_split_volumes <- aggregate_volumes %>% dplyr::filter(acronym %in% all_hipp_subregions) %>%  dplyr::mutate(acronym = if_else(AP > DV_split_AP_thresh , paste0("d", acronym), paste0("v", acronym)),
-                                                                                                                   name = as.character(name.from.acronym(acronym)))
-    aggregate_volumes <- aggregate_volumes %>% dplyr::filter(!acronym %in% all_hipp_subregions) %>% dplyr::bind_rows(hipp_split_volumes) %>% dplyr::arrange(desc(AP), acronym, right.hemisphere)
+    hipp_split_volumes <- aggregate_volumes %>% dplyr::filter(.data$acronym %in% all_hipp_subregions) %>%
+      dplyr::mutate(acronym = if_else(.data$AP > DV_split_AP_thresh ,
+                                      paste0("d", .data$acronym),
+                                      paste0("v", .data$acronym)),
+                    name = as.character(name.from.acronym(.data$acronym)))
+    aggregate_volumes <- aggregate_volumes %>% dplyr::filter(!.data$acronym %in% all_hipp_subregions) %>%
+      dplyr::bind_rows(hipp_split_volumes) %>% dplyr::arrange(desc(.data$AP), .data$acronym, .data$right.hemisphere)
   }
 
   normalized_counts <-vector(mode = "list", length = length(m$cell_table))
@@ -1543,21 +1546,24 @@ normalize_cell_counts <- function(m,
   names(mismatched_regions) <- names(m$cell_table)
 
   for (channel in names(normalized_counts)){
-
     if (isTRUE(simplify_regions)){
       m$cell_table[[channel]] <-  m$cell_table[[channel]] %>% simplify_by_keywords(keywords = simplify_keywords)
 
       acronyms <- m$cell_table[[channel]]$acronym %>% unique()
       redundant_parents <- check_redundant_parents(acronyms)
-      m$cell_table[[channel]] <- m$cell_table[[channel]]  %>% dplyr::filter(acronym %in% redundant_parents$unique_acronyms)
+      m$cell_table[[channel]] <- m$cell_table[[channel]]  %>% dplyr::filter(.data$acronym %in% redundant_parents$unique_acronyms)
     }
 
     if (isTRUE(split_hipp_DV)){
-      cell_table_hipp <-  m$cell_table[[channel]] %>% dplyr::filter(acronym %in% all_hipp_subregions) %>%  dplyr::mutate(acronym = if_else(AP > DV_split_AP_thresh , paste0("d", acronym), paste0("v", acronym)),
-                                                                                                                     name = as.character(name.from.acronym(acronym)))
-      m$cell_table[[channel]] <-  m$cell_table[[channel]] %>% dplyr::filter(!acronym %in% all_hipp_subregions) %>% dplyr::bind_rows(cell_table_hipp) %>% dplyr::arrange(desc(AP), acronym, right.hemisphere)
+      cell_table_hipp <-  m$cell_table[[channel]] %>% dplyr::filter(.data$acronym %in% all_hipp_subregions) %>%
+        dplyr::mutate(acronym = if_else(.data$AP > DV_split_AP_thresh ,
+                                        paste0("d", .data$acronym),
+                                        paste0("v", .data$acronym)),
+                      name = as.character(name.from.acronym(.data$acronym)))
+      m$cell_table[[channel]] <-  m$cell_table[[channel]] %>% dplyr::filter(!.data$acronym %in% all_hipp_subregions) %>%
+        dplyr::bind_rows(cell_table_hipp) %>% dplyr::arrange(desc(.data$AP), .data$acronym, .data$right.hemisphere)
     }
-   aggregate_counts <-  m$cell_table[[channel]] %>% dplyr::group_by(slice_name, AP, right.hemisphere, acronym, name) %>% dplyr::summarize(count = n())
+   aggregate_counts <-  m$cell_table[[channel]] %>% dplyr::group_by_at(c("slice_name", "AP", "right.hemisphere", "acronym", "name")) %>% dplyr::summarize(count = n())
    ###################  acronym checking This is primarily for troubleshooting.
    # mismatch <- union(setdiff(aggregate_volumes$acronym,  aggregate_counts$acronym), setdiff(aggregate_counts$acronym, aggregate_volumes$acronym))
    # print(paste0("mismatched acronyms between volumes and simplified counts df ", mismatch))
@@ -1565,18 +1571,18 @@ normalize_cell_counts <- function(m,
    # mismatched_regions[[channel]] <- mismatch
    ###################
    counts_per_slice[[channel]]  <- dplyr::inner_join(aggregate_counts, aggregate_volumes, by = c("slice_name", "AP", "right.hemisphere", "acronym", "name")) %>%
-     dplyr::arrange(desc(AP), acronym, right.hemisphere) %>% tidyr::drop_na()
+     dplyr::arrange(desc(.data$AP), .data$acronym, .data$right.hemisphere) %>% tidyr::drop_na()
 
    if (isTRUE(combine_hemispheres)){
-     normalized_counts[[channel]] <- counts_per_slice[[channel]] %>% dplyr::group_by(acronym, name) %>%
+     normalized_counts[[channel]] <- counts_per_slice[[channel]] %>% dplyr::group_by_at(c("acronym", "name")) %>%
        dplyr::summarise_at(c("count", "area.mm2", "volume.mm3"), sum) %>%
-       dplyr::mutate(normalized.count.by.area = count/area.mm2,
-                     normalized.count.by.volume = count/volume.mm3)
+       dplyr::mutate(normalized.count.by.area = .data$count/.data$area.mm2,
+                     normalized.count.by.volume = .data$count/.data$volume.mm3)
    } else {
-     normalized_counts[[channel]] <- counts_per_slice[[channel]] %>% dplyr::group_by(acronym, name, right.hemisphere) %>%
+     normalized_counts[[channel]] <- counts_per_slice[[channel]] %>% dplyr::group_by_at(c("acronym", "name", "right.hemisphere")) %>%
        dplyr::summarise_at(c("count", "area.mm2", "volume.mm3"), sum) %>%
-       dplyr::mutate(normalized.count.by.area = count/area.mm2,
-                     normalized.count.by.volume = count/volume.mm3)
+       dplyr::mutate(normalized.count.by.area = .data$count/.data$area.mm2,
+                     normalized.count.by.volume = .data$count/.data$volume.mm3)
    }
   }
   m$normalized_counts <- normalized_counts
@@ -1657,12 +1663,14 @@ normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
                                           e$combined_normalized_counts[[denominator_channel]],
                                           by = by,
                                           unmatched = "drop",
-                                          suffix = c(".colabel", ".denom")) %>% dplyr::mutate(count = count.colabel/count.denom,
-                                                                                       area.mm2 = area.mm2.denom,
-                                                                                       volume.mm3 = volume.mm3.denom,
-                                                                                       normalized.count.by.area = count.colabel/count.denom,
-                                                                                       normalized.count.by.volume = count.colabel/count.denom)
-  colabel_normalized <- colabel_normalized %>% dplyr::select(dplyr::all_of(c(by, "count", "area.mm2", "volume.mm3", "normalized.count.by.area", "normalized.count.by.volume")))
+                                          suffix = c(".colabel", ".denom")) %>%
+    dplyr::mutate(count = .data$count.colabel/.data$count.denom,
+                           area.mm2 = .data$area.mm2.denom,
+                           volume.mm3 = .data$volume.mm3.denom,
+                           normalized.count.by.area = .data$count.colabel/.data$count.denom,
+                           normalized.count.by.volume = .data$count.colabel/.data$count.denom)
+  colabel_normalized <- colabel_normalized %>% dplyr::select(dplyr::all_of(c(by, "count", "area.mm2", "volume.mm3",
+                                                                             "normalized.count.by.area", "normalized.count.by.volume")))
   # Returns normalized channel
   norm_chan <- paste0("colabel_over_", denominator_channel)
   e$combined_normalized_counts[[norm_chan]] <- colabel_normalized
@@ -1717,15 +1725,15 @@ simplify_cell_count <- function(e,
     # # Find the number of unique regions that aren't nested further into parent regions
     # acronyms <- m$cell_table[[channel]]$acronym %>% unique()
     # redundant_parents <- check_redundant_parents(acronyms)
-    e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]]  %>% dplyr::filter(acronym %in% redundant_parents$unique_acronyms)
+    e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]]  %>% dplyr::filter(.data$acronym %in% redundant_parents$unique_acronyms)
 
     end_index <- which(names(e$combined_normalized_counts[[channel]]) == "name")
     by <- names(e$combined_normalized_counts[[channel]])[1:end_index]
 
     e$combined_normalized_counts[[channel]] <- e$combined_normalized_counts[[channel]] %>% group_by(across(all_of(by))) %>%
-      dplyr::summarize(counts = sum(counts),
-                       volume.mm3 = sum(volume.mm3)) %>%
-      dplyr::mutate(normalized.count.by.volume = counts/volume.mm3)
+      dplyr::summarize(counts = sum(.data$counts),
+                       volume.mm3 = sum(.data$volume.mm3)) %>%
+      dplyr::mutate(normalized.count.by.volume = .data$counts/.data$volume.mm3)
   }
   return(e)
 }
@@ -1754,12 +1762,12 @@ get.registered.areas.td <- function(regions, registration, conversion.factor = 1
                           area=rep(0,nrow(regions)))
   for (k in 1:nrow(regions)) {
       region.data <- wholebrain::get.region(regions$acronym[k],registration) %>% dplyr::as_tibble() %>%
-        dplyr::filter(right.hemisphere == regions$right.hemisphere[k]) %>% tidyr::drop_na()
+        dplyr::filter(.data$right.hemisphere == regions$right.hemisphere[k]) %>% tidyr::drop_na()
       region.data[,1:4] <- region.data[,1:4]*conversion.factor
       unique_subregions <- region.data$name %>% unique()
       subregion_areas <- vector(mode = "numeric", length = length(unique_subregions))
       for (l in 1:length(unique_subregions)){
-        subregion.data <- region.data %>% dplyr::filter(unique_subregions[l] == name)
+        subregion.data <- region.data %>% dplyr::filter(unique_subregions[l] == .data$name)
         # Gauss's formula
         area <- subregion.data$xT[1:(nrow(subregion.data)-1)]*subregion.data$yT[2:nrow(subregion.data)] - subregion.data$xT[2:nrow(subregion.data)]*subregion.data$yT[1:(nrow(subregion.data)-1)]
         area <- sum(area)

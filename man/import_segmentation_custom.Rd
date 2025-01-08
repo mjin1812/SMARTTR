@@ -67,11 +67,11 @@ A \href{https://imagejdocu.list.lu/tutorial/working/tutorial_for_3d_roi_manager}
 is provided in the online documentation.
 
 The naming conventions for the ".txt" file storing the Quantif3D results are \verb{Q_*_\{channel\}_*_\{channel\}.txt},
-where the \code{*} indicates a wildcard character(s) and {channel} is the channel name without brackets.
+where the \code{*} indicates a wildcard character(s) and \code{{channel}} is the channel name without brackets.
 E.g. "Q_G_eYFP_258_1_1_eYFP.txt"
 
 The naming conventions for the ".txt" file storing the Measure 3D are \verb{M_*_\{channel\}_*.txt} where
-the \code{*} indicates a wildcard character(s) and {channel} is the channel name without brackets.
+the \code{*} indicates a wildcard character(s) and \code{{channel}} is the channel name without brackets.
 E.g "M_G_eYFP_258_1_1.txt".
 
 The wildcards characters may be used to store things like date or slice naming information.

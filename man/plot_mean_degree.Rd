@@ -65,7 +65,8 @@ Plot the mean degree of the networks in a barplot. Error bars are plotted as SEM
 }
 \examples{
 \dontrun{
-p <- plot_mean_degree(e, colors_manual = c("#660000", "#FF0000"), channels = "cfos",
-labels = c("AD" = "AD_label", "control" = "control_label"), title = "my title", ylim = c(0,100), image_ext = ".png")
+p <- plot_mean_degree(e, colors_manual = c("#660000", "#FF0000"),
+channels = "cfos", labels = c("AD" = "AD_label", "control" = "control_label"),
+title = "my title", ylim = c(0,100), image_ext = ".png")
 }
 }

@@ -63,7 +63,8 @@ Plot the mean betweenness centrality of the networks in a barplot. Error bars ar
 }
 \examples{
 \dontrun{
-p <- plot_mean_between_centrality(e, colors_manual = c("#660000", "#FF0000"), channels = "cfos",
-labels = c("AD" = "AD_label", "control" = "control_label"), title = "my title", ylim = c(0, 50), image_ext = ".png")
+p <- plot_mean_between_centrality(e, colors_manual = c("#660000", "#FF0000"),
+channels = "cfos", labels = c("AD" = "AD_label", "control" = "control_label"),
+title = "my title", ylim = c(0, 50), image_ext = ".png")
 }
 }

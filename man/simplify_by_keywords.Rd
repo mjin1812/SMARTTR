@@ -35,10 +35,15 @@ df
 Simplify dataframe by keywords.
 }
 \examples{
-df <- dplyr::tibble(acronym = c("LGd", "GU4", "dCA1so" ), name = c("Dorsal part of the lateral geniculate complex", "Gustatory areas, layer 4", "Field CA2, stratum oriens (dorsal)"))
+df <- dplyr::tibble(acronym = c("LGd", "GU4", "dCA1so" ),
+name = c("Dorsal part of the lateral geniculate complex",
+"Gustatory areas, layer 4", "Field CA2, stratum oriens (dorsal)"))
 simplify_by_keywords(df)
 
-df <- dplyr::tibble(acronym = c("LPBD", "MPBE", "CPre"), name = c("Lateral parabrachial nucleus, dorsal part", "Medial parabrachial nucleus, external part", "Caudoputamen- rostral extreme"))
-simplify_by_keywords(df, keywords = c("dorsal part", "external part", "Caudoputamen-"), ontology = "unified")
+df <- dplyr::tibble(acronym = c("LPBD", "MPBE", "CPre"),
+name = c("Lateral parabrachial nucleus, dorsal part",
+"Medial parabrachial nucleus, external part", "Caudoputamen- rostral extreme"))
+simplify_by_keywords(df, keywords = c("dorsal part", "external part",
+"Caudoputamen-"), ontology = "unified")
 
 }

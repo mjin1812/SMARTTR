@@ -374,12 +374,12 @@ export_permutation_results <- function(e,
         dplyr::left_join(sig_df, by = c("R1", "R2"), keep = FALSE)
 
       if (ontology == "allen"){
-        permutation_results <- permutation_results %>% dplyr::mutate(name1 = name.from.acronym(R1),
-                                                                     name2 = name.from.acronym(R2),
+        permutation_results <- permutation_results %>% dplyr::mutate(name1 = name.from.acronym(.data$R1),
+                                                                     name2 = name.from.acronym(.data$R2),
                                                                      .before = test_statistic)
       } else {
-        permutation_results <- permutation_results %>% dplyr::mutate(name1 = name.from.acronym.custom(R1, ontology = ontology),
-                                                                     name2 = name.from.acronym.custom(R2, ontology = ontology),
+        permutation_results <- permutation_results %>% dplyr::mutate(name1 = name.from.acronym.custom(.data$R1, ontology = ontology),
+                                                                     name2 = name.from.acronym.custom(.data$R2, ontology = ontology),
                                                                      .before = test_statistic)
       }
       if (filter_significant) {
@@ -947,7 +947,8 @@ rewire_network <- function(e,
 #' @examples
 #' \dontrun{
 #' rewire_summary <- rewire_network(e, "Context", channels = "eyfp", return_graphs = FALSE)
-#' summarized_null_networks <- summarize_null_networks(rewire_summary, network_names = "Context", channel = "eyfp")
+#' summarized_null_networks <- summarize_null_networks(rewire_summary,
+#' network_names = "Context", channel = "eyfp")
 #' }
 summarize_null_networks <- function(null_nodes_list,
                                     network_names = NULL,
@@ -964,7 +965,7 @@ summarize_null_networks <- function(null_nodes_list,
                 null_dist = mean(.data$avg.dist, na.rm = TRUE),
                 null_efficiency = mean(.data$efficiency, na.rm = TRUE),
                 null_btw = mean(.data$btw, na.rm = TRUE)) %>%
-      dplyr::mutate(group = network_names[[n]], .before = null_degree)
+      dplyr::mutate(group = network_names[[n]], .before = any_of("null_degree"))
     } else {
       toadd <- null_nodes_list[[n]][[channel]] %>% dplyr::group_by_at(c("name", "super.region")) %>%
         summarise(null_degree = mean(.data$degree, na.rm = TRUE),
@@ -973,7 +974,7 @@ summarize_null_networks <- function(null_nodes_list,
                   null_dist = mean(.data$avg.dist, na.rm = TRUE),
                   null_efficiency = mean(.data$efficiency, na.rm = TRUE),
                   null_btw = mean(.data$btw, na.rm = TRUE)) %>%
-        dplyr::mutate(group = network_names[[n]], .before = null_degree)
+        dplyr::mutate(group = network_names[[n]], .before = any_of("null_degree"))
       null_node_summary <- null_node_summary  %>% dplyr::bind_rows(toadd)
     }
   }
@@ -1097,8 +1098,8 @@ plot_percent_colabel <- function(e,
                                   width = 0.4) +
       ggplot2::scale_fill_manual(values = colors) +
       ggpattern::scale_pattern_type_manual(values = patterns) +
-      ggplot2::geom_errorbar(aes(ymin = colabel_percentage.mean - !!error_var,
-                        ymax = colabel_percentage.mean + !!error_var),
+      ggplot2::geom_errorbar(aes(ymin = .data$colabel_percentage.mean - !!error_var,
+                        ymax = .data$colabel_percentage.mean + !!error_var),
                     width=.2,
                     position = ggplot2::position_dodge(width = .5)) +
       ggplot2::geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
@@ -1200,7 +1201,7 @@ plot_percent_colabel <- function(e,
 #' @noRd
 #' @examples
 #' \dontrun{
-#' plot_percentage_colabel
+#' # To add example
 #' }
 plot_cell_counts <- function(e,
                              channel = "eyfp",
@@ -1290,8 +1291,8 @@ plot_cell_counts <- function(e,
                                   width = 0.4) +
       ggplot2::scale_fill_manual(values = colors) +
       ggpattern::scale_pattern_type_manual(values = patterns) +
-      geom_errorbar(aes(ymin = normalized.count.mean - !!error_var,
-                        ymax = normalized.count.mean + !!error_var),
+      geom_errorbar(aes(ymin = .data$normalized.count.mean - !!error_var,
+                        ymax = .data$normalized.count.mean + !!error_var),
                     width=.2,
                     position = ggplot2::position_dodge(width = .5)) +
       geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
@@ -1414,7 +1415,8 @@ plot_cell_counts <- function(e,
 #' @export
 #' @examples
 #' \dontrun{
-#' p_list <- plot_normalized_counts(e, channels = "cfos", by = c("sex", "group"), values = list(c("female", "non"), c("female", "agg")), colors = c("white", "lightblue"))
+#' p_list <- plot_normalized_counts(e, channels = "cfos", by = c("sex", "group"),
+#' values = list(c("female", "non"), c("female", "agg")), colors = c("white", "lightblue"))
 #' }
 plot_normalized_counts <- function(e,
                                     channels = c("cfos", "eyfp", "colabel"),
@@ -1509,12 +1511,12 @@ plot_normalized_counts <- function(e,
     channel_counts$name <- factor(channel_counts$name, levels = common.regions.ordered)
     if (tolower(ontology) == "allen") {
       channel_counts <- channel_counts %>%
-        mutate(parent = get.sup.structure(acronym, matching.string = anatomical.order)) %>%
+        mutate(parent = get.sup.structure(.data$acronym, matching.string = anatomical.order)) %>%
         na.omit()
       channel_counts$parent <- factor(channel_counts$parent, levels = anatomical.order)
     } else {
       channel_counts <- channel_counts %>%
-        mutate(parent = get.sup.structure.custom(acronym, ontology = ontology, matching.string = anatomical.order)) %>%
+        mutate(parent = get.sup.structure.custom(.data$acronym, ontology = ontology, matching.string = anatomical.order)) %>%
         na.omit()
       channel_counts$parent <- factor(channel_counts$parent, levels = anatomical.order)
     }
@@ -1635,7 +1637,8 @@ plot_normalized_counts <- function(e,
 #' }
 #' @seealso [SMARTR::get_correlations()]
 
-plot_correlation_heatmaps <- function(e, correlation_list_name,
+plot_correlation_heatmaps <- function(e,
+                                      correlation_list_name,
                                       channels = c('cfos', 'eyfp', 'colabel'),
                                       colors = c("#be0000", "#00782e", "#f09b08"),
                                       sig_color = "yellow",
@@ -1685,34 +1688,31 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
 
    for (k in 1:length(corr_df)){
      corr_df[[k]] <- tibble::add_column(corr_df[[k]], row_acronym = names(corr_df[[k]]), .before = TRUE ) %>%
-       tidyr::pivot_longer(!row_acronym, names_to = "col_acronym", values_to = val_names[k])
-     corr_df[[k]]$row_acronym <- factor(corr_df[[k]]$row_acronym, levels = unique(corr_df[[k]]$row_acronym)) # to keep anatomical level order
-     corr_df[[k]]$col_acronym <- factor(corr_df[[k]]$col_acronym, levels = unique(corr_df[[k]]$col_acronym)) # to keep the anatomical level order
+       tidyr::pivot_longer(!any_of("row_acronym"), names_to = "col_acronym", values_to = val_names[k])
+     corr_df[[k]]$row_acronym <- factor(corr_df[[k]]$row_acronym, levels = unique(corr_df[[k]]$row_acronym))
+     corr_df[[k]]$col_acronym <- factor(corr_df[[k]]$col_acronym, levels = unique(corr_df[[k]]$col_acronym))
    }
 
-   # Combined the correlation plots into one dataframe and add a column if there is a significant comparison
    df <- corr_df$r %>% dplyr::left_join(corr_df$n, by = c("row_acronym", "col_acronym")) %>%
      dplyr::left_join(corr_df$P, by = c("row_acronym", "col_acronym")) %>%
      dplyr::left_join(corr_df$sig, by = c("row_acronym", "col_acronym")) %>%
-     dplyr::mutate(sig_text = dplyr::if_else(sig == TRUE, "*", ""))
+     dplyr::mutate(sig_text = dplyr::if_else(.data$sig == TRUE, "*", ""))
 
-   # Get row and column parent super regions
-  df <- df %>% dplyr::mutate(row_parent = get.super.regions(row_acronym, anatomical.order = anatomical.order, ontology = ontology), .before  = row_acronym) %>%
-    dplyr::mutate(row_parent = factor(row_parent, levels = anatomical.order))
-  df <- df %>% dplyr::mutate(col_parent = get.super.regions(col_acronym, anatomical.order = anatomical.order, ontology = ontology), .before  = row_acronym) %>%
-    dplyr::mutate(col_parent = factor(col_parent, levels = rev(anatomical.order)))
-  # df <- df %>% dplyr::mutate(sig_text = ifelse(is.finite(sig_text), sig_text, ""))
+  df <- df %>% dplyr::mutate(row_parent = get.super.regions(.data$row_acronym, anatomical.order = anatomical.order,
+                                                            ontology = ontology), .before  = any_of("row_acronym")) %>%
+    dplyr::mutate(row_parent = factor(.data$row_parent, levels = anatomical.order))
+  df <- df %>% dplyr::mutate(col_parent = get.super.regions(.data$col_acronym, anatomical.order = anatomical.order,
+                                                            ontology = ontology), .before  = any_of("row_acronym")) %>%
+    dplyr::mutate(col_parent = factor(.data$col_parent, levels = rev(anatomical.order)))
 
-
-  # Generate a correlation heatmap in anatomical order
   n_facet <- df$row_parent %>% unique() %>% length()
-  p <-  ggplot(df, aes(row_acronym, col_acronym, fill = r)) +
-        ggplot2::facet_grid(col_parent ~ row_parent,
+  p <-  ggplot(df, aes(.data$row_acronym, .data$col_acronym, fill = .data$r)) +
+        ggplot2::facet_grid(.data$col_parent ~ .data$row_parent,
                    space = "free",
                    margins = FALSE,
                    scales = "free") +
         geom_tile() +
-        geom_text(aes(label = sig_text), size=sig_size, position = position_nudge(y = sig_nudge_y), color = sig_color) +
+        geom_text(aes(label = .data$sig_text), size=sig_size, position = position_nudge(y = sig_nudge_y), color = sig_color) +
         scale_fill_gradient2(low = "#4f4f4f",mid = "#ffffff", high = colors[[channel]],
                          aesthetics = c("color","fill"), na.value = "grey50",
                          limits=c(-1, 1)) +
@@ -1742,8 +1742,6 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
   }
   return(p_list)
 }
-
-
 
 #' Plot the results of the permutation histogram used to determine the p-value of the pairwise region comparison
 #'
@@ -1779,11 +1777,11 @@ plot_correlation_heatmaps <- function(e, correlation_list_name,
 #' @export
 #' @examples
 #' \dontrun{
-#' volcano_plot(e, permutation_comparison = "female_AD_vs_male_AD", channels = c("cfos", "eyfp", "colabel"),
-#' colors =  c("#be0000", "#00782e", "#f09b08"), save_plot = TRUE, title = NULL, ylim = c(0, 3), height = 8,
+#' volcano_plot(e, permutation_comparison = "female_AD_vs_male_AD",
+#' channels = c("cfos", "eyfp", "colabel"), colors =  c("#be0000", "#00782e", "#f09b08"),
+#' save_plot = TRUE, title = NULL, ylim = c(0, 3), height = 8,
 #' width = 10, print_plot = FALSE, image_ext = ".png")
 #' }
-
 
 volcano_plot <- function(e,
                          permutation_comparison = "female_AD_vs_male_AD",
@@ -1841,14 +1839,12 @@ volcano_plot <- function(e,
       dplyr::inner_join(sigs, by = c("rowreg", "colreg"))
 
 
-    p <- ggplot(df, aes(x = corr_diff, y = -log10(p_val))) +
+    p <- ggplot(df, aes(x = .data$corr_diff, y = -log10(.data$p_val))) +
       geom_point(size = point_size) +
-      geom_point(data = subset(df, sig > 0 & corr_diff <= -1 | sig > 0 & corr_diff >= 1), color = colors[k]) +
+      geom_point(data = subset(df, .data$sig > 0 & .data$corr_diff <= -1 | .data$sig > 0 & .data$corr_diff >= 1), color = colors[k], size = point_size) +
       geom_vline(xintercept = c(-1, 1), color = colors[k], size = 1) +
       geom_hline(yintercept = -log10(alpha), color = colors[k], size = 1) +
       ggplot2::coord_cartesian(xlim = c(-2.1, 2.1)) +
-      # xlim(c(-2.2, 2.2)) +
-      # scale_x_reverse() +
       ylim(ylim) +
       labs(title = title, x = "Correlation Difference", y = "-log(p-value)") +
       plt_theme
@@ -1875,7 +1871,6 @@ volcano_plot <- function(e,
       ggsave(filename = image_file,  width = width, height = height, units = "in")
     }
 
-    # Store the plot handle
     p_list[[channels[k]]] <- p
   }
 
@@ -1976,16 +1971,16 @@ parallel_coordinate_plot <- function(e,
       dplyr::inner_join(group_2_pearson, by = c("rowreg", "colreg")) %>%
       tidyr::pivot_longer(cols = dplyr::all_of(c(group_1, group_2)), names_to = "group", values_to = "corr")
 
-    df <- df %>% dplyr::filter(sig, abs(corr_diff) >= 1) %>%
-      dplyr::mutate(group = factor(group, levels = c(group_1, group_2)),
-             nudge = ifelse(group == group_1, -0.1, 0.1)) %>%
-      dplyr::arrange(group, corr_diff) %>%
-      mutate(text = paste(rowreg, colreg, sep = "."),
-             group_plot = paste(rowreg, colreg, sep = "."))
+    df <- df %>% dplyr::filter(.data$sig, abs(.data$corr_diff) >= 1) %>%
+      dplyr::mutate(group = factor(.data$group, levels = c(group_1, group_2)),
+             nudge = ifelse(.data$group == group_1, -0.1, 0.1)) %>%
+      dplyr::arrange(.data$group, .data$corr_diff) %>%
+      mutate(text = paste(.data$rowreg, .data$colreg, sep = "."),
+             group_plot = paste(.data$rowreg, .data$colreg, sep = "."))
 
     if (isTRUE(reverse_group_order)){
-      df <- df %>% dplyr::mutate(group = forcats::fct_rev(group),
-                                 nudge = ifelse(group == group_2, -0.1, 0.1))
+      df <- df %>% dplyr::mutate(group = forcats::fct_rev(.data$group),
+                                 nudge = ifelse(.data$group == group_2, -0.1, 0.1))
     }
 
     tryCatch({
@@ -2007,16 +2002,16 @@ parallel_coordinate_plot <- function(e,
         )
     }
 
-    p <- ggplot(df, aes(x = group, y = corr, group = group_plot)) +
+    p <- ggplot(df, aes(x = .data$group, y = .data$corr, group = .data$group_plot)) +
       ggplot2::geom_line(alpha = 0.5, color = colors[k], size = 3) +
       ggplot2::geom_point(size = 4, alpha = 0.5, color = colors[k]) +
-      ggrepel::geom_text_repel(aes(label = text),
+      ggrepel::geom_text_repel(aes(label = .data$text),
                       size = label_size,
                       color = colors[k], direction = "y",
                       force = force,
                       ylim = c(-1, 1),
                       segment.alpha = 0.3,
-                      nudge_x = dplyr::pull(df, nudge)*nudge_x, max.iter = 20000) +
+                      nudge_x = dplyr::pull(df, .data$nudge)*nudge_x, max.iter = 20000) +
       ggplot2::geom_hline(yintercept = 0,linetype=2,size=1.2) +
       xlab("Group") + ylab("Correlation") +
       ggplot2::expand_limits(y=c(-1,1)) + plt_theme
@@ -2104,22 +2099,22 @@ plot_networks <- function(e,
     }
     if (edge_type == "diagonal"){
       p <- ggraph::ggraph(network, layout = "linear", circular = TRUE) +
-        ggraph::geom_edge_diagonal(aes(color = sign, width = abs(weight)),
+        ggraph::geom_edge_diagonal(aes(color = .data$sign, width = abs(.data$weight)),
                                    edge_alpha = 0.6, n = 1000)
 
     } else if (edge_type == "arc"){
       p <- ggraph::ggraph(network, layout = "linear", circular = TRUE) +
-        ggraph::geom_edge_arc(aes(color = sign, width = abs(weight)),
+        ggraph::geom_edge_arc(aes(color = .data$sign, width = abs(.data$weight)),
                               edge_alpha = 0.6, n = 1000)
 
     }
-   p <- p + ggraph::geom_node_point(aes(size = degree,
-                                    color = super.region),
-                                show.legend = TRUE) +
-      ggraph::geom_node_text(aes(x = (sqrt(x^2+y^2)+label_offset)*cos(atan(y/x))*sign(x),
-                         y = abs((sqrt(x^2+y^2)+label_offset)*sin(atan(y/x)))*sign(y),
-                         angle = atan(y/x)*180/pi,
-                         label = name),
+   p <- p + ggraph::geom_node_point(aes(size = .data$degree,
+                                        color = .data$super.region),
+                                       show.legend = TRUE) +
+      ggraph::geom_node_text(aes(x = (sqrt(.data$x^2+.data$y^2)+label_offset)*cos(atan(.data$y/.data$x))*sign(.data$x),
+                         y = abs((sqrt(.data$x^2+.data$y^2)+label_offset)*sin(atan(.data$y/.data$x)))*sign(.data$y),
+                         angle = atan(.data$y/.data$x)*180/pi,
+                         label = .data$name),
                      repel = FALSE, color = "grey25",
                      size = label_size,
                      show.legend = NA) +
@@ -2136,14 +2131,14 @@ plot_networks <- function(e,
                                           discrete = TRUE,
                                           option = "D",
                                           guide = guide_legend(override.aes = list(size=max(node_size_range)), order=4)) +
-       ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=node_size_range,
+       ggplot2::scale_size(limits = degree_scale_limit, name="Degree", range = node_size_range,
                            guide = guide_legend(order = 2)) +
        ggplot2::coord_equal() + graph_theme
    } else{
      p <- p + ggplot2::scale_color_manual(name = "Anatomical Region",
                                           values = anatomical.colors,
                                           guide = guide_legend(override.aes = list(size=max(node_size_range)), order=4)) +
-       ggplot2::scale_size(limits = degree_scale_limit, name="Degree",range=node_size_range,
+       ggplot2::scale_size(limits = degree_scale_limit, name="Degree", range = node_size_range,
                            guide = guide_legend(order = 2)) +
        ggplot2::coord_equal() + graph_theme
    }
@@ -2260,31 +2255,31 @@ plot_joined_networks <- function(e,
       )
     }
     if (isTRUE(absolute_weight)) {
-      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(color = factor(network))
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(color = factor(.data$network))
     } else {
-      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(color = paste(network, sign, sep = "_"))
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(color = paste(.data$network, .data$sign, sep = "_"))
     }
 
     if (isTRUE(transparent_edge_group1) &&  isTRUE(transparent_edge_group2)){
       network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = 0)
     } else if (isFALSE(transparent_edge_group1) && isTRUE(transparent_edge_group2)){
-      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = if_else(network == p2, 0.0, 0.6))
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = if_else(.data$network == p2, 0.0, 0.6))
     } else if (isTRUE(transparent_edge_group1) && isFALSE(transparent_edge_group2)){
-      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = if_else(network == p1, 0.0, 0.6))
+      network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = if_else(.data$network == p1, 0.0, 0.6))
     } else {
       network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = 0.6)
     }
 
     p <- ggraph::ggraph(network, layout = "linear", circular = TRUE) +
-      ggraph::geom_edge_arc(aes(color = color, width = abs(weight), edge_alpha = edge_alpha),
+      ggraph::geom_edge_arc(aes(color = .data$color, width = abs(.data$weight), edge_alpha = .data$edge_alpha),
                             n = 1000) +
-      ggraph::geom_node_point(aes(size = degree,
-                                  color = super.region),
+      ggraph::geom_node_point(aes(size = .data$degree,
+                                  color = .data$super.region),
                               show.legend = TRUE) +
-      ggraph::geom_node_text(aes(x = (sqrt(x^2+y^2)+label_offset)*cos(atan(y/x))*sign(x),
-                                 y = abs((sqrt(x^2+y^2)+label_offset)*sin(atan(y/x)))*sign(y),
-                                 angle = atan(y/x)*180/pi,
-                                 label = name),
+      ggraph::geom_node_text(aes(x = (sqrt(.data$x^2+.data$y^2)+label_offset)*cos(atan(.data$y/.data$x))*sign(.data$x),
+                                 y = abs((sqrt(.data$x^2+.data$y^2)+label_offset)*sin(atan(.data$y/.data$x)))*sign(.data$y),
+                                 angle = atan(.data$y/.data$x)*180/pi,
+                                 label = .data$name),
                              repel = FALSE, color = "grey25",
                              size = label_size,
                              show.legend = NA) +
@@ -2311,7 +2306,7 @@ plot_joined_networks <- function(e,
         ggplot2::coord_equal() + graph_theme
     }
     if (is.null(title)){
-      title <- paste(network_name, channel)
+      title <- paste(joined_network_name, channel)
     }
     p <-  p + ggplot2::ggtitle(title)
     if (print_plot){
@@ -2401,8 +2396,8 @@ plot_degree_distributions <- function(e,
     }
 
     p <- ggplot2::ggplot(e$networks_summaries[[channel]]$networks_nodes,
-                    aes(degree)) +
-      ggplot2::geom_bar(aes(fill = group), color="black") +
+                    aes(.data$degree)) +
+      ggplot2::geom_bar(aes(fill = .data$group), color="black") +
       ggplot2::scale_fill_manual(values = colors[1:n_groups], name = "Group",
                         labels = labels) +
       scale_x_continuous(breaks = 1:20) +
@@ -2464,8 +2459,9 @@ plot_degree_distributions <- function(e,
 #' @export
 #' @examples
 #' \dontrun{
-#' p <- plot_mean_degree(e, colors_manual = c("#660000", "#FF0000"), channels = "cfos",
-#' labels = c("AD" = "AD_label", "control" = "control_label"), title = "my title", ylim = c(0,100), image_ext = ".png")
+#' p <- plot_mean_degree(e, colors_manual = c("#660000", "#FF0000"),
+#' channels = "cfos", labels = c("AD" = "AD_label", "control" = "control_label"),
+#' title = "my title", ylim = c(0,100), image_ext = ".png")
 #' }
 
 plot_mean_degree <- function(e,
@@ -2509,15 +2505,15 @@ plot_mean_degree <- function(e,
     }
 
     if (rev_x_scale){
-      p <- ggplot(e$networks_summaries[[channel]]$networks_stats, aes(x = reorder(group, dplyr::desc(group)), degree.mean))
+      p <- ggplot(e$networks_summaries[[channel]]$networks_stats, aes(x = stats::reorder(.data$group, dplyr::desc(.data$group)), .data$degree.mean))
     } else{
 
-      p <- ggplot(e$networks_summaries[[channel]]$networks_stats, aes(group, degree.mean))
+      p <- ggplot(e$networks_summaries[[channel]]$networks_stats, aes(.data$group, .data$degree.mean))
     }
     p <- p +
-      ggplot2::geom_col(aes(fill = group), color = "black", size = 1, width = 0.6) +
-      ggplot2::geom_errorbar(aes(ymin = degree.mean - (degree.sd/sqrt(n.nodes)),
-                        ymax = degree.mean + (degree.sd/sqrt(n.nodes))),
+      ggplot2::geom_col(aes(fill = .data$group), color = "black", size = 1, width = 0.6) +
+      ggplot2::geom_errorbar(aes(ymin = .data$degree.mean - (.data$degree.sd/sqrt(.data$n.nodes)),
+                        ymax = .data$degree.mean + (.data$degree.sd/sqrt(.data$n.nodes))),
                         width = 0.2, size = 1) +
       ggplot2::scale_fill_manual(values = colors,
                                  name = "Group",
@@ -2526,7 +2522,6 @@ plot_mean_degree <- function(e,
       xlab("Group") + ylab("Mean Degree") +
       ylim(ylim) +
       theme.gg
-
     if (!is.null(title)){
       title <- paste(title)
       p <-  p + ggplot2::ggtitle(title)
@@ -2549,8 +2544,6 @@ plot_mean_degree <- function(e,
   }
   return(p_list)
 }
-
-
 
 #' Plot mean clustering coefficient
 #' @description
@@ -2577,8 +2570,9 @@ plot_mean_degree <- function(e,
 #' @export
 #' @examples
 #' \dontrun{
-#' p <- plot_mean_clust_coeff(e, colors_manual = c("#660000", "#FF0000"), channels = "cfos",
-#' labels = c("AD" = "AD_label", "control" = "control_label"), title = "my title", ylim = c(0, 0.7), image_ext = ".png")
+#' p <- plot_mean_clust_coeff(e, colors_manual = c("#660000", "#FF0000"),
+#' channels = "cfos", labels = c("AD" = "AD_label", "control" = "control_label"),
+#' title = "my title", ylim = c(0, 0.7), image_ext = ".png")
 #' }
 
 plot_mean_clust_coeff <- function(e,
@@ -2620,16 +2614,16 @@ plot_mean_clust_coeff <- function(e,
     }
 
     if (rev_x_scale){
-      p <- ggplot2::ggplot(e$networks_summaries[[channel]]$networks_stats, aes(x = stats::reorder(group, dplyr::desc(group)), clust.coef.mean))
+      p <- ggplot2::ggplot(e$networks_summaries[[channel]]$networks_stats, aes(x = stats::reorder(.data$group, dplyr::desc(.data$group)), .data$clust.coef.mean))
     } else{
 
-      p <- ggplot2::ggplot(e$networks_summaries[[channel]]$networks_stats, aes(group, clust.coef.mean))
+      p <- ggplot2::ggplot(e$networks_summaries[[channel]]$networks_stats, aes(.data$group, .data$clust.coef.mean))
     }
 
     p <- p +
-      ggplot2::geom_col(aes(fill = group), color = "black", size = 1, width = 0.6) +
-      ggplot2::geom_errorbar(aes(ymin = clust.coef.mean - (clust.coef.sd/sqrt(n.nodes)),
-                                 ymax = clust.coef.mean + (clust.coef.sd/sqrt(n.nodes))),
+      ggplot2::geom_col(aes(fill = .data$group), color = "black", size = 1, width = 0.6) +
+      ggplot2::geom_errorbar(aes(ymin = .data$clust.coef.mean - (.data$clust.coef.sd/sqrt(.data$n.nodes)),
+                                 ymax = .data$clust.coef.mean + (.data$clust.coef.sd/sqrt(.data$n.nodes))),
                              width = 0.2, size = 1) +
       ggplot2::scale_fill_manual(values = colors,
                                  name = "Group",
@@ -2690,8 +2684,9 @@ plot_mean_clust_coeff <- function(e,
 #' @export
 #' @examples
 #' \dontrun{
-#' p <- plot_mean_global_effic(e, colors_manual = c("#660000", "#FF0000"), channels = "cfos",
-#' labels = c("AD" = "AD_label", "control" = "control_label"), title = "my title", ylim = c(0, 0.7), image_ext = ".png")
+#' p <- plot_mean_global_effic(e, colors_manual = c("#660000", "#FF0000"),
+#' channels = "cfos", labels = c("AD" = "AD_label", "control" = "control_label"),
+#' title = "my title", ylim = c(0, 0.7), image_ext = ".png")
 #' }
 
 plot_mean_global_effic <- function(e,
@@ -2735,15 +2730,15 @@ plot_mean_global_effic <- function(e,
     }
 
     if (rev_x_scale){
-      p <- ggplot2::ggplot(e$networks_summaries[[channel]]$networks_stats, aes(x = stats::reorder(group, dplyr::desc(group)), efficiency.mean))
+      p <- ggplot2::ggplot(e$networks_summaries[[channel]]$networks_stats, aes(x = stats::reorder(.data$group, dplyr::desc(.data$group)), .data$efficiency.mean))
     } else{
-      p <- ggplot2::ggplot(e$networks_summaries[[channel]]$networks_stats, aes(group, efficiency.mean))
+      p <- ggplot2::ggplot(e$networks_summaries[[channel]]$networks_stats, aes(.data$group, .data$efficiency.mean))
     }
 
     p <- p +
-      ggplot2::geom_col(aes(fill = group), color = "black", size = 1, width = 0.6) +
-      ggplot2::geom_errorbar(aes(ymin = efficiency.mean - (efficiency.sd/sqrt(n.nodes)),
-                                 ymax = efficiency.mean + (efficiency.sd/sqrt(n.nodes))),
+      ggplot2::geom_col(aes(fill = .data$group), color = "black", size = 1, width = 0.6) +
+      ggplot2::geom_errorbar(aes(ymin = .data$efficiency.mean - (.data$efficiency.sd/sqrt(.data$n.nodes)),
+                                 ymax = .data$efficiency.mean + (.data$efficiency.sd/sqrt(.data$n.nodes))),
                              width = 0.2, size = 1) +
       ggplot2::scale_fill_manual(values = colors,
                                  name = "Group",
@@ -2804,8 +2799,9 @@ plot_mean_global_effic <- function(e,
 #' @export
 #' @examples
 #' \dontrun{
-#' p <- plot_mean_between_centrality(e, colors_manual = c("#660000", "#FF0000"), channels = "cfos",
-#' labels = c("AD" = "AD_label", "control" = "control_label"), title = "my title", ylim = c(0, 50), image_ext = ".png")
+#' p <- plot_mean_between_centrality(e, colors_manual = c("#660000", "#FF0000"),
+#' channels = "cfos", labels = c("AD" = "AD_label", "control" = "control_label"),
+#' title = "my title", ylim = c(0, 50), image_ext = ".png")
 #' }
 
 plot_mean_between_centrality <- function(e,
@@ -2847,15 +2843,15 @@ plot_mean_between_centrality <- function(e,
 
     # Reverse the scale of the categorical variable when plotting
     if (rev_x_scale){
-      p <- ggplot2::ggplot(e$networks_summaries[[channel]]$networks_stats, aes(x = stats::reorder(group, dplyr::desc(group)), btw.mean))
+      p <- ggplot2::ggplot(e$networks_summaries[[channel]]$networks_stats, aes(x = stats::reorder(.data$group, dplyr::desc(.data$group)), .data$btw.mean))
     } else{
-      p <- ggplot2::ggplot(e$networks_summaries[[channel]]$networks_stats, aes(group, btw.mean))
+      p <- ggplot2::ggplot(e$networks_summaries[[channel]]$networks_stats, aes(.data$group, .data$btw.mean))
     }
 
     p <- p +
-      ggplot2::geom_col(aes(fill = group), color = "black", size = 1, width = 0.6) +
-      ggplot2::geom_errorbar(aes(ymin = btw.mean - (btw.sd/sqrt(n.nodes)),
-                                 ymax = btw.mean + (btw.sd/sqrt(n.nodes))),
+      ggplot2::geom_col(aes(fill = .data$group), color = "black", size = 1, width = 0.6) +
+      ggplot2::geom_errorbar(aes(ymin = .data$btw.mean - (.data$btw.sd/sqrt(.data$n.nodes)),
+                                 ymax = .data$btw.mean + (.data$btw.sd/sqrt(.data$n.nodes))),
                              width = 0.2, size = 1) +
       ggplot2::scale_fill_manual(values = colors,
                                  name = "Group",
@@ -2921,7 +2917,8 @@ plot_mean_between_centrality <- function(e,
 #' @export
 #' @examples
 #' \dontrun{
-#' p <- plot_degree_regions(e, colors = c("#660000", "#FF0000"), channels = "cfos", region_label_angle = 60,
+#' p <- plot_degree_regions(e, colors = c("#660000", "#FF0000"),
+#' channels = "cfos", region_label_angle = 60,
 #' ylim = c(0, 15), image_ext = ".png")
 #' }
 
@@ -2954,7 +2951,7 @@ plot_degree_regions <- function(e,
             strip.placement = "outside",
             strip.background = element_rect(color = "black",
                                             fill = "lightblue"),
-            plot.margin = margin(1,1.5,0,1.5, "cm"),
+            plot.margin = ggplot2::margin(1,1.5,0,1.5, "cm"),
             plot.background = element_blank(),
             panel.grid.major = element_blank(),
             panel.grid.minor = element_blank(),
@@ -2970,32 +2967,32 @@ plot_degree_regions <- function(e,
       unique() %>% length()
 
     if (sort_super_region) {
-      df <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(group == network) %>%
-        dplyr::arrange(super.region,  dplyr::desc(degree)) %>%
-        dplyr::mutate(name = factor(name, levels = name))
+      df <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(.data$group == network) %>%
+        dplyr::arrange(.data$super.region,  dplyr::desc(.data$degree)) %>%
+        dplyr::mutate(name = factor(.data$name, levels = .data$name))
 
       if (isTRUE(filter_isolates)){
-        df <- df %>% dplyr::filter(degree > 0)
+        df <- df %>% dplyr::filter(.data$degree > 0)
       }
 
       p <- df %>%
-        ggplot2::ggplot(aes(name, degree)) +
+        ggplot2::ggplot(aes(.data$name, .data$degree)) +
         ggplot2::geom_col(fill = colors[[k]], color = "black") +
         ggplot2::facet_grid(~super.region, scales = "free_x", space = "free_x", switch = "x")  +
         xlab("Brain Region") + ylab("Degree") +
         ylim(ylim)  + theme.bar
 
     } else {
-      df <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(group == network) %>%
-        dplyr::arrange(dplyr::desc(degree)) %>%
-        dplyr::mutate(name = factor(name, levels = name))
+      df <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(.data$group == network) %>%
+        dplyr::arrange(dplyr::desc(.data$degree)) %>%
+        dplyr::mutate(name = factor(.data$name, levels = .data$name))
 
       if (isTRUE(filter_isolates)){
-        df <- df %>% dplyr::filter(degree > 0)
+        df <- df %>% dplyr::filter(.data$degree > 0)
       }
 
       p <- df %>%
-        ggplot2::ggplot(aes(name, degree)) +
+        ggplot2::ggplot(aes(.data$name, .data$degree)) +
         ggplot2::geom_col(fill = colors[[k]], color = "black") +
         xlab("Brain Region") + ylab("Degree") +
         ylim(ylim) +
@@ -3006,7 +3003,6 @@ plot_degree_regions <- function(e,
       title <- paste(title)
       p <-  p + ggplot2::ggtitle(title)
     }
-
 
     if (print_plot){
       dev.new(noRStudioGD=TRUE)
@@ -3102,33 +3098,33 @@ plot_betweenness_regions <- function(e,
       unique() %>% length()
 
     if (sort_super_region) {
-      df <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(group == network) %>%
-        dplyr::arrange(super.region,  dplyr::desc(btw)) %>%
-        dplyr::mutate(name = factor(name, levels = name))
+      df <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(.data$group == network) %>%
+        dplyr::arrange(.data$super.region,  dplyr::desc(.data$btw)) %>%
+        dplyr::mutate(name = factor(.data$name, levels = .data$name))
 
       if (isTRUE(filter_isolates)){
-        df <- df %>% dplyr::filter(degree > 0)
+        df <- df %>% dplyr::filter(.data$degree > 0)
       }
 
       p <- df %>%
-        ggplot2::ggplot(aes(name, btw)) +
+        ggplot2::ggplot(aes(.data$name, .data$btw)) +
         ggplot2::geom_col(fill = colors[[k]], color = "black") +
-        ggplot2::facet_grid(~super.region, scales = "free_x", space = "free_x", switch = "x")  +
+        ggplot2::facet_grid(~.data$super.region, scales = "free_x", space = "free_x", switch = "x")  +
         xlab("Brain Region") + ylab("Betweenness") +
         ylim(ylim)  + theme.bar
 
     } else {
 
-      df <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(group == network) %>%
-        dplyr::arrange(dplyr::desc(btw)) %>%
-        dplyr::mutate(name = factor(name, levels = name))
+      df <- e$networks_summaries[[channel]]$networks_nodes %>% dplyr::filter(.data$group == network) %>%
+        dplyr::arrange(dplyr::desc(.data$btw)) %>%
+        dplyr::mutate(name = factor(.data$name, levels = .data$name))
 
       if (isTRUE(filter_isolates)){
-        df <- df %>% dplyr::filter(degree > 0)
+        df <- df %>% dplyr::filter(.data$degree > 0)
       }
 
       p <- df %>%
-        ggplot2::ggplot(aes(name, btw)) +
+        ggplot2::ggplot(aes(.data$name, .data$btw)) +
         ggplot2::geom_col(fill = colors[[k]], color = "black") +
         xlab("Brain Region") + ylab("Betweenness") +
         ylim(ylim) +
@@ -3252,7 +3248,7 @@ permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_l
   for (n in 1:n_shuffle){
     # Shuffle the group labels
     df$corr_group <- sample(corr_groups, replace = FALSE)
-    matrix_list <-  df %>% dplyr::select(-c(mouse_ID)) %>% dplyr::group_by(corr_group) %>%
+    matrix_list <-  df %>% dplyr::select(-any_of("mouse_ID")) %>% dplyr::group_by_at("corr_group") %>%
       dplyr::group_map(as.matrix, .keep = TRUE)
     element_1_name <- matrix_list[[1]][,"corr_group"] %>% unique()
 
@@ -3328,7 +3324,7 @@ try_correlate <- function(df_channel, type = "pearson"){
     for(r1 in 1:shape[2]){
       for(r2 in 1:r1){
         df_corr$n[r1,r2] <- sum(df_channel[,r1] & df_channel[,r2], na.rm = TRUE)
-        ct <- cor.test(df_channel[,r1], df_channel[,r2], method = type, exact = FALSE)
+        ct <- stats::cor.test(df_channel[,r1], df_channel[,r2], method = type, exact = FALSE)
         df_corr$P[r1,r2] <- ct$p.value
         df_corr$r[r1,r2] <- ct$estimate
       }

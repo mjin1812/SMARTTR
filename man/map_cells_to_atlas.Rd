@@ -61,9 +61,11 @@ Requires segmentation objects to be made for the channels specified and a regist
 }
 \examples{
 \dontrun{
-s <- map_cells_to_atlas(s, channels c('cfos' , 'eyfp', 'colabel'), clean = TRUE, display = TRUE, mouse_ID = "255")
+s <- map_cells_to_atlas(s, channels c('cfos' , 'eyfp', 'colabel'),
+clean = TRUE, display = TRUE, mouse_ID = "255")
 }
 \dontrun{
- m <- map_cells_to_atlas(m, slice_ID = "1_10", hemisphere = NULL, channels = c("cfos", "eyfp", "colabel"), clean = TRUE, replace = FALSE)
+ m <- map_cells_to_atlas(m, slice_ID = "1_10", hemisphere = NULL,
+ channels = c("cfos", "eyfp", "colabel"), clean = TRUE, replace = FALSE)
 }
 }

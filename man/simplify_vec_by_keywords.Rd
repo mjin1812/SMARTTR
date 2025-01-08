@@ -39,5 +39,6 @@ acronyms <- c("LGd", "GU4", "dCA1so" )
 simplify_vec_by_keywords(acronyms)
 
 acronyms <- c("LPBD", "MPBE", "CPre")
-simplify_vec_by_keywords(acronyms, keywords = c("dorsal part", "external part", "Caudoputamen-"), ontology = "unified")
+simplify_vec_by_keywords(acronyms,
+keywords = c("dorsal part", "external part", "Caudoputamen-"), ontology = "unified")
 }
