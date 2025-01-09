@@ -691,7 +691,7 @@ make_segmentation_filter.mouse <- function(x,
 #' @param x a mouse or slice object
 #' @param mouse_ID (str) ID of mouse
 #' @param channels (str vector, default = NULL) Channels to process. If NULL, defaults to the channels stored in the slice object attributes.
-#' @param use_filter (bool, default = FALSE). Use a filter to create more curated segmentation object from the raw segmentation data.
+#' @param use_filter (bool, default = FALSE). Use a filter to create more curated segmentation object from the raw segmentation data. Will be deprecated.
 #' @param ... (optional) additional volume and overlap parameters for get.colabeled.cells().
 #'
 #' @return s slice object
@@ -1068,6 +1068,16 @@ exclude_anatomy.slice <- function(x,
 
   for (channel in channels){
     dataset <- x$forward_warped_data[[channel]]
+
+    if (exclude_layer_1){
+      dataset <- dataset[!grepl("layer 1", dataset$name, ignore.case = TRUE),]
+    }
+
+    if(clean){
+      dataset <- dataset[!dataset$id==0,]
+      dataset <- tidyr::drop_na(dataset)
+    }
+
     if (!(length(include_right_regions)<1)){
       dataset <-  dataset[!dataset$right.hemisphere | (dataset$right.hemisphere & (dataset$acronym %in% include_right_regions)),] # Include regions
     } else {
@@ -1084,13 +1094,6 @@ exclude_anatomy.slice <- function(x,
       } else if (info$hemisphere == "left"){
         dataset <- dataset[!dataset$right.hemisphere,]
       }
-    }
-    if (exclude_layer_1){
-      dataset <- dataset[-grep("layer 1",dataset$name, ignore.case = TRUE, value = FALSE),]
-    }
-    if(clean){
-      dataset <- dataset[!dataset$id==0,]
-      dataset <- tidyr::drop_na(dataset)
     }
     x$forward_warped_data[[channel]] <- dataset
 
