@@ -46,7 +46,6 @@ test_that("reading custom segmentation info from a slice object works", {
 
 
 
-
 test_that("reading custom segmentation info from a mouse object works", {
   m <- make_test_mouse()
 

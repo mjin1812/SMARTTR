@@ -41,7 +41,13 @@
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
-      <ul class="navbar-nav"></ul></div>
+      <ul class="navbar-nav"><li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/mjin1812/SMARTR/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div>
 
     
   </div>
@@ -49,7 +55,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Changelog</h1>
-      
+      <small>Source: <a href="https://github.com/mjin1812/SMARTR/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
@@ -61,7 +67,7 @@
 <ul><li>Major change in the way area/volume of regions is calculated to account for bug in underlying atlas in wholebrain that pulls the wrong region registration outlines for certain subregions. Specifically, areas such as the DG-sg and DG-mo are represented twice in the same atlas plate when the hippocampus curves rostral-caudally. Previously only one of the two subregion outlines were used to calculate area, which should now be fixed.</li>
 <li>Change in the <code>exclude_anatomy</code>, <code>get_registered_volumes</code>, and <code>normalize_cell_counts</code> functions to include a <code>simplify_keywords</code> parameter which automatically re categorizes subregions to their major parent regions based on specific keywords.</li>
 <li>Modified the <code>normalize_cell_counts</code> and <code>combine_cell_counts</code> function to also store counts and areas/volume by slice in the mouse and experiment objects, respectively. This allows for easy evaluation of the raw mapped dataset.</li>
-<li>Our various analysis and visualization function are now compatible with the Kim lab’s <a href="https://kimlab.io/brain-map/atlas/" class="external-link">unified atlas</a>. The <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6838086/" class="external-link">unified</a> atlas synthesizes label from two of the most highly used atlases –Franklin-Paxinos (FP) and the common coordinate framework (CCF) from the Allen Institute.Check out the various help pages for analysis and plotting functions to see which ones now include<code>ontology</code> as a relevant parameter. Simply change the value from <code>allen</code> to <code>unified</code> to process datasets using this ontology.</li>
+<li>Our various analysis and visualization function are now compatible with the Kim lab’s <a href="https://kimlab.io/brain-map/atlas/" class="external-link">unified atlas</a>. The unified atlas synthesizes label from two of the most highly used atlases –Franklin-Paxinos (FP) and the common coordinate framework (CCF) from the Allen Institute.Check out the various help pages for analysis and plotting functions to see which ones now include<code>ontology</code> as a relevant parameter. Simply change the value from <code>allen</code> to <code>unified</code> to process datasets using this ontology.</li>
 <li>New function <code>simplify_cell_count</code> can process external datasets and simplify regions based on keywords. Simplification is based on user indicated atlas (<code>allen</code> or <code>unified</code>)</li>
 </ul></div>
     <div class="section level2">

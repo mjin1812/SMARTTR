@@ -8,10 +8,10 @@ Segmentation data is saved in two'.txt' files which output the results of the Me
 A description of what each of those these options measure
 is provided in the online documentation.
 The naming conventions for the &quot;.txt&quot; file storing the Quantif3D results are Q_*_{channel}_*_{channel}.txt,
-where the * indicates a wildcard character(s) and channel is the channel name without brackets.
+where the * indicates a wildcard character(s) and {channel} is the channel name without brackets.
 E.g. &quot;Q_G_eYFP_258_1_1_eYFP.txt&quot;
 The naming conventions for the &quot;.txt&quot; file storing the Measure 3D are M_*_{channel}_*.txt where
-the * indicates a wildcard character(s) and channel is the channel name without brackets.
+the * indicates a wildcard character(s) and {channel} is the channel name without brackets.
 E.g &quot;M_G_eYFP_258_1_1.txt&quot;.
 The wildcards characters may be used to store things like date or slice naming information.
 The locations of these files must be specified in the slice_directory attribute of the slice_object.
@@ -26,10 +26,10 @@ Segmentation data is saved in two'.txt' files which output the results of the Me
 A description of what each of those these options measure
 is provided in the online documentation.
 The naming conventions for the &quot;.txt&quot; file storing the Quantif3D results are Q_*_{channel}_*_{channel}.txt,
-where the * indicates a wildcard character(s) and channel is the channel name without brackets.
+where the * indicates a wildcard character(s) and {channel} is the channel name without brackets.
 E.g. &quot;Q_G_eYFP_258_1_1_eYFP.txt&quot;
 The naming conventions for the &quot;.txt&quot; file storing the Measure 3D are M_*_{channel}_*.txt where
-the * indicates a wildcard character(s) and channel is the channel name without brackets.
+the * indicates a wildcard character(s) and {channel} is the channel name without brackets.
 E.g &quot;M_G_eYFP_258_1_1.txt&quot;.
 The wildcards characters may be used to store things like date or slice naming information.
 The locations of these files must be specified in the slice_directory attribute of the slice_object.
@@ -77,7 +77,13 @@ Method for custom importation of segmentation data for a mouse object"><!-- math
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
-      <ul class="navbar-nav"></ul></div>
+      <ul class="navbar-nav"><li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/mjin1812/SMARTR/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div>
 
     
   </div>
@@ -85,7 +91,7 @@ Method for custom importation of segmentation data for a mouse object"><!-- math
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>import_segmentation (generic function)</h1>
-      
+      <small class="dont-index">Source: <a href="https://github.com/mjin1812/SMARTR/blob/HEAD/R/mapping_functions.R" class="external-link"><code>R/mapping_functions.R</code></a></small>
       <div class="d-none name"><code>import_segmentation_custom.Rd</code></div>
     </div>
 
@@ -99,10 +105,10 @@ Segmentation data is saved in two'.txt' files which output the results of the Me
 A <a href="https://imagejdocu.list.lu/tutorial/working/tutorial_for_3d_roi_manager" class="external-link">description</a> of what each of those these options measure
 is provided in the online documentation.</p>
 <p>The naming conventions for the ".txt" file storing the Quantif3D results are <code>Q_*_{channel}_*_{channel}.txt</code>,
-where the <code>*</code> indicates a wildcard character(s) and channel is the channel name without brackets.
+where the <code>*</code> indicates a wildcard character(s) and <code>{channel}</code> is the channel name without brackets.
 E.g. "Q_G_eYFP_258_1_1_eYFP.txt"</p>
 <p>The naming conventions for the ".txt" file storing the Measure 3D are <code>M_*_{channel}_*.txt</code> where
-the <code>*</code> indicates a wildcard character(s) and channel is the channel name without brackets.
+the <code>*</code> indicates a wildcard character(s) and <code>{channel}</code> is the channel name without brackets.
 E.g "M_G_eYFP_258_1_1.txt".</p>
 <p>The wildcards characters may be used to store things like date or slice naming information.</p>
 <p>The locations of these files must be specified in the <code>slice_directory</code> attribute of the slice_object.
@@ -193,9 +199,12 @@ This attribute can be stored when initializing the slice object or can be edited
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="va">s</span> <span class="op">&lt;-</span>  <span class="fu">import_segmentation_custom</span><span class="op">(</span><span class="va">s</span>, mouse_ID <span class="op">=</span> <span class="st">"255"</span>, channel <span class="op">=</span> <span class="st">"cfos"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span>  <span class="fu">import_segmentation_custom</span><span class="op">(</span><span class="va">s</span>, mouse_ID <span class="op">=</span> <span class="st">"255"</span>, channel <span class="op">=</span> <span class="st">"cfos"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span>  <span class="fu">import_segmentation</span><span class="op">(</span><span class="va">m</span>, slice_ID <span class="op">=</span> <span class="st">"1_10"</span>, channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PV"</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span>  <span class="fu">import_segmentation</span><span class="op">(</span><span class="va">m</span>, slice_ID <span class="op">=</span> <span class="st">"1_10"</span>, channels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PV"</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

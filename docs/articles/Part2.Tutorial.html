@@ -60,7 +60,14 @@
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
 </form>
 
-      <ul class="navbar-nav"></ul>
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/mjin1812/SMARTR/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 
     
@@ -75,7 +82,7 @@
       <img src="" class="logo" alt=""><h1>2. Mapping Tutorial</h1>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/mjin1812/SMARTR/blob/HEAD/vignettes/Part2.Tutorial.Rmd" class="external-link"><code>vignettes/Part2.Tutorial.Rmd</code></a></small>
       <div class="d-none name"><code>Part2.Tutorial.Rmd</code></div>
     </div>
 
@@ -131,7 +138,7 @@ is fitted to a 2D <code>.tif</code> image. Therefore, if you are
 processing any z-stack images, they need to be flattened and channels
 need to be collapsed into a single image used for the purpose of
 registration. This step needs to be completed prior to using SMARTR for
-registration. We detail how to do this in using our pre-processing <a href="/articles/1.Segmentation.html">article</a></p>
+registration. We detail how to do this in using our pre-processing <a href="/articles/Part1.Segmentation.html">article</a></p>
 </div>
 </div>
 <div class="section level2">
@@ -189,7 +196,7 @@ that others can modify for their own datasets.</p>
 to process!</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load SMARTR</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SMARTR</span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mjin1812.github.io/SMARTR/" class="external-link">SMARTR</a></span><span class="op">)</span></span></code></pre></div>
 <p>You can download our example fully pre-processed image folder <a href="https://osf.io/4qfsc" class="external-link">here</a>. This image came from mouse 733, so
 create a empty folder named <code>733</code> in a location of your
 choice and upzip the image folder into this folder.</p>
@@ -714,8 +721,7 @@ from our learned helplessness mapping experiment.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">"P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\LH_analysis\\learned_helplessness_experiment.RDATA"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Print the names of the mice stores in the learned helplessness experiment object</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">lh</span><span class="op">$</span><span class="va">mice</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] "829"  "831"  "833"  "9658" "9659" "669"  "732"  "733"  "9716" "9753" "9755"</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">lh</span><span class="op">$</span><span class="va">mice</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Aggregating the normalized cell counts across mice into one dataframe
 is done with the <code>combine_norm_cell_counts()</code> function.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">

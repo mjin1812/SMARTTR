@@ -618,7 +618,6 @@ make_segmentation_filter.slice <- function(x,
 #' @param ... further arguments passed to or from other methods.
 #' @param replace (bool, default = FALSE) replace existing filters.
 #' @noRd
-#'
 #' @return m mouse object.  Vector of indices of cells to remove are stored as the channel filters in the slice object within the mouse.
 
 make_segmentation_filter.mouse <- function(x,

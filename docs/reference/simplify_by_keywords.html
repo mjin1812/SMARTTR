@@ -41,7 +41,13 @@
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
-      <ul class="navbar-nav"></ul></div>
+      <ul class="navbar-nav"><li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/mjin1812/SMARTR/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div>
 
     
   </div>
@@ -49,7 +55,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Simplify dataframe by keywords.</h1>
-      
+      <small class="dont-index">Source: <a href="https://github.com/mjin1812/SMARTR/blob/HEAD/R/utils.R" class="external-link"><code>R/utils.R</code></a></small>
       <div class="d-none name"><code>simplify_by_keywords.Rd</code></div>
     </div>
 
@@ -102,7 +108,9 @@ Ventral posteromedial nucleus of the thalamus, parvicellular part","Ventral post
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>acronym <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LGd"</span>, <span class="st">"GU4"</span>, <span class="st">"dCA1so"</span> <span class="op">)</span>, name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dorsal part of the lateral geniculate complex"</span>, <span class="st">"Gustatory areas, layer 4"</span>, <span class="st">"Field CA2, stratum oriens (dorsal)"</span><span class="op">)</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>acronym <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LGd"</span>, <span class="st">"GU4"</span>, <span class="st">"dCA1so"</span> <span class="op">)</span>,</span></span>
+<span class="r-in"><span>name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dorsal part of the lateral geniculate complex"</span>,</span></span>
+<span class="r-in"><span><span class="st">"Gustatory areas, layer 4"</span>, <span class="st">"Field CA2, stratum oriens (dorsal)"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">simplify_by_keywords</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 x 2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   acronym name                                         </span>
@@ -111,8 +119,11 @@ Ventral posteromedial nucleus of the thalamus, parvicellular part","Ventral post
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span><span> GU      Gustatory areas                              </span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span><span> dCA1    Field CA1 (dorsal)                           </span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>acronym <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LPBD"</span>, <span class="st">"MPBE"</span>, <span class="st">"CPre"</span><span class="op">)</span>, name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lateral parabrachial nucleus, dorsal part"</span>, <span class="st">"Medial parabrachial nucleus, external part"</span>, <span class="st">"Caudoputamen- rostral extreme"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">simplify_by_keywords</span><span class="op">(</span><span class="va">df</span>, keywords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dorsal part"</span>, <span class="st">"external part"</span>, <span class="st">"Caudoputamen-"</span><span class="op">)</span>, ontology <span class="op">=</span> <span class="st">"unified"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>acronym <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LPBD"</span>, <span class="st">"MPBE"</span>, <span class="st">"CPre"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lateral parabrachial nucleus, dorsal part"</span>,</span></span>
+<span class="r-in"><span><span class="st">"Medial parabrachial nucleus, external part"</span>, <span class="st">"Caudoputamen- rostral extreme"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">simplify_by_keywords</span><span class="op">(</span><span class="va">df</span>, keywords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dorsal part"</span>, <span class="st">"external part"</span>,</span></span>
+<span class="r-in"><span><span class="st">"Caudoputamen-"</span><span class="op">)</span>, ontology <span class="op">=</span> <span class="st">"unified"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 x 2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   acronym name                        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>   </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>                       </span></span>

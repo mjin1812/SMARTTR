@@ -157,9 +157,6 @@
     <loc>/reference/plot_betweenness_regions.html</loc>
   </url>
   <url>
-    <loc>/reference/plot_cell_counts.html</loc>
-  </url>
-  <url>
     <loc>/reference/plot_correlation_heatmaps.html</loc>
   </url>
   <url>
@@ -251,8 +248,5 @@
   </url>
   <url>
     <loc>/reference/volcano_plot.html</loc>
-  </url>
-  <url>
-    <loc>/well-mice_reprex.html</loc>
   </url>
 </urlset>
