@@ -1,3 +1,7 @@
+ <!-- badges: start -->
+  [![R-CMD-check](https://github.com/mjin1812/SMARTR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mjin1812/SMARTR/actions/workflows/R-CMD-check.yaml)
+ <!-- badges: end -->
+
 
 # SMARTR: **s**imple **m**ulti-ensemble **a**tlas **r**egistration and statistical **t**esting in **R**
 
