@@ -1,6 +1,5 @@
 test_that("normalizing cell counts works on a standard mouse slice", {
 
-  skip("Skipping")  # uncomment when testing this function
   skip_on_ci()
   skip_on_cran()
 

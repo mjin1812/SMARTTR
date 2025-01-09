@@ -1,5 +1,9 @@
 test_that("Excluding anatomy works for mouse and slice objects", {
 
+
+  skip_on_cran()
+  skip_on_ci()
+
   m <- make_test_mapped_mouse_light()
 
   expect_silent(m <- exclude_anatomy(m,

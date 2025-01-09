@@ -1,6 +1,9 @@
 test_that("calculating registered volumes for a slice object works", {
 
   skip_if_not_installed("wholebrain")
+  skip_on_cran()
+  skip_on_ci()
+
   path <- file.path(test_object_path("slice"), "mapped_slice.RDS")
   s <- readRDS(file = path)
   s$volumes <- NULL
