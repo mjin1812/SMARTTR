@@ -23,3 +23,23 @@ make_test_mouse <- function(){
   m <- add_slice(m, s)
   return(m)
 }
+
+
+make_test_mapped_mouse_light <- function(){
+  path <- file.path(test_object_path("slice"), "mapped_slice.RDS")
+  s <- readRDS(file = path)
+  s$registration_obj$outputfile  <- file.path(test_object_path("slice"), "registrations",
+                                              "Registration_MAX_733_1_4")
+
+  m <- mouse(mouse_ID = "733",
+             sex = "female",
+             strain ="129s",
+             experiment = "learned helplessness",
+             group = "context",
+             cohort = "group_A",
+             output_path = test_object_path("mouse"))
+  m <- add_slice(m, s)
+  return(m)
+}
+
+

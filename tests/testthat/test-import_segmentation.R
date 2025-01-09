@@ -184,7 +184,6 @@ test_that("reading segmentation info from a mouse and slice object works", {
                                 hemisphere = NULL,
                                 channels = channels))
 
-
   expect_error(
     m <- make_segmentation_object(m,
                                   slice_ID = "1_4",
