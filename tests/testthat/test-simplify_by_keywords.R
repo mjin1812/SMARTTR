@@ -42,3 +42,27 @@ test_that("Test that simplifying vector of acronyms by keywords works for all on
                                         keywords = c("dorsal part", "external part", "Caudoputamen-"),
                                         ontology = "unified"), df)
 })
+
+
+
+
+
+test_that("test simplify by keywords for experiment object", {
+    skip_on_ci()
+    skip_on_cran()
+
+    simplify_keywords <- readRDS(file.path(test_object_path("external"), "simplify_keywords.RDS"))
+    e <- experiment(experiment_name = "external unified dataset",
+                    experimenters = c(""),
+                    channels = "cfos",
+                    experiment_groups = c("Control", "Isoflurane"),
+                    sex_groups = "male",
+                    output_path = tempdir())
+    path <- file.path(test_object_path("external"), "reformatted_ontologychecked.csv")
+    e <- import_mapped_datasets(e, normalized_count_paths = path, show_col_types = FALSE)
+    expect_error(e <- simplify_cell_count(e, ontology = "unified", simplify_keywords = simplify_keywords),
+                 regexp = NA)
+
+})
+
+

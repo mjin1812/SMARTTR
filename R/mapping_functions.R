@@ -1029,7 +1029,6 @@ exclude_anatomy.slice <- function(x,
                                   simplify_keywords = c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural"),
                                   plot_filtered = TRUE,
                                   ...){
-
   info <- attr(x, 'info')
   if (is.null(channels) && !is.null(info$channels)){
     channels <- info$channels
@@ -1228,7 +1227,7 @@ exclude_anatomy.slice <- function(x,
 #' @return s slice object with a stored dataframe with columns 'name' (full region name), 'acronym', 'area' (in microns^2^), 'volume' (in microns^3^) 'right.hemisphere'
 #' @examples
  #' \dontrun{
- #' s <- get_registered_areas(s)
+ #' s <- get_registered_volumes(s)
  #' }
 #' @export
 #' @md
@@ -1305,6 +1304,7 @@ get_registered_volumes.slice <- function(x,
 
 ## ___ Method for getting regional areas and volumes per slice
 #' Method for getting regional areas and volumes for each slice in a mouse object
+#' @rdname get_registered_volumes
 #' @description  Calculate the registered area (microns^2^) and the regional volumes (microns^3^) of all regions contained in a slice.
 #' Note: Simplification of the analyzed regions by keywords is HIGHLY RECOMMENDED because there are errors in the wholebrain basecode that results in a mismatch between the region acronym mapped to and the
 #' actual registration contour based on the region acronym. This mismatch is most notable in the dentate gyrus subregions, where certain regions are represented twice because the DG curve along the rostral caudal axis.
@@ -1314,7 +1314,6 @@ get_registered_volumes.slice <- function(x,
 #' subregions, but there is a tiny amount of potential space that allows for cells to get mapped to slim spaces between subregions.
 #' This potential anatomical space should be ignored.
 #'
-#'
 #' @param x a mouse or slice object
 #' @param slice_ID (str) ID of slice
 #' @param hemisphere (str) 'left', 'right' or NULL (both)
@@ -1322,12 +1321,15 @@ get_registered_volumes.slice <- function(x,
 #' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure
 #' @param replace (bool, default = FALSE). Replace previously calculated volumes for a particular slice.
 #' @param ...  further arguments passed to or from other methods.
+#'
 #' @return m mouse object
 #' @examples
 #' \dontrun{
 #' m <- get_registered_volumes(m, slice_ID = "1_10", hemisphere = "left", replace = FALSE)
 #' }
 #' @export
+#' @md
+
 
 get_registered_volumes.mouse <- function(x,
                                        slice_ID,

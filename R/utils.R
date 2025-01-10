@@ -17,26 +17,6 @@
 utils::globalVariables(c(".", "!!", ".orig_data", ".tidygraph_edge_index",
                          ".tidygraph_node_index","nodes", "edges"))
 
-
-
-# utils::globalVariables(c(".", "acronym", "normalized.count.by.volume", "normalized.count.mean",
-#                          "sd_norm_counts", "outlier", "network_name", "p_val", "unique_groups",
-#                          "mouse_ID", "R1", "R2", "sig", "right.hemisphere", "name","mean_norm_counts",
-#                          "count.colabel", "colabel_percentage", "colabel_percentage.mean",
-#                          "colabel_percentage.sd", "colabel_percentage.sem", "weight", "p.value",
-#                          "area.bu", "area.mm2", "area.mm2.denom", "area.td", "counts", "count",
-#                          "volume.mm3", "volume.mm3.denom", "edges", "from", "to", "nodes", "edges",
-#                          "count.colabel", "count.denom", "corr_diff", "group", "rowreg", "colreg",
-#                          "corr", "group_plot", "text", "nudge", "corr_group", "row_acronym",
-#                          "degree",  "degree.mean", "degree.sd", "avg.dist", "triangles",
-#                          "btw", "btw.mean", "btw.sd", "clust.coef", "clust.coef.mean", "clust.coef.sd",
-#                          "color", "edge_alpha", "efficiency", "efficiency.mean", "efficiency.sd",
-#                          "mean_normalized_counts", "n.edges", "n.nodes", "null_degree", "sig_text",
-#                          ".orig_data", ".tidygraph_edge_index", ".tidygraph_node_index", "super.region",
-#                          "row_parent", "col_acronym", "col_parent", "k","r","x", "y", "P", "!!"
-#                          ))
-###_____________ General housekeeping functions __________####
-
 #' @title Save experiment data
 #' @description Saves experiment object into it's attribute output path as an RDATA file
 #'  save_experiment(e)

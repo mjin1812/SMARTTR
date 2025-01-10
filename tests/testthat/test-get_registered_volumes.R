@@ -1,15 +1,17 @@
-test_that("calculating registered volumes for a slice object works", {
+test_that("calculating registered volumes for a mouse object works", {
 
   skip_if_not_installed("wholebrain")
   skip_on_cran()
   skip_on_ci()
 
-  path <- file.path(test_object_path("slice"), "mapped_slice.RDS")
-  s <- readRDS(file = path)
-  s$volumes <- NULL
-  expect_error(get_registered_volumes(s),
-               regexp = NA)
-  s$volumes <- NULL
-  expect_error(get_registered_volumes(s, simplify_regions = FALSE),
-               regexp = NA)
+  m <- make_test_mapped_mouse_light()
+  m$slices$`1_4`$volumes <- NULL
+
+  expect_error(get_registered_volumes(m,
+                       slice_ID = "1_4"),
+             regexp = NA)
+
+  expect_error(get_registered_volumes(m, slice_ID = "1_4", simplify_regions = FALSE),
+  regexp = NA)
+
 })
