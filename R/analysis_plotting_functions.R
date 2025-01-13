@@ -20,7 +20,7 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' e <- get_percent_colabel(e, c("group", "sex", channel = "eyfp"))
+#' e <- get_percent_colabel(e, c("group", "sex"), channel = "eyfp"))
 #' }
 get_percent_colabel <- function(e, by, colabel_channel = "colabel",
                                channel = "eyfp", save_table = TRUE, rois = NULL, individual = TRUE){
@@ -96,7 +96,7 @@ get_percent_colabel <- function(e, by, colabel_channel = "colabel",
 #' @param e experiment object
 #' @param by (str) Attribute names to group by, e.g. c("sex", "group")
 #' @param values (str) The respective values of the attributes entered for the `by` parameter to generate a specific analysis group,
-#' e.g.values = c("female", "AD").
+#' e.g.values = c("female", "AD"). Length must be the same as `by`.
 #' @param channels (str, channels =  c("cfos", "eyfp", "colabel") The channels to process.
 #' @param p_adjust_method (bool or str, default = "none") This parameter is fed into the p.adjust function. Options: c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr", "none")
 #'  Apply the named method to control for the inflated false discovery rate or family wise error rate (FWER). Set to FALSE or "none"
@@ -115,7 +115,7 @@ get_percent_colabel <- function(e, by, colabel_channel = "colabel",
 #' @examples
 #' \dontrun{
 #' e <- get_correlations(e, by = c("sex", "group"), values = c("female", "AD"),
-#' channels = c("cfos", "eyfp", "colabel"),  p_adjust_method = "BH", alpha = 0.05)
+#' channels = c("cfos", "eyfp", "colabel"), alpha = 0.05)
 #' }
 #' @seealso [Hmisc::rcorr()]
 get_correlations <- function(e, by, values,
@@ -128,6 +128,11 @@ get_correlations <- function(e, by, values,
                              region_order = NULL){
   corr_list <- list()
   names(corr_list) <- names(channels)
+
+  if (length(by) != length(values)){
+    warning("Your values vector seems too long. Please double check!")
+    values <- values[1:length(by)]
+  }
 
   for (channel in channels){
     df_channel <-  e$combined_normalized_counts[[channel]] %>%
@@ -196,7 +201,7 @@ get_correlations <- function(e, by, values,
 #' @param method (str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute.
 #' Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements, using midranks for ties. See also [Hmisc::rcorr()]
 #' @param seed (int, default = 5) Random seed for future replication.
-#' @param p_adjust_method (bool or str, default = "BH") Benjamini-Hochberg method is recommended.
+#' @param p_adjust_method (bool or str, default = "none")
 #'  Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE or "none"
 #'  to keep "raw" p values. See also [stats::p.adjust()] for the correction options.
 #' @param alpha (float, default = 0.05) The alpha cutoff for significance between region pairwise correlation differences
@@ -213,7 +218,7 @@ get_correlations <- function(e, by, values,
 #'                                             channels = c("cfos", "eyfp", "colabel"),
 #'                                             n_shuffles = 1000,
 #'                                             seed = 5,
-#'                                             p_adjust_method = FALSE
+#'                                             p_adjust_method = "none"
 #'                                             alpha = 0.001,
 #'                                             )
 #'}
@@ -225,7 +230,7 @@ correlation_diff_permutation <- function(e,
                                          n_shuffle = 1000,
                                          method = "pearson",
                                          seed = 5,
-                                         p_adjust_method = "BH",
+                                         p_adjust_method = "none",
                                          alpha = 0.05,
                                          ...){
 
