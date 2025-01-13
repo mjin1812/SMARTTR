@@ -12,7 +12,7 @@ correlation_diff_permutation(
   n_shuffle = 1000,
   method = "pearson",
   seed = 5,
-  p_adjust_method = "BH",
+  p_adjust_method = "none",
   alpha = 0.05,
   ...
 )
@@ -33,7 +33,7 @@ Spearman correlations are the Pearson linear correlations computed on the ranks 
 
 \item{seed}{(int, default = 5) Random seed for future replication.}
 
-\item{p_adjust_method}{(bool or str, default = "BH") Benjamini-Hochberg method is recommended.
+\item{p_adjust_method}{(bool or str, default = "none")
 Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE or "none"
 to keep "raw" p values. See also \code{\link[stats:p.adjust]{stats::p.adjust()}} for the correction options.}
 
@@ -59,7 +59,7 @@ e <- correlation_diff_permutation(sundowning,
                                             channels = c("cfos", "eyfp", "colabel"),
                                             n_shuffles = 1000,
                                             seed = 5,
-                                            p_adjust_method = FALSE
+                                            p_adjust_method = "none"
                                             alpha = 0.001,
                                             )
 }

@@ -1,0 +1,594 @@
+"","mouse_ID","group","acronym","name","count.colabel","count.eyfp","colabel_percentage"
+"1",669,"Shock","ACA","Anterior cingulate area",142,781,18.1818181818182
+"2",669,"Shock","ACB","Nucleus accumbens",25,363,6.8870523415978
+"3",669,"Shock","AI","Agranular insular area",31,205,15.1219512195122
+"4",669,"Shock","AUDd","Dorsal auditory area",96,552,17.3913043478261
+"5",669,"Shock","AUDp","Primary auditory area",96,552,17.3913043478261
+"6",669,"Shock","AUDv","Ventral auditory area",51,374,13.6363636363636
+"7",669,"Shock","BLA","Basolateral amygdalar nucleus",11,69,15.9420289855072
+"8",669,"Shock","BMA","Basomedial amygdalar nucleus",6,38,15.7894736842105
+"9",669,"Shock","CEA","Central amygdalar nucleus",2,18,11.1111111111111
+"10",669,"Shock","CLA","Claustrum",20,79,25.3164556962025
+"11",669,"Shock","COA","Cortical amygdalar area",24,235,10.2127659574468
+"12",669,"Shock","CP","Caudoputamen",35,1008,3.47222222222222
+"13",669,"Shock","dCA1","Field CA1 (dorsal)",15,307,4.88599348534202
+"14",669,"Shock","dCA3","Field CA3 (dorsal)",10,156,6.41025641025641
+"15",669,"Shock","dDG","Dentate gyrus (dorsal)",9,173,5.20231213872832
+"16",669,"Shock","ECT","Ectorhinal area",13,83,15.6626506024096
+"17",669,"Shock","ENT","Entorhinal area",45,392,11.4795918367347
+"18",669,"Shock","EP","Endopiriform nucleus",16,92,17.3913043478261
+"19",669,"Shock","GU","Gustatory areas",17,278,6.11510791366906
+"20",669,"Shock","LHA","Lateral hypothalamic area",19,87,21.8390804597701
+"21",669,"Shock","LS","Lateral septal nucleus",99,249,39.7590361445783
+"22",669,"Shock","MEA","Medial amygdalar nucleus",18,55,32.7272727272727
+"23",669,"Shock","MOp","Primary motor area",230,1765,13.0311614730878
+"24",669,"Shock","MOs","Secondary motor area",138,881,15.6640181611805
+"25",669,"Shock","MRN","Midbrain reticular nucleus",13,98,13.265306122449
+"26",669,"Shock","PA","Posterior amygdalar nucleus",7,47,14.8936170212766
+"27",669,"Shock","PAA","Piriform-amygdalar area",5,54,9.25925925925926
+"28",669,"Shock","PAG","Periaqueductal gray",30,215,13.953488372093
+"29",669,"Shock","PERI","Perirhinal area",5,43,11.6279069767442
+"30",669,"Shock","PG","Pontine gray",26,110,23.6363636363636
+"31",669,"Shock","PH","Posterior hypothalamic nucleus",17,41,41.4634146341463
+"32",669,"Shock","PIR","Piriform area",248,1442,17.1983356449376
+"33",669,"Shock","PTLp","Posterior parietal association areas",360,1764,20.4081632653061
+"34",669,"Shock","RSP","Retrosplenial area",117,977,11.9754350051177
+"35",669,"Shock","SCm","Superior colliculus, motor related",12,101,11.8811881188119
+"36",669,"Shock","SCs","Superior colliculus, sensory related",2,20,10
+"37",669,"Shock","SSp-bfd","Primary somatosensory area, barrel field",96,2563,3.7456106125634
+"38",669,"Shock","SSp-ll","Primary somatosensory area, lower limb",66,1029,6.41399416909621
+"39",669,"Shock","SSp-m","Primary somatosensory area, mouth",6,1271,0.4720692368214
+"40",669,"Shock","SSp-n","Primary somatosensory area, nose",8,1001,0.799200799200799
+"41",669,"Shock","SSp-ul","Primary somatosensory area, upper limb",96,1822,5.26893523600439
+"42",669,"Shock","SSs","Supplemental somatosensory area",10,1151,0.868809730668984
+"43",669,"Shock","SUB","Subiculum",16,236,6.77966101694915
+"44",669,"Shock","TEa","Temporal association areas",30,154,19.4805194805195
+"45",669,"Shock","TR","Postpiriform transition area",7,109,6.42201834862385
+"46",669,"Shock","vCA1","Field CA1 (ventral)",37,368,10.054347826087
+"47",669,"Shock","vCA3","Field CA3 (ventral)",5,160,3.125
+"48",669,"Shock","vDG","Dentate gyrus (ventral)",11,171,6.4327485380117
+"49",669,"Shock","VISal","Anterolateral visual area",173,689,25.1088534107402
+"50",669,"Shock","VISam","Anteromedial visual area",345,1329,25.9593679458239
+"51",669,"Shock","VISC","Visceral area",14,299,4.68227424749164
+"52",669,"Shock","VISp","Primary visual area",491,1644,29.8661800486618
+"53",669,"Shock","VTA","Ventral tegmental area",6,29,20.6896551724138
+"54",669,"Shock","ZI","Zona incerta",14,74,18.9189189189189
+"55",732,"Shock","ACA","Anterior cingulate area",370,1301,28.4396617986164
+"56",732,"Shock","ACB","Nucleus accumbens",13,193,6.73575129533679
+"57",732,"Shock","AI","Agranular insular area",48,198,24.2424242424242
+"58",732,"Shock","AUDd","Dorsal auditory area",281,1299,21.6320246343341
+"59",732,"Shock","AUDp","Primary auditory area",186,806,23.0769230769231
+"60",732,"Shock","AUDv","Ventral auditory area",42,199,21.105527638191
+"61",732,"Shock","BLA","Basolateral amygdalar nucleus",12,67,17.910447761194
+"62",732,"Shock","BMA","Basomedial amygdalar nucleus",8,33,24.2424242424242
+"63",732,"Shock","CEA","Central amygdalar nucleus",1,29,3.44827586206897
+"64",732,"Shock","CLA","Claustrum",28,121,23.1404958677686
+"65",732,"Shock","COA","Cortical amygdalar area",33,106,31.1320754716981
+"66",732,"Shock","CP","Caudoputamen",45,1628,2.76412776412776
+"67",732,"Shock","dCA1","Field CA1 (dorsal)",71,603,11.7744610281924
+"68",732,"Shock","dCA3","Field CA3 (dorsal)",13,156,8.33333333333333
+"69",732,"Shock","dDG","Dentate gyrus (dorsal)",6,295,2.03389830508475
+"70",732,"Shock","ECT","Ectorhinal area",21,177,11.864406779661
+"71",732,"Shock","ENT","Entorhinal area",72,297,24.2424242424242
+"72",732,"Shock","EP","Endopiriform nucleus",32,117,27.3504273504274
+"73",732,"Shock","GU","Gustatory areas",26,416,6.25
+"74",732,"Shock","ILA","Infralimbic area",10,54,18.5185185185185
+"75",732,"Shock","LA","Lateral amygdalar nucleus",4,44,9.09090909090909
+"76",732,"Shock","LHA","Lateral hypothalamic area",18,70,25.7142857142857
+"77",732,"Shock","LS","Lateral septal nucleus",54,190,28.4210526315789
+"78",732,"Shock","MEA","Medial amygdalar nucleus",32,109,29.3577981651376
+"79",732,"Shock","MOp","Primary motor area",916,4761,19.2396555345516
+"80",732,"Shock","MOs","Secondary motor area",763,2698,28.2802075611564
+"81",732,"Shock","MRN","Midbrain reticular nucleus",20,191,10.4712041884817
+"82",732,"Shock","OT","Olfactory tubercle",8,75,10.6666666666667
+"83",732,"Shock","PA","Posterior amygdalar nucleus",2,9,22.2222222222222
+"84",732,"Shock","PAA","Piriform-amygdalar area",11,41,26.8292682926829
+"85",732,"Shock","PAG","Periaqueductal gray",14,102,13.7254901960784
+"86",732,"Shock","PERI","Perirhinal area",19,95,20
+"87",732,"Shock","PG","Pontine gray",7,34,20.5882352941176
+"88",732,"Shock","PH","Posterior hypothalamic nucleus",25,57,43.859649122807
+"89",732,"Shock","PIR","Piriform area",450,1599,28.1425891181989
+"90",732,"Shock","PTLp","Posterior parietal association areas",403,1494,26.9745649263722
+"91",732,"Shock","RSP","Retrosplenial area",83,573,14.4851657940663
+"92",732,"Shock","SCm","Superior colliculus, motor related",61,457,13.3479212253829
+"93",732,"Shock","SCs","Superior colliculus, sensory related",2,27,7.40740740740741
+"94",732,"Shock","SSp-bfd","Primary somatosensory area, barrel field",1292,11129,11.6093090124899
+"95",732,"Shock","SSp-ll","Primary somatosensory area, lower limb",418,1787,23.3911583659765
+"96",732,"Shock","SSp-m","Primary somatosensory area, mouth",17,1232,1.37987012987013
+"97",732,"Shock","SSp-n","Primary somatosensory area, nose",31,833,3.72148859543818
+"98",732,"Shock","SSp-ul","Primary somatosensory area, upper limb",696,4214,16.516373991457
+"99",732,"Shock","SSs","Supplemental somatosensory area",88,2458,3.58014646053702
+"100",732,"Shock","SUB","Subiculum",64,528,12.1212121212121
+"101",732,"Shock","TEa","Temporal association areas",67,337,19.8813056379822
+"102",732,"Shock","TR","Postpiriform transition area",10,133,7.5187969924812
+"103",732,"Shock","vCA1","Field CA1 (ventral)",126,589,21.3921901528014
+"104",732,"Shock","vCA3","Field CA3 (ventral)",15,140,10.7142857142857
+"105",732,"Shock","vDG","Dentate gyrus (ventral)",14,274,5.10948905109489
+"106",732,"Shock","VISal","Anterolateral visual area",597,1635,36.5137614678899
+"107",732,"Shock","VISam","Anteromedial visual area",1339,3652,36.6648411829135
+"108",732,"Shock","VISC","Visceral area",15,627,2.39234449760766
+"109",732,"Shock","VISp","Primary visual area",1538,4205,36.5755053507729
+"110",732,"Shock","VTA","Ventral tegmental area",2,3,66.6666666666667
+"111",732,"Shock","ZI","Zona incerta",4,37,10.8108108108108
+"112",733,"Shock","ACA","Anterior cingulate area",539,1222,44.1080196399345
+"113",733,"Shock","ACB","Nucleus accumbens",23,160,14.375
+"114",733,"Shock","AI","Agranular insular area",40,142,28.169014084507
+"115",733,"Shock","AUDd","Dorsal auditory area",160,697,22.9555236728838
+"116",733,"Shock","AUDp","Primary auditory area",204,788,25.8883248730964
+"117",733,"Shock","AUDv","Ventral auditory area",127,377,33.6870026525199
+"118",733,"Shock","BLA","Basolateral amygdalar nucleus",13,52,25
+"119",733,"Shock","BMA","Basomedial amygdalar nucleus",3,12,25
+"120",733,"Shock","CEA","Central amygdalar nucleus",2,9,22.2222222222222
+"121",733,"Shock","CLA","Claustrum",40,103,38.8349514563107
+"122",733,"Shock","COA","Cortical amygdalar area",19,74,25.6756756756757
+"123",733,"Shock","CP","Caudoputamen",128,2045,6.25916870415648
+"124",733,"Shock","dCA1","Field CA1 (dorsal)",25,153,16.3398692810458
+"125",733,"Shock","dCA3","Field CA3 (dorsal)",6,57,10.5263157894737
+"126",733,"Shock","dDG","Dentate gyrus (dorsal)",4,166,2.40963855421687
+"127",733,"Shock","ECT","Ectorhinal area",26,138,18.8405797101449
+"128",733,"Shock","ENT","Entorhinal area",41,226,18.141592920354
+"129",733,"Shock","EP","Endopiriform nucleus",24,90,26.6666666666667
+"130",733,"Shock","GU","Gustatory areas",43,483,8.90269151138716
+"131",733,"Shock","ILA","Infralimbic area",30,58,51.7241379310345
+"132",733,"Shock","LA","Lateral amygdalar nucleus",3,40,7.5
+"133",733,"Shock","LHA","Lateral hypothalamic area",10,56,17.8571428571429
+"134",733,"Shock","LS","Lateral septal nucleus",101,186,54.3010752688172
+"135",733,"Shock","MEA","Medial amygdalar nucleus",14,62,22.5806451612903
+"136",733,"Shock","MOp","Primary motor area",454,1822,24.9176728869374
+"137",733,"Shock","MOs","Secondary motor area",548,1407,38.9481165600569
+"138",733,"Shock","MRN","Midbrain reticular nucleus",21,108,19.4444444444444
+"139",733,"Shock","OT","Olfactory tubercle",1,38,2.63157894736842
+"140",733,"Shock","PA","Posterior amygdalar nucleus",1,2,50
+"141",733,"Shock","PAA","Piriform-amygdalar area",10,46,21.7391304347826
+"142",733,"Shock","PAG","Periaqueductal gray",24,97,24.7422680412371
+"143",733,"Shock","PERI","Perirhinal area",19,73,26.027397260274
+"144",733,"Shock","PG","Pontine gray",66,153,43.1372549019608
+"145",733,"Shock","PH","Posterior hypothalamic nucleus",11,40,27.5
+"146",733,"Shock","PIR","Piriform area",341,1064,32.0488721804511
+"147",733,"Shock","PTLp","Posterior parietal association areas",205,743,27.5908479138627
+"148",733,"Shock","RSP","Retrosplenial area",250,820,30.4878048780488
+"149",733,"Shock","SCm","Superior colliculus, motor related",16,128,12.5
+"150",733,"Shock","SCs","Superior colliculus, sensory related",10,41,24.390243902439
+"151",733,"Shock","SI","Substantia innominata",1,12,8.33333333333333
+"152",733,"Shock","SSp-bfd","Primary somatosensory area, barrel field",754,5780,13.0449826989619
+"153",733,"Shock","SSp-ll","Primary somatosensory area, lower limb",337,1437,23.4516353514266
+"154",733,"Shock","SSp-m","Primary somatosensory area, mouth",24,1185,2.0253164556962
+"155",733,"Shock","SSp-n","Primary somatosensory area, nose",56,1382,4.0520984081042
+"156",733,"Shock","SSp-ul","Primary somatosensory area, upper limb",733,3765,19.468791500664
+"157",733,"Shock","SSs","Supplemental somatosensory area",144,2474,5.82053354890865
+"158",733,"Shock","SUB","Subiculum",83,557,14.9012567324955
+"159",733,"Shock","TEa","Temporal association areas",72,310,23.2258064516129
+"160",733,"Shock","TR","Postpiriform transition area",10,47,21.2765957446809
+"161",733,"Shock","vCA1","Field CA1 (ventral)",161,763,21.1009174311927
+"162",733,"Shock","vCA3","Field CA3 (ventral)",4,63,6.34920634920635
+"163",733,"Shock","vDG","Dentate gyrus (ventral)",26,294,8.84353741496599
+"164",733,"Shock","VISal","Anterolateral visual area",753,1841,40.9016838674633
+"165",733,"Shock","VISam","Anteromedial visual area",866,1915,45.2219321148825
+"166",733,"Shock","VISC","Visceral area",24,329,7.29483282674772
+"167",733,"Shock","VISp","Primary visual area",1610,3477,46.3042853034225
+"168",733,"Shock","VTA","Ventral tegmental area",2,11,18.1818181818182
+"169",733,"Shock","ZI","Zona incerta",1,7,14.2857142857143
+"170",829,"Context","ACA","Anterior cingulate area",392,635,61.7322834645669
+"171",829,"Context","ACB","Nucleus accumbens",22,60,36.6666666666667
+"172",829,"Context","AI","Agranular insular area",22,81,27.1604938271605
+"173",829,"Context","AUDd","Dorsal auditory area",444,1665,26.6666666666667
+"174",829,"Context","AUDp","Primary auditory area",430,1120,38.3928571428571
+"175",829,"Context","AUDv","Ventral auditory area",261,885,29.4915254237288
+"176",829,"Context","BLA","Basolateral amygdalar nucleus",44,139,31.6546762589928
+"177",829,"Context","BMA","Basomedial amygdalar nucleus",19,64,29.6875
+"178",829,"Context","CEA","Central amygdalar nucleus",8,59,13.5593220338983
+"179",829,"Context","CLA","Claustrum",17,33,51.5151515151515
+"180",829,"Context","COA","Cortical amygdalar area",58,175,33.1428571428571
+"181",829,"Context","CP","Caudoputamen",19,259,7.33590733590734
+"182",829,"Context","dCA1","Field CA1 (dorsal)",381,866,43.9953810623557
+"183",829,"Context","dCA3","Field CA3 (dorsal)",63,293,21.5017064846416
+"184",829,"Context","dDG","Dentate gyrus (dorsal)",24,293,8.19112627986348
+"185",829,"Context","ECT","Ectorhinal area",127,320,39.6875
+"186",829,"Context","ENT","Entorhinal area",237,667,35.5322338830585
+"187",829,"Context","EP","Endopiriform nucleus",39,93,41.9354838709677
+"188",829,"Context","GU","Gustatory areas",17,222,7.65765765765766
+"189",829,"Context","LA","Lateral amygdalar nucleus",11,48,22.9166666666667
+"190",829,"Context","LHA","Lateral hypothalamic area",19,64,29.6875
+"191",829,"Context","LS","Lateral septal nucleus",49,105,46.6666666666667
+"192",829,"Context","MEA","Medial amygdalar nucleus",39,126,30.952380952381
+"193",829,"Context","MOp","Primary motor area",644,2109,30.5357989568516
+"194",829,"Context","MOs","Secondary motor area",985,1786,55.1511758118701
+"195",829,"Context","MRN","Midbrain reticular nucleus",20,77,25.974025974026
+"196",829,"Context","PA","Posterior amygdalar nucleus",6,31,19.3548387096774
+"197",829,"Context","PAA","Piriform-amygdalar area",6,32,18.75
+"198",829,"Context","PAG","Periaqueductal gray",84,231,36.3636363636364
+"199",829,"Context","PERI","Perirhinal area",74,183,40.4371584699454
+"200",829,"Context","PG","Pontine gray",71,321,22.1183800623053
+"201",829,"Context","PH","Posterior hypothalamic nucleus",69,135,51.1111111111111
+"202",829,"Context","PIR","Piriform area",401,882,45.4648526077098
+"203",829,"Context","PTLp","Posterior parietal association areas",1612,2883,55.9139784946236
+"204",829,"Context","RSP","Retrosplenial area",1383,3396,40.7243816254417
+"205",829,"Context","SCm","Superior colliculus, motor related",35,216,16.2037037037037
+"206",829,"Context","SCs","Superior colliculus, sensory related",26,75,34.6666666666667
+"207",829,"Context","SSp-bfd","Primary somatosensory area, barrel field",1719,6425,26.7548638132296
+"208",829,"Context","SSp-ll","Primary somatosensory area, lower limb",280,1053,26.5906932573599
+"209",829,"Context","SSp-m","Primary somatosensory area, mouth",25,1049,2.38322211630124
+"210",829,"Context","SSp-n","Primary somatosensory area, nose",45,814,5.52825552825553
+"211",829,"Context","SSp-ul","Primary somatosensory area, upper limb",263,2106,12.4881291547958
+"212",829,"Context","SSs","Supplemental somatosensory area",258,1945,13.2647814910026
+"213",829,"Context","SUB","Subiculum",329,828,39.7342995169082
+"214",829,"Context","TEa","Temporal association areas",186,576,32.2916666666667
+"215",829,"Context","TR","Postpiriform transition area",7,47,14.8936170212766
+"216",829,"Context","vCA1","Field CA1 (ventral)",266,603,44.1127694859038
+"217",829,"Context","vCA3","Field CA3 (ventral)",11,35,31.4285714285714
+"218",829,"Context","vDG","Dentate gyrus (ventral)",35,266,13.1578947368421
+"219",829,"Context","VISal","Anterolateral visual area",1088,2044,53.2289628180039
+"220",829,"Context","VISam","Anteromedial visual area",1468,2459,59.6990646604311
+"221",829,"Context","VISC","Visceral area",2,41,4.8780487804878
+"222",829,"Context","VISp","Primary visual area",3039,4948,61.4187550525465
+"223",829,"Context","VTA","Ventral tegmental area",6,19,31.5789473684211
+"224",829,"Context","ZI","Zona incerta",22,73,30.1369863013699
+"225",831,"Context","ACA","Anterior cingulate area",333,512,65.0390625
+"226",831,"Context","ACB","Nucleus accumbens",32,111,28.8288288288288
+"227",831,"Context","AI","Agranular insular area",36,90,40
+"228",831,"Context","AUDd","Dorsal auditory area",420,1220,34.4262295081967
+"229",831,"Context","AUDp","Primary auditory area",286,793,36.0655737704918
+"230",831,"Context","AUDv","Ventral auditory area",109,399,27.3182957393484
+"231",831,"Context","BLA","Basolateral amygdalar nucleus",26,103,25.2427184466019
+"232",831,"Context","BMA","Basomedial amygdalar nucleus",11,29,37.9310344827586
+"233",831,"Context","CEA","Central amygdalar nucleus",2,22,9.09090909090909
+"234",831,"Context","CLA","Claustrum",45,86,52.3255813953488
+"235",831,"Context","COA","Cortical amygdalar area",25,119,21.0084033613445
+"236",831,"Context","CP","Caudoputamen",33,560,5.89285714285714
+"237",831,"Context","dCA1","Field CA1 (dorsal)",63,184,34.2391304347826
+"238",831,"Context","dCA3","Field CA3 (dorsal)",13,59,22.0338983050847
+"239",831,"Context","dDG","Dentate gyrus (dorsal)",7,113,6.19469026548673
+"240",831,"Context","ECT","Ectorhinal area",51,168,30.3571428571429
+"241",831,"Context","ENT","Entorhinal area",224,738,30.3523035230352
+"242",831,"Context","EP","Endopiriform nucleus",32,90,35.5555555555556
+"243",831,"Context","GU","Gustatory areas",57,445,12.8089887640449
+"244",831,"Context","ILA","Infralimbic area",13,23,56.5217391304348
+"245",831,"Context","LA","Lateral amygdalar nucleus",2,15,13.3333333333333
+"246",831,"Context","LHA","Lateral hypothalamic area",5,27,18.5185185185185
+"247",831,"Context","LS","Lateral septal nucleus",67,104,64.4230769230769
+"248",831,"Context","MEA","Medial amygdalar nucleus",19,32,59.375
+"249",831,"Context","MOp","Primary motor area",803,1915,41.9321148825065
+"250",831,"Context","MOs","Secondary motor area",656,1162,56.4543889845095
+"251",831,"Context","MRN","Midbrain reticular nucleus",12,70,17.1428571428571
+"252",831,"Context","OT","Olfactory tubercle",7,99,7.07070707070707
+"253",831,"Context","PA","Posterior amygdalar nucleus",4,8,50
+"254",831,"Context","PAA","Piriform-amygdalar area",8,17,47.0588235294118
+"255",831,"Context","PAG","Periaqueductal gray",26,100,26
+"256",831,"Context","PERI","Perirhinal area",32,107,29.9065420560748
+"257",831,"Context","PG","Pontine gray",70,230,30.4347826086957
+"258",831,"Context","PH","Posterior hypothalamic nucleus",1,10,10
+"259",831,"Context","PIR","Piriform area",582,989,58.8473205257836
+"260",831,"Context","PTLp","Posterior parietal association areas",215,562,38.2562277580071
+"261",831,"Context","RSP","Retrosplenial area",406,1650,24.6060606060606
+"262",831,"Context","SCm","Superior colliculus, motor related",36,152,23.6842105263158
+"263",831,"Context","SCs","Superior colliculus, sensory related",7,53,13.2075471698113
+"264",831,"Context","SI","Substantia innominata",4,14,28.5714285714286
+"265",831,"Context","SSp-bfd","Primary somatosensory area, barrel field",1010,4562,22.1394125383604
+"266",831,"Context","SSp-ll","Primary somatosensory area, lower limb",395,1125,35.1111111111111
+"267",831,"Context","SSp-m","Primary somatosensory area, mouth",75,1377,5.44662309368192
+"268",831,"Context","SSp-n","Primary somatosensory area, nose",55,1136,4.84154929577465
+"269",831,"Context","SSp-ul","Primary somatosensory area, upper limb",573,2544,22.5235849056604
+"270",831,"Context","SSs","Supplemental somatosensory area",68,996,6.82730923694779
+"271",831,"Context","SUB","Subiculum",199,593,33.5581787521079
+"272",831,"Context","TEa","Temporal association areas",104,364,28.5714285714286
+"273",831,"Context","TR","Postpiriform transition area",1,32,3.125
+"274",831,"Context","vCA1","Field CA1 (ventral)",222,700,31.7142857142857
+"275",831,"Context","vCA3","Field CA3 (ventral)",9,82,10.9756097560976
+"276",831,"Context","vDG","Dentate gyrus (ventral)",23,269,8.55018587360595
+"277",831,"Context","VISal","Anterolateral visual area",1079,2237,48.2342422887796
+"278",831,"Context","VISam","Anteromedial visual area",953,1957,48.6969851814001
+"279",831,"Context","VISC","Visceral area",5,54,9.25925925925926
+"280",831,"Context","VISp","Primary visual area",1845,3346,55.1404662283323
+"281",831,"Context","VTA","Ventral tegmental area",17,27,62.962962962963
+"282",831,"Context","ZI","Zona incerta",9,32,28.125
+"283",833,"Context","ACA","Anterior cingulate area",505,890,56.7415730337079
+"284",833,"Context","ACB","Nucleus accumbens",31,205,15.1219512195122
+"285",833,"Context","AI","Agranular insular area",42,98,42.8571428571429
+"286",833,"Context","AUDd","Dorsal auditory area",387,1151,33.6229365768897
+"287",833,"Context","AUDp","Primary auditory area",297,844,35.1895734597156
+"288",833,"Context","AUDv","Ventral auditory area",141,475,29.6842105263158
+"289",833,"Context","BLA","Basolateral amygdalar nucleus",45,126,35.7142857142857
+"290",833,"Context","BMA","Basomedial amygdalar nucleus",21,38,55.2631578947368
+"291",833,"Context","CEA","Central amygdalar nucleus",3,46,6.52173913043478
+"292",833,"Context","CLA","Claustrum",32,47,68.0851063829787
+"293",833,"Context","COA","Cortical amygdalar area",33,100,33
+"294",833,"Context","CP","Caudoputamen",142,1267,11.2075769534333
+"295",833,"Context","dCA1","Field CA1 (dorsal)",160,472,33.8983050847458
+"296",833,"Context","dCA3","Field CA3 (dorsal)",39,200,19.5
+"297",833,"Context","dDG","Dentate gyrus (dorsal)",43,324,13.2716049382716
+"298",833,"Context","ECT","Ectorhinal area",50,132,37.8787878787879
+"299",833,"Context","ENT","Entorhinal area",101,203,49.7536945812808
+"300",833,"Context","EP","Endopiriform nucleus",40,100,40
+"301",833,"Context","GU","Gustatory areas",22,377,5.83554376657825
+"302",833,"Context","ILA","Infralimbic area",38,61,62.2950819672131
+"303",833,"Context","LA","Lateral amygdalar nucleus",7,19,36.8421052631579
+"304",833,"Context","LHA","Lateral hypothalamic area",29,75,38.6666666666667
+"305",833,"Context","LS","Lateral septal nucleus",107,166,64.4578313253012
+"306",833,"Context","MEA","Medial amygdalar nucleus",27,49,55.1020408163265
+"307",833,"Context","MOp","Primary motor area",579,1716,33.7412587412587
+"308",833,"Context","MOs","Secondary motor area",892,1610,55.4037267080745
+"309",833,"Context","MRN","Midbrain reticular nucleus",8,41,19.5121951219512
+"310",833,"Context","OT","Olfactory tubercle",5,52,9.61538461538462
+"311",833,"Context","PA","Posterior amygdalar nucleus",4,14,28.5714285714286
+"312",833,"Context","PAA","Piriform-amygdalar area",5,11,45.4545454545455
+"313",833,"Context","PAG","Periaqueductal gray",33,105,31.4285714285714
+"314",833,"Context","PERI","Perirhinal area",36,99,36.3636363636364
+"315",833,"Context","PG","Pontine gray",149,346,43.0635838150289
+"316",833,"Context","PH","Posterior hypothalamic nucleus",20,34,58.8235294117647
+"317",833,"Context","PIR","Piriform area",575,949,60.5900948366702
+"318",833,"Context","PTLp","Posterior parietal association areas",939,1863,50.402576489533
+"319",833,"Context","RSP","Retrosplenial area",332,905,36.6850828729282
+"320",833,"Context","SCm","Superior colliculus, motor related",53,136,38.9705882352941
+"321",833,"Context","SCs","Superior colliculus, sensory related",2,4,50
+"322",833,"Context","SI","Substantia innominata",5,21,23.8095238095238
+"323",833,"Context","SSp-bfd","Primary somatosensory area, barrel field",967,4102,23.5738664066309
+"324",833,"Context","SSp-ll","Primary somatosensory area, lower limb",177,729,24.2798353909465
+"325",833,"Context","SSp-m","Primary somatosensory area, mouth",20,1084,1.8450184501845
+"326",833,"Context","SSp-n","Primary somatosensory area, nose",29,868,3.34101382488479
+"327",833,"Context","SSp-ul","Primary somatosensory area, upper limb",428,2675,16
+"328",833,"Context","SSs","Supplemental somatosensory area",63,1191,5.2896725440806
+"329",833,"Context","SUB","Subiculum",81,380,21.3157894736842
+"330",833,"Context","TEa","Temporal association areas",93,305,30.4918032786885
+"331",833,"Context","TR","Postpiriform transition area",10,39,25.6410256410256
+"332",833,"Context","vCA1","Field CA1 (ventral)",139,394,35.2791878172589
+"333",833,"Context","vCA3","Field CA3 (ventral)",10,83,12.0481927710843
+"334",833,"Context","vDG","Dentate gyrus (ventral)",10,161,6.2111801242236
+"335",833,"Context","VISal","Anterolateral visual area",297,619,47.9806138933764
+"336",833,"Context","VISam","Anteromedial visual area",311,696,44.683908045977
+"337",833,"Context","VISC","Visceral area",3,107,2.80373831775701
+"338",833,"Context","VISp","Primary visual area",611,1183,51.6483516483517
+"339",833,"Context","VTA","Ventral tegmental area",12,31,38.7096774193548
+"340",833,"Context","ZI","Zona incerta",16,45,35.5555555555556
+"341",9658,"Context","ACA","Anterior cingulate area",121,472,25.635593220339
+"342",9658,"Context","ACB","Nucleus accumbens",12,137,8.75912408759124
+"343",9658,"Context","AI","Agranular insular area",23,82,28.0487804878049
+"344",9658,"Context","AUDd","Dorsal auditory area",91,752,12.1010638297872
+"345",9658,"Context","AUDp","Primary auditory area",101,597,16.9179229480737
+"346",9658,"Context","AUDv","Ventral auditory area",31,200,15.5
+"347",9658,"Context","BLA","Basolateral amygdalar nucleus",1,27,3.7037037037037
+"348",9658,"Context","BMA","Basomedial amygdalar nucleus",3,9,33.3333333333333
+"349",9658,"Context","CLA","Claustrum",12,25,48
+"350",9658,"Context","COA","Cortical amygdalar area",11,46,23.9130434782609
+"351",9658,"Context","CP","Caudoputamen",21,624,3.36538461538462
+"352",9658,"Context","dCA1","Field CA1 (dorsal)",7,574,1.21951219512195
+"353",9658,"Context","dCA3","Field CA3 (dorsal)",4,80,5
+"354",9658,"Context","dDG","Dentate gyrus (dorsal)",19,445,4.26966292134831
+"355",9658,"Context","ECT","Ectorhinal area",6,31,19.3548387096774
+"356",9658,"Context","ENT","Entorhinal area",26,100,26
+"357",9658,"Context","EP","Endopiriform nucleus",9,28,32.1428571428571
+"358",9658,"Context","GU","Gustatory areas",7,156,4.48717948717949
+"359",9658,"Context","ILA","Infralimbic area",5,11,45.4545454545455
+"360",9658,"Context","LA","Lateral amygdalar nucleus",2,24,8.33333333333333
+"361",9658,"Context","LHA","Lateral hypothalamic area",11,34,32.3529411764706
+"362",9658,"Context","LS","Lateral septal nucleus",56,102,54.9019607843137
+"363",9658,"Context","MEA","Medial amygdalar nucleus",13,24,54.1666666666667
+"364",9658,"Context","MOp","Primary motor area",206,1703,12.096300645919
+"365",9658,"Context","MOs","Secondary motor area",247,929,26.5877287405813
+"366",9658,"Context","MRN","Midbrain reticular nucleus",4,31,12.9032258064516
+"367",9658,"Context","OT","Olfactory tubercle",1,40,2.5
+"368",9658,"Context","PAA","Piriform-amygdalar area",5,25,20
+"369",9658,"Context","PAG","Periaqueductal gray",19,57,33.3333333333333
+"370",9658,"Context","PERI","Perirhinal area",3,23,13.0434782608696
+"371",9658,"Context","PG","Pontine gray",87,188,46.2765957446808
+"372",9658,"Context","PH","Posterior hypothalamic nucleus",8,37,21.6216216216216
+"373",9658,"Context","PIR","Piriform area",118,307,38.4364820846906
+"374",9658,"Context","PTLp","Posterior parietal association areas",100,668,14.9700598802395
+"375",9658,"Context","RSP","Retrosplenial area",81,546,14.8351648351648
+"376",9658,"Context","SCm","Superior colliculus, motor related",11,52,21.1538461538462
+"377",9658,"Context","SCs","Superior colliculus, sensory related",17,110,15.4545454545455
+"378",9658,"Context","SI","Substantia innominata",2,15,13.3333333333333
+"379",9658,"Context","SSp-bfd","Primary somatosensory area, barrel field",329,4437,7.4149199909849
+"380",9658,"Context","SSp-ll","Primary somatosensory area, lower limb",103,1224,8.41503267973856
+"381",9658,"Context","SSp-m","Primary somatosensory area, mouth",23,1022,2.25048923679061
+"382",9658,"Context","SSp-n","Primary somatosensory area, nose",32,836,3.82775119617225
+"383",9658,"Context","SSp-ul","Primary somatosensory area, upper limb",94,2067,4.54765360425738
+"384",9658,"Context","SSs","Supplemental somatosensory area",24,764,3.1413612565445
+"385",9658,"Context","SUB","Subiculum",13,131,9.9236641221374
+"386",9658,"Context","TEa","Temporal association areas",21,135,15.5555555555556
+"387",9658,"Context","TR","Postpiriform transition area",2,13,15.3846153846154
+"388",9658,"Context","vCA1","Field CA1 (ventral)",44,204,21.5686274509804
+"389",9658,"Context","vCA3","Field CA3 (ventral)",1,9,11.1111111111111
+"390",9658,"Context","vDG","Dentate gyrus (ventral)",29,120,24.1666666666667
+"391",9658,"Context","VISal","Anterolateral visual area",95,308,30.8441558441558
+"392",9658,"Context","VISam","Anteromedial visual area",181,497,36.4185110663984
+"393",9658,"Context","VISC","Visceral area",5,80,6.25
+"394",9658,"Context","VISp","Primary visual area",377,1037,36.3548698167792
+"395",9658,"Context","VTA","Ventral tegmental area",1,1,100
+"396",9658,"Context","ZI","Zona incerta",1,2,50
+"397",9659,"Context","ACA","Anterior cingulate area",151,444,34.009009009009
+"398",9659,"Context","ACB","Nucleus accumbens",6,67,8.95522388059701
+"399",9659,"Context","AI","Agranular insular area",13,43,30.2325581395349
+"400",9659,"Context","AUDd","Dorsal auditory area",174,944,18.4322033898305
+"401",9659,"Context","AUDp","Primary auditory area",164,591,27.7495769881557
+"402",9659,"Context","AUDv","Ventral auditory area",61,255,23.921568627451
+"403",9659,"Context","BLA","Basolateral amygdalar nucleus",7,41,17.0731707317073
+"404",9659,"Context","BMA","Basomedial amygdalar nucleus",3,8,37.5
+"405",9659,"Context","CEA","Central amygdalar nucleus",4,26,15.3846153846154
+"406",9659,"Context","CLA","Claustrum",16,31,51.6129032258064
+"407",9659,"Context","COA","Cortical amygdalar area",12,38,31.5789473684211
+"408",9659,"Context","CP","Caudoputamen",18,581,3.09810671256454
+"409",9659,"Context","dCA1","Field CA1 (dorsal)",38,513,7.40740740740741
+"410",9659,"Context","dCA3","Field CA3 (dorsal)",11,78,14.1025641025641
+"411",9659,"Context","dDG","Dentate gyrus (dorsal)",32,490,6.53061224489796
+"412",9659,"Context","ECT","Ectorhinal area",13,66,19.6969696969697
+"413",9659,"Context","ENT","Entorhinal area",9,55,16.3636363636364
+"414",9659,"Context","EP","Endopiriform nucleus",13,41,31.7073170731707
+"415",9659,"Context","GU","Gustatory areas",8,124,6.45161290322581
+"416",9659,"Context","ILA","Infralimbic area",3,11,27.2727272727273
+"417",9659,"Context","LA","Lateral amygdalar nucleus",4,33,12.1212121212121
+"418",9659,"Context","LHA","Lateral hypothalamic area",4,18,22.2222222222222
+"419",9659,"Context","LS","Lateral septal nucleus",21,72,29.1666666666667
+"420",9659,"Context","MEA","Medial amygdalar nucleus",16,45,35.5555555555556
+"421",9659,"Context","MOp","Primary motor area",310,1949,15.9055926115957
+"422",9659,"Context","MOs","Secondary motor area",299,1130,26.4601769911504
+"423",9659,"Context","MRN","Midbrain reticular nucleus",3,15,20
+"424",9659,"Context","OT","Olfactory tubercle",3,28,10.7142857142857
+"425",9659,"Context","PA","Posterior amygdalar nucleus",1,2,50
+"426",9659,"Context","PAA","Piriform-amygdalar area",6,9,66.6666666666667
+"427",9659,"Context","PAG","Periaqueductal gray",4,40,10
+"428",9659,"Context","PERI","Perirhinal area",4,32,12.5
+"429",9659,"Context","PH","Posterior hypothalamic nucleus",3,13,23.0769230769231
+"430",9659,"Context","PIR","Piriform area",148,386,38.3419689119171
+"431",9659,"Context","PTLp","Posterior parietal association areas",42,120,35
+"432",9659,"Context","RSP","Retrosplenial area",22,194,11.340206185567
+"433",9659,"Context","SCm","Superior colliculus, motor related",6,28,21.4285714285714
+"434",9659,"Context","SI","Substantia innominata",1,10,10
+"435",9659,"Context","SSp-bfd","Primary somatosensory area, barrel field",435,4605,9.44625407166124
+"436",9659,"Context","SSp-ll","Primary somatosensory area, lower limb",171,1056,16.1931818181818
+"437",9659,"Context","SSp-m","Primary somatosensory area, mouth",23,743,3.09555854643338
+"438",9659,"Context","SSp-n","Primary somatosensory area, nose",29,431,6.72853828306264
+"439",9659,"Context","SSp-ul","Primary somatosensory area, upper limb",257,2557,10.0508408290966
+"440",9659,"Context","SSs","Supplemental somatosensory area",10,272,3.67647058823529
+"441",9659,"Context","SUB","Subiculum",17,109,15.5963302752294
+"442",9659,"Context","TEa","Temporal association areas",24,110,21.8181818181818
+"443",9659,"Context","vCA1","Field CA1 (ventral)",76,373,20.3753351206434
+"444",9659,"Context","vCA3","Field CA3 (ventral)",14,109,12.8440366972477
+"445",9659,"Context","vDG","Dentate gyrus (ventral)",16,147,10.8843537414966
+"446",9659,"Context","VISal","Anterolateral visual area",116,311,37.2990353697749
+"447",9659,"Context","VISam","Anteromedial visual area",196,504,38.8888888888889
+"448",9659,"Context","VISC","Visceral area",4,91,4.3956043956044
+"449",9659,"Context","VISp","Primary visual area",207,484,42.7685950413223
+"450",9659,"Context","VTA","Ventral tegmental area",1,5,20
+"451",9659,"Context","ZI","Zona incerta",9,37,24.3243243243243
+"452",9716,"Shock","ACA","Anterior cingulate area",29,205,14.1463414634146
+"453",9716,"Shock","AUDd","Dorsal auditory area",25,264,9.46969696969697
+"454",9716,"Shock","AUDp","Primary auditory area",44,200,22
+"455",9716,"Shock","AUDv","Ventral auditory area",16,126,12.6984126984127
+"456",9716,"Shock","BMA","Basomedial amygdalar nucleus",1,6,16.6666666666667
+"457",9716,"Shock","CLA","Claustrum",1,2,50
+"458",9716,"Shock","CP","Caudoputamen",5,122,4.0983606557377
+"459",9716,"Shock","dCA1","Field CA1 (dorsal)",51,715,7.13286713286713
+"460",9716,"Shock","dCA3","Field CA3 (dorsal)",4,49,8.16326530612245
+"461",9716,"Shock","dDG","Dentate gyrus (dorsal)",5,178,2.80898876404494
+"462",9716,"Shock","ECT","Ectorhinal area",3,24,12.5
+"463",9716,"Shock","ENT","Entorhinal area",1,4,25
+"464",9716,"Shock","LA","Lateral amygdalar nucleus",1,16,6.25
+"465",9716,"Shock","LHA","Lateral hypothalamic area",1,17,5.88235294117647
+"466",9716,"Shock","LS","Lateral septal nucleus",14,85,16.4705882352941
+"467",9716,"Shock","MEA","Medial amygdalar nucleus",3,14,21.4285714285714
+"468",9716,"Shock","MOp","Primary motor area",74,520,14.2307692307692
+"469",9716,"Shock","MOs","Secondary motor area",82,407,20.1474201474201
+"470",9716,"Shock","PAA","Piriform-amygdalar area",1,9,11.1111111111111
+"471",9716,"Shock","PERI","Perirhinal area",3,19,15.7894736842105
+"472",9716,"Shock","PH","Posterior hypothalamic nucleus",5,56,8.92857142857143
+"473",9716,"Shock","PIR","Piriform area",12,101,11.8811881188119
+"474",9716,"Shock","PTLp","Posterior parietal association areas",138,702,19.6581196581197
+"475",9716,"Shock","RSP","Retrosplenial area",22,186,11.8279569892473
+"476",9716,"Shock","SSp-bfd","Primary somatosensory area, barrel field",29,467,6.20985010706638
+"477",9716,"Shock","SSp-ll","Primary somatosensory area, lower limb",36,582,6.18556701030928
+"478",9716,"Shock","SSp-m","Primary somatosensory area, mouth",9,317,2.8391167192429
+"479",9716,"Shock","SSp-n","Primary somatosensory area, nose",2,313,0.638977635782748
+"480",9716,"Shock","SSp-ul","Primary somatosensory area, upper limb",39,750,5.2
+"481",9716,"Shock","SSs","Supplemental somatosensory area",14,586,2.38907849829352
+"482",9716,"Shock","TEa","Temporal association areas",3,36,8.33333333333333
+"483",9716,"Shock","VISC","Visceral area",2,149,1.34228187919463
+"484",9753,"Shock","ACA","Anterior cingulate area",72,418,17.2248803827751
+"485",9753,"Shock","ACB","Nucleus accumbens",12,159,7.54716981132075
+"486",9753,"Shock","AI","Agranular insular area",17,92,18.4782608695652
+"487",9753,"Shock","AUDd","Dorsal auditory area",76,674,11.2759643916914
+"488",9753,"Shock","AUDp","Primary auditory area",119,586,20.3071672354949
+"489",9753,"Shock","AUDv","Ventral auditory area",59,334,17.6646706586826
+"490",9753,"Shock","BLA","Basolateral amygdalar nucleus",5,31,16.1290322580645
+"491",9753,"Shock","BMA","Basomedial amygdalar nucleus",7,19,36.8421052631579
+"492",9753,"Shock","CEA","Central amygdalar nucleus",1,14,7.14285714285714
+"493",9753,"Shock","CLA","Claustrum",11,52,21.1538461538462
+"494",9753,"Shock","COA","Cortical amygdalar area",10,68,14.7058823529412
+"495",9753,"Shock","CP","Caudoputamen",35,1257,2.78440731901352
+"496",9753,"Shock","dCA1","Field CA1 (dorsal)",97,1144,8.47902097902098
+"497",9753,"Shock","dCA3","Field CA3 (dorsal)",8,164,4.8780487804878
+"498",9753,"Shock","dDG","Dentate gyrus (dorsal)",8,234,3.41880341880342
+"499",9753,"Shock","ECT","Ectorhinal area",18,70,25.7142857142857
+"500",9753,"Shock","ENT","Entorhinal area",15,77,19.4805194805195
+"501",9753,"Shock","EP","Endopiriform nucleus",12,54,22.2222222222222
+"502",9753,"Shock","GU","Gustatory areas",1,19,5.26315789473684
+"503",9753,"Shock","ILA","Infralimbic area",2,11,18.1818181818182
+"504",9753,"Shock","LA","Lateral amygdalar nucleus",2,28,7.14285714285714
+"505",9753,"Shock","LHA","Lateral hypothalamic area",4,48,8.33333333333333
+"506",9753,"Shock","LS","Lateral septal nucleus",25,77,32.4675324675325
+"507",9753,"Shock","MOp","Primary motor area",208,1591,13.073538654934
+"508",9753,"Shock","MOs","Secondary motor area",116,638,18.1818181818182
+"509",9753,"Shock","PAA","Piriform-amygdalar area",1,14,7.14285714285714
+"510",9753,"Shock","PAG","Periaqueductal gray",10,116,8.62068965517241
+"511",9753,"Shock","PERI","Perirhinal area",9,36,25
+"512",9753,"Shock","PG","Pontine gray",36,400,9
+"513",9753,"Shock","PH","Posterior hypothalamic nucleus",17,100,17
+"514",9753,"Shock","PIR","Piriform area",115,424,27.122641509434
+"515",9753,"Shock","PTLp","Posterior parietal association areas",269,1981,13.5790005047956
+"516",9753,"Shock","RSP","Retrosplenial area",117,991,11.8062563067608
+"517",9753,"Shock","SCm","Superior colliculus, motor related",4,70,5.71428571428571
+"518",9753,"Shock","SI","Substantia innominata",1,17,5.88235294117647
+"519",9753,"Shock","SSp-bfd","Primary somatosensory area, barrel field",64,3269,1.9577852554298
+"520",9753,"Shock","SSp-ll","Primary somatosensory area, lower limb",134,1091,12.282309807516
+"521",9753,"Shock","SSp-m","Primary somatosensory area, mouth",4,624,0.641025641025641
+"522",9753,"Shock","SSp-n","Primary somatosensory area, nose",25,1104,2.26449275362319
+"523",9753,"Shock","SSp-ul","Primary somatosensory area, upper limb",163,1957,8.3290751149719
+"524",9753,"Shock","SSs","Supplemental somatosensory area",29,1522,1.9053876478318
+"525",9753,"Shock","SUB","Subiculum",37,347,10.6628242074928
+"526",9753,"Shock","TEa","Temporal association areas",59,226,26.1061946902655
+"527",9753,"Shock","TR","Postpiriform transition area",2,13,15.3846153846154
+"528",9753,"Shock","vCA1","Field CA1 (ventral)",86,549,15.6648451730419
+"529",9753,"Shock","vCA3","Field CA3 (ventral)",2,45,4.44444444444444
+"530",9753,"Shock","vDG","Dentate gyrus (ventral)",4,284,1.40845070422535
+"531",9753,"Shock","VISal","Anterolateral visual area",115,669,17.1898355754858
+"532",9753,"Shock","VISam","Anteromedial visual area",257,1138,22.5834797891037
+"533",9753,"Shock","VISC","Visceral area",9,207,4.34782608695652
+"534",9753,"Shock","VISp","Primary visual area",283,1571,18.0140038192234
+"535",9753,"Shock","ZI","Zona incerta",2,28,7.14285714285714
+"536",9755,"Shock","ACA","Anterior cingulate area",91,449,20.2672605790646
+"537",9755,"Shock","ACB","Nucleus accumbens",20,154,12.987012987013
+"538",9755,"Shock","AI","Agranular insular area",26,123,21.1382113821138
+"539",9755,"Shock","AUDd","Dorsal auditory area",159,912,17.4342105263158
+"540",9755,"Shock","AUDp","Primary auditory area",183,714,25.6302521008403
+"541",9755,"Shock","AUDv","Ventral auditory area",113,390,28.974358974359
+"542",9755,"Shock","BLA","Basolateral amygdalar nucleus",5,31,16.1290322580645
+"543",9755,"Shock","BMA","Basomedial amygdalar nucleus",9,27,33.3333333333333
+"544",9755,"Shock","CEA","Central amygdalar nucleus",1,20,5
+"545",9755,"Shock","CLA","Claustrum",17,54,31.4814814814815
+"546",9755,"Shock","COA","Cortical amygdalar area",22,160,13.75
+"547",9755,"Shock","CP","Caudoputamen",35,784,4.46428571428571
+"548",9755,"Shock","dCA1","Field CA1 (dorsal)",121,1064,11.3721804511278
+"549",9755,"Shock","dCA3","Field CA3 (dorsal)",8,135,5.92592592592593
+"550",9755,"Shock","dDG","Dentate gyrus (dorsal)",24,431,5.56844547563805
+"551",9755,"Shock","ECT","Ectorhinal area",35,149,23.489932885906
+"552",9755,"Shock","ENT","Entorhinal area",17,84,20.2380952380952
+"553",9755,"Shock","EP","Endopiriform nucleus",7,32,21.875
+"554",9755,"Shock","GU","Gustatory areas",18,325,5.53846153846154
+"555",9755,"Shock","ILA","Infralimbic area",1,8,12.5
+"556",9755,"Shock","LA","Lateral amygdalar nucleus",8,40,20
+"557",9755,"Shock","LHA","Lateral hypothalamic area",5,33,15.1515151515152
+"558",9755,"Shock","LS","Lateral septal nucleus",63,176,35.7954545454545
+"559",9755,"Shock","MEA","Medial amygdalar nucleus",6,41,14.6341463414634
+"560",9755,"Shock","MOp","Primary motor area",274,1423,19.255094869993
+"561",9755,"Shock","MOs","Secondary motor area",247,1000,24.7
+"562",9755,"Shock","MRN","Midbrain reticular nucleus",2,29,6.89655172413793
+"563",9755,"Shock","OT","Olfactory tubercle",3,89,3.37078651685393
+"564",9755,"Shock","PA","Posterior amygdalar nucleus",7,54,12.962962962963
+"565",9755,"Shock","PAA","Piriform-amygdalar area",6,35,17.1428571428571
+"566",9755,"Shock","PAG","Periaqueductal gray",17,88,19.3181818181818
+"567",9755,"Shock","PERI","Perirhinal area",19,78,24.3589743589744
+"568",9755,"Shock","PG","Pontine gray",8,17,47.0588235294118
+"569",9755,"Shock","PH","Posterior hypothalamic nucleus",6,32,18.75
+"570",9755,"Shock","PIR","Piriform area",136,558,24.3727598566308
+"571",9755,"Shock","PTLp","Posterior parietal association areas",150,1046,14.34034416826
+"572",9755,"Shock","RSP","Retrosplenial area",289,1514,19.0885072655218
+"573",9755,"Shock","SCm","Superior colliculus, motor related",9,66,13.6363636363636
+"574",9755,"Shock","SCs","Superior colliculus, sensory related",3,48,6.25
+"575",9755,"Shock","SI","Substantia innominata",1,14,7.14285714285714
+"576",9755,"Shock","SSp-bfd","Primary somatosensory area, barrel field",144,2292,6.282722513089
+"577",9755,"Shock","SSp-ll","Primary somatosensory area, lower limb",166,758,21.8997361477573
+"578",9755,"Shock","SSp-m","Primary somatosensory area, mouth",16,1249,1.28102481985588
+"579",9755,"Shock","SSp-n","Primary somatosensory area, nose",26,1106,2.35081374321881
+"580",9755,"Shock","SSp-ul","Primary somatosensory area, upper limb",157,1902,8.25446898002103
+"581",9755,"Shock","SSs","Supplemental somatosensory area",37,1083,3.41643582640813
+"582",9755,"Shock","SUB","Subiculum",18,161,11.1801242236025
+"583",9755,"Shock","TEa","Temporal association areas",52,273,19.047619047619
+"584",9755,"Shock","TR","Postpiriform transition area",2,26,7.69230769230769
+"585",9755,"Shock","vCA1","Field CA1 (ventral)",93,582,15.979381443299
+"586",9755,"Shock","vCA3","Field CA3 (ventral)",5,100,5
+"587",9755,"Shock","vDG","Dentate gyrus (ventral)",10,250,4
+"588",9755,"Shock","VISal","Anterolateral visual area",258,980,26.3265306122449
+"589",9755,"Shock","VISam","Anteromedial visual area",285,1249,22.8182546036829
+"590",9755,"Shock","VISC","Visceral area",4,97,4.12371134020619
+"591",9755,"Shock","VISp","Primary visual area",488,1945,25.0899742930591
+"592",9755,"Shock","VTA","Ventral tegmental area",1,1,100
+"593",9755,"Shock","ZI","Zona incerta",2,21,9.52380952380952

@@ -234,19 +234,14 @@ correlation_diff_permutation <- function(e,
                                          alpha = 0.05,
                                          ...){
 
-  # Return the correlations list data showing the grouping and the values
   attr_group_1 <- attributes(e$correlation_list[[correlation_list_name_1]])
   attr_group_2 <- attributes(e$correlation_list[[correlation_list_name_2]])
 
-  # # Get overlapping regions between the two correlational datasets
   p_matrix_list <- vector(mode = "list", length = length(channels))
   names(p_matrix_list) <- channels
 
   for (channel in channels) {
-    # Obtain combined cell count table for this channel
     df_channel <- e$combined_normalized_counts[[channel]]
-
-    # Get cell count table for the two groups
     df_channel_group_1 <- filter_df_by_char_params(df_channel, attr_group_1$group_by, attr_group_1$values)
     df_channel_group_2 <- filter_df_by_char_params(df_channel, attr_group_2$group_by, attr_group_2$values)
 
@@ -262,10 +257,11 @@ correlation_diff_permutation <- function(e,
       dplyr::ungroup() %>%
       dplyr::select(-any_of(SMARTR::attr2match$mouse))
 
-    # Select the common regions in anatomical order across the two group dataframes
     common_regions_btwn_groups <- intersect(names(df_channel_group_1), names(df_channel_group_2))
-    df_channel_group_1 <- df_channel_group_1 %>% dplyr::select(any_of(c("mouse_ID", "corr_group")), all_of(common_regions_btwn_groups)) %>% dplyr::mutate(mouse_ID = as.character(.data$mouse_ID))
-    df_channel_group_2 <- df_channel_group_2 %>% dplyr::select(any_of(c("mouse_ID", "corr_group")), all_of(common_regions_btwn_groups)) %>% dplyr::mutate(mouse_ID = as.character(.data$mouse_ID))
+    df_channel_group_1 <- df_channel_group_1 %>% dplyr::select(any_of(c("mouse_ID", "corr_group")), all_of(common_regions_btwn_groups)) %>%
+      dplyr::mutate(mouse_ID = as.character(.data$mouse_ID))
+    df_channel_group_2 <- df_channel_group_2 %>% dplyr::select(any_of(c("mouse_ID", "corr_group")), all_of(common_regions_btwn_groups)) %>%
+      dplyr::mutate(mouse_ID = as.character(.data$mouse_ID))
     df_channel_groups <- dplyr::bind_rows(df_channel_group_1, df_channel_group_2)
 
     group_1_corr <- df_channel_group_1 %>% dplyr::select(dplyr::where(is.numeric)) %>%
@@ -290,12 +286,9 @@ correlation_diff_permutation <- function(e,
     # test_statistic_distributions <- test_statistic_distributions %>% aperm(c(1, 2, 3))
     # aperm(c(3, 2, 1))
 
-    # calculate the p-value of the permutation
     p_matrix <- matrix(nrow = dim(test_statistic)[1],
                        ncol = dim(test_statistic)[1],
                        dimnames = dimnames(test_statistic))
-
-    # Change to names just to be precise?
     l_reg <- dimnames(test_statistic)[1] %>% unlist()
     for (i in 1:length(l_reg)){
       for (j in 1:length(l_reg)){
@@ -337,6 +330,7 @@ correlation_diff_permutation <- function(e,
 #' @param ontology (str, default = "allen") Set to "unified" for Kim Lab unified ontology
 #' @param filter_significant (bool, default = TRUE) If FALSE, this keeps all comparisons. Otherwise exports only the most different and significant permutations.
 #' @export
+#' @return NULL
 #' @examples
 #' \dontrun{
 #' e <- export_permutation_results(e, permutation_groups = "all", filter_significant = TRUE)
@@ -347,7 +341,6 @@ export_permutation_results <- function(e,
                                        channels = c("cfos"),
                                        ontology = "allen",
                                        filter_significant =  TRUE){
-
   if (permutation_groups == "all") {
     permutation_groups <- e$permutation_p_matrix %>% names()
   } else{
@@ -398,10 +391,12 @@ export_permutation_results <- function(e,
 
       if (filter_significant) {
       utils::write.csv(permutation_results, file.path(output_dir, paste0("permutation_results", "_", pg, "_", channel, "_significant.csv")), row.names = FALSE)
+      } else {
+        utils::write.csv(permutation_results, file.path(output_dir, paste0("permutation_results", "_", pg, "_", channel, ".csv")), row.names = FALSE)
       }
-      utils::write.csv(permutation_results, file.path(output_dir, paste0("permutation_results", "_", pg, "_", channel, ".csv")), row.names = FALSE)
     }
   }
+  return(NULL)
 }
 
 #' Create graph objects for plotting different analysis subgroups.

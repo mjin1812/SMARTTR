@@ -1,4 +1,4 @@
-test_that("mapping a cells to atlas works on mouse and slie objects", {
+test_that("mapping a cells to atlas works on mouse and slice objects", {
 
   skip_if_not_installed("wholebrain")
   skip_on_cran()
@@ -13,6 +13,9 @@ test_that("mapping a cells to atlas works on mouse and slie objects", {
                       display = FALSE,
                       channels = NULL),
                 regexp = NA)
-
-
 })
+
+
+
+
+

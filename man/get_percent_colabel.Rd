@@ -43,6 +43,6 @@ cfos or eyfp channels. The colabelled percentage of individual animals will be c
 }
 \examples{
 \dontrun{
-e <- get_percent_colabel(e, c("group", "sex", channel = "eyfp"))
+e <- get_percent_colabel(e, c("group", "sex"), channel = "eyfp"))
 }
 }

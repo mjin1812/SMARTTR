@@ -24,7 +24,7 @@ get_correlations(
 \item{by}{(str) Attribute names to group by, e.g. c("sex", "group")}
 
 \item{values}{(str) The respective values of the attributes entered for the \code{by} parameter to generate a specific analysis group,
-e.g.values = c("female", "AD").}
+e.g.values = c("female", "AD"). Length must be the same as \code{by}.}
 
 \item{channels}{(str, channels =  c("cfos", "eyfp", "colabel") The channels to process.}
 
@@ -55,7 +55,7 @@ This analysis will get regional cross correlations based on cell counts normaliz
 \examples{
 \dontrun{
 e <- get_correlations(e, by = c("sex", "group"), values = c("female", "AD"),
-channels = c("cfos", "eyfp", "colabel"),  p_adjust_method = "BH", alpha = 0.05)
+channels = c("cfos", "eyfp", "colabel"), alpha = 0.05)
 }
 }
 \seealso{
