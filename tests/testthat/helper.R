@@ -44,3 +44,14 @@ make_test_mapped_mouse_light <- function(){
 
 
 
+
+make_test_experiment_light <- function(){
+
+  path <- file.path(test_object_path("experiment"), "experiment_light.RDS")
+  # path <- file.path(test_object_path("experiment"), "experiment.RDS")
+  e <- readRDS(file = path)
+  attr(e, "info")$output_path <- tempdir()
+  return(e)
+
+}
+

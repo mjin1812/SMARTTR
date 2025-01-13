@@ -1689,14 +1689,9 @@ normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
                            normalized.count.by.volume = .data$count.colabel/.data$count.denom)
   colabel_normalized <- colabel_normalized %>% dplyr::select(dplyr::all_of(c(by, "count", "area.mm2", "volume.mm3",
                                                                              "normalized.count.by.area", "normalized.count.by.volume")))
-  # Returns normalized channel
   norm_chan <- paste0("colabel_over_", denominator_channel)
   e$combined_normalized_counts[[norm_chan]] <- colabel_normalized
-
-
-  # Update the channel information
-  attr(e, "info")$channels <- c( attr(e, "info")$channels, norm_chan)
-
+  attr(e, "info")$channels <- c( attr(e, "info")$channels, norm_chan) %>% unique()
   return(e)
 }
 
