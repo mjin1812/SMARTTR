@@ -219,7 +219,7 @@ get_correlations <- function(e, by, values,
 #'                                             n_shuffles = 1000,
 #'                                             seed = 5,
 #'                                             p_adjust_method = "none"
-#'                                             alpha = 0.001,
+#'                                             alpha = 0.001
 #'                                             )
 #'}
 #'
@@ -407,7 +407,7 @@ export_permutation_results <- function(e,
 #' @param proportional_thresh (float, default = NULL) Takes precedent over the `alph`a and the `pearson_thresh` parameters. Input the desired edge proportion (i.e., edge density) as your desired sparsity constraint.
 #' @param alpha (float, default = 0.05) The significance threshold for including brain regions in the network. if NULL or NA,
 #' this threshold is not applied.
-#' @param pearson_thresh (float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out
+#' @param pearson_thresh (float, default = 0) The pearson correlation coefficient threshold to apply for filtering out
 #' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #' @param filter_isolates (logical, default = FALSE) Whether to filter out the number of isolated (zero degree) nodes from the network. Default is to retain them.
 #' @param anatomical.order (vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.
@@ -429,7 +429,7 @@ create_networks <- function(e,
                             channels = c("cfos", "eyfp", "colabel"),
                             proportional_thresh = NULL,
                             alpha = 0.05,
-                            pearson_thresh = 0.8,
+                            pearson_thresh = 0,
                             ontology = "allen",
                             anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"),
                             filter_isolates = FALSE){
@@ -528,8 +528,8 @@ create_networks <- function(e,
   return(e)
 }
 
-#' Summarize multiple networks. Create summary dataframes of for multiple networks and
-#' calculate network statistics for each network.
+#' Summarize multiple networks.
+#' calculate network statistics for each network. This is not meant to summarize networks created using `create_joined_networks`.
 #' @param e experiment object
 #' @param network_names (str) The names of the networks to generate summary tables for, e.g. network_names = c("female_AD", "female_control")
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
@@ -648,20 +648,20 @@ summarise_networks <- function(e,
 #' Create a joined network to visualize overlapping connections with the same outer joined node set.
 #'
 #' @param e experiment object
+#' @param correlation_list_names (str vec) character vector of the two correlation lists used to include in a joined network
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
 #' @param proportional_thresh (float, default = NULL) Takes precedent over the `alpha` and the `pearson_thresh` parameters. Input the desired edge proportion (i.e., edge density) as your desired sparsity constraint.
 #' @param alpha (float, default = 0.05) The significance threshold for including brain regions in the network. if NULL or NA,
 #' this threshold is not applied.
 #' @param pearson_thresh (float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out
-#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
-#' @param correlation_list_names (str vec) character vector of the two correlation lists used to include in a joined network
-#' @param export_overlapping_edges (bool, default  = TRUE) Whether to export the overlapping edges between the two networks as a csv into the `table` directory.
-#' @param anatomical.order (vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.
 #' @param proportional_thresh2 (NULL) If not NULL, this gives the option of filtering the second network by a different proportional threshold from the first.
 #' @param alpha2 (NULL) If not NULL, this gives the option of filtering the second network by a different alpha from the first. The `alpha` parameter will then be used as the threshold for network 1.
 #' @param pearson_thresh2 (NULL) If not NULL, this gives the option of filtering the second network by a different pearson threshold from the first network.
 #' The `pearson_thresh` parameter will then be used as the threshold for network 1.
-
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
+#' @param filter_isolates (logical, default = TRUE) Whether to filter out the number of isolated (zero degree) nodes from the network. Default is to retain them.
+#' @param export_overlapping_edges (bool, default  = TRUE) Whether to export the overlapping edges between the two networks as a csv into the `table` directory.
+#' @param anatomical.order (vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.
 #' @return e experiment object. This object now has a new added element called `networks.` This is a list storing a
 #' graph object per channel for each network analysis run. The name of each network (`network_name`) is the same as the `correlation_list_name`
 #' used to generate the network. This `network_name` is fed as a parameter into the
@@ -683,6 +683,7 @@ create_joined_networks <- function(e,
                                    alpha2 = NULL,
                                    pearson_thresh2 = NULL,
                                    proportional_thresh2 = NULL,
+                                   filter_isolates = TRUE,
                                    anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"),
                                    export_overlapping_edges = TRUE){
 
@@ -745,8 +746,6 @@ create_joined_networks <- function(e,
     network2 <- tidygraph::tbl_graph(nodes = nodes_joined[[2]],
                                      edges = edges_joined[[2]],
                                      directed = FALSE)
-
-    # Remove self-loops and parallel edges
     network1 <- network1 %>%
       tidygraph::convert(tidygraph::to_simple) %>%
       tidygraph::activate(edges) %>%
@@ -775,7 +774,6 @@ create_joined_networks <- function(e,
       tidygraph::activate(nodes) %>%
       tidygraph::select(-.tidygraph_node_index)
 
-    ######### check that proportional thresholding is null or NA. If proportional thresholding has a value, then that takes precedent over alpha or pearson thresholding
     if (!is.na(proportional_thresh) && !is.null(proportional_thresh)){
       edges <- network1 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(.data$weight)) %>% dplyr::as_tibble()
       row <- round(igraph::gsize(network1)*proportional_thresh)
@@ -816,8 +814,12 @@ create_joined_networks <- function(e,
     network <- tidygraph::graph_join(network1, network2)
     network <- network %>% tidygraph::activate(nodes) %>%
       dplyr::mutate(super.region = factor(.data$super.region, levels = unique(.data$super.region)),
-                    degree = tidygraph::centrality_degree(mode="all")) %>%
-      dplyr::filter(.data$degree>0)
+                    degree = tidygraph::centrality_degree(mode="all"))
+
+    if (filter_isolates){
+      network <- network %>% activate(nodes) %>%
+        dplyr::filter(.data$degree > 0)
+    }
 
     networks[[channel]] <- network
 
@@ -1419,7 +1421,7 @@ plot_cell_counts <- function(e,
 #' values = list(c("female", "non"), c("female", "agg")), colors = c("white", "lightblue"))
 #' }
 plot_normalized_counts <- function(e,
-                                    channels = c("cfos", "eyfp", "colabel"),
+                                   channels = c("cfos", "eyfp", "colabel"),
                                     by = c("sex", "group"),
                                     values = list(c("female", "non"),
                                                   c("female", "agg"),
@@ -1647,7 +1649,8 @@ plot_correlation_heatmaps <- function(e,
                                       ontology = "allen",
                                       anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU",
                                                            "TH", "HY", "MB", "HB", "CB"),
-                                      print_plot = FALSE, save_plot = TRUE, image_ext = ".png",
+                                      print_plot = FALSE,
+                                      save_plot = TRUE, image_ext = ".png",
                                       plot_title = NULL, height = 10, width = 10,
                                       theme.hm = ggplot2::theme(axis.text.x = element_text(hjust = 1, vjust = 0.5, angle = 90, size = 8),
                                                                 axis.text.y = element_text(vjust = 0.5, size = 8),
@@ -1799,7 +1802,7 @@ volcano_plot <- function(e,
   ## plotting theme
   if (is.null(plt_theme)){
     plt_theme <- ggplot2::theme_classic() + theme(text = element_text(size = 22),
-                                                   line = element_line(size = 1),
+                                                   line = element_line(linewidth = 1),
                                                    plot.title = element_text(hjust = 0.5, size = 36),
                                                    axis.ticks.length = unit(5.5,"points"),
                                                    axis.text.x = element_text(colour = "black"),
@@ -1841,7 +1844,7 @@ volcano_plot <- function(e,
 
     p <- ggplot(df, aes(x = .data$corr_diff, y = -log10(.data$p_val))) +
       geom_point(size = point_size) +
-      geom_point(data = subset(df, .data$sig > 0 & .data$corr_diff <= -1 | .data$sig > 0 & .data$corr_diff >= 1), color = colors[k], size = point_size) +
+      geom_point(data = subset(df, df$sig > 0 & df$corr_diff <= -1 | df$sig > 0 & df$corr_diff >= 1), color = colors[k], size = point_size) +
       geom_vline(xintercept = c(-1, 1), color = colors[k], size = 1) +
       geom_hline(yintercept = -log10(alpha), color = colors[k], size = 1) +
       ggplot2::coord_cartesian(xlim = c(-2.1, 2.1)) +
