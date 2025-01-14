@@ -957,7 +957,6 @@ summarize_null_networks <- function(null_nodes_list,
                                     channel = "cfos"){
   summaries <- vector(mode="list", length = 2)
   names(summaries) <- c("node_summary", "global_summary")
-
   for (n in 1:length(null_nodes_list)){
     if (n == 1){
     null_node_summary <- null_nodes_list[[n]][[channel]] %>% dplyr::group_by_at(c("name", "super.region")) %>%

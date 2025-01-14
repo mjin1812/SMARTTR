@@ -64,7 +64,6 @@ test_that("plotting a volcano plot works", {
   expect_silent(print(p$eyfp))
 })
 
-
 test_that("plotting a parallel coordinate plot works", {
   skip_on_cran()
   skip_on_ci()
@@ -82,7 +81,6 @@ test_that("plotting a parallel coordinate plot works", {
 
   expect_s3_class(p$eyfp, "ggplot")
 })
-
 
 test_that("plotting networks works", {
   skip_on_cran()
@@ -103,7 +101,6 @@ test_that("plotting networks works", {
                       label_offset = 0.15)
  expect_s3_class(p$eyfp, "ggplot")
 })
-
 
 test_that("plotting joined networks works", {
   skip_on_cran()
@@ -132,4 +129,163 @@ test_that("plotting joined networks works", {
                             save_plot = FALSE)
  expect_s3_class(p$eyfp, "ggplot")
 })
+
+test_that("plotting degree distributions works", {
+  skip_on_cran()
+  skip_on_ci()
+  e <- make_analyzed_experiment()
+
+  p <- plot_degree_distributions(e,
+                            channels = "eyfp",
+                            color_palettes = c("reds", "greens"),
+                            colors_manual = c("Context" = "#ffffff", "Shock" = "#00782e"),
+                            labels = c("Context" = "Context", "Shock" = "Shock") ,
+                            title = "my_title",
+                            image_ext = ".png",
+                            print_plot = FALSE,
+                            theme.gg = NULL,
+                            save_plot = FALSE)
+
+  expect_s3_class(p$eyfp, "ggplot")
+})
+
+test_that("plotting mean degree  works", {
+  skip_on_cran()
+  skip_on_ci()
+  e <- make_analyzed_experiment()
+
+  p <- plot_mean_degree(e,
+                        channels = "eyfp",
+                        colors_manual = c("Context" = "#ffffff", "Shock" = "#00782e"),
+                         labels = c("Context" = "Context", "Shock" = "Shock") ,
+                         title = "my_title",
+                         print_plot = FALSE,
+                         theme.gg = NULL,
+                         save_plot = FALSE)
+  expect_s3_class(p$eyfp, "ggplot")
+})
+
+test_that("plotting mean clustering coefficient works", {
+  skip_on_cran()
+  skip_on_ci()
+  e <- make_analyzed_experiment()
+
+  p <- plot_mean_clust_coeff(e,
+                        channels = "eyfp",
+                        colors_manual = c("Context" = "#ffffff", "Shock" = "#00782e"),
+                        labels = c("Context" = "Context", "Shock" = "Shock") ,
+                        title = "my_title",
+                        print_plot = FALSE,
+                        theme.gg = NULL,
+                        save_plot = FALSE)
+  expect_s3_class(p$eyfp, "ggplot")
+})
+
+test_that("plotting mean global efficiency works", {
+  skip_on_cran()
+  skip_on_ci()
+  e <- make_analyzed_experiment()
+
+  p <- plot_mean_global_effic(e,
+                        channels = "eyfp",
+                        colors_manual = c("Context" = "#ffffff", "Shock" = "#00782e"),
+                        labels = c("Context" = "Context", "Shock" = "Shock") ,
+                        title = "my_title",
+                        print_plot = FALSE,
+                        theme.gg = NULL,
+                        save_plot = FALSE)
+  expect_s3_class(p$eyfp, "ggplot")
+})
+
+test_that("plotting mean betweenness centrality works", {
+  skip_on_cran()
+  skip_on_ci()
+  e <- make_analyzed_experiment()
+
+  p <- plot_mean_between_centrality (e,
+                        channels = "eyfp",
+                        colors_manual = c("Context" = "#ffffff", "Shock" = "#00782e"),
+                        labels = c("Context" = "Context", "Shock" = "Shock") ,
+                        title = "my_title",
+                        print_plot = FALSE,
+                        theme.gg = NULL,
+                        save_plot = FALSE)
+  expect_s3_class(p$eyfp, "ggplot")
+})
+
+test_that("plotting plot_degree_region works", {
+  skip_on_cran()
+  skip_on_ci()
+  e <- make_analyzed_experiment()
+
+  expect_silent(p <- plot_degree_regions(e,
+                          channels = "eyfp",
+                          colors = c("Context" = "#ffffff", "Shock" = "#00782e"),
+                          title = "my_title",
+                          print_plot = FALSE,
+                          sort_super_region = FALSE,
+                          filter_isolates = TRUE,
+                          save_plot = FALSE))
+  expect_s3_class(p$eyfp, "ggplot")
+
+  expect_silent(p <- plot_degree_regions(e,
+                          channels = "eyfp",
+                          colors = c("Context" = "#ffffff", "Shock" = "#00782e"),
+                          title = "my_title",
+                          print_plot = FALSE,
+                          sort_super_region = TRUE,
+                          filter_isolates = TRUE,
+                          save_plot = FALSE))
+  expect_s3_class(p$eyfp, "ggplot")
+})
+
+test_that("plotting plot_betweenness_region works", {
+  skip_on_cran()
+  skip_on_ci()
+  e <- make_analyzed_experiment()
+
+  expect_silent(p <- plot_betweenness_regions(e,
+                          channels = "eyfp",
+                          colors = c("Context" = "#ffffff", "Shock" = "#00782e"),
+                          title = "my_title",
+                          print_plot = FALSE,
+                          sort_super_region = FALSE,
+                          filter_isolates = TRUE,
+                          save_plot = FALSE))
+  expect_s3_class(p$eyfp, "ggplot")
+
+  expect_silent(p <- plot_betweenness_regions(e,
+                          channels = "eyfp",
+                          colors = c("Context" = "#ffffff", "Shock" = "#00782e"),
+                          title = "my_title",
+                          print_plot = FALSE,
+                          sort_super_region = TRUE,
+                          filter_isolates = TRUE,
+                          save_plot = FALSE))
+  expect_s3_class(p$eyfp, "ggplot")
+})
+
+test_that("plotting plot_percent_colabel works", {
+  skip_on_cran()
+  skip_on_ci()
+  e <- make_analyzed_experiment()
+
+ expect_warning(p <-  plot_percent_colabel(e,
+                            colabel_channel = "colabel",
+                            channel = "eyfp",
+                            rois = c("AAA", "dDG", "HY"),
+                            color_mapping = "group",
+                            colors = c("#952899", "#358a9c"),
+                            error_bar = "sem",
+                            ylim = c(0, 100),
+                            plot_individual = TRUE,
+                            height = 8,
+                            width = 8,
+                            print_plot = FALSE,
+                            save_plot = FALSE),
+                regexp = "Ignoring `mapping`")
+
+  expect_s3_class(p, "ggplot")
+})
+
 
