@@ -9,7 +9,7 @@ adjust_brain_outline(s, filter = NULL)
 \arguments{
 \item{s}{slice object}
 
-\item{filter}{(list, default = NULL) If the user passes their own filter list, it will use that instead of the presaved filter list from SMARTR.}
+\item{filter}{(list, default = NULL) If the user passes their own filter list, it will use that instead of the presaved filter list from SMARTTR.}
 }
 \value{
 filter (list) wholebrain compatible filter

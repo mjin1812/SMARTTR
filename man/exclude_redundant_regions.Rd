@@ -18,7 +18,7 @@ e experiment object
 }
 \description{
 Your dataset may contain redundant information because it includes counts at different "ontological" resolutions.
-SMARTR initially operates at the highest "resolution" and later on, can fold sub-regions into parent regions later.
+SMARTTR initially operates at the highest "resolution" and later on, can fold sub-regions into parent regions later.
 Therefore redundant counts from parent regions should be removed from datasets using this function prior to analysis and plotting functions.
 }
 \details{

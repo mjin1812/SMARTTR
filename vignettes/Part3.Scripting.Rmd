@@ -26,7 +26,7 @@ A little bit of scripting can go quite a long way in scaling up this pipeline. I
 
 ## Batch object creation
 
-Although the organization of data into objects ensure a logical and heirarchical data management structure in SMARTR, it can be super tedious to manually create each mouse and slice object and store each slice object into the appropriate mouse object. Here we provide a script that essentially performs this process automatically after reading in an excel file where users can more easily enter and edit metadata for mouse and slice object. Download the template [here](https://osf.io/zdm5w)!
+Although the organization of data into objects ensure a logical and heirarchical data management structure in SMARTTR, it can be super tedious to manually create each mouse and slice object and store each slice object into the appropriate mouse object. Here we provide a script that essentially performs this process automatically after reading in an excel file where users can more easily enter and edit metadata for mouse and slice object. Download the template [here](https://osf.io/zdm5w)!
 
 When you open the template, you will see the left side (green colored columns) includes columns to populate the mouse metadata. 
 
@@ -56,7 +56,7 @@ Once you're done entering into the spread sheet, either [download](https://osf.i
 
 
 # Dependencies:
-library(SMARTR)
+library(SMARTTR)
 library(tidyverse)
 library(magrittr)
 library(stringdist)
@@ -162,7 +162,7 @@ for (s in 1:length(df$slice)){
   }
 
   # Populate the slice information
-  my_slice <- SMARTR::slice(slice_ID = df$slice[s],
+  my_slice <- SMARTTR::slice(slice_ID = df$slice[s],
                             coordinate = df$`atlas coordinate`[s],
                             conversion_factor = df$`conversion factor`[s],
                             bin = df$bin[s],
@@ -199,7 +199,7 @@ To improve the experience of registrations, we provide an interactive notebook f
 
 ## Batch segmentation importation and mapping
 
-To automate the process of atlas mapping across many mice, we provide a demo batch script that allows for batch segmentation importation, mapping, region exclusion, and concatenation of datasets across all slices for each mouse. Before running this code, make sure all registrations are complete within all mice. Additionally make sure all segmentation macros in ImageJ have been run on all images so that segmentation output is available for importation into SMARTR. 
+To automate the process of atlas mapping across many mice, we provide a demo batch script that allows for batch segmentation importation, mapping, region exclusion, and concatenation of datasets across all slices for each mouse. Before running this code, make sure all registrations are complete within all mice. Additionally make sure all segmentation macros in ImageJ have been run on all images so that segmentation output is available for importation into SMARTTR. 
 
 
 [batch mapping script](https://osf.io/fdp8v)

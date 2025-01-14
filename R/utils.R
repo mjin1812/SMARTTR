@@ -235,7 +235,7 @@ add_mouse <- function(e, m, replace = FALSE){
     }
   }
   # Check with the other experimental attributes and see if there are any new unique ones -> store it
-  attr2match <- SMARTR::attr2match
+  attr2match <- SMARTTR::attr2match
   mouse_attr <- attr(m, 'info')
   exp_attr <- attr(e,"info")
 
@@ -332,7 +332,7 @@ reset_mouse_root <- function(m, input_path = NULL, print = TRUE){
 
 #' @noRd
 m2e_attr <- function(attribs){
-  attr2match <- SMARTR::attr2match
+  attr2match <- SMARTTR::attr2match
   matched <- c()
   for (attr in attribs){
     matched <- c(matched, attr2match$exp[stringdist::amatch(attr, attr2match$mouse, maxDist=Inf)])
@@ -342,7 +342,7 @@ m2e_attr <- function(attribs){
 
 #' @noRd
 e2m_attr <- function(attribs){
-  attr2match <- SMARTR::attr2match
+  attr2match <- SMARTTR::attr2match
   matched <- c()
   for (attr in attribs){
     matched <- c(matched, attr2match$mouse[stringdist::amatch(attr, attr2match$exp, maxDist=Inf)])
@@ -352,7 +352,7 @@ e2m_attr <- function(attribs){
 
 #' @noRd
 match_e_attr <- function(attribs){
-  attr2match <- SMARTR::attr2match
+  attr2match <- SMARTTR::attr2match
   matched <- c()
   for (attr in attribs){
     matched <- c(matched, attr2match$exp[stringdist::amatch(attr, attr2match$exp, maxDist=Inf)])
@@ -362,7 +362,7 @@ match_e_attr <- function(attribs){
 
 #' @noRd
 match_m_attr <- function(attribs){
-  attr2match <- SMARTR::attr2match
+  attr2match <- SMARTTR::attr2match
   matched <- c()
   for (attr in attribs){
     matched <- c(matched, attr2match$mouse[stringdist::amatch(attr, attr2match$mouse, maxDist=Inf)])
@@ -480,8 +480,8 @@ simplify_by_keywords <- function(df,
         df$acronym[k] <- get.acronym.parent(df$acronym[k])
         df$name[k] <- as.character(name.from.acronym(df$acronym[k]))
       } else {
-        # df$acronym[k] <- SMARTR::get.acronym.parent.custom(df$acronym[k], ontology = ontology)
-        # df$name[k] <- as.character(SMARTR::name.from.acronym.custom(df$acronym[k], ontology = ontology))
+        # df$acronym[k] <- SMARTTR::get.acronym.parent.custom(df$acronym[k], ontology = ontology)
+        # df$name[k] <- as.character(SMARTTR::name.from.acronym.custom(df$acronym[k], ontology = ontology))
         ids <- id.from.acronym.custom(df$acronym[k], ontology = ontology)
         parent_ids <- parentid.from.id.custom(ids, ontology=ontology)
         df$acronym[k] <- acronym.from.id.custom(parent_ids, ontology = ontology)
@@ -559,8 +559,8 @@ simplify_vec_by_keywords <- function(vec,
         df$acronym[k] <- get.acronym.parent(df$acronym[k])
         df$name[k] <- as.character(name.from.acronym(df$acronym[k]))
       } else {
-        # df$acronym[k] <- SMARTR::get.acronym.parent.custom(df$acronym[k], ontology = ontology)
-        # df$name[k] <- as.character(SMARTR::name.from.acronym.custom(df$acronym[k], ontology = ontology))
+        # df$acronym[k] <- SMARTTR::get.acronym.parent.custom(df$acronym[k], ontology = ontology)
+        # df$name[k] <- as.character(SMARTTR::name.from.acronym.custom(df$acronym[k], ontology = ontology))
         ids <- id.from.acronym.custom(df$acronym[k], ontology = ontology)
         parent_ids <- parentid.from.id.custom(ids, ontology=ontology)
         df$acronym[k] <- acronym.from.id.custom(parent_ids, ontology = ontology)
@@ -581,7 +581,7 @@ simplify_vec_by_keywords <- function(vec,
 }
 
 #' Get region ontology name from acronym
-#' @description Get whole regional names from acronyms based on a lookup table including SMARTR's custom ontology for the
+#' @description Get whole regional names from acronyms based on a lookup table including SMARTTR's custom ontology for the
 #' dorsal ventral split of the hippocampus
 #' @param x (str) Regional acronym or vector of regional acronyms
 #' @return full ontology names of regions
@@ -589,19 +589,19 @@ simplify_vec_by_keywords <- function(vec,
 
 name.from.acronym <- function (x){
   x <- na.omit(x)
-  unlist(lapply(x, function(y){ SMARTR::ontology$name[SMARTR::ontology$acronym %in% y] %>% return()})) %>% return()
+  unlist(lapply(x, function(y){ SMARTTR::ontology$name[SMARTTR::ontology$acronym %in% y] %>% return()})) %>% return()
 }
 
 #' Get region ontology name from ID
 #' @description Similar to wholebrain package's search functions to get whole regional names from a numerical ID lookup table
-#' including SMARTR's custom ontology for the  dorsal ventral split of the hippocampus
+#' including SMARTTR's custom ontology for the  dorsal ventral split of the hippocampus
 #' @param x (int) integer ID
 #' @return full ontology names of regions
 #' @noRd
 
 name.from.id <- function (x){
   x <- na.omit(x)
-  unlist(lapply(x, function(y){ SMARTR::ontology$name[SMARTR::ontology$id %in% y] %>% return()})) %>% return()
+  unlist(lapply(x, function(y){ SMARTTR::ontology$name[SMARTTR::ontology$id %in% y] %>% return()})) %>% return()
 }
 
 
@@ -695,13 +695,13 @@ get.sup.structure <- function (x, matching.string = c("CTX", "CNU", "IB",
 get.acronym.child <-  function (x)
   {
     ids <- unlist(lapply(x, function(y) {
-      if (length(which(SMARTR::ontology$parent == SMARTR::ontology$id[which(SMARTR::ontology$acronym ==
+      if (length(which(SMARTTR::ontology$parent == SMARTTR::ontology$id[which(SMARTTR::ontology$acronym ==
                                                             y)])) != 0) {
         if (y == "root") {
           return("997")
         }
         else {
-          return(SMARTR::ontology$id[which(SMARTR::ontology$parent == SMARTR::ontology$id[which(SMARTR::ontology$acronym ==
+          return(SMARTTR::ontology$id[which(SMARTTR::ontology$parent == SMARTTR::ontology$id[which(SMARTTR::ontology$acronym ==
                                                                           y)])])
         }
       }
@@ -721,12 +721,12 @@ get.acronym.child <-  function (x)
 get.acronym.parent <- function (x)
 {
   ids <- unlist(lapply(x, function(y) {
-    if (length(which(SMARTR::ontology$acronym == y)) != 0) {
+    if (length(which(SMARTTR::ontology$acronym == y)) != 0) {
       if (y == "root") {
         return("997")
       }
       else {
-        return(SMARTR::ontology$parent[which(SMARTR::ontology$acronym ==
+        return(SMARTTR::ontology$parent[which(SMARTTR::ontology$acronym ==
                                        y)])
       }
     }
@@ -744,8 +744,8 @@ get.acronym.parent <- function (x)
 acronym.from.id <- function (x)
 {
   unlist(lapply(x, function(y) {
-    if (length(which(SMARTR::ontology$id == y)) != 0) {
-      return(as.character(SMARTR::ontology$acronym[which(SMARTR::ontology$id ==
+    if (length(which(SMARTTR::ontology$id == y)) != 0) {
+      return(as.character(SMARTTR::ontology$acronym[which(SMARTTR::ontology$id ==
                                                    y)]))
     }
     else {
@@ -808,8 +808,8 @@ with_timeout <- function(expr, cpu=1, elapsed=1){
 #' @noRd
 name.from.acronym.custom <- function (x, ontology = "unified"){
   if (tolower(ontology) == "unified"){
-    indices <- lapply(x, function(y){which(SMARTR::ontology.unified$acronym %in% y)}) %>% unlist()
-    return(SMARTR::ontology.unified$name[indices])
+    indices <- lapply(x, function(y){which(SMARTTR::ontology.unified$acronym %in% y)}) %>% unlist()
+    return(SMARTTR::ontology.unified$name[indices])
     } else {
     stop("You did not enter a valid ontology name.")
   }
@@ -825,7 +825,7 @@ name.from.acronym.custom <- function (x, ontology = "unified"){
 
 name.from.id.custom <- function (x, ontology = "unified"){
   if (tolower(ontology) == "unified"){
-    unlist(lapply(x, function(y){SMARTR::ontology.unified$name[SMARTR::ontology.unified$id %in% y] %>% return()})) %>% return()
+    unlist(lapply(x, function(y){SMARTTR::ontology.unified$name[SMARTTR::ontology.unified$id %in% y] %>% return()})) %>% return()
   }else {
     stop("You did not enter a valid ontology name.")
   }
@@ -842,7 +842,7 @@ name.from.id.custom <- function (x, ontology = "unified"){
 id.from.acronym.custom <- function (x, ontology = "unified"){
   # x <- na.omit(x)
   if (tolower(ontology) == "unified"){
-    unlist(lapply(x, function(y){SMARTR::ontology.unified$id[SMARTR::ontology.unified$acronym %in% y] %>% return()})) %>% return()
+    unlist(lapply(x, function(y){SMARTTR::ontology.unified$id[SMARTTR::ontology.unified$acronym %in% y] %>% return()})) %>% return()
   } else {
     stop("You did not enter a valid ontology name.")
   }
@@ -860,8 +860,8 @@ get.acronym.child.custom <-  function (x, ontology = "unified")
 {
   if (tolower(ontology) == "unified"){
     acronyms <- unlist(lapply(x, function(y) {
-      if (length(which(SMARTR::ontology.unified$parent_acronym == y) != 0)) {
-        return(SMARTR::ontology.unified$acronym[which(SMARTR::ontology.unified$parent_acronym == y)])
+      if (length(which(SMARTTR::ontology.unified$parent_acronym == y) != 0)) {
+        return(SMARTTR::ontology.unified$acronym[which(SMARTTR::ontology.unified$parent_acronym == y)])
       }
       else {
         return(NA)
@@ -883,12 +883,12 @@ get.acronym.parent.custom <- function (x, ontology = "unified")
 {
   if (tolower(ontology) == "unified"){
     parents <- unlist(lapply(x, function(y) {
-      if (length(which(SMARTR::ontology.unified$acronym == y)) != 0) {
+      if (length(which(SMARTTR::ontology.unified$acronym == y)) != 0) {
         if (y == "root") {
           return("")
         }
         else {
-          return(SMARTR::ontology.unified$parent_acronym[which(SMARTR::ontology.unified$acronym == y)])
+          return(SMARTTR::ontology.unified$parent_acronym[which(SMARTTR::ontology.unified$acronym == y)])
         }
       }
       else {
@@ -911,8 +911,8 @@ get.acronym.parent.custom <- function (x, ontology = "unified")
 acronym.from.id.custom <- function (x, ontology = "unified"){
   if (tolower(ontology) == "unified"){
     acronyms <- unlist(lapply(x, function(y) {
-      if (length(which(SMARTR::ontology.unified$id == y)) != 0) {
-        return(as.character(SMARTR::ontology.unified$acronym[which(SMARTR::ontology.unified$id == y)]))
+      if (length(which(SMARTTR::ontology.unified$id == y)) != 0) {
+        return(as.character(SMARTTR::ontology.unified$acronym[which(SMARTTR::ontology.unified$id == y)]))
       }
       else {
         return(NA)
@@ -935,8 +935,8 @@ acronym.from.id.custom <- function (x, ontology = "unified"){
 parentid.from.id.custom <- function (x, ontology = "unified"){
   if (tolower(ontology) == "unified"){
     acronyms <- unlist(lapply(x, function(y) {
-      if (length(which(SMARTR::ontology.unified$id == y)) != 0) {
-        return(SMARTR::ontology.unified$parent[which(SMARTR::ontology.unified$id == y)])
+      if (length(which(SMARTTR::ontology.unified$id == y)) != 0) {
+        return(SMARTTR::ontology.unified$parent[which(SMARTTR::ontology.unified$id == y)])
       }
       else {
         return(NA)
@@ -968,7 +968,7 @@ get.sub.structure.custom <- function(x, ontology = "unified"){
       # print(get.sub.structure.custom(i, ontology = ontology))
       tmp2 <- append(tmp2, get.sub.structure.custom(i, ontology = ontology))
     }
-    tmp2 <- intersect(tmp2, SMARTR::ontology.unified$acronym)
+    tmp2 <- intersect(tmp2, SMARTTR::ontology.unified$acronym)
   } else {
     stop("You did not enter a valid ontology name.")
   }

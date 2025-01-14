@@ -36,7 +36,7 @@ We recommend a minimum of 32 GB of RAM because the image processing scripts can 
 
 It depends on the specs of your computer and the size and specs of your images. Since our images are somewhat high resolution, and our image [segmentation macro](https://osf.io/bek56) segments in 3D not 2D, it can be relatively computationally intensive. However, it is easy to process an equivalent dataset of ~150 images over a weekend using a computer with the recommended hardware specs.
 
-## What are some common errors I might encounter either using SMARTR or in wholebrain?
+## What are some common errors I might encounter either using SMARTTR or in wholebrain?
 
 ### R out of bounds error during registration or mapping
 
@@ -85,13 +85,13 @@ filter$resize <- 0.1
 
 #### None of the above fixed my issue.
 
-As SMARTR is a wrapper around registration and mapping functions in wholebrain, we also
+As SMARTTR is a wrapper around registration and mapping functions in wholebrain, we also
 recommend checking out the [wholebrain github](https://github.com/tractatus/wholebrain) for more detailed questions.
 
 
 ### I have damage to my brain and I want to exclude it from my analysis
 
-The ability to process only subsets of regions are built-in to the SMARTR package. The sections below are organized in order of increasing damage severity. 
+The ability to process only subsets of regions are built-in to the SMARTTR package. The sections below are organized in order of increasing damage severity. 
 
 #### I only want to exclude a subset of regions
 
@@ -129,7 +129,7 @@ Error in quartz(width = plate.width * 11.3, height = 7.9) :
 could not find function "quartz"
 ```
 
-The function quartz is calling a graphics device driver for the macOS system, so this error occurs when running the pipeline in Windows or Linux. Calling `quartz` is built into some internals of wholebrain functions. One work around is by running the lines below every time you load the SMARTR library if you are running Windows or Linux (This can only be done on machines/accounts that have access to an X server.).
+The function quartz is calling a graphics device driver for the macOS system, so this error occurs when running the pipeline in Windows or Linux. Calling `quartz` is built into some internals of wholebrain functions. One work around is by running the lines below every time you load the SMARTTR library if you are running Windows or Linux (This can only be done on machines/accounts that have access to an X server.).
 
 ```{r}
 quartz <- x11

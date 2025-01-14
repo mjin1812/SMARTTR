@@ -8,7 +8,7 @@
 #' so the user can qualitatively evaluate the raw data. Users also have to option of removing these regions automatically
 #' from normalized_counts dataframe.
 #'
-#' The user should run [SMARTR::normalize_cell_counts()] and [SMARTR::get_cell_table()] functions prior to using this function.
+#' The user should run [SMARTTR::normalize_cell_counts()] and [SMARTTR::get_cell_table()] functions prior to using this function.
 #' @param m mouse object
 #' @param remove (bool, FALSE) Remove any regions in the normalized counts table that
 #' @param log (bool, TRUE) Save the regions that don't have enough n into a .csv file in the output folder.
@@ -138,8 +138,8 @@ enough_mice_per_group <- function(e, by = c("group", "sex"), min_n = 5, remove =
 
 #' Checks the acronyms and full length region names to match with internally stored ontology
 #'
-#' Run this as a quality check after importing an external dataset using [SMARTR::import_mapped_datasets()]. This goes through
-#' all dataframes for all channels imported and replaces any non-matching acronyms and region names with those as they are exactly coded in SMARTR.
+#' Run this as a quality check after importing an external dataset using [SMARTTR::import_mapped_datasets()]. This goes through
+#' all dataframes for all channels imported and replaces any non-matching acronyms and region names with those as they are exactly coded in SMARTTR.
 #'
 #' Note: Processing times scales with the size of your dataset so it
 #' may take a few minutes if your dataset is large...
@@ -158,9 +158,9 @@ check_ontology_coding <- function(e, ontology = "allen"){
 
   ont <- switch(ontology,
                 allen = ,
-                Allen = SMARTR::ontology,
+                Allen = SMARTTR::ontology,
                 unified = ,
-                Unified = SMARTR::ontology.unified,
+                Unified = SMARTTR::ontology.unified,
                 stop("Invalid ontology option. Please enter `allen` or `unified`"))
 
   for (channel in channels){
@@ -222,10 +222,10 @@ filter_regions <- function(e,
 #' Exclude redundant regions
 #'
 #' Your dataset may contain redundant information because it includes counts at different "ontological" resolutions.
-#' SMARTR initially operates at the highest "resolution" and later on, can fold sub-regions into parent regions later.
+#' SMARTTR initially operates at the highest "resolution" and later on, can fold sub-regions into parent regions later.
 #' Therefore redundant counts from parent regions should be removed from datasets using this function prior to analysis and plotting functions.
 #'
-#' To check and see redundant regions contained in a list of acronyms, see the function [SMARTR::check_redundant_parents()].
+#' To check and see redundant regions contained in a list of acronyms, see the function [SMARTTR::check_redundant_parents()].
 #' @param e exoeriment object
 #' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #' @param channels (str, default = NULL) NULL option processes all channels. `channels = c("cfos", "eyfp")` specifies exact channels.

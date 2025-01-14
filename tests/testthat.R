@@ -1,4 +1,4 @@
 library(testthat)
-library(SMARTR)
+library(SMARTTR)
 
-test_check("SMARTR")
+test_check("SMARTTR")

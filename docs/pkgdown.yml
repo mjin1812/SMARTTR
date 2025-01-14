@@ -1,5 +1,5 @@
 pandoc: 3.1.11
-pkgdown: 2.0.7
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   Part1.Segmentation: Part1.Segmentation.html
@@ -8,6 +8,5 @@ articles:
   Part4.Example_Analysis_Notebook: Part4.Example_Analysis_Notebook.html
   Part5.FAQ: Part5.FAQ.html
   Part6.Development: Part6.Development.html
-  SMARTR: SMARTR.html
-last_built: 2025-01-08T18:04Z
-
+  SMARTTR: SMARTTR.html
+last_built: 2025-01-14T18:51Z

@@ -22,11 +22,11 @@ knitr::opts_chunk$set(
 
 # 0 Pre-processing 
 
-SMARTR encapsulates the process of registration, importation of segmentation data, and performs downstream analysis. Prior to this, the imaging data must be pre-processed and cells are separately segmented in ImageJ/FIJI. We have a separate, in-depth [article](../articles/Part1.Segmentation.html) on our imaging approach, parameters, and segmentation process. We suggest starting there if you would like to walk through the pipeline from raw example image. The remainder of this page will focus on steps relevant to registration, segmentation data import, and downstream data analysis using SMARTR. We recommend completing the pre-processing and segmentation tutorial with the example image so you can walk through the SMARTR tutorial with this data.
+SMARTTR encapsulates the process of registration, importation of segmentation data, and performs downstream analysis. Prior to this, the imaging data must be pre-processed and cells are separately segmented in ImageJ/FIJI. We have a separate, in-depth [article](../articles/Part1.Segmentation.html) on our imaging approach, parameters, and segmentation process. We suggest starting there if you would like to walk through the pipeline from raw example image. The remainder of this page will focus on steps relevant to registration, segmentation data import, and downstream data analysis using SMARTTR. We recommend completing the pre-processing and segmentation tutorial with the example image so you can walk through the SMARTTR tutorial with this data.
 
 <figure>
-  <img src="../man/figures/SMARTR_package_schematic.jpg" alt="Image" style="width: 800px; height: 400px;">
-  <figcaption><em>SMARTR package features</em> </figcaption>
+  <img src="../man/figures/SMARTTR_package_schematic.jpg" alt="Image" style="width: 800px; height: 400px;">
+  <figcaption><em>SMARTTR package features</em> </figcaption>
 </figure>
 
 
@@ -54,7 +54,7 @@ Here, the image or slice name is `733_1_1.lif` with the slice no. being `1_1`. T
 ## 0.2 Flatten any z-stacks for registration
 
 Although cell counts may be segmented in 3D, during the registration process, a single coronal atlas plate from the Allen Mouse Brain Atlas is fitted to a 2D `.tif` image. 
-Therefore, if you are processing any z-stack images, they need to be flattened and channels need to be collapsed into a single image used for the purpose of registration. This step needs to be completed prior to using SMARTR for registration. We detail how to do this in using our pre-processing [article](/articles/Part1.Segmentation.html)
+Therefore, if you are processing any z-stack images, they need to be flattened and channels need to be collapsed into a single image used for the purpose of registration. This step needs to be completed prior to using SMARTTR for registration. We detail how to do this in using our pre-processing [article](/articles/Part1.Segmentation.html)
 
 # 1 Tutorial outline
 
@@ -77,7 +77,7 @@ XI.   Functions for easy analysis, based on categorical variables entered as mou
 
 Functions for analysis and automated visualization are detailed in our example analysis [notebook](../articles/4.Example Analysis Notebook.html)
   
-These steps will be achieved through functions that operate on objects in SMARTR. Objects are used to store raw data and processed data, as well as imaging, animal, and experimental parameters relevant to the analysis. Note that in a separate article, we describe ways to scale-up many of these steps to map images in a high-throughput manner with scripts. The modularity of these functions lend to the creation of many different custom workflows. We provide links to example notebooks that others can modify for their own datasets.
+These steps will be achieved through functions that operate on objects in SMARTTR. Objects are used to store raw data and processed data, as well as imaging, animal, and experimental parameters relevant to the analysis. Note that in a separate article, we describe ways to scale-up many of these steps to map images in a high-throughput manner with scripts. The modularity of these functions lend to the creation of many different custom workflows. We provide links to example notebooks that others can modify for their own datasets.
 
 
 # 2 Pipeline setup
@@ -85,8 +85,8 @@ These steps will be achieved through functions that operate on objects in SMARTR
 Okay, let's walkthrough the pipeline with an example mouse and image to process! 
 
 ```{r, eval=TRUE}
-# Load SMARTR
-library(SMARTR)
+# Load SMARTTR
+library(SMARTTR)
 ```
 
 
@@ -99,7 +99,7 @@ This image came from mouse 733, so create a empty folder named `733` in a locati
 
 Let's create an instance of a mouse object. This mouse object will store data from mouse No. 733, so
 we will name it `mouse_733`. We also want to store the important experiment metadata related to this mouse.
-All of this can be done using the `SMARTR::mouse()` constructor function:
+All of this can be done using the `SMARTTR::mouse()` constructor function:
 
 ```{r, eval = FALSE}
 
@@ -150,7 +150,7 @@ We have now finished setting up a mouse object and are ready to store some imagi
 ## 2.3 Initializing a slice object
 
 Now we need to create a slice object. We also want to store imaging 
-metadata as the slice object's attributes. For this we'll use the `SMARTR::slice()` constructor function.
+metadata as the slice object's attributes. For this we'll use the `SMARTTR::slice()` constructor function.
 
 Before doing this, look at your image and compare it with a standardized mouse atlas to decide what the most accurate AP coordinate should be prior to creating the object. You can reference either the 
 [SMART reference atlas](https://osf.io/cpt5w) or [http://openbrainmap.org](http://openbrainmap.org). In our example image, we've already pre-assigned the coordinate.
@@ -244,16 +244,16 @@ Before we register we must first check that the contours of our brain sample can
 
 ## 3.1 Detecting brain contours
 
-To get a good outline of our brain, we need to feed a `filter` list which contains various parameters used to segment feature of interest in an image with wholebrain functions. We can autogenerate a default `filter` list with `SMARTR::filter`. Within this filter, we need to modify a parameter called the `brain.threshold` which is critical for detection the contours of the brain. We will adjust and check the effects of changing the `brain.threshold` parameter using the function `adjust_brain_outline()` This function uses a default `brain.threshold` of 10 and pops up a window showing the detected contours in a blue line. 
+To get a good outline of our brain, we need to feed a `filter` list which contains various parameters used to segment feature of interest in an image with wholebrain functions. We can autogenerate a default `filter` list with `SMARTTR::filter`. Within this filter, we need to modify a parameter called the `brain.threshold` which is critical for detection the contours of the brain. We will adjust and check the effects of changing the `brain.threshold` parameter using the function `adjust_brain_outline()` This function uses a default `brain.threshold` of 10 and pops up a window showing the detected contours in a blue line. 
 
-If the contours are unsatisfactory, press "esc" or "Q" to exit from the popup and you can use the interactive console interface to modify the value. I recommend modifying the value in steps of +/- 2. we will pass this filter to`SMARTR::register()` so the function knows which `brain.threshold` to use. Note that another GUI window pops up to modify various filter parameters, however it is quite buggy and often crashes I would recommend using the console interface.
+If the contours are unsatisfactory, press "esc" or "Q" to exit from the popup and you can use the interactive console interface to modify the value. I recommend modifying the value in steps of +/- 2. we will pass this filter to`SMARTTR::register()` so the function knows which `brain.threshold` to use. Note that another GUI window pops up to modify various filter parameters, however it is quite buggy and often crashes I would recommend using the console interface.
 
 If your imaging parameters are standardized. You may not need to adjust your filter on an image by image basis. Below we use the brain.threshold of 2 to detect the contours of our image.
 
 ```{r,  eval = FALSE}
 
-# store the default filter list from the SMARTR package
-filter <- SMARTR::filter
+# store the default filter list from the SMARTTR package
+filter <- SMARTTR::filter
 
 # Manually adjust the brain.threshold in the filter list 
 filter$brain.threshold <- 2
@@ -603,7 +603,7 @@ save_experiment(lh, timestamp = TRUE)
 ```
 
 
-This concludes the end of the mapping tutorial! Check out section [4. Example analysis notebook ](../articles/Part4.Example_Analysis_Notebook.html) to see how we apply the analysis and visualization functions in SMARTR to this dataset. 
+This concludes the end of the mapping tutorial! Check out section [4. Example analysis notebook ](../articles/Part4.Example_Analysis_Notebook.html) to see how we apply the analysis and visualization functions in SMARTTR to this dataset. 
 
 
 

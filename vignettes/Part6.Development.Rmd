@@ -25,7 +25,7 @@ Sys.Date()
 ## Development R session information and package versions:
  
 ```{r}
-library(SMARTR)
+library(SMARTTR)
 sessionInfo()
 ```
  

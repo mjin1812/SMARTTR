@@ -1,252 +1,85 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/articles/Part1.Segmentation.html</loc>
-  </url>
-  <url>
-    <loc>/articles/Part2.Tutorial.html</loc>
-  </url>
-  <url>
-    <loc>/articles/Part3.Scripting.html</loc>
-  </url>
-  <url>
-    <loc>/articles/Part4.Example_Analysis_Notebook.html</loc>
-  </url>
-  <url>
-    <loc>/articles/Part5.FAQ.html</loc>
-  </url>
-  <url>
-    <loc>/articles/Part6.Development.html</loc>
-  </url>
-  <url>
-    <loc>/articles/SMARTR.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/add_mouse.html</loc>
-  </url>
-  <url>
-    <loc>/reference/add_slice.html</loc>
-  </url>
-  <url>
-    <loc>/reference/adjust_brain_outline.html</loc>
-  </url>
-  <url>
-    <loc>/reference/attr2match.html</loc>
-  </url>
-  <url>
-    <loc>/reference/check_ontology_coding.html</loc>
-  </url>
-  <url>
-    <loc>/reference/check_redundant_parents.html</loc>
-  </url>
-  <url>
-    <loc>/reference/combine_cell_counts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/correlation_diff_permutation.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_joined_networks.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_networks.html</loc>
-  </url>
-  <url>
-    <loc>/reference/detect_single_slice_regions.html</loc>
-  </url>
-  <url>
-    <loc>/reference/enough_mice_per_group.html</loc>
-  </url>
-  <url>
-    <loc>/reference/exclude_anatomy.html</loc>
-  </url>
-  <url>
-    <loc>/reference/exclude_by_acronym.html</loc>
-  </url>
-  <url>
-    <loc>/reference/exclude_by_keyword.html</loc>
-  </url>
-  <url>
-    <loc>/reference/exclude_redundant_regions.html</loc>
-  </url>
-  <url>
-    <loc>/reference/experiment.html</loc>
-  </url>
-  <url>
-    <loc>/reference/export_permutation_results.html</loc>
-  </url>
-  <url>
-    <loc>/reference/filter.html</loc>
-  </url>
-  <url>
-    <loc>/reference/filter_regions.html</loc>
-  </url>
-  <url>
-    <loc>/reference/find_outlier_counts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_cell_table.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_correlations.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_percent_colabel.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_registered_volumes.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_registered_volumes.mouse.html</loc>
-  </url>
-  <url>
-    <loc>/reference/import_mapped_datasets.html</loc>
-  </url>
-  <url>
-    <loc>/reference/import_segmentation_custom.html</loc>
-  </url>
-  <url>
-    <loc>/reference/import_segmentation_ij.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_segmentation_object.html</loc>
-  </url>
-  <url>
-    <loc>/reference/map_cells_to_atlas.html</loc>
-  </url>
-  <url>
-    <loc>/reference/mouse.html</loc>
-  </url>
-  <url>
-    <loc>/reference/normalize_cell_counts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/normalize_colabel_counts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ontology.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ontology.unified.html</loc>
-  </url>
-  <url>
-    <loc>/reference/parallel_coordinate_plot.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_betweenness_regions.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_correlation_heatmaps.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_degree_distributions.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_degree_regions.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_joined_networks.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_mean_between_centrality.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_mean_clust_coeff.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_mean_degree.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_mean_global_effic.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_networks.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_normalized_counts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_percent_colabel.html</loc>
-  </url>
-  <url>
-    <loc>/reference/print.correlation_list.html</loc>
-  </url>
-  <url>
-    <loc>/reference/print.experiment.html</loc>
-  </url>
-  <url>
-    <loc>/reference/print.mouse.html</loc>
-  </url>
-  <url>
-    <loc>/reference/print.slice.html</loc>
-  </url>
-  <url>
-    <loc>/reference/read_check_file.html</loc>
-  </url>
-  <url>
-    <loc>/reference/register.html</loc>
-  </url>
-  <url>
-    <loc>/reference/reset_mouse_root.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rewire_network.html</loc>
-  </url>
-  <url>
-    <loc>/reference/save_experiment.html</loc>
-  </url>
-  <url>
-    <loc>/reference/save_mouse.html</loc>
-  </url>
-  <url>
-    <loc>/reference/segmentation.object.html</loc>
-  </url>
-  <url>
-    <loc>/reference/sem.html</loc>
-  </url>
-  <url>
-    <loc>/reference/simplify_by_keywords.html</loc>
-  </url>
-  <url>
-    <loc>/reference/simplify_cell_count.html</loc>
-  </url>
-  <url>
-    <loc>/reference/simplify_vec_by_keywords.html</loc>
-  </url>
-  <url>
-    <loc>/reference/slice.html</loc>
-  </url>
-  <url>
-    <loc>/reference/SMARTR.html</loc>
-  </url>
-  <url>
-    <loc>/reference/summarise_networks.html</loc>
-  </url>
-  <url>
-    <loc>/reference/summarize_null_networks.html</loc>
-  </url>
-  <url>
-    <loc>/reference/volcano_plot.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/Part1.Segmentation.html</loc></url>
+<url><loc>/articles/Part2.Tutorial.html</loc></url>
+<url><loc>/articles/Part3.Scripting.html</loc></url>
+<url><loc>/articles/Part4.Example_Analysis_Notebook.html</loc></url>
+<url><loc>/articles/Part5.FAQ.html</loc></url>
+<url><loc>/articles/Part6.Development.html</loc></url>
+<url><loc>/articles/SMARTTR.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/LICENSE.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/add_mouse.html</loc></url>
+<url><loc>/reference/add_slice.html</loc></url>
+<url><loc>/reference/adjust_brain_outline.html</loc></url>
+<url><loc>/reference/attr2match.html</loc></url>
+<url><loc>/reference/check_ontology_coding.html</loc></url>
+<url><loc>/reference/check_redundant_parents.html</loc></url>
+<url><loc>/reference/combine_cell_counts.html</loc></url>
+<url><loc>/reference/correlation_diff_permutation.html</loc></url>
+<url><loc>/reference/create_joined_networks.html</loc></url>
+<url><loc>/reference/create_networks.html</loc></url>
+<url><loc>/reference/detect_single_slice_regions.html</loc></url>
+<url><loc>/reference/enough_mice_per_group.html</loc></url>
+<url><loc>/reference/exclude_anatomy.html</loc></url>
+<url><loc>/reference/exclude_by_acronym.html</loc></url>
+<url><loc>/reference/exclude_by_keyword.html</loc></url>
+<url><loc>/reference/exclude_redundant_regions.html</loc></url>
+<url><loc>/reference/experiment.html</loc></url>
+<url><loc>/reference/export_permutation_results.html</loc></url>
+<url><loc>/reference/filter.html</loc></url>
+<url><loc>/reference/filter_regions.html</loc></url>
+<url><loc>/reference/find_outlier_counts.html</loc></url>
+<url><loc>/reference/get_cell_table.html</loc></url>
+<url><loc>/reference/get_correlations.html</loc></url>
+<url><loc>/reference/get_percent_colabel.html</loc></url>
+<url><loc>/reference/get_registered_volumes.html</loc></url>
+<url><loc>/reference/import_mapped_datasets.html</loc></url>
+<url><loc>/reference/import_segmentation_custom.html</loc></url>
+<url><loc>/reference/import_segmentation_ij.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/make_segmentation_object.html</loc></url>
+<url><loc>/reference/map_cells_to_atlas.html</loc></url>
+<url><loc>/reference/mouse.html</loc></url>
+<url><loc>/reference/normalize_cell_counts.html</loc></url>
+<url><loc>/reference/normalize_colabel_counts.html</loc></url>
+<url><loc>/reference/ontology.html</loc></url>
+<url><loc>/reference/ontology.unified.html</loc></url>
+<url><loc>/reference/parallel_coordinate_plot.html</loc></url>
+<url><loc>/reference/plot_betweenness_regions.html</loc></url>
+<url><loc>/reference/plot_correlation_heatmaps.html</loc></url>
+<url><loc>/reference/plot_degree_distributions.html</loc></url>
+<url><loc>/reference/plot_degree_regions.html</loc></url>
+<url><loc>/reference/plot_joined_networks.html</loc></url>
+<url><loc>/reference/plot_mean_between_centrality.html</loc></url>
+<url><loc>/reference/plot_mean_clust_coeff.html</loc></url>
+<url><loc>/reference/plot_mean_degree.html</loc></url>
+<url><loc>/reference/plot_mean_global_effic.html</loc></url>
+<url><loc>/reference/plot_networks.html</loc></url>
+<url><loc>/reference/plot_normalized_counts.html</loc></url>
+<url><loc>/reference/plot_percent_colabel.html</loc></url>
+<url><loc>/reference/print.correlation_list.html</loc></url>
+<url><loc>/reference/print.experiment.html</loc></url>
+<url><loc>/reference/print.mouse.html</loc></url>
+<url><loc>/reference/print.slice.html</loc></url>
+<url><loc>/reference/read_check_file.html</loc></url>
+<url><loc>/reference/register.html</loc></url>
+<url><loc>/reference/reset_mouse_root.html</loc></url>
+<url><loc>/reference/rewire_network.html</loc></url>
+<url><loc>/reference/save_experiment.html</loc></url>
+<url><loc>/reference/save_mouse.html</loc></url>
+<url><loc>/reference/segmentation.object.html</loc></url>
+<url><loc>/reference/sem.html</loc></url>
+<url><loc>/reference/simplify_by_keywords.html</loc></url>
+<url><loc>/reference/simplify_cell_count.html</loc></url>
+<url><loc>/reference/simplify_vec_by_keywords.html</loc></url>
+<url><loc>/reference/slice.html</loc></url>
+<url><loc>/reference/SMARTTR.html</loc></url>
+<url><loc>/reference/summarise_networks.html</loc></url>
+<url><loc>/reference/summarize_null_networks.html</loc></url>
+<url><loc>/reference/volcano_plot.html</loc></url>
 </urlset>
+

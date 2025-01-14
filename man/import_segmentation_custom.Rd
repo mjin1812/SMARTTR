@@ -63,7 +63,7 @@ m mouse object
 \description{
 Custom method for importing segmentation data for a slice object.
 This is a flexible method for importing channels aside from \code{cfos} and \code{eyfp} that use the same ImageJ segmentation macros provided
-in the \href{https://mjin1812.github.io/SMARTR/articles/Part1.Segmentation.html}{SMARTR pipeline}. This method works best when following
+in the \href{https://mjin1812.github.io/SMARTTR/articles/Part1.Segmentation.html}{SMARTTR pipeline}. This method works best when following
 saving segmentation data with the same naming conventions using the
 \href{https://imagejdocu.list.lu/plugin/stacks/3d_ij_suite/start}{3D Roi Manager} within the
 \href{https://imagej.net/plugins/3d-imagej-suite/}{3D ImageJ Suite}.

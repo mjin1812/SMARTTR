@@ -8,7 +8,7 @@
 #' @param by (str) Attribute names to group by, e.g. by = c("group", "sex"). These will generate analysis subgroups that are
 #' averaged together to assess across all rois.
 #' @param colabel_channel (str, default = "colabel") The channel used as the numerator in fraction counts. The string 'colabel' in the pipeline
-#' refers to colocalized 'eyfp' and 'cfos' channels. For other colocalized channels, import the channel using [SMARTR::import_segmentation_custom()]
+#' refers to colocalized 'eyfp' and 'cfos' channels. For other colocalized channels, import the channel using [SMARTTR::import_segmentation_custom()]
 #' or your own customized import channel.
 #' @param channel (str, default = "eyfp") The channel used as denominator in fraction counts.
 #' @param save_table (bool, default = TRUE) Whether to save the output table as a csv in the experiment object output folder.
@@ -142,7 +142,7 @@ get_correlations <- function(e, by, values,
       tidyr::pivot_wider(names_from = any_of("acronym"), values_from = any_of("normalized.count.by.volume"), values_fill = NA)
 
     # Rearrange the correlations to be in "anatomical order"
-    common.regions <-  df_channel %>% dplyr::ungroup() %>% dplyr::select(-any_of(c('mouse_ID', SMARTR::attr2match$mouse))) %>% names()
+    common.regions <-  df_channel %>% dplyr::ungroup() %>% dplyr::select(-any_of(c('mouse_ID', SMARTTR::attr2match$mouse))) %>% names()
 
     if (is.null(region_order)){
       if (tolower(ontology) == "allen"){
@@ -209,7 +209,7 @@ get_correlations <- function(e, by, values,
 #' @return e experiment object. The experiment object now has a list called `permutation_p_matrix` stored in it. Elements of this `permutation_p_matrix` list are
 #' the outputs of different permutation comparison analyses. These elements are named by the groups that were compared.
 #' @export
-#' @seealso [SMARTR::get_correlations()]
+#' @seealso [SMARTTR::get_correlations()]
 #' @examples
 #' \dontrun{
 #' e <- correlation_diff_permutation(sundowning,
@@ -249,13 +249,13 @@ correlation_diff_permutation <- function(e,
       tidyr::pivot_wider(names_from = any_of("acronym"), values_from = any_of("normalized.count.by.volume")) %>%
       dplyr::mutate(corr_group = correlation_list_name_1) %>% dplyr::relocate(any_of("corr_group"), .before = 2) %>%
       dplyr::ungroup() %>%
-      dplyr::select(-any_of(SMARTR::attr2match$mouse))
+      dplyr::select(-any_of(SMARTTR::attr2match$mouse))
 
     df_channel_group_2  <- df_channel_group_2  %>%  dplyr::select(any_of("mouse_ID"):any_of("acronym"), "normalized.count.by.volume") %>%
       tidyr::pivot_wider(names_from = any_of("acronym"), values_from = any_of("normalized.count.by.volume")) %>%
       dplyr::mutate(corr_group = correlation_list_name_2) %>% dplyr::relocate(any_of("corr_group"), .before = 2) %>%
       dplyr::ungroup() %>%
-      dplyr::select(-any_of(SMARTR::attr2match$mouse))
+      dplyr::select(-any_of(SMARTTR::attr2match$mouse))
 
     common_regions_btwn_groups <- intersect(names(df_channel_group_1), names(df_channel_group_2))
     df_channel_group_1 <- df_channel_group_1 %>% dplyr::select(any_of(c("mouse_ID", "corr_group")), all_of(common_regions_btwn_groups)) %>%
@@ -416,13 +416,13 @@ export_permutation_results <- function(e,
 #' graph object per channel for each network analysis run.
 #' The name of each network (`network_name`) is the same as the `correlation_list_name`
 #' used to generate the network. This `network_name` is fed as a parameter into the
-#' [SMARTR::plot_networks()] function.
+#' [SMARTTR::plot_networks()] function.
 #' @export
 #' @examples
 #' \dontrun{
 #' e sundowning <- create_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
 #' }
-#' @seealso [SMARTR::plot_networks()]
+#' @seealso [SMARTTR::plot_networks()]
 
 create_networks <- function(e,
                             correlation_list_name,
@@ -665,13 +665,13 @@ summarise_networks <- function(e,
 #' @return e experiment object. This object now has a new added element called `networks.` This is a list storing a
 #' graph object per channel for each network analysis run. The name of each network (`network_name`) is the same as the `correlation_list_name`
 #' used to generate the network. This `network_name` is fed as a parameter into the
-#' [SMARTR::plot_networks()] function.
+#' [SMARTTR::plot_networks()] function.
 #' @export
 #' @examples
 #' \dontrun{
 #' e sundowning <- create_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
 #' }
-#' @seealso [SMARTR::plot_networks()]
+#' @seealso [SMARTTR::plot_networks()]
 
 create_joined_networks <- function(e,
                                    correlation_list_names = c("male_agg", "female_non"),
@@ -863,7 +863,7 @@ create_joined_networks <- function(e,
 #' @param n_networks (int, default = 100) The number of random networks to create
 #' @param seed (int, default = 5) Random seed for future replication.
 #' @param return_graphs (logical, default = FALSE) if TRUE, returns a list organized by channel containing a sublist, with each element containing a tidygraph object. This must be FALSE if you want to run
-#' you want to summarize the null network statistics with [SMARTR::summarize_null_networks()]
+#' you want to summarize the null network statistics with [SMARTTR::summarize_null_networks()]
 #' @return Summary table of rewired network properties of all nodes showing the average of all randomized network properties generated.
 #' @export
 #' @examples
@@ -936,9 +936,9 @@ rewire_network <- function(e,
 }
 
 
-#' Summarize the parameters of the rewired null networks generated by [SMARTR::rewire_network()]
+#' Summarize the parameters of the rewired null networks generated by [SMARTTR::rewire_network()]
 #'
-#' @param null_nodes_list a list of output summary tables (1 per network) of rewired network properties of all nodes from [SMARTR::rewire_network()].
+#' @param null_nodes_list a list of output summary tables (1 per network) of rewired network properties of all nodes from [SMARTTR::rewire_network()].
 #' @param network_names (str vec) Name of the networks that were rewired (in the same order as the list). `null_nodes_list` and `network_names` must have
 #' the same length.
 #' @param channel (str)   channel to process
@@ -1612,8 +1612,8 @@ plot_normalized_counts <- function(e,
 
 #' Plot correlation heatmaps
 #'
-#' @param e experiment object. Must contain a named correlation_list object generated by [SMARTR::get_correlations()]
-#' @param correlation_list_name (str) The name of the correlation object generated by [SMARTR::get_correlations()]
+#' @param e experiment object. Must contain a named correlation_list object generated by [SMARTTR::get_correlations()]
+#' @param correlation_list_name (str) The name of the correlation object generated by [SMARTTR::get_correlations()]
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) Must exist in the channels attribute of the correlation_list.
 #' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal code for the colors corresponding channels parameter. Color values can also be
 #' input compatible with ggplot2 plotting functions.
@@ -1636,7 +1636,7 @@ plot_normalized_counts <- function(e,
 #' \dontrun{
 #' plot_correlation_heatmaps(e, correlation_list_name = "female_AD")
 #' }
-#' @seealso [SMARTR::get_correlations()]
+#' @seealso [SMARTTR::get_correlations()]
 
 plot_correlation_heatmaps <- function(e,
                                       correlation_list_name,
@@ -1757,7 +1757,7 @@ plot_correlation_heatmaps <- function(e,
 #' Create a Volcano plot.
 #'
 #' Plot the correlation difference between two comparison groups into a volcano plot. The function
-#' [SMARTR::correlation_diff_permutation()] must be run first in order to generate results to plot.
+#' [SMARTTR::correlation_diff_permutation()] must be run first in order to generate results to plot.
 #'
 #' @param e experiment object
 #' @param permutation_comparison The name of the correlation group comparisons to plot.
@@ -1883,7 +1883,7 @@ volcano_plot <- function(e,
 
 #' Create a parallel coordinate plot
 #' @description Plot the correlation difference between two comparison groups into a parallel coordinate plot. The function
-#' [SMARTR::correlation_diff_permutation()] must be run first in order to generate results to plot.
+#' [SMARTTR::correlation_diff_permutation()] must be run first in order to generate results to plot.
 #'
 #' @param e experiment object
 #' @param permutation_comparison The name of the correlation group comparisons to plot.
@@ -2440,7 +2440,7 @@ plot_degree_distributions <- function(e,
 #'
 #' @param e experiment object
 #' @param labels (str) The legend labels to correspond with your network names, e.g. labels = c(network1_name = "network 1 label", network2_name = "network 2 label).
-#' These are the same network names used in the function [SMARTR::summarise_networks()].
+#' These are the same network names used in the function [SMARTTR::summarise_networks()].
 #' @param channels (str, default = c("cfos", "eyfp", "colabel")) Channels to plot
 #' @param color_palettes (str, default = c("reds", "greens")) Color palettes from [grDevices::hcl.colors] that are used to for plotting networks for each channel, respectively.
 #' @param colors_manual (str, default = NULL ) Manually choose the hexadecimal color codes to create a custom color palette, e.g. colors_manual = c("#660000", "#FF0000", "#FF6666").

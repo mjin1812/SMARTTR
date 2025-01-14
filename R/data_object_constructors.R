@@ -73,7 +73,7 @@ validate_mouse <- function(m){
 #' @description mouse() constructs an S3 object of class 'mouse'. A mouse object
 #' consists of a list of slice objects and attributes stored as a list.
 #'
-#' The slice objects are added to a mouse object with the function [SMARTR::add_slice()].
+#' The slice objects are added to a mouse object with the function [SMARTTR::add_slice()].
 #' Each slice is a named element in the mouse object list, with the naming convention dependent on the slice ID and hemisphere attributes of the slice object.
 #'
 #' If you are processing either a left or right hemisphere, the slice is named with the convention: "slice_ID" appended with its "hemisphere"
@@ -89,8 +89,8 @@ validate_mouse <- function(m){
 #' @returns A mouse, a colloquial term for an object of class 'mouse'. A 'mouse' object
 #' is also a list, with class list.
 #' @seealso
-#' See also [SMARTR::slice()] for the description of a slice object and it's attributes.
-#' See also [SMARTR::add_slice()] for the description of how to add a slice object to a mouse object.
+#' See also [SMARTTR::slice()] for the description of a slice object and it's attributes.
+#' See also [SMARTTR::add_slice()] for the description of how to add a slice object to a mouse object.
 #' @export
 
 mouse <- function(mouse_ID = 'set ID',
@@ -367,7 +367,7 @@ validate_experiment <- function(e){
 #' @returns An experiment, a colloquial term for an object of class 'wb_experiment'. An 'experiment' object
 #' is also a list, with class list.
 #' @seealso
-#' See also [SMARTR::mouse()] for the description of a mouse object and it's attributes.
+#' See also [SMARTTR::mouse()] for the description of a mouse object and it's attributes.
 #' @export
 
 experiment <- function(experiment_name = NULL,

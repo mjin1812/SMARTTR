@@ -16,7 +16,7 @@ e experiment object
 }
 \description{
 Run this as a quality check after importing an external dataset using \code{\link[=import_mapped_datasets]{import_mapped_datasets()}}. This goes through
-all dataframes for all channels imported and replaces any non-matching acronyms and region names with those as they are exactly coded in SMARTR.
+all dataframes for all channels imported and replaces any non-matching acronyms and region names with those as they are exactly coded in SMARTTR.
 }
 \details{
 Note: Processing times scales with the size of your dataset so it

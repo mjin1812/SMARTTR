@@ -13,3 +13,7 @@
 * Tables are now saved into an autocreated `tables` folder in the output directory for organization.
 * Added `create_joined_networks` and `plot_joined_networks` as as capability to visualize the overlapping edges in two networks with outer joined nodes. The capability to export a list of overlapping edges between the joined network is included as a parameter in `create_joined_networks`. See the documentation for more details.
 * Altered `plot_correlation_heatmaps() function to automatically plot parent regions as subfacets`
+
+
+# SMARTTR 1.0.1
+* To adhere to CRAN naming policy, we are changing our package repository name to SMARTTR. The new package website can be assessed [here](https://mjin1812.github.io/SMARTTR/).

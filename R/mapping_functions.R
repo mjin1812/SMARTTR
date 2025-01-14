@@ -183,7 +183,7 @@ register.mouse <- function(x,
         } else{
           message("Improving previous registration for this slice. Set replace = TRUE to start from scratch!...\n")
           if (is.null(filter)){
-            filter <- SMARTR::segmentation.object$filter
+            filter <- SMARTTR::segmentation.object$filter
             filter$resize <-  x$slices[[match]]$registration_obj$resize
           }
           # Register matched slices with existing data
@@ -227,7 +227,7 @@ register.mouse <- function(x,
 #' @export
 #' @note The designated `colabel` channel name in this pipeline will auto import the output of the batch_3D_MultiColocalization.ijm macro provided in the pre-processing pipeline.
 #' If you have a separate method used for detecting colabelled cells, please use a different naming convention for this channel,
-#' e.g. "colabel_PV_cfos", and import using a customized import function such as [SMARTR::import_segmentation_custom()].
+#' e.g. "colabel_PV_cfos", and import using a customized import function such as [SMARTTR::import_segmentation_custom()].
 
 import_segmentation_ij.slice <- function(x,
                                       mouse_ID = NA,
@@ -382,7 +382,7 @@ import_segmentation_ij.mouse <- function(x,
 #' @rdname import_segmentation_custom
 #' @description Custom method for importing segmentation data for a slice object.
 #' This is a flexible method for importing channels aside from `cfos` and `eyfp` that use the same ImageJ segmentation macros provided
-#' in the \href{https://mjin1812.github.io/SMARTR/articles/Part1.Segmentation.html}{SMARTR pipeline}. This method works best when following
+#' in the \href{https://mjin1812.github.io/SMARTTR/articles/Part1.Segmentation.html}{SMARTTR pipeline}. This method works best when following
 #' saving segmentation data with the same naming conventions using the
 #' \href{https://imagejdocu.list.lu/plugin/stacks/3d_ij_suite/start}{3D Roi Manager} within the
 #' \href{https://imagej.net/plugins/3d-imagej-suite/}{3D ImageJ Suite}.
@@ -748,7 +748,7 @@ make_segmentation_object.slice <- function(x,
       } else {
         counts <-x$raw_segmentation_data[[channel]]
       }
-      seg <- SMARTR::segmentation.object
+      seg <- SMARTTR::segmentation.object
       seg$soma$x <- counts$CX..pix./(info$bin) #create position column to account for binning
       seg$soma$y <- counts$CY..pix./(info$bin) #same as above
       seg$soma$area <- counts$Vol..pix.
@@ -1387,7 +1387,7 @@ return(x)
 #' since the wholebrain GUI tends to be a bit buggy. This function then returns a filter with the adjusted brain threshold.
 #'
 #' @param s slice object
-#' @param filter (list, default = NULL) If the user passes their own filter list, it will use that instead of the presaved filter list from SMARTR.
+#' @param filter (list, default = NULL) If the user passes their own filter list, it will use that instead of the presaved filter list from SMARTTR.
 #' @return filter (list) wholebrain compatible filter
 #' @export
 #' @examples
@@ -1404,7 +1404,7 @@ adjust_brain_outline <- function(s, filter = NULL){
   }
   regi_path <- attr(s, "info")$registration_path
   if (is.null(filter)){
-    filter <- SMARTR::filter
+    filter <- SMARTTR::filter
     filter$brain.threshold <- 10
   } else if (!is.list(filter)){
     stop("You did not supply a valid list for the filter parameter.")
@@ -1497,7 +1497,7 @@ get_cell_table <- function(m,
 #
 #' Normalize cell counts per mm^2^ or by mm^3^ (if multiplying by the stack size).
 #' @description Run this function after all the slices that you want to process are finished being added
-#' and you have combined your cell counts with [SMARTR::get_cell_table()]. This functions process all channels
+#' and you have combined your cell counts with [SMARTTR::get_cell_table()]. This functions process all channels
 #' where a cell table was made using the latter function.
 #' @param m mouse object
 #' @param combine_hemispheres (bool, default = TRUE) Combine normalized cell counts from both hemispheres
@@ -1659,16 +1659,16 @@ combine_cell_counts <- function(e, by){
 }
 
 #' @title Normalize colabel counts over a designated denominator channel.
-#' @description This function can only be run after running [SMARTR::combine_cell_counts()]. It divides the colabelled cell counts by
+#' @description This function can only be run after running [SMARTTR::combine_cell_counts()]. It divides the colabelled cell counts by
 #' a designated normalization channel to provide a normalized ratio. Please note that the areas and volumes cancel out in this operation.
-#' This is not designed to work on multiple hemispheres. Please combine cell counts across multiple hemispheres when you run [SMARTR::normalize_cell_counts()].
+#' This is not designed to work on multiple hemispheres. Please combine cell counts across multiple hemispheres when you run [SMARTTR::normalize_cell_counts()].
 #' @param e experiment object
 #' @param denominator_channel (str, default = "eyfp") The exact name of the channel used for normalization
 #' @return e An experiment object with a new dataframe with the normalized ratios of colabelled counts over the designated denominator counts.
 #' Because the volumes and region areas cancel out, the values of count, normalized.count.by.area, and normalized.count.by.volume are all the same.
 #' This is to provide a consistent input dataframe into the analysis functions.
 #' @export
-#' @seealso [SMARTR::combine_cell_counts()] &  [SMARTR::normalize_cell_counts()]
+#' @seealso [SMARTTR::combine_cell_counts()] &  [SMARTTR::normalize_cell_counts()]
 #' @examples
 #' \dontrun{
 #' e <- normalize_colabel_counts(e, denominator_channel = "eyfp")
@@ -1698,7 +1698,7 @@ normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
 
 #' @title Simplify the combined cell count table
 #' @description This function is designed to offer flexible simplification of mapped cells counts. This can be applied after running
-#'  [SMARTR::combine_cell_counts()]. However, if mapping is being conducted using the SMARTR package, we recommend simplifying mapped counts earlier, at the level of mouse objects using [SMARTR::normalize_cell_counts()]
+#'  [SMARTTR::combine_cell_counts()]. However, if mapping is being conducted using the SMARTTR package, we recommend simplifying mapped counts earlier, at the level of mouse objects using [SMARTTR::normalize_cell_counts()]
 #'  because the options offered for simplification are more flexible.
 #'  The benefit of this function is that it can operate on experiment objects with externally imported combined cell counts tables that are formatted for compatibility. This allows
 #'  for simplification using other ontologies. See the available atlas options under the `ontology` parameter.
@@ -1912,7 +1912,7 @@ get.colabeled.cells <- function(coloc_table,
   }
   x <-  rowMeans(cbind(x_a, x_b))
   y <-  rowMeans(cbind(y_a, y_b))
-  seg.coloc <- SMARTR::segmentation.object
+  seg.coloc <- SMARTTR::segmentation.object
   seg.coloc$soma$x  <-   x
   seg.coloc$soma$y  <-   y
   seg.coloc$soma$area   <- areas

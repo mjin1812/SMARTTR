@@ -98,7 +98,7 @@ The followup window should popup when you run this macro. The default parameters
   <figcaption><em>batch_create_max_projection pop up window </em> </figcaption>
 </figure>
 
-The default parameters should be fine, but you can change the contrast saturation parameter to optimize the image saturation levels. The transformed images are then autosaved into each image directory as `MAX_SliceName.tif`. The path to this file will be used as the registration path. Note that once this file is made, any part of the pipeline using SMARTR related to image registration can proceed independently of image segmentation. 
+The default parameters should be fine, but you can change the contrast saturation parameter to optimize the image saturation levels. The transformed images are then autosaved into each image directory as `MAX_SliceName.tif`. The path to this file will be used as the registration path. Note that once this file is made, any part of the pipeline using SMARTTR related to image registration can proceed independently of image segmentation. 
 
 ## c-Fos segmentation using a generalized 3D segmentation macro
 
@@ -150,7 +150,7 @@ Run the macro and you will see the following menu pop up:
 
 Replace the entry for "C1 segmentation file ext" with the exact stem of the .tif storing the segmented objects for channel 1 (eYFP) without the image name. In our images, this stem is "_C1_eYFP_LabelImage.tif".  Then do the same thing for channel 2 for the c-Fos segmentation image. This macro will save additional colocalization information as .txt files in the image folder.
 
-Once this step is done, you're ready to import the segmentation and colocalization information into the SMARTR pipeline!
+Once this step is done, you're ready to import the segmentation and colocalization information into the SMARTTR pipeline!
 
 
 

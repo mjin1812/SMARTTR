@@ -16,12 +16,12 @@ knitr::opts_chunk$set(echo = TRUE, eval = FALSE, warnings = FALSE)
 
 # 1 Analysis Setup 
 
-In this analysis tutorial we will load the learned helplessness dataset as an experiment object and walk through the analysis and visualization functions in SMARTR with it. You can download the learned helplessness dataset [here](https://osf.io/fhrxj)! Please see the accompanying paper for an in-depth explanation of the behavioral groups used in this experiment.
+In this analysis tutorial we will load the learned helplessness dataset as an experiment object and walk through the analysis and visualization functions in SMARTTR with it. You can download the learned helplessness dataset [here](https://osf.io/fhrxj)! Please see the accompanying paper for an in-depth explanation of the behavioral groups used in this experiment.
 
 ## 1.1 Load the libraries and data needed
 
 ```{r, results='hide', message=FALSE}
-library(SMARTR)
+library(SMARTTR)
 # library(tidyverse)
 # Install rstatix if it is not installed already
 library(rstatix) 
@@ -73,7 +73,7 @@ If there are specific regions you would like to exclude from your analysis, you 
 toremove <- c("CA2")
 
 channels <- names(lh$combined_normalized_counts)
-toremove <- c(toremove, SMARTR::get.sub.structure(toremove))
+toremove <- c(toremove, SMARTTR::get.sub.structure(toremove))
 for (channel in channels){
   lh$combined_normalized_counts[[channel]] <- lh$combined_normalized_counts[[channel]] %>% dplyr::filter(!acronym %in% toremove)
 }
@@ -125,12 +125,12 @@ lh <- enough_mice_per_group(lh, by = c("group"), min_n = 4, remove = TRUE, log =
 
 It is helpful to now conceptualize analysis as composed of two parts: 1) One function performs data wrangling or analysis behind the scenes. 2) The second function is responsible for visualization, with built-in auto-export of figures.
 
-This section will cover the analysis and transformation of data stored in the experiment object. Visualization/plotting, and export of the figures from these functions will be covered in section 3. The data output from these analyses will typically be stored in the experiment object if it is a `SMARTR` package function. Depending on the function, data can be auto-exported as a .csv file to the experiment output folder.
+This section will cover the analysis and transformation of data stored in the experiment object. Visualization/plotting, and export of the figures from these functions will be covered in section 3. The data output from these analyses will typically be stored in the experiment object if it is a `SMARTTR` package function. Depending on the function, data can be auto-exported as a .csv file to the experiment output folder.
 
 
 ## 2.1 Exporting formatted regional counts list with multiple comparisons correction
 
-Generating an a formatted regional counts list with an false discovery rate correction (FDR) can be performed with the `dplyr` and `rstatix` package functions. A user-friendly function to perform this flexibly with multiple groupings is planned to be incorporated later into the `SMARTR` package.
+Generating an a formatted regional counts list with an false discovery rate correction (FDR) can be performed with the `dplyr` and `rstatix` package functions. A user-friendly function to perform this flexibly with multiple groupings is planned to be incorporated later into the `SMARTTR` package.
 
 ### Perform pairwise group comparisons in region counts and correct for multiple comparisons
 
@@ -154,7 +154,7 @@ The following code pivots the stats table to long form to concatenate with the r
 ```{r, results='hide', message=FALSE, warning=FALSE}
 wide_eyfp_norm_counts <- lh$combined_normalized_counts$eyfp %>% group_by(group, acronym, name) %>%
       summarise(mean.normalized.count.by.volume = mean(normalized.count.by.volume),
-      sem.normalized.count.by.volume = SMARTR::sem(normalized.count.by.volume),
+      sem.normalized.count.by.volume = SMARTTR::sem(normalized.count.by.volume),
       n = n())
 wide_eyfp_norm_counts <-  wide_eyfp_norm_counts %>% pivot_wider(names_from =  group, names_sep = ".", values_from = c(group, acronym, name, mean.normalized.count.by.volume, sem.normalized.count.by.volume, n)) %>% unnest() %>% rename(acronym = acronym.Context,
                           name = name.Context)
@@ -169,7 +169,7 @@ write.csv(joined_eyfp_stats, file_name)
 ```{r, results='hide', message=FALSE, warning=FALSE}
 wide_cfos_norm_counts <- lh$combined_normalized_counts$cfos %>% group_by(group, acronym, name) %>%
       summarise(mean.normalized.count.by.volume = mean(normalized.count.by.volume),
-      sem.normalized.count.by.volume = SMARTR::sem(normalized.count.by.volume),
+      sem.normalized.count.by.volume = SMARTTR::sem(normalized.count.by.volume),
       n = n())
 
 wide_cfos_norm_counts <-  wide_cfos_norm_counts %>% pivot_wider(names_from =  group, names_sep = ".", values_from = c(group, acronym, name, mean.normalized.count.by.volume, sem.normalized.count.by.volume, n)) %>% unnest() %>% rename(acronym = acronym.Context,
@@ -186,7 +186,7 @@ write.csv(joined_cfos_stats, file_name)
 ```{r, results='hide', message=FALSE, warning=FALSE}
 wide_colabel_over_eyfp_norm_counts <- lh$combined_normalized_counts$colabel_over_eyfp %>% group_by(group, acronym, name) %>%
       summarise(mean.normalized.count.by.volume = mean(normalized.count.by.volume),
-      sem.normalized.count.by.volume = SMARTR::sem(normalized.count.by.volume),
+      sem.normalized.count.by.volume = SMARTTR::sem(normalized.count.by.volume),
       n = n())
 
 wide_colabel_over_eyfp_norm_counts <-  wide_colabel_over_eyfp_norm_counts %>% pivot_wider(names_from =  group, names_sep = ".", values_from = c(group, acronym, name, mean.normalized.count.by.volume, sem.normalized.count.by.volume, n)) %>%
