@@ -1,10 +1,10 @@
 ---
-title: "SMARTR"
+title: "SMARTTR"
 output: 
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{SMARTR}
+  %\VignetteIndexEntry{SMARTTR}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -21,10 +21,10 @@ knitr::opts_chunk$set(
 
 # 0 Prior steps to get started
 
-`SMARTR` stands for **s**imple **m**ulti-ensemble **a**tlas **r**egistration and statistical **t**esting in **R**. It is also a self-referential play  on a previous package developed as an extension to `wholebrain` called `SMART`.`SMARTR` interfaces with some functions from both of these packages underneath the hood.
+`SMARTTR` stands for **s**imple **m**ulti-ensemble **a**tlas **r**egistration and s**t**atistical **t**esting in **R**. It is also a self-referential play  on a previous package developed as an extension to `wholebrain` called `SMART`.`SMARTTR` interfaces with some functions from both of these packages underneath the hood.
 
 
-`SMARTR` encapsulates the process of registration and performs downstream analysis. Prior to this, the imaging data must be pre-processed and cells are separately segmented in ImageJ/FIJI. We have a separate, in-depth article on our imaging and pre-processing approach, parameters, and segmentation process. We provide links to an example image to run though the pre-processing and segmentation. There is also a separate in-depth tutorial article for SMARTR using this example image.
+`SMARTTR` encapsulates the process of registration and performs downstream analysis. Prior to this, the imaging data must be pre-processed and cells are separately segmented in ImageJ/FIJI. We have a separate, in-depth article on our imaging and pre-processing approach, parameters, and segmentation process. We provide links to an example image to run though the pre-processing and segmentation. There is also a separate in-depth tutorial article for SMARTTR using this example image.
 This page provides installation instructions and a broad explanation of the central package organization around data objects
 
 <figure>
@@ -38,7 +38,7 @@ This page provides installation instructions and a broad explanation of the cent
 
 We recommend installing R version 3.6 for compatibility with `wholebrain` for registration and mapping. You can download it [here](https://cran-archive.r-project.org/bin/windows/base/old/3.6.3/) for Windows.
 
-However, we will soon be releasing and supporting a separate version of SMARTR supporting R versions 4.1+ for users who only need access to analysis and visualization capabilities. Importation from other workflows would be supported on this version.
+However, we will soon be releasing and supporting a separate version of SMARTTR supporting R versions 4.1+ for users who only need access to analysis and visualization capabilities. Importation from other workflows would be supported on this version.
 
 ## 1.2 Install `wholebrain`
 
@@ -50,7 +50,7 @@ If wholebrain is not installed, only the analysis and visualization functions ma
 
 If you are using R 3.6+ on a Windows machine, you will need to install Rtools version 3.5. Download it [here](https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe) if you haven't already installed it during the `wholebrain` installation process.
 
-## 1.4 Install `SMARTR` 
+## 1.4 Install `SMARTTR` 
 
 To to download the package from github, we need to use the `install_github()` function from the `remotes` package. There are also a number of packages imports. Install the package with the code below:
 
@@ -62,8 +62,8 @@ library(remotes)
 # Sometimes, the dependencies are not installed with the appropriate up-to-date version. Below, we install dplyr from source and specify the exact version for compatibility.
 install_version("dplyr", version = "1.1.0", INSTALL_opts = "--no-multiarch");
 
-# Install package dependencies. This may result in an error in the final step for installing SMARTR
-remotes::install_github("mjin1812/SMARTR@main", contriburl = "https://cran-archive.r-project.org/bin/windows/contrib/3.6/", 
+# Install package dependencies. This may result in an error in the final step for installing SMARTTR
+remotes::install_github("mjin1812/SMARTTR@main", contriburl = "https://cran-archive.r-project.org/bin/windows/contrib/3.6/", 
                         dependencies = c("Depends", "Imports"), INSTALL_opts = "--no-multiarch")
 ```
 
@@ -72,7 +72,7 @@ You may run into something similar to the following error messages below:
 
 ```
 Warning message:
-package ‘C:/Users/[User]/AppData/Local/Temp/RtmpGo67wj/file261419dd3f94/SMARTR_1.0.1.tar.gz’ is not available (for R version 3.6.3)
+package ‘C:/Users/[User]/AppData/Local/Temp/RtmpGo67wj/file261419dd3f94/SMARTTR_1.0.1.tar.gz’ is not available (for R version 3.6.3)
 ```
 
 If this is the case try the following steps:
@@ -80,19 +80,19 @@ If this is the case try the following steps:
 # Install Hmisc. This is a package dependency but is sometimes skipped. Enter a space to skip any updates.
 install.packages("Hmisc", contriburl = "https://cran-archive.r-project.org/bin/windows/contrib/3.6/")
 
-# Try the following command again without the contriburl parameter to install SMARTR. Enter a space to skip any updates.
-remotes::install_github("mjin1812/SMARTR@main", dependencies = c("Depends", "Imports"), INSTALL_opts = "--no-multiarch")
+# Try the following command again without the contriburl parameter to install SMARTTR. Enter a space to skip any updates.
+remotes::install_github("mjin1812/SMARTTR@main", dependencies = c("Depends", "Imports"), INSTALL_opts = "--no-multiarch")
 ```
 
 
 We can now load the package!
 
 ```{r, message=FALSE}
-# Load SMARTR
-library(SMARTR)
+# Load SMARTTR
+library(SMARTTR)
 
 # You can pull up the package description with the code below:
-?SMARTR
+?SMARTTR
 
 ```
 
@@ -131,7 +131,7 @@ Instructions will be available soon!
 <br>  
 
 
-# 3 Introduction to SMARTR 
+# 3 Introduction to SMARTTR 
 
 ## 3.1 OOP in R
 
@@ -149,10 +149,10 @@ It will also contain metadata about your images, such as what the `slice no.` is
 Run the code below to used the `?` operator to pull up the documentation for a `slice` object. This will pull up a help page description of all the `slice` object attributes. 
 
 ```{r}
-?SMARTR::slice
+?SMARTTR::slice
 ```
 
-> Tip: Usage of the `::` or double colons here means that R specifically looks for a function, object, or help page in `SMARTR` package. This isn't necessary if you load the package, but it can sometimes help avoid ambiguity if there are identical names for things in other loaded packages.
+> Tip: Usage of the `::` or double colons here means that R specifically looks for a function, object, or help page in `SMARTTR` package. This isn't necessary if you load the package, but it can sometimes help avoid ambiguity if there are identical names for things in other loaded packages.
 
 ## 3.3 Mouse objects
 
