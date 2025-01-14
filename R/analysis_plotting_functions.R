@@ -1104,7 +1104,7 @@ plot_percent_colabel <- function(e,
                         ymax = .data$colabel_percentage.mean + !!error_var),
                     width=.2,
                     position = ggplot2::position_dodge(width = .5)) +
-      ggplot2::geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
+      ggplot2::geom_hline(yintercept = 0, element_line(colour = 'black', linewidth = 0.5, linetype='solid')) +
       ggplot2::facet_wrap(~.data$acronym,
                  strip.position = "bottom") +
       ylim(ylim) +
@@ -1136,7 +1136,7 @@ plot_percent_colabel <- function(e,
                         ymax = .data$colabel_percentage.mean + !!error_var),
                     width=.2,
                     position = ggplot2::position_dodge(width = .5)) +
-      geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
+      geom_hline(yintercept = 0, element_line(colour = 'black', linewidth = 0.5, linetype='solid')) +
       ggplot2::facet_wrap(~.data$acronym,
                  strip.position = "bottom") +
       ylim(ylim) +
@@ -1297,7 +1297,7 @@ plot_cell_counts <- function(e,
                         ymax = .data$normalized.count.mean + !!error_var),
                     width=.2,
                     position = ggplot2::position_dodge(width = .5)) +
-      geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
+      geom_hline(yintercept = 0, element_line(colour = 'black', linewidth = 0.5, linetype='solid')) +
       ggplot2::facet_wrap(~.data$acronym,
                  strip.position = "bottom") +
       ylim(ylim) +
@@ -1328,7 +1328,7 @@ plot_cell_counts <- function(e,
                         ymax = .data$normalized.count.mean + !!error_var),
                     width=.2,
                     position = ggplot2::position_dodge(width = .5)) +
-      geom_hline(yintercept = 0, element_line(colour = 'black', size=0.5, linetype='solid')) +
+      geom_hline(yintercept = 0, element_line(colour = 'black', linewidth = 0.5, linetype='solid')) +
       ggplot2::facet_wrap(~.data$acronym,
                  strip.position = "bottom") +
       ylim(ylim) +
@@ -1845,8 +1845,8 @@ volcano_plot <- function(e,
     p <- ggplot(df, aes(x = .data$corr_diff, y = -log10(.data$p_val))) +
       geom_point(size = point_size) +
       geom_point(data = subset(df, df$sig > 0 & df$corr_diff <= -1 | df$sig > 0 & df$corr_diff >= 1), color = colors[k], size = point_size) +
-      geom_vline(xintercept = c(-1, 1), color = colors[k], size = 1) +
-      geom_hline(yintercept = -log10(alpha), color = colors[k], size = 1) +
+      geom_vline(xintercept = c(-1, 1), color = colors[k], linewidth = 1) +
+      geom_hline(yintercept = -log10(alpha), color = colors[k], linewidth = 1) +
       ggplot2::coord_cartesian(xlim = c(-2.1, 2.1)) +
       ylim(ylim) +
       labs(title = title, x = "Correlation Difference", y = "-log(p-value)") +
@@ -1997,7 +1997,7 @@ parallel_coordinate_plot <- function(e,
     if (is.null(plt_theme)){
       plt_theme <- ggplot2::theme_classic() +
         theme(text = element_text(size = 22),
-              line = element_line(size = 1),
+              line = element_line(linewidth = 1),
               plot.title = element_text(hjust = 0.5, size = 36),
               axis.ticks.length = unit(5.5, "points"),
               axis.text.x = element_text(colour = "black"),
@@ -2006,7 +2006,7 @@ parallel_coordinate_plot <- function(e,
     }
 
     p <- ggplot(df, aes(x = .data$group, y = .data$corr, group = .data$group_plot)) +
-      ggplot2::geom_line(alpha = 0.5, color = colors[k], size = 3) +
+      ggplot2::geom_line(alpha = 0.5, color = colors[k], linewidth = 3) +
       ggplot2::geom_point(size = 4, alpha = 0.5, color = colors[k]) +
       ggrepel::geom_text_repel(aes(label = .data$text),
                       size = label_size,
@@ -2015,7 +2015,7 @@ parallel_coordinate_plot <- function(e,
                       ylim = c(-1, 1),
                       segment.alpha = 0.3,
                       nudge_x = dplyr::pull(df, .data$nudge)*nudge_x, max.iter = 20000) +
-      ggplot2::geom_hline(yintercept = 0,linetype=2,size=1.2) +
+      ggplot2::geom_hline(yintercept = 0,linetype=2,linewidth=1.2) +
       xlab("Group") + ylab("Correlation") +
       ggplot2::expand_limits(y=c(-1,1)) + plt_theme
 
