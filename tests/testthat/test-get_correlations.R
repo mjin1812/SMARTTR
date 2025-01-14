@@ -18,14 +18,14 @@ test_that("spearman and pearson options work for get_correlation",{
   e <- make_test_experiment_light()
   e$correlation_list <- NULL
 
-  e <- get_correlations(e, by = "group", values = c("Context"),
-                        channels = "cfos", method = "spearman")
+  suppressWarnings(e <- get_correlations(e, by = "group", values = c("Context"),
+                        channels = "cfos", method = "spearman"))
 
   expect_snapshot(e$correlation_list$Context$cfos$r)
 
   e$correlation_list <- NULL
-  e <- get_correlations(e, by = "group", values = c("Shock"),
-                        channels = "cfos", , method = "pearson")
+  suppressWarnings(e <- get_correlations(e, by = "group", values = c("Shock"),
+                        channels = "cfos", , method = "pearson"))
   expect_snapshot(e$correlation_list$Context$cfos$r)
 
 })

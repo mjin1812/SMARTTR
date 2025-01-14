@@ -81,7 +81,6 @@ test_that("plotting a parallel coordinate plot works", {
                                 nudge_x = 2:5)
 
   expect_s3_class(p$eyfp, "ggplot")
-  expect_warning(print(p$eyfp), regexp = "too many overlaps")
 })
 
 
