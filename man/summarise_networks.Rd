@@ -2,8 +2,8 @@
 % Please edit documentation in R/analysis_plotting_functions.R
 \name{summarise_networks}
 \alias{summarise_networks}
-\title{Summarize multiple networks. Create summary dataframes of for multiple networks and
-calculate network statistics for each network.}
+\title{Summarize multiple networks.
+calculate network statistics for each network. This is not meant to summarize networks created using \code{create_joined_networks}.}
 \usage{
 summarise_networks(
   e,
@@ -34,8 +34,8 @@ summarise_networks(
 e experiment object
 }
 \description{
-Summarize multiple networks. Create summary dataframes of for multiple networks and
-calculate network statistics for each network.
+Summarize multiple networks.
+calculate network statistics for each network. This is not meant to summarize networks created using \code{create_joined_networks}.
 }
 \examples{
 \dontrun{

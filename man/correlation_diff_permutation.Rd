@@ -60,7 +60,7 @@ e <- correlation_diff_permutation(sundowning,
                                             n_shuffles = 1000,
                                             seed = 5,
                                             p_adjust_method = "none"
-                                            alpha = 0.001,
+                                            alpha = 0.001
                                             )
 }
 

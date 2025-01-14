@@ -1,5 +1,6 @@
 test_that("saving to output directory works", {
-
+  skip_on_cran()
+  skip_on_ci()
   e <- make_test_experiment_light()
   out_path <- attr(e, "info")$output_path
   expect_message(get_percent_colabel(e, "group", colabel_channel = "colabel",
@@ -11,6 +12,8 @@ test_that("saving to output directory works", {
 
 
 test_that("entering non-existent grouping variable throws error", {
+  skip_on_cran()
+  skip_on_ci()
   e <- make_test_experiment_light()
   out_path <- attr(e, "info")$output_path
 
@@ -20,7 +23,8 @@ test_that("entering non-existent grouping variable throws error", {
 })
 
 test_that("You can analyze subsets of rois", {
-
+  skip_on_cran()
+  skip_on_ci()
   e <- make_test_experiment_light()
   out_path <- attr(e, "info")$output_path
 

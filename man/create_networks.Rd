@@ -10,7 +10,7 @@ create_networks(
   channels = c("cfos", "eyfp", "colabel"),
   proportional_thresh = NULL,
   alpha = 0.05,
-  pearson_thresh = 0.8,
+  pearson_thresh = 0,
   ontology = "allen",
   anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB", "HB",
     "CB"),
@@ -29,7 +29,7 @@ create_networks(
 \item{alpha}{(float, default = 0.05) The significance threshold for including brain regions in the network. if NULL or NA,
 this threshold is not applied.}
 
-\item{pearson_thresh}{(float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out}
+\item{pearson_thresh}{(float, default = 0) The pearson correlation coefficient threshold to apply for filtering out}
 
 \item{ontology}{(str, default = "allen") Region ontology to use. options = "allen" or "unified"}
 
