@@ -54,7 +54,7 @@ Here, the image or slice name is `733_1_1.lif` with the slice no. being `1_1`. T
 ## 0.2 Flatten any z-stacks for registration
 
 Although cell counts may be segmented in 3D, during the registration process, a single coronal atlas plate from the Allen Mouse Brain Atlas is fitted to a 2D `.tif` image. 
-Therefore, if you are processing any z-stack images, they need to be flattened and channels need to be collapsed into a single image used for the purpose of registration. This step needs to be completed prior to using SMARTTR for registration. We detail how to do this in using our pre-processing [article](/articles/Part1.Segmentation.html)
+Therefore, if you are processing any z-stack images, they need to be flattened and channels need to be collapsed into a single image used for the purpose of registration. This step needs to be completed prior to using SMARTTR for registration. We detail how to do this in using our pre-processing [article](../articles/Part1.Segmentation.html)
 
 # 1 Tutorial outline
 

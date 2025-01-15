@@ -1,5 +1,5 @@
 Package: SMARTTR
-Title: Mapping, Analysis, and Visualization Package for Brain-wide Dual-Ensemble Coronal Datasets
+Title: Mapping, Analysis, and Visualization Package for Brain-Wide Dual-Ensemble Coronal Datasets
 Version: 1.0.1
 Authors@R: c(
     person(given = "Michelle",

@@ -10,3 +10,8 @@
 ^docs$
 ^man/figures$
 ^temp_testing\.R$
+^test.*\.RDS
+^test.*\.csv
+^test.*\.txt
+^vignettes
+^.*\.html

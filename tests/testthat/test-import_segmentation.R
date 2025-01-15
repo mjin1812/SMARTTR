@@ -2,6 +2,8 @@
 
 ## Testing slice objects
 test_that("reading segmentation info from a slice object works", {
+  skip_on_cran()
+
   s <- slice(slice_ID = "1_4",
              slice_directory = test_object_path("slice"))
   expect_message(
@@ -30,7 +32,7 @@ test_that("Reading a non-existent channel from a slice object results in error",
 
 # Testing mouse objects
 test_that("reading segmentation data from a mouse object works", {
-
+  skip_on_cran()
  m <- make_test_mouse()
   expect_message(
   m <- import_segmentation_ij(m, slice_ID = "1_4", channels = c("eyfp", "cfos", "colabel")),
@@ -54,6 +56,7 @@ test_that("Reading a non-existent channel from a mouse object results in error",
 })
 
 test_that("Test for existing segmentation data in an object", {
+  skip_on_cran()
   m <-  make_test_mouse()
   m <- import_segmentation_ij(m, slice_ID = "1_4", channels = c("eyfp", "cfos", "colabel"))
 
@@ -71,7 +74,7 @@ test_that("Test for existing segmentation data in an object", {
 
 ## Testing slice objects
 test_that("reading custom segmentation info from a slice object works", {
-
+  skip_on_cran()
 
   s <- slice(slice_ID = "1_4",
              slice_directory = test_object_path("slice"))
@@ -117,6 +120,7 @@ test_that("reading custom segmentation info from a slice object works", {
 
 
 test_that("reading custom segmentation info from a mouse object works", {
+  skip_on_cran()
   m <- make_test_mouse()
 
   expect_message(
@@ -162,6 +166,7 @@ test_that("reading custom segmentation info from a mouse object works", {
 # _____________________ testing make segmentation object ________________________
 
 test_that("reading segmentation info from a mouse and slice object works", {
+  skip_on_cran()
   s <- slice(slice_ID = "1_4",
              slice_directory = test_object_path("slice"))
   channels <- c("eyfp", "cfos", "colabel")
