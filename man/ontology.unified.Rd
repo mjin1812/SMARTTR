@@ -6,8 +6,6 @@
 \title{Unified Kim ontology}
 \format{
 A dataframe
-\describe{
-}
 }
 \usage{
 ontology.unified

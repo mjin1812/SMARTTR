@@ -6,8 +6,6 @@
 \title{Ontology}
 \format{
 A dataframe
-\describe{
-}
 }
 \usage{
 ontology

@@ -29,8 +29,7 @@
 #' They are given unique IDs and parent ids except for the c("dCA1", "dCA2", "dCA3", "dDG") and c("vCA1", "vCA2", "vCA3", "vDG"), whose parents are c(CA1, CA2, CA3, and DG)
 #' respectively.
 #' @format A dataframe
-#' \describe{
-#' }
+
 "ontology"
 
 #' Unified Kim ontology
@@ -38,8 +37,7 @@
 #' The combined ontology created by the Yongsoo Kim lab. Combines nomenclature of the two most-used mouse brain atlases, the Franklin and Paxinos (FP) and the common coordinate framework (CCF) from the Allen Institute for Brain Science.
 #'
 #' @format A dataframe
-#' \describe{
-#' }
+
 "ontology.unified"
 
 #' attr2match
@@ -47,6 +45,4 @@
 #' A custom list to match attributes of a mouse and experiment object
 #' respectively.
 #' @format A list
-#' \describe{
-#' }
 "attr2match"

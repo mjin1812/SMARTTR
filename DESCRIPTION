@@ -1,5 +1,5 @@
 Package: SMARTTR
-Title: Mapping, Analysis, and Visualization Package for Brainwide Dual-Ensemble Coronal Datasets
+Title: Mapping, Analysis, and Visualization Package for Brain-wide Dual-Ensemble Coronal Datasets
 Version: 1.0.1
 Authors@R: c(
     person(given = "Michelle",
@@ -19,13 +19,13 @@ Authors@R: c(
        comment = c(ORCID = "0000-0003-3000-1592")))
 Maintainer: Michelle Jin <mj2947@cumc.columbia.edu>
 Description:  A workflow designed for the high-throughput mapping and analysis of dual-labelled ensemble datasets. 
-    SMARTTR stands for simple multi-ensemble atlas registration and statistical testing in R.
+   stands for simple multi-ensemble atlas registration and statistical testing in R.
     Genetic activity-tagging strategies in mice allow for investigation of neural ensembles 
-    underlying behavior during multiple time points. SMARTTR provides a streamlined API for 
+    underlying behavior during multiple time points. This package provides a streamlined API for 
     storing metadata related to imaging, animal subject, and experimental parameters and groupings. 
     Data management is intrinsically built into the package, which helps automate the process of 
-    combining ensemble datasets across multiple images, animals, and experimental groupings. 
-    SMARTTR is compatible with importing external datasets, and provides a set of built-in analysis 
+    combining ensemble datasets across multiple images, animals, and experimental groupings. This workflow is 
+    compatible with importing external datasets, and provides a set of built-in analysis 
     and visualization functions for network analysis for each ensemble dataset.
 License: GPL (>= 3)
 URL: https://mjin1812.github.io/SMARTTR/, https://github.com/mjin1812/SMARTTR

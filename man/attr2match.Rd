@@ -6,8 +6,6 @@
 \title{attr2match}
 \format{
 A list
-\describe{
-}
 }
 \usage{
 attr2match
