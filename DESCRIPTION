@@ -62,8 +62,6 @@ Suggests:
     rmarkdown (>= 2.8.0),
     testthat (>= 3.1.1),
     ggh4x (>= 0.2.8),
-    knitr (>= 1.33.0),
     rstatix
 Additional_repositories: https://mjin1812.github.io/drat/
 Config/testthat/edition: 3
-VignetteBuilder: knitr
