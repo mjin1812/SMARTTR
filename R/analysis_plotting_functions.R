@@ -1071,7 +1071,7 @@ plot_percent_colabel <- function(e,
                      axis.title = element_text(size = 20, color = "black"),
                      legend.text = element_text(size = 20,  color = "black"),
                      legend.title = element_text(size = 20, color = "black"),
-                     axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))
+                     axis.line.y = element_line(colour = 'black', linewidth = 0.5, linetype ='solid'))
 
   color_var <- rlang::sym(color_mapping)
 
@@ -2379,7 +2379,7 @@ plot_degree_distributions <- function(e,
   if (is.null(theme.gg)){
     theme.gg <- ggplot2::theme_classic() +
                 theme(text = element_text(size = 22),
-                      line = element_line(size = 1),
+                      line = element_line(linewidth = 1),
                       plot.title = element_text(hjust = 0.5, size = 36),
                       axis.ticks.length = unit(5.5,"points"))
   }
@@ -2484,7 +2484,7 @@ plot_mean_degree <- function(e,
   if (is.null(theme.gg)){
     theme.gg <- ggplot2::theme_classic() +
       theme(text = element_text(size = 22),
-            line = element_line(size = 1),
+            line = element_line(linewidth = 1),
             plot.title = element_text(hjust = 0.5, size = 36),
             axis.text.x = element_text(angle = label_angle, hjust = 1, color = "black"),
             axis.ticks.length = unit(5.5,"points"))
@@ -2513,10 +2513,10 @@ plot_mean_degree <- function(e,
       p <- ggplot(e$networks_summaries[[channel]]$networks_stats, aes(.data$group, .data$degree.mean))
     }
     p <- p +
-      ggplot2::geom_col(aes(fill = .data$group), color = "black", size = 1, width = 0.6) +
+      ggplot2::geom_col(aes(fill = .data$group), color = "black", linewidth = 1, width = 0.6) +
       ggplot2::geom_errorbar(aes(ymin = .data$degree.mean - (.data$degree.sd/sqrt(.data$n.nodes)),
                         ymax = .data$degree.mean + (.data$degree.sd/sqrt(.data$n.nodes))),
-                        width = 0.2, size = 1) +
+                        width = 0.2, linewidth = 1) +
       ggplot2::scale_fill_manual(values = colors,
                                  name = "Group",
                                  guide="none") +
@@ -2595,7 +2595,7 @@ plot_mean_clust_coeff <- function(e,
   if (is.null(theme.gg)){
     theme.gg <- ggplot2::theme_classic() +
       theme(text = element_text(size = 22),
-            line = element_line(size = 1),
+            line = element_line(linewidth = 1),
             plot.title = element_text(hjust = 0.5, size = 36),
             axis.text.x = element_text(angle = label_angle, hjust = 1, color = "black"),
             axis.ticks.length = unit(5.5,"points"))
@@ -2623,10 +2623,10 @@ plot_mean_clust_coeff <- function(e,
     }
 
     p <- p +
-      ggplot2::geom_col(aes(fill = .data$group), color = "black", size = 1, width = 0.6) +
+      ggplot2::geom_col(aes(fill = .data$group), color = "black", linewidth = 1, width = 0.6) +
       ggplot2::geom_errorbar(aes(ymin = .data$clust.coef.mean - (.data$clust.coef.sd/sqrt(.data$n.nodes)),
                                  ymax = .data$clust.coef.mean + (.data$clust.coef.sd/sqrt(.data$n.nodes))),
-                             width = 0.2, size = 1) +
+                             width = 0.2, linewidth = 1) +
       ggplot2::scale_fill_manual(values = colors,
                                  name = "Group",
                                  guide="none") +
@@ -2709,7 +2709,7 @@ plot_mean_global_effic <- function(e,
   if (is.null(theme.gg)){
     theme.gg <- ggplot2::theme_classic() +
       theme(text = element_text(size = 22),
-            line = element_line(size = 1),
+            line = element_line(linewidth = 1),
             plot.title = element_text(hjust = 0.5, size = 36),
             axis.text.x = element_text(angle = label_angle, hjust = 1, color = "black"),
             axis.ticks.length = unit(5.5,"points"))
@@ -2738,10 +2738,10 @@ plot_mean_global_effic <- function(e,
     }
 
     p <- p +
-      ggplot2::geom_col(aes(fill = .data$group), color = "black", size = 1, width = 0.6) +
+      ggplot2::geom_col(aes(fill = .data$group), color = "black", linewidth = 1, width = 0.6) +
       ggplot2::geom_errorbar(aes(ymin = .data$efficiency.mean - (.data$efficiency.sd/sqrt(.data$n.nodes)),
                                  ymax = .data$efficiency.mean + (.data$efficiency.sd/sqrt(.data$n.nodes))),
-                             width = 0.2, size = 1) +
+                             width = 0.2, linewidth = 1) +
       ggplot2::scale_fill_manual(values = colors,
                                  name = "Group",
                                  guide="none") +
@@ -2824,7 +2824,7 @@ plot_mean_between_centrality <- function(e,
   if (is.null(theme.gg)){
     theme.gg <- ggplot2::theme_classic() +
       theme(text = element_text(size = 22),
-            line = element_line(size = 1),
+            line = element_line(linewidth = 1),
             plot.title = element_text(hjust = 0.5, size = 36),
             axis.text.x = element_text(angle = label_angle, hjust = 1, color = "black"),
             axis.ticks.length = unit(5.5,"points"))
@@ -2851,10 +2851,10 @@ plot_mean_between_centrality <- function(e,
     }
 
     p <- p +
-      ggplot2::geom_col(aes(fill = .data$group), color = "black", size = 1, width = 0.6) +
+      ggplot2::geom_col(aes(fill = .data$group), color = "black", linewidth = 1, width = 0.6) +
       ggplot2::geom_errorbar(aes(ymin = .data$btw.mean - (.data$btw.sd/sqrt(.data$n.nodes)),
                                  ymax = .data$btw.mean + (.data$btw.sd/sqrt(.data$n.nodes))),
-                             width = 0.2, size = 1) +
+                             width = 0.2, linewidth = 1) +
       ggplot2::scale_fill_manual(values = colors,
                                  name = "Group",
                                  guide="none") +
