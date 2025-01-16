@@ -307,22 +307,37 @@ reset_mouse_root <- function(m, input_path = NULL, print = TRUE){
   if (is.null(input_path)){
     stop("Please provide a new root folder path using the input_path parameter...")
   }
-  root_files <- list.files(path = input_path, pattern = "MAX", recursive = TRUE)
 
-  if (length(root_files) < 1){
-    stop("There were no registration files found in the directory set as the input path. Please recheck where your folder is.")
-  }
   message("OLD mouse output path: ", attr(m, "info")$output_path, "\n",
           "New mouse output path: ", input_path)
   attr(m, "info")$output_path <- input_path
-    for (k in 1:length(m$slices)){
-    s <- m$slices[[k]]
-    s_reg_path <- attr(s, "info")$registration_path
-    matched_root_file <- root_files[stringdist::amatch(s_reg_path, root_files, maxDist = Inf)]
-    attr(m$slices[[k]], "info")$registration_path <- file.path(input_path, matched_root_file)
 
-    if (print){
-      message("Changed ", s_reg_path, " to ", attr(m$slices[[k]], "info")$registration_path)
+  root_files <- list.files(path = input_path, pattern = "MAX", recursive = TRUE)
+
+
+  if (length(root_files) < 1){
+    warning("There were no registration files found in the directory set as the input path. Please recheck where your folder is to make sure the input_path provided is correct.")
+  } else {
+    for (k in 1:length(m$slices)){
+      s <- m$slices[[k]]
+      s_reg_path <- attr(s, "info")$registration_path
+      matched_root_file <- root_files[stringdist::amatch(s_reg_path, root_files, maxDist = Inf)]
+      attr(m$slices[[k]], "info")$registration_path <- file.path(input_path, matched_root_file)
+      if (print){
+        message("Changed ", s_reg_path, " to ", attr(m$slices[[k]], "info")$registration_path)
+      }
+      if (!is.null(m$slices[[k]]$registration_obj)){
+
+        root_files2 <- root_files %>%
+          stringr::str_replace(., "_distorted.tif", "") %>%
+          stringr::str_replace(., "_distorted.png", "") %>%
+          stringr::str_replace(., "_undistorted.tif", "") %>%
+          stringr::str_replace(., "_undistorted.png", "") %>% unique()
+
+        matched_root_file <- root_files2[stringdist::amatch(m$slices[[k]]$registration_obj$outputfile, root_files2, maxDist = Inf)]
+        m$slices[[k]]$registration_obj$outputfile <- file.path(input_path, matched_root_file)
+      }
+
     }
   }
   return(m)
