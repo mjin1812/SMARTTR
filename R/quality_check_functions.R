@@ -279,7 +279,7 @@ exclude_by_acronym <- function(e, acronyms = "fiber_tracts", ontology = "allen",
       } else {
         all_exclusion_sub <- c(k, get.sub.structure.custom(k, ontology = ontology))
       }
-      e$combined_normalized_counts[[channel]]  <- e$combined_normalized_counts[[channel]] %>% dplyr::filter(!any_of("acronym") %in%  all_exclusion_sub)
+      e$combined_normalized_counts[[channel]]  <- e$combined_normalized_counts[[channel]] %>% dplyr::filter(!.data$acronym %in% all_exclusion_sub)
     }
   }
   return(e)
