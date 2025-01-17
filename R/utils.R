@@ -262,7 +262,6 @@ add_mouse <- function(e, m, replace = FALSE){
 #' Must have the same order and length as the `channels` parameter.
 #' You can add channels as names to the vector elements to avoid ambiguity and ensure correct importation for the right channel.
 #' @param ... additional parameters to pass to either the [readr::read_csv()] function or [readxl::read_excel()]
-#'
 #' @return e an experiment object with the imported dataset
 #' @export
 #'
@@ -280,10 +279,23 @@ import_mapped_datasets <- function(e, normalized_count_paths, ...){
   combined_normalized_counts <- vector(mode = "list", length = length(names(normalized_count_paths)))
   names(combined_normalized_counts) <- names(normalized_count_paths)
   for (channel in names(normalized_count_paths)){
-    combined_normalized_counts[[channel]] <- read_check_file(normalized_count_paths[[channel]], , ...) %>%
+    combined_normalized_counts[[channel]] <- read_check_file(normalized_count_paths[[channel]], ...) %>%
        dplyr::mutate(across(any_of("counts"):any_of("normalized.count.by.volume"), as.numeric)) %>%
       dplyr::mutate(across(!any_of("counts"):any_of("normalized.count.by.volume"), as.character))
   }
+
+  columns <- colnames(combined_normalized_counts[[channel]])
+  grouping_vars <- columns[!columns %in% c("mouse_ID", "acronym", "name", "counts", "volume.mm3", "normalized.count.by.volume")]
+  if (length(grouping_vars) > 1){
+    groups_df <- combined_normalized_counts[[channel]] %>% dplyr::select(any_of(grouping_vars)) %>% dplyr::group_by_at(grouping_vars[1]) %>% dplyr::summarise_at(grouping_vars[-1], unique)
+  } else{
+    groups_df <- combined_normalized_counts[[channel]] %>% dplyr::select(any_of(grouping_vars)) %>% dplyr::summarise_at(grouping_vars, unique)
+  }
+  for (variable in grouping_vars){
+    variable_e <- m2e_attr(variable )
+    exp_attr[[variable_e]] <-  groups_df[[variable]] %>% unique()
+  }
+  attr(e,"info") <- exp_attr
   e$combined_normalized_counts <- combined_normalized_counts
   return(e)
 }

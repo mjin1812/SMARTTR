@@ -1,5 +1,5 @@
 ---
-title: "6. Development environment"
+title: "7. Development environment"
 output: 
   rmarkdown::html_vignette:
     toc: true

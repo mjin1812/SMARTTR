@@ -6,8 +6,12 @@ articles:
   Part2.Tutorial: Part2.Tutorial.html
   Part3.Scripting: Part3.Scripting.html
   Part4.Example_Analysis_Notebook: Part4.Example_Analysis_Notebook.html
-  Part5.FAQ: Part5.FAQ.html
-  Part6.Development: Part6.Development.html
+  Part5.ImportingExternalDatasets: Part5.ImportingExternalDatasets.html
+  Part6.FAQ: Part6.FAQ.html
+  Part7.Development: Part7.Development.html
   SMARTTR: SMARTTR.html
-last_built: 2025-01-15T22:45Z
+last_built: 2025-01-17T16:33Z
+urls:
+  reference: https://mjin1812.github.io/SMARTTR/reference
+  article: https://mjin1812.github.io/SMARTTR/articles
 

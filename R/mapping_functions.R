@@ -1005,7 +1005,7 @@ map_cells_to_atlas.mouse <- function(x,
 #' @param include_left_regions (str vector, default = NULL) Acronyms of regions to include from the light hemi; if not NULL, takes precedence over `exclude_left_regions` & all other regions will be excluded.  Typically, this is used for slices with poor quality/lots of tears.
 #' @param simplify_regions (bool, default = TRUE ) simplify the normalized region counts based on keywords in the internal function, `simplify_keywords`
 #' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division")). Keywords to search through region names and simplify to parent structure. This means the parent structure is also excluded if the list of excluded right and left
-#' regions can be further
+#' regions can be further folded based on keywords.
 #' @param ... further arguments passed to or from other methods.
 #' @param plot_filtered (bool, default = TRUE) pop up window to check the excluded anatomy.
 #'
@@ -1142,7 +1142,7 @@ exclude_anatomy.slice <- function(x,
 #' \dontrun{
 #' m <- exclude_anatomy(m, slice_ID = "1_10",
 #' hemisphere = NULL, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE,
-#' exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE
+#' exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE)
 #' }
 #' @export
  exclude_anatomy.mouse <- function(x,
@@ -1705,9 +1705,8 @@ normalize_colabel_counts <- function(e, denominator_channel = "eyfp"){
 #' @param e experiment object
 #' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
 #' @param simplify_keywords (str vec, default =  c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural")).
-#' Keywords to search through region names and simplify to parent structure. This means the parent structure is also excluded if the list of excluded right and left
-#' @param dont_fold (vec) vector of regions to not fold in.
-#' regions can be further
+#' Keywords to search through region names and simplify to parent structure.
+#' @param dont_fold (vec) Regions that are exceptions to being folded into their parent regions.
 #' @return e experiment object with simplified keywords
 #' @export
 #' @examples

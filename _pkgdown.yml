@@ -1,7 +1,4 @@
+url: https://mjin1812.github.io/SMARTTR/
 template:
   bootstrap: 5
-  bootswatch: pulse
-navbar:
-  structure:
-    left:  [intro, articles, tutorials, reference, news]
-    right: [search, github]
+

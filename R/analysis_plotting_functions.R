@@ -211,8 +211,7 @@ get_correlations <- function(e, by, values,
 #' @export
 #' @seealso [SMARTTR::get_correlations()]
 #' @examples
-#' \dontrun{
-#' e <- correlation_diff_permutation(sundowning,
+#' \dontrun{e <- correlation_diff_permutation(sundowning,
 #'                                             correlation_list_name_1 = "female_AD",
 #'                                             correlation_list_name_2 = "female_control",
 #'                                             channels = c("cfos", "eyfp", "colabel"),
@@ -668,8 +667,7 @@ summarise_networks <- function(e,
 #' [SMARTTR::plot_networks()] function.
 #' @export
 #' @examples
-#' \dontrun{
-#' e sundowning <- create_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
+#' \dontrun{sundowning <- create_joined_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
 #' }
 #' @seealso [SMARTTR::plot_networks()]
 

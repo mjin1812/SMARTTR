@@ -24,10 +24,9 @@ simplify_cell_count(
 \item{ontology}{(str, default = "allen") Region ontology to use. options = "allen" or "unified"}
 
 \item{simplify_keywords}{(str vec, default =  c("layer","part","stratum","division", "leaflet", "Subgeniculate", "island", "Islands", "Fields of Forel", "Cajal", "Darkschewitsch", "Precommissural")).
-Keywords to search through region names and simplify to parent structure. This means the parent structure is also excluded if the list of excluded right and left}
+Keywords to search through region names and simplify to parent structure.}
 
-\item{dont_fold}{(vec) vector of regions to not fold in.
-regions can be further}
+\item{dont_fold}{(vec) Regions that are exceptions to being folded into their parent regions.}
 }
 \value{
 e experiment object with simplified keywords

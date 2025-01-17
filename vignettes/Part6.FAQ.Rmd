@@ -1,5 +1,5 @@
 ---
-title: "5. FAQ"
+title: "6. FAQ"
 output: 
   rmarkdown::html_vignette:
     toc: true
