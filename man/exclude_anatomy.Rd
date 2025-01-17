@@ -107,6 +107,6 @@ exclude the entire parent region as a conservative exclusion approach. Keep \cod
 \dontrun{
 m <- exclude_anatomy(m, slice_ID = "1_10",
 hemisphere = NULL, channels = c('cfos', 'eyfp', 'colabel'), clean = TRUE,
-exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE
+exclude_regions = NULL, exclude_hemisphere = TRUE, exclude_layer_1 = TRUE)
 }
 }

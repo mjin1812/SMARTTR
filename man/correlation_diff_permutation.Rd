@@ -52,8 +52,7 @@ number of channels to compare. The functions \code{get_correlations()} needs to 
 running this function. The test statistics used is the pearson values of those in correlation_list_name_2 subtracted from corresponding Pearson values in correlation_list_name_1.
 }
 \examples{
-\dontrun{
-e <- correlation_diff_permutation(sundowning,
+\dontrun{e <- correlation_diff_permutation(sundowning,
                                             correlation_list_name_1 = "female_AD",
                                             correlation_list_name_2 = "female_control",
                                             channels = c("cfos", "eyfp", "colabel"),

@@ -667,7 +667,8 @@ summarise_networks <- function(e,
 #' [SMARTTR::plot_networks()] function.
 #' @export
 #' @examples
-#' \dontrun{sundowning <- create_joined_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
+#' \dontrun{sundowning <- create_joined_networks(sundowning,
+#' correlation_list_name = "female_control", alpha = 0.05)
 #' }
 #' @seealso [SMARTTR::plot_networks()]
 

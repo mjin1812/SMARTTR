@@ -60,8 +60,7 @@ used to generate the network. This \code{network_name} is fed as a parameter int
 Create a joined network to visualize overlapping connections with the same outer joined node set.
 }
 \examples{
-\dontrun{
-e sundowning <- create_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
+\dontrun{sundowning <- create_joined_networks(sundowning, correlation_list_name = "female_control", alpha = 0.05)
 }
 }
 \seealso{

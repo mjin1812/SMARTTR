@@ -231,7 +231,7 @@ exclusion_acronyms <- c("fiber_tracts", "cm", "2n", "s5", "8cn", "sst", "cbf", "
                          "fxpo", "hc", "st", "mfbsma", "mfbse", "VS", "3V", "4V", "drt")
 ```
 
-clean the dataset based on exclusion acronyms
+Clean the dataset based on exclusion acronyms
 ```{r}
 anesthesia <- exclude_by_acronym(anesthesia, acronyms = exclusion_acronyms, ontology = ontology)
 ```
