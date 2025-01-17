@@ -22,7 +22,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">SMARTTR</a>
 
@@ -38,9 +38,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../articles/SMARTTR.html">Get started</a>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
-</li>
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
@@ -52,6 +49,9 @@
     <a class="dropdown-item" href="../articles/Part6.FAQ.html">6. FAQ</a>
     <a class="dropdown-item" href="../articles/Part7.Development.html">7. Development environment</a>
   </div>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -178,12 +178,6 @@ another ontology supported!</p>
 <div class="section level2">
 <h2 id="data-importation-and-pre-processing">Data importation and pre-processing<a class="anchor" aria-label="anchor" href="#data-importation-and-pre-processing"></a>
 </h2>
-<blockquote>
-<p>Please note that in this notebook, <code>%&gt;%</code> is a pipe
-operator, and allows for stringing together multiple functions. This
-means the output of one function automatically is fed as a parameter
-into the next function.</p>
-</blockquote>
 <div class="section level3">
 <h3 id="import-necessary-dependencies">Import necessary dependencies<a class="anchor" aria-label="anchor" href="#import-necessary-dependencies"></a>
 </h3>
@@ -293,7 +287,8 @@ variables used in the dataset.</p>
 <span><span class="co">## $output_path</span></span>
 <span><span class="co">## [1] "P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\example_data\\example_experiment"</span></span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># If you have more than one channel data set to import, you would specify the normalized_count_paths as a vector of named strings, with the names corresponding to the channel names.</span></span>
+<code class="sourceCode R"><span><span class="co"># If you have more than one channel data set to import, you would specify the normalized_count_paths </span></span>
+<span><span class="co"># as a vector of named strings, with the names corresponding to the channel names.</span></span>
 <span><span class="co"># Uncomment the lines below:</span></span>
 <span></span>
 <span><span class="co"># anesthesia &lt;- import_mapped_datasets(anesthesia,</span></span>
@@ -445,6 +440,12 @@ or less cfos counts, it is removed.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">thresh</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
 <span><span class="va">anesthesia</span><span class="op">$</span><span class="va">combined_normalized_counts</span><span class="op">$</span><span class="va">cfos</span> <span class="op">&lt;-</span> <span class="va">anesthesia</span><span class="op">$</span><span class="va">combined_normalized_counts</span><span class="op">$</span><span class="va">cfos</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">counts</span> <span class="op">&gt;=</span> <span class="va">thresh</span><span class="op">)</span></span></code></pre></div>
+<blockquote>
+<p>Please note that in this notebook, <code>%&gt;%</code> is a pipe
+operator, and allows for stringing together multiple functions. This
+means the output of one function automatically is fed as a parameter
+into the next function.</p>
+</blockquote>
 <p>Remove outliers for each subgroup.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/find_outlier_counts.html">find_outlier_counts</a></span><span class="op">(</span><span class="va">anesthesia</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span><span class="op">)</span>, n_sd <span class="op">=</span> <span class="fl">2</span>, remove <span class="op">=</span> <span class="cn">TRUE</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>

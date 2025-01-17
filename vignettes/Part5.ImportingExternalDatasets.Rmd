@@ -77,7 +77,6 @@ Please reach out and provide a full ontology tree if you would like another onto
 
 # Data importation and pre-processing
 
-> Please note that in this notebook, `%>%` is a pipe operator, and allows for stringing together multiple functions. This means the output of one function automatically is fed as a parameter into the next function.
 
 ## Import necessary dependencies
 
@@ -119,7 +118,8 @@ anesthesia <- import_mapped_datasets(anesthesia,
 print(anesthesia)
 
 
-# If you have more than one channel data set to import, you would specify the normalized_count_paths as a vector of named strings, with the names corresponding to the channel names.
+# If you have more than one channel data set to import, you would specify the normalized_count_paths 
+# as a vector of named strings, with the names corresponding to the channel names.
 # Uncomment the lines below:
 
 # anesthesia <- import_mapped_datasets(anesthesia,
@@ -252,6 +252,7 @@ anesthesia$combined_normalized_counts$cfos <- anesthesia$combined_normalized_cou
 
 ```
 
+> Please note that in this notebook, `%>%` is a pipe operator, and allows for stringing together multiple functions. This means the output of one function automatically is fed as a parameter into the next function.
 
 
 Remove outliers for each subgroup.
