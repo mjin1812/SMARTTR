@@ -47,7 +47,7 @@ Below we detail more about the column entries:
 * `name` - ontology-specific long-form region names Case sensitive.
 * `counts` - the absolute number of cells counted.
 * `volume.mm3` - the volume of each region in mm^3^
-* `normalized.counts.by.volume` - the `counts` column divided by the `volume.mm3` column.
+* `normalized.count.by.volume` - the `counts` column divided by the `volume.mm3` column.
 
 
 In this tutorial, we use the `group` variable to subdivide and analyze control mice, coded as `Control`, and inhaled anesthesia-exposed mice, coded as `Isoflurane`.
