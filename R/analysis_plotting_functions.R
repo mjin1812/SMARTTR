@@ -3238,8 +3238,9 @@ permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_l
 
   set.seed(seed)
   # Create a 3D matrix to hold the correlation distributions
-  n_reg <- length(names(df)) - 2
-  region_names <- names(df)[3:length(names(df))]
+  df <- df %>% dplyr::select(any_of("corr_group"), dplyr::where(is.numeric))
+  n_reg <- length(names(df)) - 1
+  region_names <- names(df)[2:length(names(df))]
   corr_diff_matrix <- array(dim= c(n_reg, n_reg, n_shuffle))
   dimnames(corr_diff_matrix) <- list(region_names, region_names, 1:n_shuffle)
 
@@ -3249,7 +3250,7 @@ permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_l
   for (n in 1:n_shuffle){
     # Shuffle the group labels
     df$corr_group <- sample(corr_groups, replace = FALSE)
-    matrix_list <-  df %>% dplyr::select(-any_of("mouse_ID")) %>% dplyr::group_by_at("corr_group") %>%
+    matrix_list <-  df %>% dplyr::group_by_at("corr_group") %>%
       dplyr::group_map(as.matrix, .keep = TRUE)
     element_1_name <- matrix_list[[1]][,"corr_group"] %>% unique()
 
