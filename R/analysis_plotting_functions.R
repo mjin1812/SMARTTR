@@ -193,6 +193,7 @@ get_correlations <- function(e, by, values,
 #' `correlation_list_name_1` and `correlation_list_name_2` parameters. Note that both of these analysis groups must have the same
 #' number of channels to compare. The functions `get_correlations()` needs to have been run for each of these analysis groups prior to
 #' running this function. The test statistics used is the pearson values of those in correlation_list_name_2 subtracted from corresponding Pearson values in correlation_list_name_1.
+#'
 #' @param e experiment object
 #' @param correlation_list_name_1 (str) The name of the correlation list object used as the first group for comparison.
 #' @param correlation_list_name_2 (str) The name of the correlation list object used as the second group for comparison.
@@ -205,7 +206,9 @@ get_correlations <- function(e, by, values,
 #'  Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE or "none"
 #'  to keep "raw" p values. See also [stats::p.adjust()] for the correction options.
 #' @param alpha (float, default = 0.05) The alpha cutoff for significance between region pairwise correlation differences
+#' @param progressbar (bool, default = TRUE) Display a progress bar for the processing time of the permutation.
 #' @param ... additional parameters to pass to `permute_corr_diff_distrib()`
+#'
 #' @return e experiment object. The experiment object now has a list called `permutation_p_matrix` stored in it. Elements of this `permutation_p_matrix` list are
 #' the outputs of different permutation comparison analyses. These elements are named by the groups that were compared.
 #' @export
@@ -231,6 +234,7 @@ correlation_diff_permutation <- function(e,
                                          seed = 5,
                                          p_adjust_method = "none",
                                          alpha = 0.05,
+                                         progressbar = TRUE,
                                          ...){
 
   attr_group_1 <- attributes(e$correlation_list[[correlation_list_name_1]])
@@ -274,7 +278,7 @@ correlation_diff_permutation <- function(e,
                                                          correlation_list_name_1 = correlation_list_name_1,
                                                          correlation_list_name_2 = correlation_list_name_2,
                                                          n_shuffle = n_shuffle,
-                                                         seed = seed, method = method, ...)
+                                                         seed = seed, method = method,  progressbar = progressbar, ...)
     )
 
     # message("dim before sort", dim(test_statistic_distributions))
@@ -3229,13 +3233,11 @@ maslov_sneppen_rewire <- function(network, n_rewires = 10000){
 #' @param seed random seed for replication
 #' @param method (str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute.
 #' Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements, using midranks for ties. See also [Hmisc::rcorr()]
+#' @param progressbar (bool, default = TRUE) Display a progress bar for the processing time of the permutation.
 #' @return a matrix storing the permutation with the dimensions no. regions x no. regions x n_shuffle
 #' @noRd
 permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_list_name_2,
-                                      n_shuffle = n_shuffle, seed = 5, method = "pearson"){
-
-
-
+                                      n_shuffle = n_shuffle, seed = 5, method = "pearson", progressbar = TRUE){
   set.seed(seed)
   # Create a 3D matrix to hold the correlation distributions
   df <- df %>% dplyr::select(any_of("corr_group"), dplyr::where(is.numeric))
@@ -3246,6 +3248,10 @@ permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_l
 
   # Get original group order
   corr_groups <- df$corr_group
+
+  if (progressbar){
+    pb = txtProgressBar(min = 0, max = n_shuffle, initial = 0, style = 3)
+  }
 
   for (n in 1:n_shuffle){
     # Shuffle the group labels
@@ -3265,6 +3271,10 @@ permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_l
     correlations_list[[correlation_list_name_1]] <- matrix_list[[correlation_list_name_1]][,-1] %>% try_correlate(type = method)
     correlations_list[[correlation_list_name_2]] <- matrix_list[[correlation_list_name_2]][,-1] %>% try_correlate(type = method)
     corr_diff_matrix[,,n] <- correlations_list[[correlation_list_name_2]]$r - correlations_list[[correlation_list_name_1]]$r
+
+    if (progressbar){
+      setTxtProgressBar(pb,n)
+    }
   }
   return(corr_diff_matrix)
 }
