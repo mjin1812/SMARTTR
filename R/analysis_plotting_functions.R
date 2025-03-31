@@ -187,6 +187,118 @@ get_correlations <- function(e, by, values,
   return(e)
 }
 
+
+#' Get regional cross correlations and their p-values in a correlation list object.
+#' @description This analysis will get regional cross correlations across left and right brain regions based on cell counts normalized by region volume.
+#' This is essentially the same functionality as `get_correlations()` except it supports division of regions by hemisphere.
+#' @param e experiment object
+#' @param by (str) Attribute names to group by, e.g. c("sex", "group")
+#' @param values (str) The respective values of the attributes entered for the `by` parameter to generate a specific analysis group,
+#' e.g.values = c("female", "AD"). Length must be the same as `by`.
+#' @param channels (str, channels =  c("cfos", "eyfp", "colabel") The channels to process.
+#' @param p_adjust_method (bool or str, default = "none") This parameter is fed into the p.adjust function. Options: c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "fdr", "none")
+#'  Apply the named method to control for the inflated false discovery rate or family wise error rate (FWER). Set to FALSE or "none"
+#'  to keep "raw" p values. See also [stats::p.adjust()] for the correction options.
+#' @param region_order (list, default = NULL)  optional list with the first element named "acronym" supplying a vector as region acronyms and the second element named
+#' "order"  supplying an vector of integers determining numerical order, e.g. 1, 1, 2, 2.
+#' @param alpha (num, default = 0.05) The alpha level for significance applied AFTER p-adjustment.
+#' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
+#' @param method (str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute. Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements,
+#' @param anatomical.order (str, default = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The order of the regions to plot in the heatmaps.
+#' using midranks for ties. See also [Hmisc::rcorr()]
+#' @return e experiment object. The experiment object now has a named `correlation_list` object stored in it.
+#' The name of the correlation object is the concatenation of the variable values separated by a "_".
+#' This name allows for unambiguous identification of different analysis subgroups in the future.
+#' @examples
+#' \dontrun{
+#' e <- get_correlations(e, by = c("sex", "group"), values = c("female", "AD"),
+#' channels = c("cfos", "eyfp", "colabel"), alpha = 0.05)
+#' }
+#' @seealso [Hmisc::rcorr()]
+get_correlations_hemi <- function(e, by, values,
+                             channels = c("cfos", "eyfp", "colabel"),
+                             p_adjust_method = "none",
+                             alpha = 0.05,
+                             ontology = "allen",
+                             method = "pearson",
+                             anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"),
+                             region_order = NULL){
+  corr_list <- list()
+  names(corr_list) <- names(channels)
+
+  if (length(by) != length(values)){
+    warning("Your values vector seems too long. Please double check!")
+    values <- values[1:length(by)]
+  }
+
+  for (channel in channels){
+    df_channel <-  e$combined_normalized_counts[[channel]] %>%
+      filter_df_by_char_params(by, values) %>% dplyr::distinct()
+
+    df_channel <- df_channel %>% mutate(acronym =  ifelse(hemisphere=="left", paste0(acronym, "_L"), paste0(acronym, "_R"))) %>%
+      dplyr::ungroup() %>%
+      dplyr::select(-any_of("hemisphere"))
+
+
+    df_channel <- df_channel %>%  dplyr::select(any_of("mouse_ID"):any_of("acronym"), "normalized.count.by.volume") %>%
+      tidyr::pivot_wider(names_from = any_of("acronym"), values_from = any_of("normalized.count.by.volume"), values_fill = NA)
+
+
+    # Rearrange the correlations to be in "anatomical order"
+    common.regions.hemi <-  df_channel %>% dplyr::ungroup() %>% dplyr::select(-any_of(c('mouse_ID', SMARTTR::attr2match$mouse))) %>% names()
+    common.regions <- common.regions.hemi %>% stringr::str_replace_all("_L", "") %>% stringr::str_replace_all("_R", "") %>% unique()
+
+    if (is.null(region_order)){
+      if (tolower(ontology) == "allen"){
+        common.regions.ordered <- anatomical.order %>% purrr::map(get.sub.structure) %>%
+          purrr::map(intersect, y=common.regions) %>% unlist()
+      } else {
+        common.regions.ordered <- anatomical.order %>% purrr::map(get.sub.structure.custom, ontology = ontology) %>%
+          purrr::map(intersect, y=common.regions) %>% unlist()
+      }
+    } else if (is.list(region_order)){
+      common.regions.ordered <- region_order$acronym[region_order$order]
+      common.regions.ordered <- intersect(common.regions.ordered , common.regions)
+    } else {
+      stop("You did not supply a list object for the variable `region_order`."
+      )
+    }
+
+
+    ############### left off here
+    common.regions.ordered.hemi <- c(paste(common.regions.ordered, "_L", sep =""), paste(common.regions.ordered, "_R", sep = ""))
+
+
+    df_channel <- df_channel %>% dplyr::ungroup() %>% dplyr::select(any_of(common.regions.ordered.hemi)) %>%
+      as.matrix()
+
+    df_corr <-  try_correlate(df_channel, type = method)
+
+    if (!isFALSE(p_adjust_method)){
+      lowertri <- df_corr$P %>%  lower.tri(diag = FALSE)
+      lower_p <- df_corr$P[lowertri]
+      uppertri <- df_corr$P %>%  upper.tri(diag = FALSE)
+      upper_p <- df_corr$P[uppertri]
+
+      lower_p <- lower_p %>% stats::p.adjust(method = p_adjust_method)
+      df_corr$P[lowertri] <- lower_p
+      upper_p <- upper_p %>% stats::p.adjust(method = p_adjust_method)
+      df_corr$P[uppertri] <- upper_p
+    }
+    df_corr$sig <- df_corr$P <= alpha
+    diag(df_corr$sig) <- FALSE
+    corr_list[[channel]] <- df_corr
+  }
+  values_title <- paste0(values, collapse = "_")
+  e$correlation_list[[values_title]] <- structure(corr_list,
+                                                  class = "correlation_list",
+                                                  group_by = by,
+                                                  values = values)
+  return(e)
+}
+
+
+
 #' This function performs a permutation analysis to compare the region pairwise correlation coefficients between two different analysis groups.
 #'
 #' @description The data from two different analysis groups are compared by specifying the
@@ -325,6 +437,150 @@ correlation_diff_permutation <- function(e,
 }
 
 
+#' This function performs a permutation analysis to compare the region pairwise correlation coefficients between two different analysis groups.
+#'
+#' @description The data from two different analysis groups are compared by specifying the
+#' `correlation_list_name_1` and `correlation_list_name_2` parameters. Note that both of these analysis groups must have the same
+#' number of channels to compare. The functions `get_correlations()` needs to have been run for each of these analysis groups prior to
+#' running this function. The test statistics used is the pearson values of those in correlation_list_name_2 subtracted from corresponding Pearson values in correlation_list_name_1.
+#'
+#' @param e experiment object
+#' @param correlation_list_name_1 (str) The name of the correlation list object used as the first group for comparison.
+#' @param correlation_list_name_2 (str) The name of the correlation list object used as the second group for comparison.
+#' @param channels (str, default = c("cfos", "eyfp", "colabel")) The channels to process.
+#' @param n_shuffle (int, default = 1000) The number of permutation shuffles.
+#' @param method (str, default = "pearson", options = c("pearson", "spearman")) Specifies the type of correlations to compute.
+#' Spearman correlations are the Pearson linear correlations computed on the ranks of non-missing elements, using midranks for ties. See also [Hmisc::rcorr()]
+#' @param seed (int, default = 5) Random seed for future replication.
+#' @param p_adjust_method (bool or str, default = "none")
+#'  Apply the named method to control for the inflated false discovery rate or FWER. Set to FALSE or "none"
+#'  to keep "raw" p values. See also [stats::p.adjust()] for the correction options.
+#' @param alpha (float, default = 0.05) The alpha cutoff for significance between region pairwise correlation differences
+#' @param progressbar (bool, default = TRUE) Display a progress bar for the processing time of the permutation.
+#' @param ... additional parameters to pass to `permute_corr_diff_distrib()`
+#'
+#' @return e experiment object. The experiment object now has a list called `permutation_p_matrix` stored in it. Elements of this `permutation_p_matrix` list are
+#' the outputs of different permutation comparison analyses. These elements are named by the groups that were compared.
+#' @export
+#' @seealso [SMARTTR::get_correlations()]
+#' @examples
+#' \dontrun{e <- correlation_diff_permutation(sundowning,
+#'                                             correlation_list_name_1 = "female_AD",
+#'                                             correlation_list_name_2 = "female_control",
+#'                                             channels = c("cfos", "eyfp", "colabel"),
+#'                                             n_shuffles = 1000,
+#'                                             seed = 5,
+#'                                             p_adjust_method = "none"
+#'                                             alpha = 0.001
+#'                                             )
+#'}
+#'
+correlation_diff_permutation_hemi <- function(e,
+                                         correlation_list_name_1,
+                                         correlation_list_name_2,
+                                         channels = c("cfos", "eyfp", "colabel"),
+                                         n_shuffle = 1000,
+                                         method = "pearson",
+                                         seed = 5,
+                                         p_adjust_method = "none",
+                                         alpha = 0.05,
+                                         progressbar = TRUE,
+                                         ...){
+
+  attr_group_1 <- attributes(e$correlation_list[[correlation_list_name_1]])
+  attr_group_2 <- attributes(e$correlation_list[[correlation_list_name_2]])
+
+  p_matrix_list <- vector(mode = "list", length = length(channels))
+  names(p_matrix_list) <- channels
+
+  for (channel in channels) {
+    df_channel <- e$combined_normalized_counts[[channel]]
+
+    df_channel <- df_channel %>% mutate(acronym =  ifelse(hemisphere=="left", paste0(acronym, "_L"), paste0(acronym, "_R"))) %>%
+      dplyr::ungroup() %>%
+      dplyr::select(-any_of("hemisphere"))
+
+    df_channel_group_1 <- filter_df_by_char_params(df_channel, attr_group_1$group_by, attr_group_1$values)
+    df_channel_group_2 <- filter_df_by_char_params(df_channel, attr_group_2$group_by, attr_group_2$values)
+
+    df_channel_group_1  <- df_channel_group_1  %>%  dplyr::select(any_of("mouse_ID"):any_of("acronym"), "normalized.count.by.volume") %>%
+      tidyr::pivot_wider(names_from = any_of("acronym"), values_from = any_of("normalized.count.by.volume")) %>%
+      dplyr::mutate(corr_group = correlation_list_name_1) %>% dplyr::relocate(any_of("corr_group"), .before = 2) %>%
+      dplyr::ungroup() %>%
+      dplyr::select(-any_of(SMARTTR::attr2match$mouse))
+
+    df_channel_group_2  <- df_channel_group_2  %>%  dplyr::select(any_of("mouse_ID"):any_of("acronym"), "normalized.count.by.volume") %>%
+      tidyr::pivot_wider(names_from = any_of("acronym"), values_from = any_of("normalized.count.by.volume")) %>%
+      dplyr::mutate(corr_group = correlation_list_name_2) %>% dplyr::relocate(any_of("corr_group"), .before = 2) %>%
+      dplyr::ungroup() %>%
+      dplyr::select(-any_of(SMARTTR::attr2match$mouse))
+
+    common_regions_btwn_groups <- intersect(names(df_channel_group_1), names(df_channel_group_2))
+    df_channel_group_1 <- df_channel_group_1 %>% dplyr::select(any_of(c("mouse_ID", "corr_group")), all_of(common_regions_btwn_groups)) %>%
+      dplyr::mutate(mouse_ID = as.character(.data$mouse_ID))
+    df_channel_group_2 <- df_channel_group_2 %>% dplyr::select(any_of(c("mouse_ID", "corr_group")), all_of(common_regions_btwn_groups)) %>%
+      dplyr::mutate(mouse_ID = as.character(.data$mouse_ID))
+    df_channel_groups <- dplyr::bind_rows(df_channel_group_1, df_channel_group_2)
+
+    group_1_corr <- df_channel_group_1 %>% dplyr::select(dplyr::where(is.numeric)) %>%
+      as.matrix() %>% try_correlate(type = method)
+    group_2_corr <- df_channel_group_2 %>%  dplyr::select(dplyr::where(is.numeric)) %>%
+      as.matrix() %>% try_correlate(type = method)
+    test_statistic <- group_2_corr$r - group_1_corr$r
+
+    suppressWarnings(
+    test_statistic_distributions <- permute_corr_diff_distrib(df_channel_groups,
+                                                         correlation_list_name_1 = correlation_list_name_1,
+                                                         correlation_list_name_2 = correlation_list_name_2,
+                                                         n_shuffle = n_shuffle,
+                                                         seed = seed, method = method,  progressbar = progressbar, ...)
+    )
+
+    # message("dim before sort", dim(test_statistic_distributions))
+    # For each pairwise distribution, sort the values
+    # test_statistic_distributions <- apply(test_statistic_distributions, 1:2, sort)
+    # message("dim after sort", dim(test_statistic_distributions))
+    # do.call(sort, 1:2)
+    # test_statistic_distributions <- test_statistic_distributions %>% aperm(c(1, 2, 3))
+    # aperm(c(3, 2, 1))
+
+    p_matrix <- matrix(nrow = dim(test_statistic)[1],
+                       ncol = dim(test_statistic)[1],
+                       dimnames = dimnames(test_statistic))
+    l_reg <- dimnames(test_statistic)[1] %>% unlist()
+    for (i in 1:length(l_reg)){
+      for (j in 1:length(l_reg)){
+        null_distrib <- test_statistic_distributions[l_reg[i],l_reg[j],] %>% unlist()
+        p_matrix[l_reg[i],l_reg[j]] <-  (sum(abs(null_distrib) >= abs(test_statistic[l_reg[i],l_reg[j]])) + 1) / (n_shuffle + 1)
+
+        if(j>=i){
+          p_matrix[i,j:length(l_reg)] <- NA
+        }
+      }
+    }
+
+    if (!isFALSE(p_adjust_method)){
+      p_matrix <- p_matrix %>% stats::p.adjust(method = p_adjust_method) %>%
+        matrix(nrow = length(l_reg), ncol= length(l_reg), dimnames = dimnames(test_statistic))
+    }
+    p_matrix_list[[channel]] <- list(p_val = p_matrix,
+                                     sig = p_matrix < alpha,
+                                     test_statistic = test_statistic,
+                                     group_1_pearson = group_1_corr$r,
+                                     group_2_pearson = group_2_corr$r,
+                                     permutation_null_distribution = test_statistic_distributions,
+                                     alpha = alpha)
+  }
+  comparison <- paste(correlation_list_name_1,"vs",correlation_list_name_2, sep = "_")
+  if(is.null(e$permutation_p_matrix)){
+    e$permutation_p_matrix <- list()
+  }
+  e$permutation_p_matrix[[comparison]] <- p_matrix_list
+  return(e)
+}
+
+
+
 #' Export the permutation results as a csv file. This automatically saves into the tables folder.
 #'
 #' @param e experiment object
@@ -381,6 +637,84 @@ export_permutation_results <- function(e,
       } else {
         permutation_results <- permutation_results %>% dplyr::mutate(name1 = name.from.acronym.custom(.data$R1, ontology = ontology),
                                                                      name2 = name.from.acronym.custom(.data$R2, ontology = ontology),
+                                                                     .before = test_statistic)
+      }
+      if (filter_significant) {
+        permutation_results <- permutation_results %>% dplyr::filter(.data$sig)
+      }
+      # Create table directory if it doesn't already exists
+      output_dir <-  file.path(attr(e, "info")$output_path, "tables")
+      if(!dir.exists(output_dir)){
+        dir.create(output_dir)
+      }
+
+      if (filter_significant) {
+      utils::write.csv(permutation_results, file.path(output_dir, paste0("permutation_results", "_", pg, "_", channel, "_significant.csv")), row.names = FALSE)
+      } else {
+        utils::write.csv(permutation_results, file.path(output_dir, paste0("permutation_results", "_", pg, "_", channel, ".csv")), row.names = FALSE)
+      }
+    }
+  }
+  return(NULL)
+}
+
+#' Export the permutation results as a csv file. This automatically saves into the tables folder. Meant for
+#' datasets with hemispheric information.
+#'
+#' @param e experiment object
+#' @param permutation_groups (str vec, default = "all") Default is to export all analyses run. Supply names of the specific analyses found under `e$permutation_p_matrix %>% names()` if you want to export specific groups.
+#' @param channels (str, channels =  c("cfos", "eyfp", "colabel") The channels to process.
+#' @param ontology (str, default = "allen") Set to "unified" for Kim Lab unified ontology
+#' @param filter_significant (bool, default = TRUE) If FALSE, this keeps all comparisons. Otherwise exports only the most different and significant permutations.
+#' @export
+#' @return NULL
+#' @examples
+#' \dontrun{
+#' e <- export_permutation_results(e, permutation_groups = "all", filter_significant = TRUE)
+#' }
+#'
+export_permutation_results_hemi <- function(e,
+                                       permutation_groups = "all",
+                                       channels = c("cfos"),
+                                       ontology = "allen",
+                                       filter_significant =  TRUE){
+  if (permutation_groups == "all") {
+    permutation_groups <- e$permutation_p_matrix %>% names()
+  } else{
+    # Check that permutation_groups is in the names vector for e$permutation_p_matrix
+    if (!all(permutation_groups %in% names(e$permutation_p_matrix))){
+      stop("The permutation groups you have supplied are not all in the experiment object. Please fix the names supplied or run the permutation analysis if you have not done so.")
+    }
+  }
+
+  for (channel in channels) {
+    for (pg in permutation_groups){
+      regions <- colnames(e$permutation_p_matrix[[pg]][[channel]]$sig)
+      sig_df <- e$permutation_p_matrix[[pg]][[channel]]$sig %>%
+        tibble::as_tibble(rownames="R1") %>%
+        tidyr::pivot_longer(cols = all_of(regions), names_to = "R2", values_to = "sig") %>%
+        tidyr::drop_na()
+      pval_df <-e$permutation_p_matrix[[pg]][[channel]]$p_val %>%
+        tibble::as_tibble(rownames="R1") %>%
+        tidyr::pivot_longer(cols = all_of(regions), names_to = "R2", values_to = "p_val") %>%
+        tidyr::drop_na()
+      test_statistic <- e$permutation_p_matrix[[pg]][[channel]]$test_statistic
+      test_statistic[upper.tri(test_statistic, diag = TRUE)] <- NA
+      test_statistic <- test_statistic %>%
+        tibble::as_tibble(rownames="R1") %>%
+        tidyr::pivot_longer(cols = all_of(regions), names_to = "R2", values_to = "test_statistic") %>%
+        tidyr::drop_na()
+
+      permutation_results <- dplyr::left_join(test_statistic, pval_df, by = c("R1", "R2"), keep = FALSE) %>%
+        dplyr::left_join(sig_df, by = c("R1", "R2"), keep = FALSE)
+
+      if (ontology == "allen"){
+        permutation_results <- permutation_results %>% dplyr::mutate(name1 = name.from.acronym({function (x)return(str_remove_all(x, "_L") %>% str_remove_all("_R"))}(.data$R1)),
+                                                                     name2 = name.from.acronym({function (x)return(str_remove_all(x, "_L") %>% str_remove_all("_R"))}(.data$R2)),
+                                                                     .before = test_statistic)
+      } else {
+        permutation_results <- permutation_results %>% dplyr::mutate(name1 = name.from.acronym.custom({function (x)return(str_remove_all(x, "_L") %>% str_remove_all("_R"))}(.data$R1), ontology = ontology),
+                                                                     name2 = name.from.acronym.custom({function (x)return(str_remove_all(x, "_L") %>% str_remove_all("_R"))}(.data$R2), ontology = ontology),
                                                                      .before = test_statistic)
       }
       if (filter_significant) {
@@ -1747,6 +2081,169 @@ plot_correlation_heatmaps <- function(e,
   }
   return(p_list)
 }
+
+
+#' Plot correlation heatmaps for a dataset with hemispheric information
+#'
+#' @param e experiment object. Must contain a named correlation_list object generated by [SMARTTR::get_correlations()]
+#' @param correlation_list_name (str) The name of the correlation object generated by [SMARTTR::get_correlations()]
+#' @param channels (str, default = c("cfos", "eyfp", "colabel")) Must exist in the channels attribute of the correlation_list.
+#' @param colors (str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal code for the colors corresponding channels parameter. Color values can also be
+#' input compatible with ggplot2 plotting functions.
+#' @param plot_title (str, default = NULL) If NULL, the `correlation_list_name` will used as the title with underscores removed
+#' @param sig_color (str, default = "yellow") Color of the significance symbol in R
+#' @param sig_size (default = 7) Point size for significance symbol.
+#' @param sig_nudge_y (default = -0.7) Relative amount to nudge the significance symbols in the y direction to center over each square.
+#' @param anatomical.order (default = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB", "CB")) Default way to group subregions into super regions order
+#' @param strip_background_colors Named vector of hexadecimal strings corresponding to base parent regions.
+#' @param height (int) Height of the plot in inches.
+#' @param width (int) Width of the plot in inches.
+#' @param print_plot (bool, default = FALSE) Print the plot as graphics windows.
+#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
+#' the experiment object output folder.
+#' @param image_ext (default = ".png") image extension to the plot as.
+#' @param theme.hm Option to use custom ggplot2 theme if the user wants. See default values as example.
+#' @return p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
+#' @export
+plot_correlation_heatmaps_hemi <- function(e,
+                                           correlation_list_name,
+                                           channels = c('rcbv'),
+                                           colors = NULL, # if NULL, scale_fill_viridis is used
+                                           sig_color = "yellow",
+                                           sig_nudge_y = -0.7,
+                                           sig_size = 7,
+                                           ontology = "allen",
+                                           anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU",
+                                                            "TH", "HY", "MB", "HB", "CB"),
+                                           print_plot = TRUE, save_plot = TRUE, image_ext = ".png",
+                                           plot_title = NULL, height = 10, width = 10,
+                                          strip_background_colors = c(Isocortex = "#70ff71", OLF = "#75aadb", HPF = "#7ed04b",
+                                                                   CTXsp = "#8ada87", CNU = "#98d6f9", TH = "#ff7080",
+                                                                   HY = "#e64438",  MB = "#ff64ff", HB = "#ff9b88"),
+
+                                           theme.hm = ggplot2::theme(axis.text.x = element_text(hjust = 1, vjust = 0.5, angle = 90, size = 8),
+                                                                 axis.text.y = element_text(vjust = 0.5, size = 8),
+                                                                 plot.title = element_text(hjust = 0.5, size = 36),
+                                                                 axis.title = element_text(size = 18),
+                                                                 legend.text = element_text(size = 22),
+                                                                 legend.key.height = unit(100, "points"),
+                                                                 legend.title = element_text(size = 22),
+                                                                 panel.spacing = unit(0.2, "lines"),
+                                                                 strip.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, size = 10),
+                                                                 strip.text.y = element_text(angle = 270,  hjust = 0.5, vjust = 0.5, size = 10),
+                                                                 strip.placement = "outside"
+                                       )
+){
+
+
+  # Get the attributes for plotting
+  if (is.null(e$correlation_list[[correlation_list_name]])){
+    stop(paste0("Your experiment object doesn't contain the specified correlation_list object to plot! ",
+                "\nRun the function, get_correlations() first."))
+  }
+
+  cl_attr <- attributes(e$correlation_list[[correlation_list_name]])
+  # channels <- cl_attr$names
+  names(colors) <- channels
+
+  if (is.null(plot_title)){
+    cl_attr$values <- stringr::str_to_title(cl_attr$values)
+    plot_title <- paste(cl_attr$value, collapse = " ")
+  }
+
+  # List to store the returned plot handles
+  p_list <- vector(mode='list', length = length(channels))
+  names(p_list) <- channels
+
+  for (channel in channels){
+    # Turn into tibblee$
+    corr_df <-  e$correlation_list[[correlation_list_name]][[channel]] %>% purrr::map(tibble::as_tibble)
+    val_names <- names(corr_df)
+
+    for (k in 1:length(corr_df)){
+      corr_df[[k]] <- tibble::add_column(corr_df[[k]], row_acronym = names(corr_df[[k]]), .before = TRUE ) %>%
+        tidyr::pivot_longer(!row_acronym, names_to = "col_acronym", values_to = val_names[k])
+      corr_df[[k]]$row_acronym <- factor(corr_df[[k]]$row_acronym, levels = unique(corr_df[[k]]$row_acronym)) # to keep anatomical level order
+      corr_df[[k]]$col_acronym <- factor(corr_df[[k]]$col_acronym, levels = unique(corr_df[[k]]$col_acronym)) # to keep the anatomical level order
+    }
+
+    # Combined the correlation plots into one dataframe and add a column if there is a significant comparison
+    df <- corr_df$r %>% dplyr::left_join(corr_df$n, by = c("row_acronym", "col_acronym")) %>%
+      dplyr::left_join(corr_df$P, by = c("row_acronym", "col_acronym")) %>%
+      dplyr::left_join(corr_df$sig, by = c("row_acronym", "col_acronym")) %>%
+      dplyr::mutate(sig_text = dplyr::if_else(sig == TRUE, "*", ""))
+
+    # Get row and column parent super regions
+    df <- df %>% dplyr::mutate(row_parent = get.super.regions({function (x)  return(str_remove_all(x, "_L") %>% str_remove_all("_R"))}(row_acronym),
+                                                              anatomical.order = anatomical.order, ontology = ontology), .before  = row_acronym) %>%
+      dplyr::mutate(row_parent = factor(row_parent, levels = anatomical.order))
+    df <- df %>% dplyr::mutate(col_parent = get.super.regions({function (x)  return(str_remove_all(x, "_L") %>% str_remove_all("_R"))}(col_acronym),
+                                                              anatomical.order = anatomical.order, ontology = ontology), .before  = row_acronym) %>%
+      dplyr::mutate(col_parent = factor(col_parent, levels = rev(anatomical.order)))
+    # df <- df %>% dplyr::mutate(sig_text = ifelse(is.finite(sig_text), sig_text, ""))
+
+
+    # Arrange the custom strip colors
+    background_x <- vector(mode = "list", length = length(strip_background_colors))
+    for (c in 1:length(strip_background_colors)){
+      background_x[[c]] <- element_rect(fill = strip_background_colors[[c]], color = "black")
+    }
+
+    # Generate a correlation heatmap in anatomical order
+    n_facet <- df$row_parent %>% unique() %>% length()
+    p <-  ggplot(df, aes(row_acronym, col_acronym, fill = r)) +
+      ggh4x::facet_grid2(col_parent ~ row_parent,
+                         space = "free",
+                         margins = FALSE,
+                         scales = "free",
+                         strip = ggh4x::strip_themed(background_y = background_x,
+                                                     background_x = background_x)) +
+      geom_tile() +
+      geom_text(aes(label = sig_text), size=sig_size, position = position_nudge(y = sig_nudge_y), color = sig_color) +
+      labs(title = plot_title, x = "Brain Region", y = "Brain Region") +
+      theme.hm
+
+    if (is.na(colors)){
+      p <- p + scale_fill_viridis_c(aesthetics = c("color","fill"), option="magma", na.value = "grey50",
+                                    limits=c(-1, 1))
+
+    } else {
+      p <- p + scale_fill_gradient2(low = "#4f4f4f",mid = "#ffffff", high = colors[[channel]],
+                                    aesthetics = c("color","fill"), na.value = "grey50",
+                                    limits=c(-1, 1))
+    }
+
+    if (print_plot){
+      dev.new(noRStudioGD=TRUE)
+      print(p)
+    }
+
+    if(save_plot){
+      # Plot the heatmap
+      dev.new(width = width, height = height, noRStudioGD=TRUE)
+      print(p)
+
+      # Create figure directory if it doesn't already exists
+      output_dir <-  file.path(attr(e, "info")$output_path, "figures")
+      if(!dir.exists(output_dir)){
+        dir.create(output_dir)
+      }
+      image_file <- file.path(output_dir, paste0("heatmap_", stringr::str_replace(plot_title, " ", "_"), "_", channel, image_ext))
+      ggsave(filename = image_file,  width = width, height = height, units = "in")
+    }
+    # Store the plot handle
+    p_list[[channel]] <- p
+  }
+  return(p_list)
+}
+
+
+
+
+
+
+
+
 
 #' Plot the results of the permutation histogram used to determine the p-value of the pairwise region comparison
 #'

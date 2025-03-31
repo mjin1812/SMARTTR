@@ -66,7 +66,6 @@ Below we illustrate this nested structure for the Allen Mouse ontology.
 
 However, as part of a pre-processing step, it is highly recommended to fold smaller sub-regions into their larger parent region. While detailed sub-regional mapping is nice, there is a point where inclusion of each smaller sub-region begins to dilute out larger topological patterns in networks if instead they were folded them into their parent structure. SMARTTR includes folding options based on keyword matches to reduce the ontological "resolution". See the section "Clean redundant parent region data" for more information.
 
-
 Currently the supported ontologies for folding are:
 
 * The [Allen Mouse CCF](https://doi.org/10.1016/j.cell.2020.04.007) from the Allen Institute
@@ -74,9 +73,7 @@ Currently the supported ontologies for folding are:
 
 Please reach out and provide a full ontology tree if you would like another ontology supported!
 
-
 # Data importation and pre-processing
-
 
 ## Import necessary dependencies
 
@@ -86,7 +83,6 @@ library(SMARTTR)
 library(magrittr)
 library(dplyr)
 ```
-
 
 ## Create an experiment object 
 ```{r}
@@ -104,7 +100,6 @@ anesthesia <- experiment(experiment_name = "anesthesia",
 print(anesthesia)
 
 ```
-
 
 ## Import and preprocess your externally mapped dataset
 
@@ -146,8 +141,6 @@ Here, we use the `check_ontology_coding function()` to correct any discrepencies
 ontology <- "unified"   # Set to "allen" if you are using the allen ontology
 anesthesia <- check_ontology_coding(anesthesia, ontology = ontology)
 ```
-
-
 ### Cleaning based on regions to include
 
 If there are a standardized set of regions you wish to analyze, to the exclusion of others, you may use the function `filter_regions()` to specify the acronyms of the base parent regions (which includes all subregions) you wish to analyze.
@@ -172,7 +165,6 @@ anesthesia <- exclude_redundant_regions(anesthesia, ontology = ontology)
 ```
 
 Note: See also the function `check_redundant_parents()`, which detects redundant parents. It returns a named list with two elements `redundant_parents` (vector of acronyms) and `unique_acronyms` (vector of acronyms of subregions to retain)
-
 
 
 ### Simplify regions
@@ -207,7 +199,6 @@ simplify_keywords <-c("layer", "zone",  "area 1", "area 2", "area 3",
                       "Lateral periaqueductal", "related", "prosomere 1", "Ventral cochlear", "Dorsal cochlear", 
                       "Cell bridges of the", "Commissural nucleus of the",    "Nucleus of the brachium of the",
                       "intermediate part", "Zona limitans", "Posterodorsal", "interfascicular part")
-
 ```
 
 Below we simplify the counts by keywords chosen and recalculate the normalized counts
@@ -222,15 +213,12 @@ anesthesia <- simplify_cell_count(anesthesia, ontology = ontology, simplify_keyw
 
 As another pre-processing step, you may want to exclude a custom list of regions. This may be due to your analysis needs or physical tissue preparation limitations. The function `exclude_by_acronym()` allows for this using a list of acronyms from supported ontologies (allen or unified). The function `exclude_by_keywords()` allows for this using a list of keywords included in the long-form name of a region. Below illustrates both of these functions as further cleaning steps.
 
-
 Load and print list of chosen exclusion acronyms
-
 ```{r}
 exclusion_acronyms <- c("fiber_tracts", "cm", "2n", "s5", "8cn", "sst", "cbf", "cbp", "scp", "mcp", "lfbs", 
                         "cc", "fmi", "cst", "lfbst", "eps", "epsc", "ts", "rs", "mfbs", "mfbc", "fxs", 
                          "fxpo", "hc", "st", "mfbsma", "mfbse", "VS", "3V", "4V", "drt")
 ```
-
 Clean the dataset based on exclusion acronyms
 ```{r}
 anesthesia <- exclude_by_acronym(anesthesia, acronyms = exclusion_acronyms, ontology = ontology)
