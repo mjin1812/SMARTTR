@@ -29,8 +29,8 @@ plot_correlation_heatmaps(
     strip.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, size = 10),
     strip.text.y = element_text(angle = 270, 
      hjust = 0.5, vjust = 0.5, size = 10),
-    strip.placement = "outside", strip.background = element_rect(color = "black", fill =
-    "lightblue"))
+    strip.placement = "outside"),
+  strip_background_colors = "lightblue"
 )
 }
 \arguments{
@@ -41,7 +41,7 @@ plot_correlation_heatmaps(
 \item{channels}{(str, default = c("cfos", "eyfp", "colabel")) Must exist in the channels attribute of the correlation_list.}
 
 \item{colors}{(str, default = c("#be0000", "#00782e", "#f09b08")) Hexadecimal code for the colors corresponding channels parameter. Color values can also be
-input compatible with ggplot2 plotting functions.}
+input compatible with ggplot2 plotting functions. If value is NULL scale_fill_viridis will be used.}
 
 \item{sig_color}{(str, default = "yellow") Color of the significance symbol in R}
 
@@ -67,6 +67,10 @@ the experiment object output folder.}
 \item{width}{(int) Width of the plot in inches.}
 
 \item{theme.hm}{Option to use custom ggplot2 theme if the user wants. See default values as example.}
+
+\item{strip_background_colors}{(default = "lightblue) Enter custom codes to control the strip background colors, e.g. c(Isocortex = "#5571a9", OLF = "#64bdc4",
+HPF = "#d2875b", CTXsp = "#87a3db", CNU = "#466496", TH = "#7e72af", HY = "#8e7960",  MB = "#d796c8", HB = "#646464", CB = "#dddd7f").
+If more than one color is used, you must install the package ggh4x. If a single color is used, it will}
 }
 \value{
 p_list A list the same length as the number of channels, with each element containing a plot handle for that channel.
