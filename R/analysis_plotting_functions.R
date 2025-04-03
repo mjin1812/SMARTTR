@@ -386,12 +386,10 @@ export_permutation_results <- function(e,
       if (filter_significant) {
         permutation_results <- permutation_results %>% dplyr::filter(.data$sig)
       }
-      # Create table directory if it doesn't already exists
       output_dir <-  file.path(attr(e, "info")$output_path, "tables")
       if(!dir.exists(output_dir)){
         dir.create(output_dir)
       }
-
       if (filter_significant) {
       utils::write.csv(permutation_results, file.path(output_dir, paste0("permutation_results", "_", pg, "_", channel, "_significant.csv")), row.names = FALSE)
       } else {
@@ -401,6 +399,79 @@ export_permutation_results <- function(e,
   }
   return(NULL)
 }
+
+
+#' Create a permutation difference network
+#'
+#' @param e experiment object
+#' @param permutation_group (str) Supply names of the specific analyses found under `e$permutation_p_matrix %>% names()`
+#' @param channel (str, default = "cfos")
+#' @param ontology (str, default = "allen") Set to "unified" for Kim Lab unified ontology
+#' @param p_value_thresh (numeric, default = 0.001) User chosen p-value for thresholding edges to include in the network.
+#' @param anatomical.order (vec, default = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"))
+#' The default super region acronym list that groups all subregions in the dataset.
+#' @param community_detection_function (function, default = tidygraph::group_fast_greedy)
+#' \href{https://tidygraph.data-imaginist.com/reference/group_graph.html}{tidygraph grouping function} supporting
+#' various algorithms for community detection
+#' @param ... Additional arguments for the community_detection_function chosen
+#' @return e experiment object
+#' @export
+#' @examples
+#' \dontrun{
+#' e <- create_perm_diff_network(e, permutation_group = "Control_vs_Isoflurane", channel = "cfos", ontology = "unified", p_value_thresh = 0.001, weights = NULL)
+#' }
+#'
+create_perm_diff_network <- function(e,
+                                     permutation_group,
+                                     channel = "cfos",
+                                     p_value_thresh = 0.001,
+                                     ontology = "allen",
+                                     anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"),
+                                     community_detection_function = tidygraph::group_fast_greedy,
+                                     ...){
+
+  output_dir <-  file.path(attr(e, "info")$output_path, "tables")
+  perm_df <- read.csv(file.path(output_dir, paste0("permutation_results", "_", permutation_group, "_", channel, ".csv")))
+
+
+  perm_df <- perm_df %>% dplyr::filter(p_val <= p_value_thresh)
+  perm_df <- perm_df %>% dplyr::mutate(sign = ifelse(test_statistic >= 0, "pos", "neg"),
+                                       weight = abs(test_statistic)) %>%
+    dplyr::rename(from = R1,
+                  to = R2,
+                  p.value = p_val)
+
+  perm_network <- tidygraph::tbl_graph(
+    edges = perm_df,
+    directed = FALSE)
+  perm_network <- perm_network %>% activate(nodes) %>%
+    dplyr::mutate(degree = tidygraph::centrality_degree()) %>%
+    dplyr::filter(degree>0)
+  # Get unique common regions
+  acronyms <- perm_network %>% activate(nodes) %>% tibble::as_tibble()
+  acronyms <- acronyms$name
+  # get the parent super region
+  super.region <- acronyms
+
+  if (tolower(ontology) == "allen"){
+    for (sup.region in anatomical.order){
+      super.region[super.region %in% SMARTTR::get.sub.structure(sup.region)] <- sup.region
+    }
+  } else {
+    for (sup.region in anatomical.order){
+      super.region[super.region %in% SMARTTR::get.sub.structure.custom(sup.region, ontology = ontology)] <- sup.region
+    }
+  }
+  perm_network <- perm_network %>% activate(nodes) %>%
+    dplyr::mutate(super.region =  factor(super.region,levels = intersect(anatomical.order, unique(super.region))),
+                  btw = tidygraph::centrality_betweenness(weights = NULL, directed = FALSE),
+                  hub_score = tidygraph::centrality_hub( scale = TRUE))  # Kleinberg's hubness centrality score
+  perm_network <- perm_network %>% activate(nodes) %>%
+    mutate(community = as.factor(do.call(community_detection_function, list(...))))
+
+  return(perm_network)
+}
+
 
 #' Create graph objects for plotting different analysis subgroups.
 #'
@@ -1610,8 +1681,6 @@ plot_normalized_counts <- function(e,
   }
   return(p_list)
 }
-
-
 
 #' Plot correlation heatmaps
 #'

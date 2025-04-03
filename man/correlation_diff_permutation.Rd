@@ -14,6 +14,7 @@ correlation_diff_permutation(
   seed = 5,
   p_adjust_method = "none",
   alpha = 0.05,
+  progressbar = TRUE,
   ...
 )
 }
@@ -38,6 +39,8 @@ Apply the named method to control for the inflated false discovery rate or FWER.
 to keep "raw" p values. See also \code{\link[stats:p.adjust]{stats::p.adjust()}} for the correction options.}
 
 \item{alpha}{(float, default = 0.05) The alpha cutoff for significance between region pairwise correlation differences}
+
+\item{progressbar}{(bool, default = TRUE) Display a progress bar for the processing time of the permutation.}
 
 \item{...}{additional parameters to pass to \code{permute_corr_diff_distrib()}}
 }
