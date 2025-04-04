@@ -400,9 +400,9 @@ export_permutation_results <- function(e,
   return(NULL)
 }
 
-
 #' Create a permutation difference network
-#'
+#' This function requires [SMARTTR::export_permutation_results()] to have been run for the specific permutation analysis of interest, with the `filter_significant`
+#' parameter set to FALSE, so that users can set their own p-value threshold for filtering out edges.
 #' @param e experiment object
 #' @param permutation_group (str) Supply names of the specific analyses found under `e$permutation_p_matrix %>% names()`
 #' @param channel (str, default = "cfos")
@@ -429,49 +429,50 @@ create_perm_diff_network <- function(e,
                                      anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"),
                                      community_detection_function = tidygraph::group_fast_greedy,
                                      ...){
-
   output_dir <-  file.path(attr(e, "info")$output_path, "tables")
   perm_df <- read.csv(file.path(output_dir, paste0("permutation_results", "_", permutation_group, "_", channel, ".csv")))
-
-
-  perm_df <- perm_df %>% dplyr::filter(p_val <= p_value_thresh)
-  perm_df <- perm_df %>% dplyr::mutate(sign = ifelse(test_statistic >= 0, "pos", "neg"),
-                                       weight = abs(test_statistic)) %>%
-    dplyr::rename(from = R1,
-                  to = R2,
-                  p.value = p_val)
+  perm_df <- perm_df %>% dplyr::filter(.data$p_val <= p_value_thresh)
+  perm_df <- perm_df %>% dplyr::mutate(sign = ifelse(.data$test_statistic >= 0, "pos", "neg"),
+                                       weight = abs(.data$test_statistic)) %>%
+    dplyr::rename(from = .data$R1,
+                  to = .data$R2,
+                  p.value = .data$p_val)
 
   perm_network <- tidygraph::tbl_graph(
     edges = perm_df,
     directed = FALSE)
   perm_network <- perm_network %>% activate(nodes) %>%
     dplyr::mutate(degree = tidygraph::centrality_degree()) %>%
-    dplyr::filter(degree>0)
+    dplyr::filter(.data$degree>0)
   # Get unique common regions
   acronyms <- perm_network %>% activate(nodes) %>% tibble::as_tibble()
   acronyms <- acronyms$name
   # get the parent super region
   super.region <- acronyms
-
   if (tolower(ontology) == "allen"){
     for (sup.region in anatomical.order){
-      super.region[super.region %in% SMARTTR::get.sub.structure(sup.region)] <- sup.region
+      super.region[super.region %in% get.sub.structure(sup.region)] <- sup.region
     }
   } else {
     for (sup.region in anatomical.order){
-      super.region[super.region %in% SMARTTR::get.sub.structure.custom(sup.region, ontology = ontology)] <- sup.region
+      super.region[super.region %in% get.sub.structure.custom(sup.region, ontology = ontology)] <- sup.region
     }
   }
   perm_network <- perm_network %>% activate(nodes) %>%
-    dplyr::mutate(super.region =  factor(super.region,levels = intersect(anatomical.order, unique(super.region))),
+    dplyr::mutate(super.region =  factor(super.region, levels = intersect(anatomical.order, unique(super.region))),
                   btw = tidygraph::centrality_betweenness(weights = NULL, directed = FALSE),
-                  hub_score = tidygraph::centrality_hub( scale = TRUE))  # Kleinberg's hubness centrality score
+                  hub_score = tidygraph::centrality_hub(scale = TRUE))  # Kleinberg's hubness centrality score
   perm_network <- perm_network %>% activate(nodes) %>%
     mutate(community = as.factor(do.call(community_detection_function, list(...))))
-
-  return(perm_network)
+  if(is.null(e$permutation_diff_network)){
+    e$permutation_diff_network <- list()
+  }
+  if(is.null(e$permutation_diff_network[[permutation_group]])){
+    e$permutation_diff_network[[permutation_group]] <- list()
+  }
+  e$permutation_diff_network[[permutation_group]][[channel]] <- perm_network
+  return(e)
 }
-
 
 #' Create graph objects for plotting different analysis subgroups.
 #'
@@ -1787,9 +1788,6 @@ plot_correlation_heatmaps <- function(e,
   df <- df %>% dplyr::mutate(col_parent = get.super.regions(.data$col_acronym, anatomical.order = anatomical.order,
                                                             ontology = ontology), .before  = any_of("row_acronym")) %>%
     dplyr::mutate(col_parent = factor(.data$col_parent, levels = rev(anatomical.order)))
-
-
-  # ggplot
   p <-  ggplot(df, aes(.data$row_acronym, .data$col_acronym, fill = .data$r))
   if (length(strip_background_colors) > 1) {
     if (!requireNamespace("ggh4x", quietly = TRUE)) {
@@ -1809,7 +1807,7 @@ plot_correlation_heatmaps <- function(e,
                          strip = ggh4x::strip_themed(background_y = background_x,
                                                      background_x = background_x)) +
       geom_tile() +
-      geom_text(aes(label = sig_text), size=sig_size, position = position_nudge(y = sig_nudge_y), color = sig_color) +
+      geom_text(aes(label =  .data$sig_text), size=sig_size, position = position_nudge(y = sig_nudge_y), color = sig_color) +
       labs(title = plot_title, x = "Brain Region", y = "Brain Region") +
       theme.hm
   } else {
@@ -2344,9 +2342,6 @@ plot_joined_networks <- function(e,
                                  node_size_range = c(1, 8),
                                  anatomical.colors = NULL,
                                  save_plot = TRUE){
-  # if(get_os() != "osx"){
-  #   quartz <- X11
-  # }
 
   p_list <- vector(mode='list', length = length(channels))
   names(p_list) <- channels
@@ -2438,6 +2433,133 @@ plot_joined_networks <- function(e,
   }
   return(p_list)
 }
+
+
+
+#' Plot a permutation difference network
+#' e experiment object
+#'
+#' @param e experiment object
+#' @param permutation_group (str) Supply names of the specific analyses found under `e$permutation_p_matrix %>% names()`
+#' @param channel (str, default = "cfos")
+#' @param layout (str, default = "stress") equivalent to the
+#' \href{https://ggraph.data-imaginist.com/reference/ggraph.html}{ggraph} `layout` parameter.
+#' @param seed random seed for replication
+#' @param degree_scale_limit (vec, default = c(1,15)) Scale limit for degree size
+#' @param node_size_range (default = c(1,8)) Node size range.
+#' @param edge_color_pos (str, default = "#04C3C3") Color of the edges representing positive correlation differences
+#' @param edge_color_neg (str, default = "#BF1F1F") Color of the edges representing negative correlation differences
+#' @param pos_edge_legend_label (str, default = "") Legend label for positive difference edges, e.g. "Iso > Ctrl"
+#' @param neg_edge_legend_label (str, default = "") Legend label for negative difference edges, e.g. "Iso < Ctrl"
+#' @param correlation_edge_width_limit (default = c(0, 2)) Range of correlation differences in the network.
+#' @param edge_thickness_range (default = c(0,6))  Range for the width size of the edges.
+#' @param node_text_size (default = 12)  Font size for node text.
+#' @param graph_theme (default = NULL) Add a [ggraph::theme_graph()] to the network graph. If NULL, the default is taken.
+#' @param mark_hull  (bool, default = TRUE) Plot detected communities using a convex hull polygon.
+#' @param save_plot (bool, default = TRUE) Save into the figures subdirectory of the
+#'  the experiment object output folder.
+#' @param height Height of the plot in inches.
+#' @param width width of the plot in inches.
+#' @param image_ext (default = ".png")
+#' @param anatomical.colors (vec, default = c(Isocortex = "#70ff71", OLF = "#75aadb", HPF = "#7ed04b", CTXsp = "#8ada87", CNU = "#98d6f9",
+#' TH = "#ff7080", HY = "#e64438",  MB = "#ff64ff", HB = "#ff9b88")) Colors for the parent region as a named vector of hexadecimal regions.
+#' @return p A plot handle.
+#' @export
+#' @examples
+#' \dontrun{
+#' p <- plot_perm_diff_network(anesthesia,
+#' permutation_group = "Control_vs_Isoflurane",
+#' channel = "cfos",
+#' pos_edge_legend_label = "Iso > Ctrl",
+#' neg_edge_legend_label = "Iso < Ctrl",
+#' layout = "fr",
+#' mark_hull=TRUE,
+#' node_text_size = 14,
+#' seed = 15,
+#' width = 20,
+#' height = 20,
+#' graph_theme = graph_theme,
+#' anatomical.colors = anatomical.colors,
+#' image_ext = ".png")
+#' }
+plot_perm_diff_network <- function(e,
+                                   permutation_group,
+                                   channel = "cfos",
+                                   layout ="stress",
+                                   seed = 30,
+                                   degree_scale_limit= c(1,15),
+                                   node_size_range = c(3,15),
+                                   edge_color_pos = "#04C3C3",
+                                   edge_color_neg =  "#BF1F1F",
+                                   anatomical.colors = c(Isocortex = "#70ff71", OLF = "#75aadb", HPF = "#7ed04b",
+                                                          CTXsp = "#8ada87", CNU = "#98d6f9", TH = "#ff7080",
+                                                          HY = "#e64438",  MB = "#ff64ff", HB = "#ff9b88"),
+                                   pos_edge_legend_label = "",
+                                   neg_edge_legend_label = "",
+                                   correlation_edge_width_limit = c(0,2),
+                                   edge_thickness_range = c(0,6),
+                                   node_text_size = 12,
+                                   graph_theme = NULL,
+                                   mark_hull = TRUE,
+                                   save_plot = TRUE,
+                                   height=15,
+                                   width=15,
+                                   image_ext = ".png"){
+
+  if (is.null(graph_theme)){
+    graph_theme <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5,size = 28),
+                                                 legend.text = element_text(size = 15),
+                                                 legend.title = element_text(size = 15))
+  }
+  perm_network <- e$permutation_diff_network[[permutation_group]][[channel]]
+  set.seed(seed)
+  p <- ggraph::ggraph(perm_network, layout = layout) +
+    ggraph::geom_edge_link(aes(color = sign, width = abs(.data$weight)),
+                           edge_alpha = 0.6, n = 1000) +
+    ggraph::geom_node_point(aes(size = .data$degree, color = .data$super.region)) +
+    ggraph::geom_node_text(aes(label = .data$name), size =  node_text_size, color = "black", repel = TRUE, check_overlap = TRUE) +
+    ggplot2::scale_color_manual(name = "Anatomical Region",
+                                values = anatomical.colors,
+                                guide = guide_legend(override.aes = list(size=max(node_size_range)), order=4)) +
+    ggplot2::coord_equal() +
+    ggraph::scale_edge_color_manual(values = c(pos = edge_color_pos,
+                                               neg = edge_color_neg),
+                                    labels = c(pos = pos_edge_legend_label, neg = neg_edge_legend_label),
+                                    name = "Functional direction",
+                                    guide = guide_legend(order = 1)) +
+
+    ggraph::scale_edge_width(limits=correlation_edge_width_limit,
+                             range = edge_thickness_range, name = "Pearson correlation difference",
+                             guide = guide_legend(order = 3))  +
+    ggplot2::scale_size(limits = degree_scale_limit, name ="Degree",
+                        range = node_size_range,
+                        guide = guide_legend(order = 2)) +
+    graph_theme
+
+  if (mark_hull){
+    p <- p +  ggforce::geom_mark_hull(aes(.data$x, .data$y, fill = .data$community, color = .data$community), alpha = .1,
+                                      concavity = 5, radius = unit(6, "mm"), show.legend = FALSE) +
+      ggplot2::scale_fill_viridis_d(option = "D")
+      ### add an if/else statement here
+      # scale_fill_manual(values = c( "#3c9ea5", "#2f3480", "#9d1c7b", "#ff7f00", "#4daf4a", "#e41a1c","#984ea3",  "#bdd9bf", "#377eb8","#27ae60"))
+  }
+
+  if (save_plot){
+    dev.new(width = width, height = height, noRStudioGD=TRUE)
+    print(p)
+    output_dir <-  file.path(attr(e, "info")$output_path, "figures")
+    if(!dir.exists(output_dir)){
+      dir.create(output_dir)
+    }
+    image_file <- file.path(output_dir,
+                            paste0("permutation_difference_network_mark_hull_", mark_hull, image_ext))
+    ggsave(filename = image_file,  width = width, height = height, units = "in")
+  }
+  return(p)
+}
+
+
+
 
 #' Plot the degree distributions
 #' @description
@@ -3088,7 +3210,7 @@ plot_degree_regions <- function(e,
       p <- df %>%
         ggplot2::ggplot(aes(.data$name, .data$degree)) +
         ggplot2::geom_col(fill = colors[[k]], color = "black") +
-        ggplot2::facet_grid(~super.region, scales = "free_x", space = "free_x", switch = "x")  +
+        ggplot2::facet_grid(~.data$super.region, scales = "free_x", space = "free_x", switch = "x")  +
         xlab("Brain Region") + ylab("Degree") +
         ylim(ylim)  + theme.bar
 
@@ -3355,7 +3477,7 @@ permute_corr_diff_distrib <- function(df, correlation_list_name_1, correlation_l
   corr_groups <- df$corr_group
 
   if (progressbar){
-    pb = txtProgressBar(min = 0, max = n_shuffle, initial = 0, style = 3)
+    pb <- txtProgressBar(min = 0, max = n_shuffle, initial = 0, style = 3)
   }
 
   for (n in 1:n_shuffle){
