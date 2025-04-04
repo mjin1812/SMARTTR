@@ -1,13 +1,13 @@
 ##______________ Package imports ________________
 #' @importFrom ggplot2 ggplot aes theme element_text element_line element_rect element_blank unit labs ggsave guide_legend xlab ylab xlim ylim labs
 #' @importFrom ggplot2 geom_col geom_tile geom_text geom_jitter geom_hline geom_vline geom_errorbar geom_point
-#' @importFrom ggplot2 scale_y_continuous scale_x_continuous scale_fill_manual scale_fill_gradient2 position_nudge
+#' @importFrom ggplot2 scale_y_continuous scale_x_continuous scale_fill_manual scale_fill_gradient2 scale_fill_viridis_c position_nudge
 #' @importFrom tidyselect all_of any_of last_col
 #' @importFrom dplyr n mutate summarize summarise across arrange group_by if_else desc
 #' @importFrom tidygraph activate convert
 #' @importFrom tidyr pivot_longer pivot_wider
 #' @importFrom grDevices dev.new
-#' @importFrom utils write.csv read.csv
+#' @importFrom utils write.csv read.csv setTxtProgressBar txtProgressBar
 #' @importFrom magrittr %>%
 #' @importFrom stats sd na.omit
 #' @importFrom rlang .data

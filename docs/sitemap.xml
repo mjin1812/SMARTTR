@@ -73,6 +73,9 @@
     <loc>https://mjin1812.github.io/SMARTTR/reference/create_networks.html</loc>
   </url>
   <url>
+    <loc>https://mjin1812.github.io/SMARTTR/reference/create_perm_diff_network.html</loc>
+  </url>
+  <url>
     <loc>https://mjin1812.github.io/SMARTTR/reference/detect_single_slice_regions.html</loc>
   </url>
   <url>
@@ -188,6 +191,9 @@
   </url>
   <url>
     <loc>https://mjin1812.github.io/SMARTTR/reference/plot_percent_colabel.html</loc>
+  </url>
+  <url>
+    <loc>https://mjin1812.github.io/SMARTTR/reference/plot_perm_diff_network.html</loc>
   </url>
   <url>
     <loc>https://mjin1812.github.io/SMARTTR/reference/print.correlation_list.html</loc>

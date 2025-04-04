@@ -11,7 +11,7 @@ vignette: >
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval = TRUE, warning=FALSE, message=FALSE, fig.show = 'inline')
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE, warning=FALSE, message=FALSE, fig.show = 'inline')
 ```
 
 
@@ -80,16 +80,15 @@ Please reach out and provide a full ontology tree if you would like another onto
 
 ## Import necessary dependencies
 
-```{r}
+```{r, eval = TRUE}
 ## Packages to load
 library(SMARTTR)
 library(magrittr)
 library(dplyr)
 ```
 
-
 ## Create an experiment object 
-```{r}
+```{r, eval = TRUE}
 # Creating an experiment object named "anesthesia" 
 # Enter the channels parameter to distinguish which IEG(s) is/are stained.
 # Note, the other categorical variables will be auto-imported from the dataset
@@ -111,9 +110,10 @@ print(anesthesia)
 The `import_mapped_datasets()` is a helper function that makes it easy to import the formatted csv file into the proper location in the experiment object. 
 It will also auto-detect the categorical variables used in the dataset. 
 
-```{r}
+```{r, eval = TRUE}
 anesthesia <- import_mapped_datasets(anesthesia, 
-                                     normalized_count_paths = "P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\example_data\\anesthesia\\unified_ontology_unchecked.csv",
+                                     # normalized_count_paths = "P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\example_data\\anesthesia\\unified_ontology_unchecked.csv",
+                                     normalized_count_paths = "P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\example_data\\anesthesia\\anesthesia_reformatted_ontology_unchecked.csv",
                                      show_col_types = FALSE)
 print(anesthesia)
 
@@ -132,17 +132,15 @@ print(anesthesia)
 
 This dataset uses the Kim Unified Ontology. The code below prints the first few entries of the Kim Unified Ontology.
 
-```{r}
+```{r, eval = TRUE}
 head(SMARTTR::ontology.unified)
-
 ```
-
 
 SMARTTR requires that the ontology acronyms and full length region names of your dataset are perfectly matched with those of the stored ontology. Sometimes during the data exportation process, additional characters suchas as commas, semicolons, and spaces are erroneously introduced into acronyms or names. 
 
 Here, we use the `check_ontology_coding function()` to correct any discrepencies and match to the internal ontologies stored in  SMARTTR. This step may take a minute if the dataset is quite large.
 
-```{r}
+```{r, eval = TRUE}
 ontology <- "unified"   # Set to "allen" if you are using the allen ontology
 anesthesia <- check_ontology_coding(anesthesia, ontology = ontology)
 ```
@@ -159,7 +157,6 @@ The example below shows the inclusion of the isocortex, olfactory bulb, hippocam
 anesthesia <- filter_regions(anesthesia, 
                             base_regions =  c("Isocortex", "OLF", "HPF", "CTXsp", "CNU","TH", "HY", "MB", "HB"),
                             ontology = ontology)
-
 ```
 
 
@@ -213,7 +210,6 @@ simplify_keywords <-c("layer", "zone",  "area 1", "area 2", "area 3",
 Below we simplify the counts by keywords chosen and recalculate the normalized counts
 
 ```{r}
-
 # simplify the acronyms by the keyworks and recalculate the normalized counts
 anesthesia <- simplify_cell_count(anesthesia, ontology = ontology, simplify_keywords = simplify_keywords, dont_fold = "")
 ```
@@ -269,4 +265,323 @@ anesthesia <- enough_mice_per_group(anesthesia, by = c("group"), min_n = 4, remo
 ```{r}
 save_experiment(anesthesia, timestamp = TRUE)
 ```
+
+
+
+
+# Representative dataset analysis 
+
+In the following section, we will expand on or highlight more analyses with this dataset that are not as covered in-depth in the [Example analysis notebook](../articles/Part4.Example_Analysis_Notebook.html). We recommend reading section 4 first, as less detail will be described here for functions already mentioned there.
+
+Additionally, some of these analysis features are only available through the development version of SMARTTR, installed directly from Github. As checks and testing are incorporated for these,
+these functions will be updated in the latest bundled installation of SMARTTR.
+
+> The example results images presented in this section are from the actual dataset and will look different from the results of the scrambled example dataset. Once the manuscript is fully available, the unscrambled dataset will be available for download and results will resemble those in this section.
+
+## Get regional cross correlations and plot them as a heatmap
+The `get_correlations()` function is used to calculate pairwise Pearson correlations across all regions within an analysis group. 
+```{r}
+# Groups to iterate through and their corresponding plotting labels
+groups <- c("Control", "Isoflurane")
+
+# Calculate correlations for each group
+for (i in 1:length(groups)){
+  print(groups[[i]])
+  anesthesia <- get_correlations(anesthesia,
+                                by = "group",
+                                values = groups[[i]],
+                                p_adjust_method = "none",
+                                channels = "cfos",
+                                ontology = "unified",
+                                alpha = 0.00001)
+}
+
+```
+There are a few global aesthetic parameters that will be used repeatedly across plotting functions, so they are setup below for use:
+```{r}
+# Setting up aesthetic color choices
+group.colors <- c(Isoflurane="#04C3C3", Control = "#BF1F1F")
+anatomical.colors <- c(Isocortex = "#5571a9", OLF = "#64bdc4", HPF = "#d2875b", CTXsp = "#87a3db", 
+                       CNU = "#466496", TH = "#7e72af", HY = "#8e7960",  MB = "#d796c8", HB = "#646464")
+```
+
+
+Plotting a regional correlation heatmap for the Control group. Note that setting the `colors` parameter to NULL results in the viridis color scale. Figures will autosave at [experiment folder path]/[Figures].
+```{r}
+# Option to use custom ggplot2 theme to fine-tune aesthetics
+theme.hm <- ggplot2::theme(axis.text.x = element_text(hjust = 1, vjust = 0.5, angle = 90, size = 5),
+                          axis.text.y = element_text(vjust = 0.5, size = 5),
+                          plot.title = element_text(hjust = 0.5, size = 40),
+                          axis.title = element_text(size = 35),
+                          legend.text = element_text(size = 22),
+                          legend.key.height = unit(50, "pt"),
+                          legend.title = element_text(size = 22),
+                          panel.spacing = unit(0.2, "lines"),
+                          strip.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, size = 12, face="bold"),
+                          strip.text.y = element_text(angle = 270,  hjust = 0.5, vjust = 0.5, size = 12, face="bold"),
+                          strip.placement = "outside")
+
+# Plotting heatmap.
+plot_correlation_heatmaps(anesthesia,
+                          channels = "cfos",
+                          correlation_list_name = "Control",
+                          sig_color = "black",
+                          sig_nudge_y = -0.8,
+                          sig_size = 4,
+                          plot_title = "Control",
+                          print_plot = FALSE,
+                          ontology = "unified",
+                          colors = NULL,  # Uses viridis scale if NULL
+                          height = 12,
+                          width = 12,
+                          strip_background_colors = anatomical.colors,
+                          theme.hm = theme.hm,
+                          image_ext = ".png",
+                          save_plot = TRUE)
+```
+
+<figure>
+  <img src="../man/figures/heatmap_Control_cfos.png" alt="Image" style="width: 500px;">
+  <figcaption><em>Heatmap of regional correlations for the Control group. Black astericks represent significant correlations based on user-set alpha value..</em> </figcaption>
+</figure>
+
+
+
+
+```{r}
+plot_correlation_heatmaps(anesthesia,
+                                  channels = "cfos",
+                                  correlation_list_name = "Isoflurane",
+                                  sig_color = "black",
+                                  sig_nudge_y = -0.8,
+                                  sig_size = 4,
+                                  plot_title = "Isoflurane",
+                                  print_plot = FALSE,
+                                  ontology = "unified",
+                                  colors = NULL, 
+                                  height = 12,
+                                  width = 12,
+                                  strip_background_colors = anatomical.colors,
+                                  theme.hm = theme.hm,
+                                  image_ext = ".png",
+                                  save_plot = TRUE)
+```
+
+
+<figure>
+  <img src="../man/figures/heatmap_Isoflurane_cfos.png" alt="Image" style="width: 500px;">
+  <figcaption><em>Heatmap of regional correlations for the Isoflurane group. Black astericks represent significant correlations based on user-set alpha value..</em> </figcaption>
+</figure>
+
+
+## Plotting representative joined networks using a proportional threshold
+
+We can plot the concatenation of two networks of interest using the `create_joined_networks()` and `plot_joined_networks()` functions. 
+We can make sure the networks have matching edge density using the `proportional_thresh` parameter (edge proportion 3.15%)
+
+```{r, eval=FALSE}
+anesthesia <- create_joined_networks(anesthesia, 
+                                     correlation_list_names = c("Control", "Isoflurane"),
+                                     channels = "cfos",
+                                     proportional_thresh = 0.0315,
+                                     ontology = ontology)
+
+# Creating ggraph theme to apply to the networks to fine tune graphics
+graph_theme <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5, size = 100, face = "plain"),
+                                             legend.text = element_text(size = 55),
+                                             legend.title = element_text(size = 60),
+                                             panel.background = element_rect(fill='transparent', color = "transparent"),
+                                             plot.background = element_rect(fill='transparent', color= "transparent"),
+                                             legend.background = element_rect(fill='transparent', color = "transparent"))
+
+# Group labels for plotting the edges
+group.labels <- c(Control = "Control", Isoflurane = "Isoflurane")
+
+# Plotting the network. The figure will autosave in the Figures output folde of the experiment
+p_list <- plot_joined_networks(anesthesia,
+                               correlation_list_names = c("Control", "Isoflurane"),
+                               channels = "cfos",
+                               absolute_weight = TRUE,
+                               title = "Control + Isoflurane",
+                               edge_colors = group.colors,
+                               edge_color_labels = group.labels,
+                               degree_scale_limit = c(1,45),
+                               correlation_edge_width_limit = c(0.8, 1.0),
+                               height = 30,
+                               width = 30,
+                               label_size = 10,
+                               label_offset = 0.08,
+                               anatomical.colors = anatomical.colors,
+                               transparent_edge_group1 = FALSE,
+                               transparent_edge_group2 = FALSE,
+                               edge_thickness_range = c(1,5),
+                               node_size_range = c(1, 18),
+                               graph_theme = graph_theme,
+                               image_ext = ".png")
+
+```
+
+<figure>
+  <img src="../man/figures/network_Control_Isoflurane_cfos_ds.png" alt="Image" style="width: 700px;">
+  <figcaption><em>All mapped eYFP regions.</em> </figcaption>
+</figure>
+
+
+
+## Generate null networks
+
+Sometimes it is informative to examine the properties of each empirical network in comparison to null networks with some characteristics controlled such as average degree.
+We can do so with the `rewire_network()` function. The current supported algorithm used is [Maslov-Sneppen](https://www.science.org/doi/10.1126/science.1065103) rewiring, 
+which preserves degree sequence of each empirical network. The `n_rewires` parameter determines the number of rewirings which occur to generate each null network. The general recommended
+number of rewirings corresponds to the size of each empirical network (no. edges) times 100. The `n_networks` parameter determines the number of null networks to generate. The default is 
+to create 100 null networks.
+
+```{r}
+
+## Calculate null summaries
+null_nodes_p1 <- rewire_network(anesthesia,
+                          channels = "cfos",
+                         network_name = "Control",
+                         n_rewires = igraph::gsize(anesthesia$networks$Control$cfos) * 100,
+                         return_graphs = FALSE)
+
+null_nodes_p2 <- rewire_network(anesthesia,
+                          channels = "cfos",
+                         network_name = "Isoflurane",
+                         n_rewires = igraph::gsize(anesthesia$networks$Isoflurane$cfos) * 100,
+                         return_graphs = FALSE)
+```
+
+
+The following code averages node-level properties across all null networks generated. It then summarizes global network level properties by averaging the mean node-level properties.
+```{r}
+
+null_network_summary <- summarize_null_networks(null_nodes_list = list(null_nodes_p1,
+                                                                       null_nodes_p2),
+                                                network_names = c("Control", "Isoflurane"),
+                                                channel = "cfos")
+
+head(null_network_summary$global_summary)
+```
+
+
+We can export the node-level and global level summaries of the null networks to the experiment folder using the code below:
+```{r}
+write.csv(null_network_summary$global_summary ,  file = file.path(attr(anesthesia, "info")$output, "tables", "df_null_network_summaries_global_cfos .csv"))  
+write.csv(null_network_summaries$node_summary ,  file = file.path(attr(anesthesia, "info")$output, "tables", "df_null_network_summaries_nodes_cfos .csv"))
+```
+
+
+## Permutation analysis 
+
+We can perform a permutation analysis to create a null distribution of Pearson correlation values for each regional correlation. The following code generates null distributions between the Control and Isoflurane groups after 10,000 label shuffles.
+```{r}
+anesthesia <- correlation_diff_permutation(anesthesia,
+                                 correlation_list_name_1 = "Control",
+                                 correlation_list_name_2 = "Isoflurane",
+                                 channels = "cfos",
+                                 n_shuffle = 10000,
+                                 p_adjust_method = "none",
+                                 alpha = 0.001)
+```
+The results of the permutation analysis can be automatically exported with the following code:
+```{r}
+export_permutation_results(anesthesia, channels = "cfos", ontology = "unified")
+
+```
+
+You can save a separate csv of the permutation results that are filtered only for significant values useing the `filter_significant` parameter.
+
+```{r}
+export_permutation_results(anesthesia, channels = "cfos", ontology = "unified", filter_significant = TRUE)
+```
+
+
+> Please note that figures may be very similar across different permutation runs, but not identical due to different random seeds. 
+
+The follow code plots a volcano plot to highlight the major correlation differences in both direction and magnitude. Red dots in the upper left quadrant are correlation
+differences where Control > Isoflurane and those in the upper right quadrant are correlation differences where  Control < Isoflurane.
+```{r}
+# Choose the color of the plot with a hexadecimal string
+vp_color <- "#BF1F1F"
+
+# User optional theme to define the aesthetics of the plot using ggplot2 syntax
+plt_theme_vp <- ggplot2::theme_classic() +
+  theme(text = element_text(size = 34),
+        line = element_line(size = 1.0),
+        axis.line = element_line(colour = 'black', size = 1.0),
+        plot.title = element_text(hjust = 0.5, size = 36),
+        axis.ticks.length = unit(5.5,"points"),
+        axis.text.x = element_text(colour = "black", size =34),
+        axis.text.y = element_text(colour = "black", size = 34))
+
+# Plot a volcano plot
+plots <- volcano_plot(anesthesia,
+                      permutation_comparison = "Control_vs_Isoflurane",
+                      channels = "cfos",
+                      colors = vp_color,
+                      height = 8,
+                      width = 8, 
+                      title = "Control vs Isoflurane",
+                      print_plot = FALSE,
+                      ylim = c(0,5),
+                      point_size = 2,
+                      plt_theme = plt_theme_vp)
+```
+
+<figure>
+  <img src="../man/figures/volcano_plot_Control_vs isoflurane_cfos.png" alt="Image" style="width: 500px;">
+  <figcaption><em>Volcano plot.</em> </figcaption>
+</figure>
+
+
+## Permuted correlation difference networks
+
+We can better highlight the individual significant region correlations differences, and the overall structure of the regions they connect, by plotting them as a permuted correlation difference
+network.
+
+We first create this network with the `create_perm_diff_network()` function. This function also supports the possibility for community detection using the `community_detection_function` parameter,
+which defaults to the `tidygraph::group_fast_greedy` [method](https://tidygraph.data-imaginist.com/reference/group_graph.html).
+
+```{r}
+anesthesia <- create_perm_diff_network(anesthesia, permutation_group = "Control_vs_Isoflurane", channel = "cfos", ontology = "unified", p_value_thresh = 0.001, weights = NULL)
+```
+
+
+We can then plot this network using the `plot_perm_diff_network()` function. The `mark_hull` parameter allows for the visualization of communities detected,  plotted as 
+a colored polygon.
+
+```{r}
+graph_theme <- ggraph::theme_graph() + theme(plot.title = element_text(hjust = 0.5,size = 20),
+                                             legend.text = element_text(size = 30),
+                                             legend.title = element_text(size = 30))
+
+p <- plot_perm_diff_network(anesthesia, 
+                            permutation_group = "Control_vs_Isoflurane", 
+                            channel = "cfos",
+                            pos_edge_legend_label = "Iso > Ctrl",
+                            neg_edge_legend_label = "Iso < Ctrl",
+                            layout = "fr", 
+                            mark_hull=TRUE,  
+                            node_text_size = 14,
+                            seed = 15, 
+                            width = 20, 
+                            height = 20, 
+                            graph_theme = graph_theme,  
+                            anatomical.colors = anatomical.colors,
+                            image_ext = ".png")
+```
+
+<figure>
+  <img src="../man/figures/permutation_difference_network_mark_hull_TRUE_ds.png" alt="Image" style="width: 500px;">
+  <figcaption><em>All mapped eYFP regions.</em> </figcaption>
+</figure>
+
+
+
+
+
+
+
+
 

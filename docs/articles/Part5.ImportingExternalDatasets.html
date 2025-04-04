@@ -248,7 +248,8 @@ in the experiment object. It will also auto-detect the categorical
 variables used in the dataset.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_mapped_datasets.html">import_mapped_datasets</a></span><span class="op">(</span><span class="va">anesthesia</span>, </span>
-<span>                                     normalized_count_paths <span class="op">=</span> <span class="st">"P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\example_data\\anesthesia\\unified_ontology_unchecked.csv"</span>,</span>
+<span>                                     <span class="co"># normalized_count_paths = "P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\example_data\\anesthesia\\unified_ontology_unchecked.csv",</span></span>
+<span>                                     normalized_count_paths <span class="op">=</span> <span class="st">"P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\example_data\\anesthesia\\anesthesia_reformatted_ontology_unchecked.csv"</span>,</span>
 <span>                                     show_col_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">anesthesia</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## $experiment_name</span></span>
@@ -267,7 +268,7 @@ variables used in the dataset.</p>
 <span><span class="co">## NULL</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $sex_groups</span></span>
-<span><span class="co">## [1] "Female" "Male"  </span></span>
+<span><span class="co">## [1] "Male"   "Female"</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $cohorts</span></span>
 <span><span class="co">## NULL</span></span>
@@ -449,34 +450,323 @@ into the next function.</p>
 <p>Remove outliers for each subgroup.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/find_outlier_counts.html">find_outlier_counts</a></span><span class="op">(</span><span class="va">anesthesia</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span><span class="op">)</span>, n_sd <span class="op">=</span> <span class="fl">2</span>, remove <span class="op">=</span> <span class="cn">TRUE</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 98 x 9</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># Groups:   mouse_ID, group, sex, acronym [98]</span></span></span>
-<span><span class="co">##    mouse_ID group   sex   acronym name  counts volume.mm3 normalized.count.by.~1</span></span>
-<span><span class="co">##    <span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>    </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>   </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>   </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>  </span><span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span><span>      </span><span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span><span>                  </span><span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span><span> 5        Control Fema~ 5Te     Moto~    152     0.104                   </span><span style="text-decoration: underline;">1</span><span>462.</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span><span> 2        Control Fema~ A24 (C~ Cing~  </span><span style="text-decoration: underline;">20</span><span>920     3.69                    </span><span style="text-decoration: underline;">5</span><span>666.</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span><span> 2        Control Fema~ ATg     Ante~     49     0.015</span><span style="text-decoration: underline;">7</span><span>                  </span><span style="text-decoration: underline;">3</span><span>125 </span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span><span> 2        Control Fema~ Acb     Accu~  </span><span style="text-decoration: underline;">14</span><span>833     4.80                    </span><span style="text-decoration: underline;">3</span><span>088.</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span><span> 2        Control Fema~ BLA     Baso~   </span><span style="text-decoration: underline;">1</span><span>745     0.664                   </span><span style="text-decoration: underline;">2</span><span>628.</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span><span> 2        Control Fema~ Ect     Ecto~  </span><span style="text-decoration: underline;">12</span><span>268     3.11                    </span><span style="text-decoration: underline;">3</span><span>945.</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span><span> 2        Control Fema~ IG      Indu~    110     0.028</span><span style="text-decoration: underline;">2</span><span>                  </span><span style="text-decoration: underline;">3</span><span>901.</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span><span> 5        Control Fema~ IMA     Intr~     89     0.039</span><span style="text-decoration: underline;">0</span><span>                  </span><span style="text-decoration: underline;">2</span><span>284.</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span><span> 2        Control Fema~ LM      Late~    194     0.044</span><span style="text-decoration: underline;">9</span><span>                  </span><span style="text-decoration: underline;">4</span><span>323.</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span><span> 2        Control Fema~ LPtA    Late~   </span><span style="text-decoration: underline;">1</span><span>534     0.619                   </span><span style="text-decoration: underline;">2</span><span>477.</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># i 88 more rows</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># i abbreviated name: 1: normalized.count.by.volume</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># i 1 more variable: outlier &lt;lgl&gt;</span></span></span></code></pre>
 <p>Detect if each region is represented by a minimum number of mice
 (<code>min_n</code>) per subgroup (Control or Isoflurane groups).</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enough_mice_per_group.html">enough_mice_per_group</a></span><span class="op">(</span><span class="va">anesthesia</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span><span class="op">)</span>, min_n <span class="op">=</span> <span class="fl">4</span>, remove <span class="op">=</span> <span class="cn">TRUE</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="checkpoint-load-default-saved-experiment-object-here">Checkpoint load default saved experiment object here<a class="anchor" aria-label="anchor" href="#checkpoint-load-default-saved-experiment-object-here"></a>
 </h4>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_experiment.html">save_experiment</a></span><span class="op">(</span><span class="va">anesthesia</span>, timestamp <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="representative-dataset-analysis">Representative dataset analysis<a class="anchor" aria-label="anchor" href="#representative-dataset-analysis"></a>
+</h2>
+<p>In the following section, we will expand on or highlight more
+analyses with this dataset that are not as covered in-depth in the <a href="../articles/Part4.Example_Analysis_Notebook.html">Example analysis
+notebook</a>. We recommend reading section 4 first, as less detail will
+be described here for functions already mentioned there.</p>
+<p>Additionally, some of these analysis features are only available
+through the development version of SMARTTR, installed directly from
+Github. As checks and testing are incorporated for these, these
+functions will be updated in the latest bundled installation of
+SMARTTR.</p>
+<blockquote>
+<p>The example results images presented in this section are from the
+actual dataset and will look different from the results of the scrambled
+example dataset. Once the manuscript is fully available, the unscrambled
+dataset will be available for download and results will resemble those
+in this section.</p>
+</blockquote>
+<div class="section level3">
+<h3 id="get-regional-cross-correlations-and-plot-them-as-a-heatmap">Get regional cross correlations and plot them as a heatmap<a class="anchor" aria-label="anchor" href="#get-regional-cross-correlations-and-plot-them-as-a-heatmap"></a>
+</h3>
+<p>The <code><a href="../reference/get_correlations.html">get_correlations()</a></code> function is used to calculate
+pairwise Pearson correlations across all regions within an analysis
+group.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Groups to iterate through and their corresponding plotting labels</span></span>
+<span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Control"</span>, <span class="st">"Isoflurane"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Calculate correlations for each group</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">groups</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">groups</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_correlations.html">get_correlations</a></span><span class="op">(</span><span class="va">anesthesia</span>,</span>
+<span>                                by <span class="op">=</span> <span class="st">"group"</span>,</span>
+<span>                                values <span class="op">=</span> <span class="va">groups</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>                                p_adjust_method <span class="op">=</span> <span class="st">"none"</span>,</span>
+<span>                                channels <span class="op">=</span> <span class="st">"cfos"</span>,</span>
+<span>                                ontology <span class="op">=</span> <span class="st">"unified"</span>,</span>
+<span>                                alpha <span class="op">=</span> <span class="fl">0.00001</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>There are a few global aesthetic parameters that will be used
+repeatedly across plotting functions, so they are setup below for
+use:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Setting up aesthetic color choices</span></span>
+<span><span class="va">group.colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Isoflurane<span class="op">=</span><span class="st">"#04C3C3"</span>, Control <span class="op">=</span> <span class="st">"#BF1F1F"</span><span class="op">)</span></span>
+<span><span class="va">anatomical.colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Isocortex <span class="op">=</span> <span class="st">"#5571a9"</span>, OLF <span class="op">=</span> <span class="st">"#64bdc4"</span>, HPF <span class="op">=</span> <span class="st">"#d2875b"</span>, CTXsp <span class="op">=</span> <span class="st">"#87a3db"</span>, </span>
+<span>                       CNU <span class="op">=</span> <span class="st">"#466496"</span>, TH <span class="op">=</span> <span class="st">"#7e72af"</span>, HY <span class="op">=</span> <span class="st">"#8e7960"</span>,  MB <span class="op">=</span> <span class="st">"#d796c8"</span>, HB <span class="op">=</span> <span class="st">"#646464"</span><span class="op">)</span></span></code></pre></div>
+<p>Plotting a regional correlation heatmap for the Control group. Note
+that setting the <code>colors</code> parameter to NULL results in the
+viridis color scale. Figures will autosave at [experiment folder
+path]/[Figures].</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Option to use custom ggplot2 theme to fine-tune aesthetics</span></span>
+<span><span class="va">theme.hm</span> <span class="op">&lt;-</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">0.5</span>, angle <span class="op">=</span> <span class="fl">90</span>, size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
+<span>                          axis.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>vjust <span class="op">=</span> <span class="fl">0.5</span>, size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
+<span>                          plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span>, size <span class="op">=</span> <span class="fl">40</span><span class="op">)</span>,</span>
+<span>                          axis.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">35</span><span class="op">)</span>,</span>
+<span>                          legend.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">22</span><span class="op">)</span>,</span>
+<span>                          legend.key.height <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">50</span>, <span class="st">"pt"</span><span class="op">)</span>,</span>
+<span>                          legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">22</span><span class="op">)</span>,</span>
+<span>                          panel.spacing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="st">"lines"</span><span class="op">)</span>,</span>
+<span>                          strip.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">0</span>, hjust <span class="op">=</span> <span class="fl">0.5</span>, vjust <span class="op">=</span> <span class="fl">0.5</span>, size <span class="op">=</span> <span class="fl">12</span>, face<span class="op">=</span><span class="st">"bold"</span><span class="op">)</span>,</span>
+<span>                          strip.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">270</span>,  hjust <span class="op">=</span> <span class="fl">0.5</span>, vjust <span class="op">=</span> <span class="fl">0.5</span>, size <span class="op">=</span> <span class="fl">12</span>, face<span class="op">=</span><span class="st">"bold"</span><span class="op">)</span>,</span>
+<span>                          strip.placement <span class="op">=</span> <span class="st">"outside"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Plotting heatmap.</span></span>
+<span><span class="fu"><a href="../reference/plot_correlation_heatmaps.html">plot_correlation_heatmaps</a></span><span class="op">(</span><span class="va">anesthesia</span>,</span>
+<span>                          channels <span class="op">=</span> <span class="st">"cfos"</span>,</span>
+<span>                          correlation_list_name <span class="op">=</span> <span class="st">"Control"</span>,</span>
+<span>                          sig_color <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>                          sig_nudge_y <span class="op">=</span> <span class="op">-</span><span class="fl">0.8</span>,</span>
+<span>                          sig_size <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>                          plot_title <span class="op">=</span> <span class="st">"Control"</span>,</span>
+<span>                          print_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                          ontology <span class="op">=</span> <span class="st">"unified"</span>,</span>
+<span>                          colors <span class="op">=</span> <span class="cn">NULL</span>,  <span class="co"># Uses viridis scale if NULL</span></span>
+<span>                          height <span class="op">=</span> <span class="fl">12</span>,</span>
+<span>                          width <span class="op">=</span> <span class="fl">12</span>,</span>
+<span>                          strip_background_colors <span class="op">=</span> <span class="va">anatomical.colors</span>,</span>
+<span>                          theme.hm <span class="op">=</span> <span class="va">theme.hm</span>,</span>
+<span>                          image_ext <span class="op">=</span> <span class="st">".png"</span>,</span>
+<span>                          save_plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<figure><img src="../reference/figures/heatmap_Control_cfos.png" alt="Image" style="width: 500px;"><figcaption><em>Heatmap of regional correlations for the Control group. Black
+astericks represent significant correlations based on user-set alpha
+value..</em>
+</figcaption></figure><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_correlation_heatmaps.html">plot_correlation_heatmaps</a></span><span class="op">(</span><span class="va">anesthesia</span>,</span>
+<span>                                  channels <span class="op">=</span> <span class="st">"cfos"</span>,</span>
+<span>                                  correlation_list_name <span class="op">=</span> <span class="st">"Isoflurane"</span>,</span>
+<span>                                  sig_color <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>                                  sig_nudge_y <span class="op">=</span> <span class="op">-</span><span class="fl">0.8</span>,</span>
+<span>                                  sig_size <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>                                  plot_title <span class="op">=</span> <span class="st">"Isoflurane"</span>,</span>
+<span>                                  print_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                                  ontology <span class="op">=</span> <span class="st">"unified"</span>,</span>
+<span>                                  colors <span class="op">=</span> <span class="cn">NULL</span>, </span>
+<span>                                  height <span class="op">=</span> <span class="fl">12</span>,</span>
+<span>                                  width <span class="op">=</span> <span class="fl">12</span>,</span>
+<span>                                  strip_background_colors <span class="op">=</span> <span class="va">anatomical.colors</span>,</span>
+<span>                                  theme.hm <span class="op">=</span> <span class="va">theme.hm</span>,</span>
+<span>                                  image_ext <span class="op">=</span> <span class="st">".png"</span>,</span>
+<span>                                  save_plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<figure><img src="../reference/figures/heatmap_Isoflurane_cfos.png" alt="Image" style="width: 500px;"><figcaption><em>Heatmap of regional correlations for the Isoflurane group. Black
+astericks represent significant correlations based on user-set alpha
+value..</em>
+</figcaption></figure>
+</div>
+<div class="section level3">
+<h3 id="plotting-representative-joined-networks-using-a-proportional-threshold">Plotting representative joined networks using a proportional
+threshold<a class="anchor" aria-label="anchor" href="#plotting-representative-joined-networks-using-a-proportional-threshold"></a>
+</h3>
+<p>We can plot the concatenation of two networks of interest using the
+<code><a href="../reference/create_joined_networks.html">create_joined_networks()</a></code> and
+<code><a href="../reference/plot_joined_networks.html">plot_joined_networks()</a></code> functions. We can make sure the
+networks have matching edge density using the
+<code>proportional_thresh</code> parameter (edge proportion 3.15%)</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_joined_networks.html">create_joined_networks</a></span><span class="op">(</span><span class="va">anesthesia</span>, </span>
+<span>                                     correlation_list_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Control"</span>, <span class="st">"Isoflurane"</span><span class="op">)</span>,</span>
+<span>                                     channels <span class="op">=</span> <span class="st">"cfos"</span>,</span>
+<span>                                     proportional_thresh <span class="op">=</span> <span class="fl">0.0315</span>,</span>
+<span>                                     ontology <span class="op">=</span> <span class="va">ontology</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Creating ggraph theme to apply to the networks to fine tune graphics</span></span>
+<span><span class="va">graph_theme</span> <span class="op">&lt;-</span> <span class="fu">ggraph</span><span class="fu">::</span><span class="fu"><a href="https://ggraph.data-imaginist.com/reference/theme_graph.html" class="external-link">theme_graph</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span>, size <span class="op">=</span> <span class="fl">100</span>, face <span class="op">=</span> <span class="st">"plain"</span><span class="op">)</span>,</span>
+<span>                                             legend.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">55</span><span class="op">)</span>,</span>
+<span>                                             legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">60</span><span class="op">)</span>,</span>
+<span>                                             panel.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>fill<span class="op">=</span><span class="st">'transparent'</span>, color <span class="op">=</span> <span class="st">"transparent"</span><span class="op">)</span>,</span>
+<span>                                             plot.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>fill<span class="op">=</span><span class="st">'transparent'</span>, color<span class="op">=</span> <span class="st">"transparent"</span><span class="op">)</span>,</span>
+<span>                                             legend.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>fill<span class="op">=</span><span class="st">'transparent'</span>, color <span class="op">=</span> <span class="st">"transparent"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Group labels for plotting the edges</span></span>
+<span><span class="va">group.labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Control <span class="op">=</span> <span class="st">"Control"</span>, Isoflurane <span class="op">=</span> <span class="st">"Isoflurane"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Plotting the network. The figure will autosave in the Figures output folde of the experiment</span></span>
+<span><span class="va">p_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_joined_networks.html">plot_joined_networks</a></span><span class="op">(</span><span class="va">anesthesia</span>,</span>
+<span>                               correlation_list_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Control"</span>, <span class="st">"Isoflurane"</span><span class="op">)</span>,</span>
+<span>                               channels <span class="op">=</span> <span class="st">"cfos"</span>,</span>
+<span>                               absolute_weight <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                               title <span class="op">=</span> <span class="st">"Control + Isoflurane"</span>,</span>
+<span>                               edge_colors <span class="op">=</span> <span class="va">group.colors</span>,</span>
+<span>                               edge_color_labels <span class="op">=</span> <span class="va">group.labels</span>,</span>
+<span>                               degree_scale_limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">45</span><span class="op">)</span>,</span>
+<span>                               correlation_edge_width_limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">1.0</span><span class="op">)</span>,</span>
+<span>                               height <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>                               width <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>                               label_size <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>                               label_offset <span class="op">=</span> <span class="fl">0.08</span>,</span>
+<span>                               anatomical.colors <span class="op">=</span> <span class="va">anatomical.colors</span>,</span>
+<span>                               transparent_edge_group1 <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                               transparent_edge_group2 <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                               edge_thickness_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">5</span><span class="op">)</span>,</span>
+<span>                               node_size_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">18</span><span class="op">)</span>,</span>
+<span>                               graph_theme <span class="op">=</span> <span class="va">graph_theme</span>,</span>
+<span>                               image_ext <span class="op">=</span> <span class="st">".png"</span><span class="op">)</span></span></code></pre></div>
+<figure><img src="../reference/figures/network_Control_Isoflurane_cfos_ds.png" alt="Image" style="width: 700px;"><figcaption><em>All mapped eYFP regions.</em>
+</figcaption></figure>
+</div>
+<div class="section level3">
+<h3 id="generate-null-networks">Generate null networks<a class="anchor" aria-label="anchor" href="#generate-null-networks"></a>
+</h3>
+<p>Sometimes it is informative to examine the properties of each
+empirical network in comparison to null networks with some
+characteristics controlled such as average degree. We can do so with the
+<code><a href="../reference/rewire_network.html">rewire_network()</a></code> function. The current supported algorithm
+used is <a href="https://www.science.org/doi/10.1126/science.1065103" class="external-link">Maslov-Sneppen</a>
+rewiring, which preserves degree sequence of each empirical network. The
+<code>n_rewires</code> parameter determines the number of rewirings
+which occur to generate each null network. The general recommended
+number of rewirings corresponds to the size of each empirical network
+(no. edges) times 100. The <code>n_networks</code> parameter determines
+the number of null networks to generate. The default is to create 100
+null networks.</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## Calculate null summaries</span></span>
+<span><span class="va">null_nodes_p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rewire_network.html">rewire_network</a></span><span class="op">(</span><span class="va">anesthesia</span>,</span>
+<span>                          channels <span class="op">=</span> <span class="st">"cfos"</span>,</span>
+<span>                         network_name <span class="op">=</span> <span class="st">"Control"</span>,</span>
+<span>                         n_rewires <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">gsize</a></span><span class="op">(</span><span class="va">anesthesia</span><span class="op">$</span><span class="va">networks</span><span class="op">$</span><span class="va">Control</span><span class="op">$</span><span class="va">cfos</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>,</span>
+<span>                         return_graphs <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">null_nodes_p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rewire_network.html">rewire_network</a></span><span class="op">(</span><span class="va">anesthesia</span>,</span>
+<span>                          channels <span class="op">=</span> <span class="st">"cfos"</span>,</span>
+<span>                         network_name <span class="op">=</span> <span class="st">"Isoflurane"</span>,</span>
+<span>                         n_rewires <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">gsize</a></span><span class="op">(</span><span class="va">anesthesia</span><span class="op">$</span><span class="va">networks</span><span class="op">$</span><span class="va">Isoflurane</span><span class="op">$</span><span class="va">cfos</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>,</span>
+<span>                         return_graphs <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>The following code averages node-level properties across all null
+networks generated. It then summarizes global network level properties
+by averaging the mean node-level properties.</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">null_network_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summarize_null_networks.html">summarize_null_networks</a></span><span class="op">(</span>null_nodes_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">null_nodes_p1</span>,</span>
+<span>                                                                       <span class="va">null_nodes_p2</span><span class="op">)</span>,</span>
+<span>                                                network_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Control"</span>, <span class="st">"Isoflurane"</span><span class="op">)</span>,</span>
+<span>                                                channel <span class="op">=</span> <span class="st">"cfos"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">null_network_summary</span><span class="op">$</span><span class="va">global_summary</span><span class="op">)</span></span></code></pre></div>
+<p>We can export the node-level and global level summaries of the null
+networks to the experiment folder using the code below:</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">null_network_summary</span><span class="op">$</span><span class="va">global_summary</span> ,  file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">anesthesia</span>, <span class="st">"info"</span><span class="op">)</span><span class="op">$</span><span class="va">output</span>, <span class="st">"tables"</span>, <span class="st">"df_null_network_summaries_global_cfos .csv"</span><span class="op">)</span><span class="op">)</span>  </span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">null_network_summaries</span><span class="op">$</span><span class="va">node_summary</span> ,  file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">anesthesia</span>, <span class="st">"info"</span><span class="op">)</span><span class="op">$</span><span class="va">output</span>, <span class="st">"tables"</span>, <span class="st">"df_null_network_summaries_nodes_cfos .csv"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="permutation-analysis">Permutation analysis<a class="anchor" aria-label="anchor" href="#permutation-analysis"></a>
+</h3>
+<p>We can perform a permutation analysis to create a null distribution
+of Pearson correlation values for each regional correlation. The
+following code generates null distributions between the Control and
+Isoflurane groups after 10,000 label shuffles.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correlation_diff_permutation.html">correlation_diff_permutation</a></span><span class="op">(</span><span class="va">anesthesia</span>,</span>
+<span>                                 correlation_list_name_1 <span class="op">=</span> <span class="st">"Control"</span>,</span>
+<span>                                 correlation_list_name_2 <span class="op">=</span> <span class="st">"Isoflurane"</span>,</span>
+<span>                                 channels <span class="op">=</span> <span class="st">"cfos"</span>,</span>
+<span>                                 n_shuffle <span class="op">=</span> <span class="fl">10000</span>,</span>
+<span>                                 p_adjust_method <span class="op">=</span> <span class="st">"none"</span>,</span>
+<span>                                 alpha <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span></span></code></pre></div>
+<p>The results of the permutation analysis can be automatically exported
+with the following code:</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/export_permutation_results.html">export_permutation_results</a></span><span class="op">(</span><span class="va">anesthesia</span>, channels <span class="op">=</span> <span class="st">"cfos"</span>, ontology <span class="op">=</span> <span class="st">"unified"</span><span class="op">)</span></span></code></pre></div>
+<p>You can save a separate csv of the permutation results that are
+filtered only for significant values useing the
+<code>filter_significant</code> parameter.</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/export_permutation_results.html">export_permutation_results</a></span><span class="op">(</span><span class="va">anesthesia</span>, channels <span class="op">=</span> <span class="st">"cfos"</span>, ontology <span class="op">=</span> <span class="st">"unified"</span>, filter_significant <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<blockquote>
+<p>Please note that figures may be very similar across different
+permutation runs, but not identical due to different random seeds.</p>
+</blockquote>
+<p>The follow code plots a volcano plot to highlight the major
+correlation differences in both direction and magnitude. Red dots in the
+upper left quadrant are correlation differences where Control &gt;
+Isoflurane and those in the upper right quadrant are correlation
+differences where Control &lt; Isoflurane.</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Choose the color of the plot with a hexadecimal string</span></span>
+<span><span class="va">vp_color</span> <span class="op">&lt;-</span> <span class="st">"#BF1F1F"</span></span>
+<span></span>
+<span><span class="co"># User optional theme to define the aesthetics of the plot using ggplot2 syntax</span></span>
+<span><span class="va">plt_theme_vp</span> <span class="op">&lt;-</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">34</span><span class="op">)</span>,</span>
+<span>        line <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1.0</span><span class="op">)</span>,</span>
+<span>        axis.line <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">'black'</span>, size <span class="op">=</span> <span class="fl">1.0</span><span class="op">)</span>,</span>
+<span>        plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span>, size <span class="op">=</span> <span class="fl">36</span><span class="op">)</span>,</span>
+<span>        axis.ticks.length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">5.5</span>,<span class="st">"points"</span><span class="op">)</span>,</span>
+<span>        axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span><span class="fl">34</span><span class="op">)</span>,</span>
+<span>        axis.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span> <span class="fl">34</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Plot a volcano plot</span></span>
+<span><span class="va">plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/volcano_plot.html">volcano_plot</a></span><span class="op">(</span><span class="va">anesthesia</span>,</span>
+<span>                      permutation_comparison <span class="op">=</span> <span class="st">"Control_vs_Isoflurane"</span>,</span>
+<span>                      channels <span class="op">=</span> <span class="st">"cfos"</span>,</span>
+<span>                      colors <span class="op">=</span> <span class="va">vp_color</span>,</span>
+<span>                      height <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>                      width <span class="op">=</span> <span class="fl">8</span>, </span>
+<span>                      title <span class="op">=</span> <span class="st">"Control vs Isoflurane"</span>,</span>
+<span>                      print_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                      ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span>,</span>
+<span>                      point_size <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>                      plt_theme <span class="op">=</span> <span class="va">plt_theme_vp</span><span class="op">)</span></span></code></pre></div>
+<figure><img src="../reference/figures/volcano_plot_Control_vs%20isoflurane_cfos.png" alt="Image" style="width: 500px;"><figcaption><em>Volcano plot.</em>
+</figcaption></figure>
+</div>
+<div class="section level3">
+<h3 id="permuted-correlation-difference-networks">Permuted correlation difference networks<a class="anchor" aria-label="anchor" href="#permuted-correlation-difference-networks"></a>
+</h3>
+<p>We can better highlight the individual significant region
+correlations differences, and the overall structure of the regions they
+connect, by plotting them as a permuted correlation difference
+network.</p>
+<p>We first create this network with the
+<code><a href="../reference/create_perm_diff_network.html">create_perm_diff_network()</a></code> function. This function also
+supports the possibility for community detection using the
+<code>community_detection_function</code> parameter, which defaults to
+the <code><a href="https://tidygraph.data-imaginist.com/reference/group_graph.html" class="external-link">tidygraph::group_fast_greedy</a></code> <a href="https://tidygraph.data-imaginist.com/reference/group_graph.html" class="external-link">method</a>.</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_perm_diff_network.html">create_perm_diff_network</a></span><span class="op">(</span><span class="va">anesthesia</span>, permutation_group <span class="op">=</span> <span class="st">"Control_vs_Isoflurane"</span>, channel <span class="op">=</span> <span class="st">"cfos"</span>, ontology <span class="op">=</span> <span class="st">"unified"</span>, p_value_thresh <span class="op">=</span> <span class="fl">0.001</span>, weights <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<p>We can then plot this network using the
+<code><a href="../reference/plot_perm_diff_network.html">plot_perm_diff_network()</a></code> function. The
+<code>mark_hull</code> parameter allows for the visualization of
+communities detected, plotted as a colored polygon.</p>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">graph_theme</span> <span class="op">&lt;-</span> <span class="fu">ggraph</span><span class="fu">::</span><span class="fu"><a href="https://ggraph.data-imaginist.com/reference/theme_graph.html" class="external-link">theme_graph</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span>,size <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>,</span>
+<span>                                             legend.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">30</span><span class="op">)</span>,</span>
+<span>                                             legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">30</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_perm_diff_network.html">plot_perm_diff_network</a></span><span class="op">(</span><span class="va">anesthesia</span>, </span>
+<span>                            permutation_group <span class="op">=</span> <span class="st">"Control_vs_Isoflurane"</span>, </span>
+<span>                            channel <span class="op">=</span> <span class="st">"cfos"</span>,</span>
+<span>                            pos_edge_legend_label <span class="op">=</span> <span class="st">"Iso &gt; Ctrl"</span>,</span>
+<span>                            neg_edge_legend_label <span class="op">=</span> <span class="st">"Iso &lt; Ctrl"</span>,</span>
+<span>                            layout <span class="op">=</span> <span class="st">"fr"</span>, </span>
+<span>                            mark_hull<span class="op">=</span><span class="cn">TRUE</span>,  </span>
+<span>                            node_text_size <span class="op">=</span> <span class="fl">14</span>,</span>
+<span>                            seed <span class="op">=</span> <span class="fl">15</span>, </span>
+<span>                            width <span class="op">=</span> <span class="fl">20</span>, </span>
+<span>                            height <span class="op">=</span> <span class="fl">20</span>, </span>
+<span>                            graph_theme <span class="op">=</span> <span class="va">graph_theme</span>,  </span>
+<span>                            anatomical.colors <span class="op">=</span> <span class="va">anatomical.colors</span>,</span>
+<span>                            image_ext <span class="op">=</span> <span class="st">".png"</span><span class="op">)</span></span></code></pre></div>
+<figure><img src="../reference/figures/permutation_difference_network_mark_hull_TRUE_ds.png" alt="Image" style="width: 500px;"><figcaption><em>All mapped eYFP regions.</em>
+</figcaption></figure>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
