@@ -423,7 +423,7 @@ p_list <- plot_joined_networks(anesthesia,
 
 <figure>
   <img src="../man/figures/network_Control_Isoflurane_cfos_ds.png" alt="Image" style="width: 700px;">
-  <figcaption><em>All mapped eYFP regions.</em> </figcaption>
+  <figcaption><em>Joined Control and Isoflurane networks.</em> </figcaption>
 </figure>
 
 
@@ -574,7 +574,7 @@ p <- plot_perm_diff_network(anesthesia,
 
 <figure>
   <img src="../man/figures/permutation_difference_network_mark_hull_TRUE_ds.png" alt="Image" style="width: 500px;">
-  <figcaption><em>All mapped eYFP regions.</em> </figcaption>
+  <figcaption><em>Permutated correlation difference network.</em> </figcaption>
 </figure>
 
 
