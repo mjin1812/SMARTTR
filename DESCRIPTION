@@ -46,6 +46,7 @@ Imports:
     tidygraph (>= 1.2.0),
     igraph (>= 1.2.6),
     ggraph (>= 2.0.5),
+    ggforce (>= 0.2.0),
     stringdist (>= 0.9.6),
     stringr (>= 1.4.0),
     readr (>= 1.4.0),
