@@ -11,6 +11,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom stats sd na.omit
 #' @importFrom rlang .data
+#' @importFrom stringr str_remove_all
 
 # ## ____________Globals bindings _____________
 
