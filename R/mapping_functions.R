@@ -1588,6 +1588,9 @@ normalize_cell_counts <- function(m,
    # message("For channel ",channel, paste0(" mismatched acronym ", mismatch))
    # mismatched_regions[[channel]] <- mismatch
    ###################
+
+   aggregate_volumes <- aggregate_volumes  %>%
+     dplyr::mutate(AP = as.numeric(.data$AP))
    counts_per_slice[[channel]]  <- dplyr::inner_join(aggregate_counts, aggregate_volumes, by = c("slice_name", "AP", "right.hemisphere", "acronym", "name")) %>%
      dplyr::arrange(desc(.data$AP), .data$acronym, .data$right.hemisphere) %>% tidyr::drop_na()
 
