@@ -165,7 +165,7 @@ get_correlations <- function(e, by, values,
     df_corr <-  try_correlate(df_channel, type = method)
 
     if (!isFALSE(p_adjust_method)){
-
+      lowertri <- df_corr$P %>%  lower.tri(diag = FALSE)
       lower_p <- df_corr$P[lowertri]
       uppertri <- df_corr$P %>%  upper.tri(diag = FALSE)
       upper_p <- df_corr$P[uppertri]
@@ -1072,6 +1072,8 @@ summarise_networks <- function(e,
 #' @param filter_isolates (logical, default = TRUE) Whether to filter out the number of isolated (zero degree) nodes from the network. Default is to retain them.
 #' @param export_overlapping_edges (bool, default  = TRUE) Whether to export the overlapping edges between the two networks as a csv into the `table` directory.
 #' @param anatomical.order (vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.
+#' @param proportional_sort
+#'
 #' @return e experiment object. This object now has a new added element called `networks.` This is a list storing a
 #' graph object per channel for each network analysis run. The name of each network (`network_name`) is the same as the `correlation_list_name`
 #' used to generate the network. This `network_name` is fed as a parameter into the
@@ -1090,6 +1092,7 @@ create_joined_networks <- function(e,
                                    alpha = 0.001,
                                    pearson_thresh = 0.9,
                                    proportional_thresh = NULL,
+                                   proportional_sort = "pearson",
                                    alpha2 = NULL,
                                    pearson_thresh2 = NULL,
                                    proportional_thresh2 = NULL,
@@ -1148,7 +1151,6 @@ create_joined_networks <- function(e,
                                      edges = edges_joined[[1]],
                                      directed = FALSE)
 
-
     network2 <- tidygraph::tbl_graph(nodes = nodes_joined[[2]],
                                      edges = edges_joined[[2]],
                                      directed = FALSE)
@@ -1181,22 +1183,46 @@ create_joined_networks <- function(e,
       tidygraph::select(-.tidygraph_node_index)
 
     if (!is.na(proportional_thresh) && !is.null(proportional_thresh)){
-      edges <- network1 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(.data$weight)) %>% dplyr::as_tibble()
-      row <- round(igraph::gsize(network1)*proportional_thresh)
-      pearson_thresh <- edges$weight[[row]]
-      network1 <- network1 %>% activate(edges) %>% dplyr::filter(.data$weight >= pearson_thresh)
-      if (!is.na(proportional_thresh2) && !is.null(proportional_thresh2)){
+
+      if ("pearson" == tolower(proportional_sort)){
+
+        edges <- network1 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(.data$weight)) %>% dplyr::as_tibble()
+        row <- round(igraph::gsize(network1)*proportional_thresh)
+        pearson_thresh <- edges$weight[[row]]
+        network1 <- network1 %>% activate(edges) %>% dplyr::filter(.data$p.value >= pearson_thresh)
+        print(edges$p.value[[row]])
+
+        # network 2
         edges <- network2 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(.data$weight)) %>% dplyr::as_tibble()
-        row <- round(igraph::gsize(network2)*proportional_thresh2)
+        if (!is.na(proportional_thresh2) && !is.null(proportional_thresh2)){
+          row <- round(igraph::gsize(network2)*proportional_thresh2)
+          } else{
+          row <- round(igraph::gsize(network2)*proportional_thresh)
+          }
         pearson_thresh <- edges$weight[[row]]
         network2 <- network2 %>% activate(edges) %>% dplyr::filter(.data$weight >= pearson_thresh)
+        print(edges$p.value[[row]])
+
+      } else if ("alpha" == tolower(proportional_sort)) {
+        edges <- network1 %>% activate(edges) %>% dplyr::arrange(.data$p.value) %>% dplyr::as_tibble()
+        row <- round(igraph::gsize(network1)*proportional_thresh)
+        alpha_thresh <- edges$p.value[[row]]
+        network1 <- network1 %>% activate(edges) %>% dplyr::filter(.data$p.value <= alpha_thresh)
+        # print(edges$p.value)
+        print(alpha_thresh)
+
+        edges <- network2 %>% activate(edges) %>% dplyr::arrange(.data$p.value) %>% dplyr::as_tibble()
+        if (!is.na(proportional_thresh2) && !is.null(proportional_thresh2)){
+          row <- round(igraph::gsize(network2)*proportional_thresh2)
+        } else{
+          row <- round(igraph::gsize(network2)*proportional_thresh)
+        }
+
+        alpha_thresh <- edges$p.value[[row]]
+        network2 <-network2 %>% activate(edges) %>% dplyr::filter(.data$p.value <= alpha_thresh)
+        print(alpha_thresh)
+    }
       } else{
-        edges <- network2 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(.data$weight)) %>% dplyr::as_tibble()
-        row <- round(igraph::gsize(network2)*proportional_thresh)
-        pearson_thresh <- edges$weight[[row]]
-        network2 <- network2 %>% activate(edges) %>% dplyr::filter(.data$weight >= pearson_thresh)
-      }
-    } else{
       # filter by alpha
       if(!is.na(alpha) && !is.null(alpha)){
         network1 <- network1 %>% tidygraph::activate(edges) %>% dplyr::filter(.data$p.value < alpha)

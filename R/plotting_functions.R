@@ -740,7 +740,7 @@ plot_correlation_heatmaps <- function(e,
                            space = "free",
                            margins = FALSE,
                            scales = "free",
-                           strip = ggh4x::strip_themed(background_y = background_x,
+                           strip = ggh4x::strip_themed(background_y = rev(background_x),
                                                        background_x = background_x)) +
         geom_tile() +
         geom_text(aes(label =  .data$sig_text), size=sig_size, position = position_nudge(y = sig_nudge_y), color = sig_color) +
@@ -1304,6 +1304,8 @@ plot_networks <- function(e,
                                                    legend.text = element_text(size = 15),
                                                    legend.title = element_text(size = 15))
     }
+
+    network <- network %>% activate(nodes) %>% dplyr::arrange(.data$super.region)
     if (edge_type == "diagonal"){
       p <- ggraph::ggraph(network, layout = "linear", circular = TRUE) +
         ggraph::geom_edge_diagonal(aes(color = .data$sign, width = abs(.data$weight)),
@@ -1474,6 +1476,7 @@ plot_joined_networks <- function(e,
       network <- network %>% tidygraph::activate(edges) %>% dplyr::mutate(edge_alpha = 0.6)
     }
 
+    network <- network %>% activate(nodes) %>% dplyr::arrange(.data$super.region)
     p <- ggraph::ggraph(network, layout = "linear", circular = TRUE) +
       ggraph::geom_edge_arc(aes(color = .data$color, width = abs(.data$weight), edge_alpha = .data$edge_alpha),
                             n = 1000) +
