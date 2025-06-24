@@ -1044,6 +1044,7 @@ exclude_anatomy.slice <- function(x,
     attr(x, 'info')$right_regions_included <- include_right_regions
   } else{
     exclude_right_regions <- unique(c(exclude_right_regions, info$right_regions_excluded))
+    exclude_right_regions <- exclude_right_regions[!exclude_right_regions %in% "layer 1"]
     if (isTRUE(simplify_regions)){
       df <- simplify_vec_by_keywords(exclude_right_regions, keywords = simplify_keywords) %>% dplyr::distinct()
       exclude_right_regions <- df$acronym
@@ -1057,6 +1058,7 @@ exclude_anatomy.slice <- function(x,
     attr(x, 'info')$left_regions_included <- include_left_regions
   } else{
     exclude_left_regions <- unique(c(exclude_left_regions, info$left_regions_excluded))
+    exclude_left_regions <- exclude_left_regions[!exclude_left_regions %in% "layer 1"]
     if (isTRUE(simplify_regions)){
       df <- simplify_vec_by_keywords(exclude_left_regions, keywords = simplify_keywords) %>% dplyr::distinct()
       exclude_left_regions <- df$acronym
