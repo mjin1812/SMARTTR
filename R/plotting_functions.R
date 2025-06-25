@@ -913,7 +913,10 @@ plot_correlation_heatmaps_hemi <- function(e,
                                     limits=c(-1, 1))
 
     } else {
-      p <- p + scale_fill_gradient2(low = "#4f4f4f",mid = "#ffffff", high = colors[[channel]],
+      # p <- p + scale_fill_gradient2(low = "#4f4f4f",mid = "#ffffff", high = colors[[channel]],
+      #                               aesthetics = c("color","fill"), na.value = "grey50",
+      #                               limits=c(-1, 1))
+      p <- p + scale_fill_gradient2(low = "#0e065c",mid = "#ffffb8", high = colors[[channel]],
                                     aesthetics = c("color","fill"), na.value = "grey50",
                                     limits=c(-1, 1))
     }

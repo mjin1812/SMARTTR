@@ -1109,7 +1109,6 @@ exclude_anatomy.slice <- function(x,
 }
 
 ##____Method for excluding regions, layer 1, and hemispheres per mouse ____
-
 #' Method for excluding regions, layer 1, and hemispheres in a slice per mouse
 #' @description Method for excluding cell counts in specified regions, layer 1, out-of-bounds cells counts, and hemispheres per mouse.
 #' This function automatically excludes the default regions included in the attribute "regions_excluded" in each slice
@@ -1119,7 +1118,6 @@ exclude_anatomy.slice <- function(x,
 #' Note: Please see the `simplify_regions` and `simplify_keywords` parameters. By default, if a subregion can be folded into a parent region based on a certain keywords, then this function will automatically
 #' exclude the entire parent region as a conservative exclusion approach. Keep `simplify_regions=TRUE` if the final analysis will contain simplified regions.
 #' @rdname exclude_anatomy
-#'
 #' @param x a mouse or slice object
 #' @param slice_ID (str) ID of slice
 #' @param hemisphere (str) 'left', 'right' or NULL (both)
