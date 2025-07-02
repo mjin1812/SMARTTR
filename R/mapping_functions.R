@@ -1540,12 +1540,15 @@ normalize_cell_counts <- function(m,
       }
 
       if (s == 1){
-        aggregate_volumes <- m$slices[[s]]$volumes %>% tibble::as_tibble() %>% dplyr::mutate(AP = AP, slice_name = slice_name)
+        aggregate_volumes <- m$slices[[s]]$volumes %>% tibble::as_tibble() %>% dplyr::mutate(AP = as.numeric(AP),
+                                                                                             slice_name = slice_name)
       } else {
-        volume_to_add <- m$slices[[s]]$volumes %>% tibble::as_tibble() %>% dplyr::mutate(AP = AP, slice_name = slice_name)
+        volume_to_add <- m$slices[[s]]$volumes %>% tibble::as_tibble() %>% dplyr::mutate(AP = as.numeric(AP),
+                                                                                         slice_name = slice_name)
         aggregate_volumes <- rbind(aggregate_volumes, volume_to_add)
       }
     }
+
 
   if (isTRUE(split_hipp_DV)){
     all_hipp_subregions <- c(c("DG", "CA1", "CA2", "CA3"), get.sub.structure(c("DG", "CA1", "CA2", "CA3")))
@@ -1574,6 +1577,7 @@ normalize_cell_counts <- function(m,
       m$cell_table[[channel]] <- m$cell_table[[channel]]  %>% dplyr::filter(.data$acronym %in% redundant_parents$unique_acronyms)
     }
 
+    m$cell_table[[channel]] <- m$cell_table[[channel]] %>% dplyr::mutate(AP = as.numeric(.data$AP))
     if (isTRUE(split_hipp_DV)){
       cell_table_hipp <-  m$cell_table[[channel]] %>% dplyr::filter(.data$acronym %in% all_hipp_subregions) %>%
         dplyr::mutate(acronym = if_else(.data$AP > DV_split_AP_thresh ,
