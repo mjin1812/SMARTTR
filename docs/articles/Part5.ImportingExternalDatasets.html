@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">SMARTTR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -203,41 +203,6 @@ another ontology supported!</p>
 <span></span>
 <span><span class="co"># Print experiment object to make sure metadata is up to date</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">anesthesia</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## $experiment_name</span></span>
-<span><span class="co">## [1] "anesthesia"</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $experimenters</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $channels</span></span>
-<span><span class="co">## [1] "cfos"</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $experiment_groups</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $drug_groups</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $sex_groups</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $cohorts</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $strains</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $genotypes</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $reporters</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $ages</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $output_path</span></span>
-<span><span class="co">## [1] "P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\example_data\\example_experiment"</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="import-and-preprocess-your-externally-mapped-dataset">Import and preprocess your externally mapped dataset<a class="anchor" aria-label="anchor" href="#import-and-preprocess-your-externally-mapped-dataset"></a>
@@ -246,49 +211,15 @@ another ontology supported!</p>
 makes it easy to import the formatted csv file into the proper location
 in the experiment object. It will also auto-detect the categorical
 variables used in the dataset.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_mapped_datasets.html">import_mapped_datasets</a></span><span class="op">(</span><span class="va">anesthesia</span>, </span>
 <span>                                     <span class="co"># normalized_count_paths = "P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\example_data\\anesthesia\\unified_ontology_unchecked.csv",</span></span>
 <span>                                     normalized_count_paths <span class="op">=</span> <span class="st">"P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\example_data\\anesthesia\\anesthesia_reformatted_ontology_unchecked.csv"</span>,</span>
 <span>                                     show_col_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">anesthesia</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## $experiment_name</span></span>
-<span><span class="co">## [1] "anesthesia"</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $experimenters</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $channels</span></span>
-<span><span class="co">## [1] "cfos"</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $experiment_groups</span></span>
-<span><span class="co">## [1] "Control"    "Isoflurane"</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $drug_groups</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $sex_groups</span></span>
-<span><span class="co">## [1] "Male"   "Female"</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $cohorts</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $strains</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $genotypes</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $reporters</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $ages</span></span>
-<span><span class="co">## NULL</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $output_path</span></span>
-<span><span class="co">## [1] "P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\example_data\\example_experiment"</span></span></code></pre>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># If you have more than one channel data set to import, you would specify the normalized_count_paths </span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">anesthesia</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="co"># If you have more than one channel data set to import, you would specify the normalized_count_paths </span></span>
 <span><span class="co"># as a vector of named strings, with the names corresponding to the channel names.</span></span>
 <span><span class="co"># Uncomment the lines below:</span></span>
 <span></span>
@@ -300,17 +231,8 @@ variables used in the dataset.</p>
 </h4>
 <p>This dataset uses the Kim Unified Ontology. The code below prints the
 first few entries of the Kim Unified Ontology.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">SMARTTR</span><span class="fu">::</span><span class="va"><a href="../reference/ontology.unified.html">ontology.unified</a></span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 x 6</span></span></span>
-<span><span class="co">##      id acronym   name                     structure_order parent parent_acronym</span></span>
-<span><span class="co">##   <span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>     </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>                              </span><span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span><span>  </span><span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>         </span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span><span>   997 root      root                                   0    997 root          </span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span><span>     8 grey      Basic cell groups and r~             100    997 root          </span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span><span>   567 CH        Cerebrum                             200      8 grey          </span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span><span>   688 CTX       Cerebral cortex                      300    567 CH            </span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span><span>   695 CTXpl     Cortical plate                       400    688 CTX           </span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span><span>   315 Isocortex Isocortex                            500    695 CTXpl</span></span></span></code></pre>
 <p>SMARTTR requires that the ontology acronyms and full length region
 names of your dataset are perfectly matched with those of the stored
 ontology. Sometimes during the data exportation process, additional
@@ -319,7 +241,7 @@ introduced into acronyms or names.</p>
 <p>Here, we use the <code>check_ontology_coding function()</code> to
 correct any discrepencies and match to the internal ontologies stored in
 SMARTTR. This step may take a minute if the dataset is quite large.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ontology</span> <span class="op">&lt;-</span> <span class="st">"unified"</span>   <span class="co"># Set to "allen" if you are using the allen ontology</span></span>
 <span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/check_ontology_coding.html">check_ontology_coding</a></span><span class="op">(</span><span class="va">anesthesia</span>, ontology <span class="op">=</span> <span class="va">ontology</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -335,7 +257,7 @@ bulb, hippocampal formation, cortical subplate, cerebral nuclei,
 thalamus, hypothalamus, midbrain, and hindbrain. Exclusion of the
 acronym, <code>CBL</code> automatically removes the cerebellum from the
 dataset.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_regions.html">filter_regions</a></span><span class="op">(</span><span class="va">anesthesia</span>, </span>
 <span>                            base_regions <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Isocortex"</span>, <span class="st">"OLF"</span>, <span class="st">"HPF"</span>, <span class="st">"CTXsp"</span>, <span class="st">"CNU"</span>,<span class="st">"TH"</span>, <span class="st">"HY"</span>, <span class="st">"MB"</span>, <span class="st">"HB"</span><span class="op">)</span>,</span>
 <span>                            ontology <span class="op">=</span> <span class="va">ontology</span><span class="op">)</span></span></code></pre></div>
@@ -351,7 +273,7 @@ entered as an additional row. SMARTTR initially operates at the highest
 “resolution” and later on, can fold sub-regions into parent regions
 later. Therefore redundant counts from parent regions should be removed
 with <code><a href="../reference/exclude_redundant_regions.html">exclude_redundant_regions()</a></code>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/exclude_redundant_regions.html">exclude_redundant_regions</a></span><span class="op">(</span><span class="va">anesthesia</span>, ontology <span class="op">=</span> <span class="va">ontology</span><span class="op">)</span></span></code></pre></div>
 <p>Note: See also the function <code><a href="../reference/check_redundant_parents.html">check_redundant_parents()</a></code>,
 which detects redundant parents. It returns a named list with two
@@ -377,7 +299,7 @@ regions for the Allen CCF ontology.</p>
 on the analysis needs of this dataset and inspection of full names of
 the unified ontology (You can inspect the ontology <a href="https://osf.io/45qbj/" class="external-link">here.</a>). The ones you use may be
 customized to suit your own needs.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simplify_keywords</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"layer"</span>, <span class="st">"zone"</span>,  <span class="st">"area 1"</span>, <span class="st">"area 2"</span>, <span class="st">"area 3"</span>, </span>
 <span>                      <span class="st">"subnucleus"</span>, <span class="st">"division"</span>, <span class="st">"Caudoputamen-"</span>, <span class="st">"Intergeniculate"</span>, <span class="st">"Pregeniculate"</span>, </span>
 <span>                      <span class="st">"Subgeniculate"</span>, <span class="st">"Island"</span>, <span class="st">"fields of Forel"</span>, <span class="st">"Cajal"</span>, <span class="st">"Darkschewitsch"</span>, </span>
@@ -403,7 +325,7 @@ customized to suit your own needs.</p>
 <span>                      <span class="st">"intermediate part"</span>, <span class="st">"Zona limitans"</span>, <span class="st">"Posterodorsal"</span>, <span class="st">"interfascicular part"</span><span class="op">)</span></span></code></pre></div>
 <p>Below we simplify the counts by keywords chosen and recalculate the
 normalized counts</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># simplify the acronyms by the keyworks and recalculate the normalized counts</span></span>
 <span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simplify_cell_count.html">simplify_cell_count</a></span><span class="op">(</span><span class="va">anesthesia</span>, ontology <span class="op">=</span> <span class="va">ontology</span>, simplify_keywords <span class="op">=</span> <span class="va">simplify_keywords</span>, dont_fold <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -420,15 +342,15 @@ allows for this using a list of keywords included in the long-form name
 of a region. Below illustrates both of these functions as further
 cleaning steps.</p>
 <p>Load and print list of chosen exclusion acronyms</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">exclusion_acronyms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fiber_tracts"</span>, <span class="st">"cm"</span>, <span class="st">"2n"</span>, <span class="st">"s5"</span>, <span class="st">"8cn"</span>, <span class="st">"sst"</span>, <span class="st">"cbf"</span>, <span class="st">"cbp"</span>, <span class="st">"scp"</span>, <span class="st">"mcp"</span>, <span class="st">"lfbs"</span>, </span>
 <span>                        <span class="st">"cc"</span>, <span class="st">"fmi"</span>, <span class="st">"cst"</span>, <span class="st">"lfbst"</span>, <span class="st">"eps"</span>, <span class="st">"epsc"</span>, <span class="st">"ts"</span>, <span class="st">"rs"</span>, <span class="st">"mfbs"</span>, <span class="st">"mfbc"</span>, <span class="st">"fxs"</span>, </span>
 <span>                         <span class="st">"fxpo"</span>, <span class="st">"hc"</span>, <span class="st">"st"</span>, <span class="st">"mfbsma"</span>, <span class="st">"mfbse"</span>, <span class="st">"VS"</span>, <span class="st">"3V"</span>, <span class="st">"4V"</span>, <span class="st">"drt"</span><span class="op">)</span></span></code></pre></div>
 <p>Clean the dataset based on exclusion acronyms</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/exclude_by_acronym.html">exclude_by_acronym</a></span><span class="op">(</span><span class="va">anesthesia</span>, acronyms <span class="op">=</span> <span class="va">exclusion_acronyms</span>, ontology <span class="op">=</span> <span class="va">ontology</span><span class="op">)</span></span></code></pre></div>
 <p>Exclude based on keywords detected in the long-form name</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">keywords_exclude</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nerve"</span>, <span class="st">"tract"</span>, <span class="st">"pineal gland"</span>, <span class="st">"   Area subpostrema"</span><span class="op">)</span></span>
 <span><span class="va">anesthesia</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/exclude_by_keyword.html">exclude_by_keyword</a></span><span class="op">(</span><span class="va">anesthesia</span>, keywords <span class="op">=</span> <span class="va">keywords_exclude</span><span class="op">)</span></span></code></pre></div>
 <div class="section level4">
@@ -438,7 +360,7 @@ cleaning steps.</p>
 (predominately hindbrain) This step primarily removes small-area regions
 that are probably adding noise to the analysis. If a regions possesses 1
 or less cfos counts, it is removed.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">thresh</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
 <span><span class="va">anesthesia</span><span class="op">$</span><span class="va">combined_normalized_counts</span><span class="op">$</span><span class="va">cfos</span> <span class="op">&lt;-</span> <span class="va">anesthesia</span><span class="op">$</span><span class="va">combined_normalized_counts</span><span class="op">$</span><span class="va">cfos</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">counts</span> <span class="op">&gt;=</span> <span class="va">thresh</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
@@ -448,17 +370,17 @@ means the output of one function automatically is fed as a parameter
 into the next function.</p>
 </blockquote>
 <p>Remove outliers for each subgroup.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/find_outlier_counts.html">find_outlier_counts</a></span><span class="op">(</span><span class="va">anesthesia</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span><span class="op">)</span>, n_sd <span class="op">=</span> <span class="fl">2</span>, remove <span class="op">=</span> <span class="cn">TRUE</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>Detect if each region is represented by a minimum number of mice
 (<code>min_n</code>) per subgroup (Control or Isoflurane groups).</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enough_mice_per_group.html">enough_mice_per_group</a></span><span class="op">(</span><span class="va">anesthesia</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span><span class="op">)</span>, min_n <span class="op">=</span> <span class="fl">4</span>, remove <span class="op">=</span> <span class="cn">TRUE</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="checkpoint-load-default-saved-experiment-object-here">Checkpoint load default saved experiment object here<a class="anchor" aria-label="anchor" href="#checkpoint-load-default-saved-experiment-object-here"></a>
 </h4>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_experiment.html">save_experiment</a></span><span class="op">(</span><span class="va">anesthesia</span>, timestamp <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -488,7 +410,7 @@ in this section.</p>
 <p>The <code><a href="../reference/get_correlations.html">get_correlations()</a></code> function is used to calculate
 pairwise Pearson correlations across all regions within an analysis
 group.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Groups to iterate through and their corresponding plotting labels</span></span>
 <span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Control"</span>, <span class="st">"Isoflurane"</span><span class="op">)</span></span>
 <span></span>
@@ -506,7 +428,7 @@ group.</p>
 <p>There are a few global aesthetic parameters that will be used
 repeatedly across plotting functions, so they are setup below for
 use:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Setting up aesthetic color choices</span></span>
 <span><span class="va">group.colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Isoflurane<span class="op">=</span><span class="st">"#04C3C3"</span>, Control <span class="op">=</span> <span class="st">"#BF1F1F"</span><span class="op">)</span></span>
 <span><span class="va">anatomical.colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Isocortex <span class="op">=</span> <span class="st">"#5571a9"</span>, OLF <span class="op">=</span> <span class="st">"#64bdc4"</span>, HPF <span class="op">=</span> <span class="st">"#d2875b"</span>, CTXsp <span class="op">=</span> <span class="st">"#87a3db"</span>, </span>
@@ -515,7 +437,7 @@ use:</p>
 that setting the <code>colors</code> parameter to NULL results in the
 viridis color scale. Figures will autosave at [experiment folder
 path]/[Figures].</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Option to use custom ggplot2 theme to fine-tune aesthetics</span></span>
 <span><span class="va">theme.hm</span> <span class="op">&lt;-</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">0.5</span>, angle <span class="op">=</span> <span class="fl">90</span>, size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
 <span>                          axis.text.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>vjust <span class="op">=</span> <span class="fl">0.5</span>, size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
@@ -549,7 +471,7 @@ path]/[Figures].</p>
 <figure><img src="../reference/figures/heatmap_Control_cfos.png" alt="Image" style="width: 500px;"><figcaption><em>Heatmap of regional correlations for the Control group. Black
 astericks represent significant correlations based on user-set alpha
 value..</em>
-</figcaption></figure><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+</figcaption></figure><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_correlation_heatmaps.html">plot_correlation_heatmaps</a></span><span class="op">(</span><span class="va">anesthesia</span>,</span>
 <span>                                  channels <span class="op">=</span> <span class="st">"cfos"</span>,</span>
 <span>                                  correlation_list_name <span class="op">=</span> <span class="st">"Isoflurane"</span>,</span>
@@ -580,7 +502,7 @@ threshold<a class="anchor" aria-label="anchor" href="#plotting-representative-jo
 <code><a href="../reference/plot_joined_networks.html">plot_joined_networks()</a></code> functions. We can make sure the
 networks have matching edge density using the
 <code>proportional_thresh</code> parameter (edge proportion 3.15%)</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_joined_networks.html">create_joined_networks</a></span><span class="op">(</span><span class="va">anesthesia</span>, </span>
 <span>                                     correlation_list_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Control"</span>, <span class="st">"Isoflurane"</span><span class="op">)</span>,</span>
 <span>                                     channels <span class="op">=</span> <span class="st">"cfos"</span>,</span>
@@ -637,7 +559,7 @@ number of rewirings corresponds to the size of each empirical network
 (no. edges) times 100. The <code>n_networks</code> parameter determines
 the number of null networks to generate. The default is to create 100
 null networks.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Calculate null summaries</span></span>
 <span><span class="va">null_nodes_p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rewire_network.html">rewire_network</a></span><span class="op">(</span><span class="va">anesthesia</span>,</span>
 <span>                          channels <span class="op">=</span> <span class="st">"cfos"</span>,</span>
@@ -653,7 +575,7 @@ null networks.</p>
 <p>The following code averages node-level properties across all null
 networks generated. It then summarizes global network level properties
 by averaging the mean node-level properties.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">null_network_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summarize_null_networks.html">summarize_null_networks</a></span><span class="op">(</span>null_nodes_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">null_nodes_p1</span>,</span>
 <span>                                                                       <span class="va">null_nodes_p2</span><span class="op">)</span>,</span>
 <span>                                                network_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Control"</span>, <span class="st">"Isoflurane"</span><span class="op">)</span>,</span>
@@ -662,7 +584,7 @@ by averaging the mean node-level properties.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">null_network_summary</span><span class="op">$</span><span class="va">global_summary</span><span class="op">)</span></span></code></pre></div>
 <p>We can export the node-level and global level summaries of the null
 networks to the experiment folder using the code below:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">null_network_summary</span><span class="op">$</span><span class="va">global_summary</span> ,  file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">anesthesia</span>, <span class="st">"info"</span><span class="op">)</span><span class="op">$</span><span class="va">output</span>, <span class="st">"tables"</span>, <span class="st">"df_null_network_summaries_global_cfos .csv"</span><span class="op">)</span><span class="op">)</span>  </span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">null_network_summaries</span><span class="op">$</span><span class="va">node_summary</span> ,  file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">anesthesia</span>, <span class="st">"info"</span><span class="op">)</span><span class="op">$</span><span class="va">output</span>, <span class="st">"tables"</span>, <span class="st">"df_null_network_summaries_nodes_cfos .csv"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -673,7 +595,7 @@ networks to the experiment folder using the code below:</p>
 of Pearson correlation values for each regional correlation. The
 following code generates null distributions between the Control and
 Isoflurane groups after 10,000 label shuffles.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correlation_diff_permutation.html">correlation_diff_permutation</a></span><span class="op">(</span><span class="va">anesthesia</span>,</span>
 <span>                                 correlation_list_name_1 <span class="op">=</span> <span class="st">"Control"</span>,</span>
 <span>                                 correlation_list_name_2 <span class="op">=</span> <span class="st">"Isoflurane"</span>,</span>
@@ -683,12 +605,12 @@ Isoflurane groups after 10,000 label shuffles.</p>
 <span>                                 alpha <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span></span></code></pre></div>
 <p>The results of the permutation analysis can be automatically exported
 with the following code:</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/export_permutation_results.html">export_permutation_results</a></span><span class="op">(</span><span class="va">anesthesia</span>, channels <span class="op">=</span> <span class="st">"cfos"</span>, ontology <span class="op">=</span> <span class="st">"unified"</span><span class="op">)</span></span></code></pre></div>
 <p>You can save a separate csv of the permutation results that are
 filtered only for significant values useing the
 <code>filter_significant</code> parameter.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/export_permutation_results.html">export_permutation_results</a></span><span class="op">(</span><span class="va">anesthesia</span>, channels <span class="op">=</span> <span class="st">"cfos"</span>, ontology <span class="op">=</span> <span class="st">"unified"</span>, filter_significant <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
 <p>Please note that figures may be very similar across different
@@ -699,7 +621,7 @@ correlation differences in both direction and magnitude. Red dots in the
 upper left quadrant are correlation differences where Control &gt;
 Isoflurane and those in the upper right quadrant are correlation
 differences where Control &lt; Isoflurane.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Choose the color of the plot with a hexadecimal string</span></span>
 <span><span class="va">vp_color</span> <span class="op">&lt;-</span> <span class="st">"#BF1F1F"</span></span>
 <span></span>
@@ -740,13 +662,13 @@ network.</p>
 supports the possibility for community detection using the
 <code>community_detection_function</code> parameter, which defaults to
 the <code><a href="https://tidygraph.data-imaginist.com/reference/group_graph.html" class="external-link">tidygraph::group_fast_greedy</a></code> <a href="https://tidygraph.data-imaginist.com/reference/group_graph.html" class="external-link">method</a>.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anesthesia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_perm_diff_network.html">create_perm_diff_network</a></span><span class="op">(</span><span class="va">anesthesia</span>, permutation_group <span class="op">=</span> <span class="st">"Control_vs_Isoflurane"</span>, channel <span class="op">=</span> <span class="st">"cfos"</span>, ontology <span class="op">=</span> <span class="st">"unified"</span>, p_value_thresh <span class="op">=</span> <span class="fl">0.001</span>, weights <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <p>We can then plot this network using the
 <code><a href="../reference/plot_perm_diff_network.html">plot_perm_diff_network()</a></code> function. The
 <code>mark_hull</code> parameter allows for the visualization of
 communities detected, plotted as a colored polygon.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">graph_theme</span> <span class="op">&lt;-</span> <span class="fu">ggraph</span><span class="fu">::</span><span class="fu"><a href="https://ggraph.data-imaginist.com/reference/theme_graph.html" class="external-link">theme_graph</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span>,size <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>,</span>
 <span>                                             legend.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">30</span><span class="op">)</span>,</span>
 <span>                                             legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">30</span><span class="op">)</span><span class="op">)</span></span>

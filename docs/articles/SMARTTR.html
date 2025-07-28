@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">SMARTTR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -170,17 +170,14 @@ installation process.</p>
 </h4>
 <p>We are currently working on submission of SMARTTR to CRAN. However,
 we currently offer SMARTTR as a package tarball hosted on a CRAN-like
-repository.</p>
-<p>You can install from this repository with the code below.
-Installation is compatible with versions of R &gt;= 3.6 and has been
-tested on Mac ARM-based (Apple silicon) architecture (R v4.4.2), and
-Windows 10 (R v3.6.3, v4.5.0 [devel]).</p>
+repository hosted by R-universe by rOpenSci. This will install the
+latest rendered version of SMARTTR on GitHub.</p>
+<p>Installation should be compatible with versions of R &gt;= 3.6 and
+has been last tested on Mac ARM-based (Apple silicon) architecture (R
+v4.4.2), and Windows 10 (R v3.6.3, v4.5.0 [devel]).</p>
+<p>You can install using the code below.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"SMARTTR"</span>, repos <span class="op">=</span> <span class="st">"https://mjin1812.github.io/drat"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># If you get an architecture error while trying to install in a Windows system, uncomment and try to run the line below instead</span></span>
-<span></span>
-<span><span class="co"># install.packages("SMARTTR", repos = "https://mjin1812.github.io/drat", INSTALL_opts = "--no-multiarch")</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"SMARTTR"</span>, repos <span class="op">=</span> <span class="st">"https://mjin1812.r-universe.dev"</span>, INSTALL_opts <span class="op">=</span> <span class="st">"--no-multiarch"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="installation-of-the-development-version-of-smarttr">1.5.2 Installation of the development version of SMARTTR<a class="anchor" aria-label="anchor" href="#installation-of-the-development-version-of-smarttr"></a>

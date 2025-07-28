@@ -734,7 +734,7 @@ summarise_networks <- function(e,
 #' @param pearson_thresh2 (NULL) If not NULL, this gives the option of filtering the second network by a different pearson threshold from the first network.
 #' The `pearson_thresh` parameter will then be used as the threshold for network 1.
 #' @param ontology (str, default = "allen") Region ontology to use. options = "allen" or "unified"
-#' @param filter_isolates (logical, default = TRUE) Whether to filter out the number of isolated (zero degree) nodes from the network. Default is to retain them.
+#' @param filter_isolates (logical, default = TRUE) Whether to filter out the number of isolated (zero degree) nodes from the network.
 #' @param export_overlapping_edges (bool, default  = TRUE) Whether to export the overlapping edges between the two networks as a csv into the `table` directory.
 #' @param anatomical.order (vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.
 #' @return e experiment object. This object now has a new added element called `networks.` This is a list storing a

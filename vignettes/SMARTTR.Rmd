@@ -73,16 +73,14 @@ If you are using R 3.6+ on a Windows machine, you will need to install Rtools ve
 
 ### 1.5.1 Installation from a repository bundle (recommended)
 
-We are currently working on submission of SMARTTR to CRAN. However, we currently offer SMARTTR as a package tarball hosted on a CRAN-like repository. 
+We are currently working on submission of SMARTTR to CRAN. However, we currently offer SMARTTR as a package tarball hosted on a CRAN-like repository hosted by R-universe by rOpenSci. This will install the latest rendered version of SMARTTR on GitHub.
 
-You can install from this repository with the code below. Installation is compatible with versions of R >= 3.6 and has been tested on Mac ARM-based (Apple silicon) architecture (R v4.4.2), and Windows 10 (R v3.6.3, v4.5.0 [devel]).
+Installation should be compatible with versions of R >= 3.6 and has been last tested on Mac ARM-based (Apple silicon) architecture (R v4.4.2), and Windows 10 (R v3.6.3, v4.5.0 [devel]).
+
+You can install using the code below.
 
 ```{r}
-install.packages("SMARTTR", repos = "https://mjin1812.github.io/drat")
-
-# If you get an architecture error while trying to install in a Windows system, uncomment and try to run the line below instead
-
-# install.packages("SMARTTR", repos = "https://mjin1812.github.io/drat", INSTALL_opts = "--no-multiarch")
+install.packages("SMARTTR", repos = "https://mjin1812.r-universe.dev", INSTALL_opts = "--no-multiarch")
 ```
 
 ### 1.5.2 Installation of the development version of SMARTTR

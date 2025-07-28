@@ -4,7 +4,7 @@ output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{FAQ}
+  %\VignetteIndexEntry{Importing External Datasets}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -80,7 +80,7 @@ Please reach out and provide a full ontology tree if you would like another onto
 
 ## Import necessary dependencies
 
-```{r, eval = TRUE}
+```{r}
 ## Packages to load
 library(SMARTTR)
 library(magrittr)
@@ -88,7 +88,7 @@ library(dplyr)
 ```
 
 ## Create an experiment object 
-```{r, eval = TRUE}
+```{r}
 # Creating an experiment object named "anesthesia" 
 # Enter the channels parameter to distinguish which IEG(s) is/are stained.
 # Note, the other categorical variables will be auto-imported from the dataset
@@ -110,7 +110,7 @@ print(anesthesia)
 The `import_mapped_datasets()` is a helper function that makes it easy to import the formatted csv file into the proper location in the experiment object. 
 It will also auto-detect the categorical variables used in the dataset. 
 
-```{r, eval = TRUE}
+```{r}
 anesthesia <- import_mapped_datasets(anesthesia, 
                                      # normalized_count_paths = "P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\example_data\\anesthesia\\unified_ontology_unchecked.csv",
                                      normalized_count_paths = "P:\\DENNYLABV\\Michelle_Jin\\Wholebrain pipeline\\example_data\\anesthesia\\anesthesia_reformatted_ontology_unchecked.csv",
@@ -132,7 +132,7 @@ print(anesthesia)
 
 This dataset uses the Kim Unified Ontology. The code below prints the first few entries of the Kim Unified Ontology.
 
-```{r, eval = TRUE}
+```{r}
 head(SMARTTR::ontology.unified)
 ```
 
@@ -140,7 +140,7 @@ SMARTTR requires that the ontology acronyms and full length region names of your
 
 Here, we use the `check_ontology_coding function()` to correct any discrepencies and match to the internal ontologies stored in  SMARTTR. This step may take a minute if the dataset is quite large.
 
-```{r, eval = TRUE}
+```{r}
 ontology <- "unified"   # Set to "allen" if you are using the allen ontology
 anesthesia <- check_ontology_coding(anesthesia, ontology = ontology)
 ```

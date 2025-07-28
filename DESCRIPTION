@@ -1,6 +1,6 @@
 Package: SMARTTR
 Title: Mapping, Analysis, and Visualization Package for Brain-Wide Dual-Ensemble Coronal Datasets
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: c(
     person(given = "Michelle",
            family = "Jin",
@@ -64,5 +64,5 @@ Suggests:
     testthat (>= 3.1.1),
     ggh4x (>= 0.2.8),
     rstatix
-Additional_repositories: https://mjin1812.github.io/drat/
+Additional_repositories: https://mjin1812.r-universe.dev/
 Config/testthat/edition: 3
