@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">SMARTTR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -107,25 +107,30 @@ the hypothalamus are represented, the HY should not be included in the list.</dd
         <dd>Combine cell counts across all mice in an experiment into a single dataframe.</dd>
       </dl><dl><dt>
           
-          <code><a href="correlation_diff_permutation.html">correlation_diff_permutation()</a></code> 
+          <code><a href="correlation_diff_permutation.html">correlation_diff_permutation()</a></code> <code><a href="correlation_diff_permutation.html">correlation_diff_permutation()</a></code> 
         </dt>
         <dd>This function performs a permutation analysis to compare the region pairwise correlation coefficients between two different analysis groups.</dd>
       </dl><dl><dt>
           
-          <code><a href="create_joined_networks.html">create_joined_networks()</a></code> 
+          <code><a href="correlation_diff_permutation_hemi.html">correlation_diff_permutation_hemi()</a></code> 
+        </dt>
+        <dd>This function performs a permutation analysis to compare the region pairwise correlation coefficients between two different analysis groups.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="create_joined_networks.html">create_joined_networks()</a></code> <code><a href="create_joined_networks.html">create_joined_networks()</a></code> 
         </dt>
         <dd>Create a joined network to visualize overlapping connections with the same outer joined node set.</dd>
       </dl><dl><dt>
           
-          <code><a href="create_networks.html">create_networks()</a></code> 
+          <code><a href="create_networks.html">create_networks()</a></code> <code><a href="create_networks.html">create_networks()</a></code> 
         </dt>
         <dd>Create graph objects for plotting different analysis subgroups.</dd>
       </dl><dl><dt>
           
-          <code><a href="create_perm_diff_network.html">create_perm_diff_network()</a></code> 
+          <code><a href="create_perm_diff_network.html">create_perm_diff_network()</a></code> <code><a href="create_perm_diff_network.html">create_perm_diff_network()</a></code> 
         </dt>
         <dd>Create a permutation difference network
-This function requires <code><a href="https://mjin1812.github.io/SMARTTR/reference/export_permutation_results.html">export_permutation_results()</a></code> to have been run for the specific permutation analysis of interest, with the <code>filter_significant</code>
+This function requires <code><a href="../reference/export_permutation_results.html">export_permutation_results()</a></code> or  <code><a href="../reference/export_permutation_results_hemi.html">export_permutation_results_hemi()</a></code> to have been run for the specific permutation analysis of interest, with the <code>filter_significant</code>
 parameter set to FALSE, so that users can set their own p-value threshold for filtering out edges.</dd>
       </dl><dl><dt>
           
@@ -166,9 +171,15 @@ This function also automatically keeps only the common regions that are found ac
         <dd>Create an experiment object</dd>
       </dl><dl><dt>
           
-          <code><a href="export_permutation_results.html">export_permutation_results()</a></code> 
+          <code><a href="export_permutation_results.html">export_permutation_results()</a></code> <code><a href="export_permutation_results.html">export_permutation_results()</a></code> 
         </dt>
         <dd>Export the permutation results as a csv file. This automatically saves into the tables folder.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="export_permutation_results_hemi.html">export_permutation_results_hemi()</a></code> 
+        </dt>
+        <dd>Export the permutation results as a csv file. This automatically saves into the tables folder. Meant for
+datasets with hemispheric information.</dd>
       </dl><dl><dt>
           
           <code><a href="filter.html">filter</a></code> 
@@ -193,12 +204,17 @@ than their cohort mean.</dd>
         <dd>Get cell tables</dd>
       </dl><dl><dt>
           
-          <code><a href="get_correlations.html">get_correlations()</a></code> 
+          <code><a href="get_correlations.html">get_correlations()</a></code> <code><a href="get_correlations.html">get_correlations()</a></code> 
         </dt>
         <dd>Get regional cross correlations and their p-values in a correlation list object.</dd>
       </dl><dl><dt>
           
-          <code><a href="get_percent_colabel.html">get_percent_colabel()</a></code> 
+          <code><a href="get_correlations_hemi.html">get_correlations_hemi()</a></code> 
+        </dt>
+        <dd>Get regional cross correlations and their p-values in a correlation list object.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="get_percent_colabel.html">get_percent_colabel()</a></code> <code><a href="get_percent_colabel.html">get_percent_colabel()</a></code> 
         </dt>
         <dd>Get the percentage of colabelled cells over either cfos or eyfp channels.</dd>
       </dl><dl><dt>
@@ -258,72 +274,77 @@ than their cohort mean.</dd>
         <dd>Unified Kim ontology</dd>
       </dl><dl><dt>
           
-          <code><a href="parallel_coordinate_plot.html">parallel_coordinate_plot()</a></code> 
+          <code><a href="parallel_coordinate_plot.html">parallel_coordinate_plot()</a></code> <code><a href="parallel_coordinate_plot.html">parallel_coordinate_plot()</a></code> 
         </dt>
         <dd>Create a parallel coordinate plot</dd>
       </dl><dl><dt>
           
-          <code><a href="plot_betweenness_regions.html">plot_betweenness_regions()</a></code> 
+          <code><a href="plot_betweenness_regions.html">plot_betweenness_regions()</a></code> <code><a href="plot_betweenness_regions.html">plot_betweenness_regions()</a></code> 
         </dt>
         <dd>Plot the betweenness distributions across regions</dd>
       </dl><dl><dt>
           
-          <code><a href="plot_correlation_heatmaps.html">plot_correlation_heatmaps()</a></code> 
+          <code><a href="plot_correlation_heatmaps.html">plot_correlation_heatmaps()</a></code> <code><a href="plot_correlation_heatmaps.html">plot_correlation_heatmaps()</a></code> 
         </dt>
         <dd>Plot correlation heatmaps</dd>
       </dl><dl><dt>
           
-          <code><a href="plot_degree_distributions.html">plot_degree_distributions()</a></code> 
+          <code><a href="plot_correlation_heatmaps_hemi.html">plot_correlation_heatmaps_hemi()</a></code> 
+        </dt>
+        <dd>Plot correlation heatmaps for a dataset with hemispheric information</dd>
+      </dl><dl><dt>
+          
+          <code><a href="plot_degree_distributions.html">plot_degree_distributions()</a></code> <code><a href="plot_degree_distributions.html">plot_degree_distributions()</a></code> 
         </dt>
         <dd>Plot the degree distributions</dd>
       </dl><dl><dt>
           
-          <code><a href="plot_degree_regions.html">plot_degree_regions()</a></code> 
+          <code><a href="plot_degree_regions.html">plot_degree_regions()</a></code> <code><a href="plot_degree_regions.html">plot_degree_regions()</a></code> 
         </dt>
         <dd>Plot the degree distributions across regions</dd>
       </dl><dl><dt>
           
-          <code><a href="plot_joined_networks.html">plot_joined_networks()</a></code> 
+          <code><a href="plot_joined_networks.html">plot_joined_networks()</a></code> <code><a href="plot_joined_networks.html">plot_joined_networks()</a></code> 
         </dt>
         <dd>Plot the networks stored in an experiment object</dd>
       </dl><dl><dt>
           
-          <code><a href="plot_mean_between_centrality.html">plot_mean_between_centrality()</a></code> 
+          <code><a href="plot_mean_between_centrality.html">plot_mean_between_centrality()</a></code> <code><a href="plot_mean_between_centrality.html">plot_mean_between_centrality()</a></code> 
         </dt>
         <dd>Plot mean betweenness centrality</dd>
       </dl><dl><dt>
           
-          <code><a href="plot_mean_clust_coeff.html">plot_mean_clust_coeff()</a></code> 
+          <code><a href="plot_mean_clust_coeff.html">plot_mean_clust_coeff()</a></code> <code><a href="plot_mean_clust_coeff.html">plot_mean_clust_coeff()</a></code> 
         </dt>
         <dd>Plot mean clustering coefficient</dd>
       </dl><dl><dt>
           
-          <code><a href="plot_mean_degree.html">plot_mean_degree()</a></code> 
+          <code><a href="plot_mean_degree.html">plot_mean_degree()</a></code> <code><a href="plot_mean_degree.html">plot_mean_degree()</a></code> 
         </dt>
         <dd>Plot the mean degree of the networks in a barplot. Error bars are plotted as SEM.</dd>
       </dl><dl><dt>
           
-          <code><a href="plot_mean_global_effic.html">plot_mean_global_effic()</a></code> 
+          <code><a href="plot_mean_global_effic.html">plot_mean_global_effic()</a></code> <code><a href="plot_mean_global_effic.html">plot_mean_global_effic()</a></code> 
         </dt>
         <dd>Plot mean global efficiency</dd>
       </dl><dl><dt>
           
-          <code><a href="plot_networks.html">plot_networks()</a></code> 
+          <code><a href="plot_networks.html">plot_networks()</a></code> <code><a href="plot_networks.html">plot_networks()</a></code> 
         </dt>
         <dd>Plot the networks stored in an experiment object</dd>
       </dl><dl><dt>
           
-          <code><a href="plot_normalized_counts.html">plot_normalized_counts()</a></code> 
+          <code><a href="plot_normalized_counts.html">plot_normalized_counts()</a></code> <code><a href="plot_normalized_counts.html">plot_normalized_counts()</a></code> 
         </dt>
         <dd>Plot normalized cell counts</dd>
       </dl><dl><dt>
           
-          <code><a href="plot_percent_colabel.html">plot_percent_colabel()</a></code> 
+          <code><a href="plot_percent_colabel.html">plot_percent_colabel()</a></code> <code><a href="plot_percent_colabel.html">plot_percent_colabel()</a></code> 
         </dt>
         <dd>This function allows for plotting of colabelled cells over either the "cfos" or "eyfp" channels.</dd>
       </dl><dl><dt>
           
-          <code><a href="plot_perm_diff_network.html">plot_perm_diff_network()</a></code> 
+          <code><a href="plot_perm_diff_network.html">plot_perm_diff_network()</a></code> <code><a href="plot_perm_diff_network.html">plot_perm_diff_network()</a></code> 
         </dt>
         <dd>Plot a permutation difference network
 e experiment object</dd>
@@ -364,7 +385,7 @@ e experiment object</dd>
         <dd>Reset the root path for the folder containing the registration and segmentation data.</dd>
       </dl><dl><dt>
           
-          <code><a href="rewire_network.html">rewire_network()</a></code> 
+          <code><a href="rewire_network.html">rewire_network()</a></code> <code><a href="rewire_network.html">rewire_network()</a></code> 
         </dt>
         <dd>Implement rewiring algorithms to current empirical networks to randomize certain network properties.</dd>
       </dl><dl><dt>
@@ -414,18 +435,18 @@ e experiment object</dd>
         <dd>SMARTTR: A Mapping, Analysis, and Visualization Package for Wholebrain Dual-Ensemble Coronal Datasets.</dd>
       </dl><dl><dt>
           
-          <code><a href="summarise_networks.html">summarise_networks()</a></code> 
+          <code><a href="summarise_networks.html">summarise_networks()</a></code> <code><a href="summarise_networks.html">summarise_networks()</a></code> 
         </dt>
         <dd>Summarize multiple networks.
 calculate network statistics for each network. This is not meant to summarize networks created using <code>create_joined_networks</code>.</dd>
       </dl><dl><dt>
           
-          <code><a href="summarize_null_networks.html">summarize_null_networks()</a></code> 
+          <code><a href="summarize_null_networks.html">summarize_null_networks()</a></code> <code><a href="summarize_null_networks.html">summarize_null_networks()</a></code> 
         </dt>
-        <dd>Summarize the parameters of the rewired null networks generated by <code><a href="https://mjin1812.github.io/SMARTTR/reference/rewire_network.html">rewire_network()</a></code></dd>
+        <dd>Summarize the parameters of the rewired null networks generated by <code><a href="../reference/rewire_network.html">rewire_network()</a></code></dd>
       </dl><dl><dt>
           
-          <code><a href="volcano_plot.html">volcano_plot()</a></code> 
+          <code><a href="volcano_plot.html">volcano_plot()</a></code> <code><a href="volcano_plot.html">volcano_plot()</a></code> 
         </dt>
         <dd>Plot the results of the permutation histogram used to determine the p-value of the pairwise region comparison</dd>
       </dl></div>
