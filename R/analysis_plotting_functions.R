@@ -730,6 +730,7 @@ summarise_networks <- function(e,
 #' this threshold is not applied.
 #' @param pearson_thresh (float, default = 0.8) The pearson correlation coefficient threshold to apply for filtering out
 #' @param proportional_thresh2 (NULL) If not NULL, this gives the option of filtering the second network by a different proportional threshold from the first.
+#' @param proportional_sort (NULL or "alpha") If NULL, default is to filter by correlation coefficient values. If "alpha", will filter by p-value (by lowest p-values).
 #' @param alpha2 (NULL) If not NULL, this gives the option of filtering the second network by a different alpha from the first. The `alpha` parameter will then be used as the threshold for network 1.
 #' @param pearson_thresh2 (NULL) If not NULL, this gives the option of filtering the second network by a different pearson threshold from the first network.
 #' The `pearson_thresh` parameter will then be used as the threshold for network 1.
@@ -758,6 +759,7 @@ create_joined_networks <- function(e,
                                    alpha2 = NULL,
                                    pearson_thresh2 = NULL,
                                    proportional_thresh2 = NULL,
+                                   proportional_sort = "alpha",
                                    filter_isolates = TRUE,
                                    anatomical.order = c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB"),
                                    export_overlapping_edges = TRUE){
@@ -850,20 +852,40 @@ create_joined_networks <- function(e,
       tidygraph::select(-.tidygraph_node_index)
 
     if (!is.na(proportional_thresh) && !is.null(proportional_thresh)){
-      edges <- network1 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(.data$weight)) %>% dplyr::as_tibble()
-      row <- round(igraph::gsize(network1)*proportional_thresh)
-      pearson_thresh <- edges$weight[[row]]
-      network1 <- network1 %>% activate(edges) %>% dplyr::filter(.data$weight >= pearson_thresh)
-      if (!is.na(proportional_thresh2) && !is.null(proportional_thresh2)){
-        edges <- network2 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(.data$weight)) %>% dplyr::as_tibble()
-        row <- round(igraph::gsize(network2)*proportional_thresh2)
+      if (proportional_sort == "alpha"){
+        edges <- network1 %>% activate(edges) %>% dplyr::arrange(.data$p.value) %>% dplyr::as_tibble()
+        row <- round(igraph::gsize(network1)*proportional_thresh)
+        alpha_thresh <- edges$p.value[[row]]
+        network1 <- network1 %>% activate(edges) %>% dplyr::filter(.data$p.value <= alpha_thresh)
+        if (!is.na(proportional_thresh2) && !is.null(proportional_thresh2)){
+          edges <- network2 %>% activate(edges) %>% dplyr::arrange(.data$p.value) %>% dplyr::as_tibble()
+          row <- round(igraph::gsize(network2)*proportional_thresh2)
+          alpha_thresh  <- edges$p.value[[row]]
+          network2 <- network2 %>% activate(edges) %>% dplyr::filter(.data$p.value <= alpha_thresh)
+        } else{
+          edges <- network2 %>% activate(edges) %>% dplyr::arrange(.data$p.value) %>% dplyr::as_tibble()
+          row <- round(igraph::gsize(network2)*proportional_thresh)
+          alpha_thresh <- edges$p.value[[row]]
+          network2 <- network2 %>% activate(edges) %>% dplyr::filter(.data$p.value <= alpha_thresh)
+        }
+      } else if (is.null(proportional_sort)){
+        edges <- network1 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(.data$weight)) %>% dplyr::as_tibble()
+        row <- round(igraph::gsize(network1)*proportional_thresh)
         pearson_thresh <- edges$weight[[row]]
-        network2 <- network2 %>% activate(edges) %>% dplyr::filter(.data$weight >= pearson_thresh)
-      } else{
-        edges <- network2 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(.data$weight)) %>% dplyr::as_tibble()
-        row <- round(igraph::gsize(network2)*proportional_thresh)
-        pearson_thresh <- edges$weight[[row]]
-        network2 <- network2 %>% activate(edges) %>% dplyr::filter(.data$weight >= pearson_thresh)
+        network1 <- network1 %>% activate(edges) %>% dplyr::filter(.data$weight >= pearson_thresh)
+        if (!is.na(proportional_thresh2) && !is.null(proportional_thresh2)){
+          edges <- network2 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(.data$weight)) %>% dplyr::as_tibble()
+          row <- round(igraph::gsize(network2)*proportional_thresh2)
+          pearson_thresh <- edges$weight[[row]]
+          network2 <- network2 %>% activate(edges) %>% dplyr::filter(.data$weight >= pearson_thresh)
+        } else{
+          edges <- network2 %>% activate(edges) %>% dplyr::arrange(dplyr::desc(.data$weight)) %>% dplyr::as_tibble()
+          row <- round(igraph::gsize(network2)*proportional_thresh)
+          pearson_thresh <- edges$weight[[row]]
+          network2 <- network2 %>% activate(edges) %>% dplyr::filter(.data$weight >= pearson_thresh)
+        }
+      } else {
+        stop("You did not supply a valid argument for proportional_sort. Values can be NULL or 'alpha'.")
       }
     } else{
       # filter by alpha
