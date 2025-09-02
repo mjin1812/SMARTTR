@@ -15,6 +15,7 @@ create_joined_networks(
   alpha2 = NULL,
   pearson_thresh2 = NULL,
   proportional_thresh2 = NULL,
+  proportional_sort = "alpha",
   filter_isolates = TRUE,
   anatomical.order = c("Isocortex", "OLF", "HPF", "CTXsp", "CNU", "TH", "HY", "MB", "HB",
     "CB"),
@@ -44,7 +45,9 @@ The \code{pearson_thresh} parameter will then be used as the threshold for netwo
 
 \item{proportional_thresh2}{(NULL) If not NULL, this gives the option of filtering the second network by a different proportional threshold from the first.}
 
-\item{filter_isolates}{(logical, default = TRUE) Whether to filter out the number of isolated (zero degree) nodes from the network. Default is to retain them.}
+\item{proportional_sort}{(NULL or "alpha") If NULL, default is to filter by correlation coefficient values. If "alpha", will filter by p-value (by lowest p-values).}
+
+\item{filter_isolates}{(logical, default = TRUE) Whether to filter out the number of isolated (zero degree) nodes from the network.}
 
 \item{anatomical.order}{(vec, c("Isocortex","OLF","HPF","CTXsp","CNU","TH","HY","MB","HB","CB")) The default super region acronym list that groups all subregions in the dataset.}
 
