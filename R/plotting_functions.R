@@ -740,7 +740,7 @@ plot_correlation_heatmaps <- function(e,
                            space = "free",
                            margins = FALSE,
                            scales = "free",
-                           strip = ggh4x::strip_themed(background_y = rev(background_x),
+                           strip = ggh4x::strip_themed(background_y = background_x,
                                                        background_x = background_x)) +
         geom_tile() +
         geom_text(aes(label =  .data$sig_text), size=sig_size, position = position_nudge(y = sig_nudge_y), color = sig_color) +
